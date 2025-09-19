@@ -1,0 +1,58 @@
+.vscode
+build/*
+impl/*
+!impl/*_process_config.json
+obj_dir/*
+*.user
+*_tmp.v
+waveform.vcd
+waveform.view
+tmp.*
+*.log
+*.html
+*.xml
+*.lst
+*.o
+*.hex
+*.bin
+temp
+
+# dsim
+dsim_work/
+dsim.*
+dvlcom.*
+*.dpf
+metrics.db
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# AI
+.claude
+.serena

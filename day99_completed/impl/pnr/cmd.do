@@ -1,0 +1,14 @@
+-d /Users/scott/repo/sokoide/fpga/lcd_cpu_bsram/impl/gwsynthesis/lcd_cpu_bsram.vg
+-p GW2AR-18C-QFN88-8
+-pn GW2AR-LV18QN88C8/I7
+-cst /Users/scott/repo/sokoide/fpga/lcd_cpu_bsram/src/lcd_cpu_bsram_20K.cst
+-cfg /Users/scott/repo/sokoide/fpga/lcd_cpu_bsram/impl/pnr/device.cfg
+-bit
+-tr
+-ph
+-timing
+-cst_error
+-convert_sdp32_36_to_sdp16_18
+-correct_hold 1
+-route_maxfan 23
+-global_freq 100.000
