@@ -1,0 +1,6 @@
+// Tang Nano 9K Pin Constraints
+// LED Blink Project - Completed
+
+IO_LOC "clk" 52;
+IO_PORT "clk" PULL_MODE=UP;
+IO_LOC "led" 10;

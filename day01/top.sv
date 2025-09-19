@@ -1,5 +1,5 @@
 // Day 01: LED Blink Example Template
-// Tang Nano FPGA LED チカチカ サンプル
+// Tang Nano FPGA LED Blink Sample
 
 module top (
     input  wire clk,     // 27MHz clock input
@@ -7,17 +7,17 @@ module top (
 );
 
     // TODO: Clock divider implementation
-    // ヒント: 27MHzを約1Hzに分周するには？
+    // Hint: How to divide 27MHz to approximately 1Hz?
 
     reg [24:0] counter;
 
     always_ff @(posedge clk) begin
-        // TODO: カウンタのインクリメント処理を書いてください
+        // TODO: Write counter increment logic here
         counter <= counter + 1;
     end
 
-    // TODO: LEDの点滅制御
-    // ヒント: counterの適切なビットを使用
+    // TODO: LED blink control
+    // Hint: Use appropriate bit of counter
     assign led = counter[24];
 
 endmodule
