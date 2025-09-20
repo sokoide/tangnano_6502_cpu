@@ -1,119 +1,100 @@
 # Tang Nano 6502 CPU with LCD Display
 
-A complete SystemVerilog implementation of a 6502 microprocessor with LCD controller for Tang Nano FPGA boards, featuring modular architecture and comprehensive testing.
+A complete SystemVerilog implementation of a 6502 microprocessor with an LCD controller for Tang Nano FPGA boards. This project features a modular architecture, comprehensive testing, and support for custom assembly programs.
+
+---
+
+🌐 **Available languages:** [English](./README.md) | [日本語](./README_ja.md)
 
 ## 🚀 Quick Start
 
-- For Tang Nano 9K
+-   For Tang Nano 9K
 
-  - Build and Download
+    -   Build and Download
 
-    ```bash
-    # Clone and build
-    git clone <repository-url>
-    cd lcd_cpu_bsram
-    make
+        ```bash
+        # Clone and build
+        git clone <repository-url>
+        cd lcd_cpu_bsram
+        make
 
-    # Download
-    make download
+        # Download
+        make download
+        ```
+
+-   For Tang Nano 20K
+
+    -   Update the following files
+
+    -   `lcd_cpu_bsram.gprj`
+
+        ```xml
+        <!-- Tang Nano 9K -->
+        <!-- <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device> -->
+        <!-- Tang Nano 20K -->
+        <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
+
+        <!-- Tang Nano 9K -->
+        <!-- <File path="src/lcd_cpu_bsram_9K.cst" type="file.cst" enable="1"/>
+        <File path="src/gowin_rpll_9K/gowin_rpll40.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll_9K/gowin_rpll9.v" type="file.verilog" enable="1"/> -->
+        <!-- Tang Nano 20K -->
+        <File path="src/lcd_cpu_bsram_20K.cst" type="file.cst" enable="1"/>
+        <File path="src/gowin_rpll_20K/gowin_rpll40.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll_20K/gowin_rpll9.v" type="file.verilog" enable="1"/>
+        ```
+
+    -   `src/top.sv`
+
+    ```systemverilog
+        // Tang Nano 9K:
+        //  wire rst_n = ResetButton;
+        // Tang Nano 20K:
+        wire rst_n = !ResetButton;
     ```
 
-- For Tang Nano 20K
+    -   Make
 
-  - Update the following files
+        ```bash
+        # BOARD is optional
+        make BOARD=20k download
+        ```
 
-  - `lcd_cpu_bsram.gprj`
+    -   Download
 
-    ```xml
-    <!-- Tang Nano 9K -->
-    <!-- <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device> -->
-    <!-- Tang Nano 20K -->
-    <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
-
-    <!-- Tang Nano 9K -->
-    <!-- <File path="src/lcd_cpu_bsram_9K.cst" type="file.cst" enable="1"/>
-    <File path="src/gowin_rpll_9K/gowin_rpll40.v" type="file.verilog" enable="1"/>
-    <File path="src/gowin_rpll_9K/gowin_rpll9.v" type="file.verilog" enable="1"/> -->
-    <!-- Tang Nano 20K -->
-    <File path="src/lcd_cpu_bsram_20K.cst" type="file.cst" enable="1"/>
-    <File path="src/gowin_rpll_20K/gowin_rpll40.v" type="file.verilog" enable="1"/>
-    <File path="src/gowin_rpll_20K/gowin_rpll9.v" type="file.verilog" enable="1"/>
-    ```
-
-  - `src/top.sv`
-
-  ```systemverilog
-      // Tang Nano 9K:
-      //  wire rst_n = ResetButton;
-      // Tang Nano 20K:
-      wire rst_n = !ResetButton;
-  ```
-
-  - Make
-
-    ```bash
-    # BOARD is optional
-    make BOARD=20k download
-    ```
-
-  - Download
-
-    ```bash
-    # BOARD is mandatory
-    make BOARD=20k download
-    ```
+        ```bash
+        # BOARD is mandatory
+        make BOARD=20k download
+        ```
 
 ## ✨ Features
 
-- **Complete 6502 CPU**: Standard instruction set plus custom extensions (CVR, IFO, HLT, WVS)
-- **LCD Text Display**: 60×17 character display with hardware font rendering
-- **Modular Design**: Clean separation between CPU core, LCD controller, and memory systems
-- **Assembly Programming**: cc65 toolchain integration with example programs
-- **Comprehensive Testing**: Unit tests and integration test suites
-- **Multi-Board Support**: Tang Nano 9K/20K with automatic configuration
+-   **Complete 6502 CPU**: Implements the standard instruction set with custom extensions for hardware control.
+-   **LCD Text Display**: Drives a 480x272 LCD to display 60x17 characters with hardware-accelerated font rendering.
+-   **Modular Design**: Clean separation between the CPU core, LCD controller, and memory systems.
+-   **Assembly Programming**: Integrated with the cc65 toolchain, with several example programs included.
+-   **Comprehensive Testing**: Includes unit tests, integration suites, and simulation testbenches.
+-   **Multi-Board Support**: Easily switch between Tang Nano 9K and 20K targets.
 
 ## 📚 Documentation
 
-| Document                                                               | Purpose                                   | Audience                   |
-| ---------------------------------------------------------------------- | ----------------------------------------- | -------------------------- |
-| **[docs/DEVELOPER.md](./docs/DEVELOPER.md)**                           | Technical architecture and learning guide | FPGA developers & learners |
-| **[docs/README_architecture_en.md](./docs/README_architecture_en.md)** | Detailed CPU architecture                 | Advanced developers        |
-| **[docs/README_architecture_ja.md](./docs/README_architecture_ja.md)** | CPU implementation details (Japanese)     | Advanced developers (Ja)   |
-| **[docs/BUILD.md](./docs/BUILD.md)**                                   | Build system and tooling                  | All developers             |
-| **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | CPU supported instructions                | All developers             |
-| **[docs/LCD.md](./docs/LCD.md)**                                       | LCD specification                         | Who need LCD info          |
-| **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog conventions                 | Contributors               |
-| **[docs/QUALITY_en.md](./docs/QUALITY_en.md)**                         | Code quality                              | All developers             |
-| **[docs/QUALITY_ja.md](./docs/QUALITY_ja.md)**                         | Code quality (Japanease)                  | All developers (Ja)        |
-| **[CLAUDE.md](./CLAUDE.md)**                                           | AI development integration                | Claude Code users          |
+For more details, refer to the documentation:
 
-## 🛠️ System Requirements
-
-**Hardware:**
-
-- Tang Nano 9K or 20K FPGA board
-- 043026-N6(ML) 4.3" 480×272 LCD module (optional)
-
-**Software:**
-
-- Gowin EDA tools (for FPGA synthesis)
-- cc65 assembler (for 6502 programs)
-- Make and basic Unix tools
-
-## 📋 Architecture Overview
-
-This project implements a complete computer system on FPGA with the following components:
-
-- **6502 CPU Core**: Modular implementation with decoder, ALU, and memory interface
-- **LCD Controller**: 480×272 RGB display with character-based text mode
-- **Memory System**: 32KB RAM + 1KB VRAM + 4KB Font ROM
-- **Custom Instructions**: Hardware-accelerated display operations
+| Document                                                               | Description                                        |
+| ---------------------------------------------------------------------- | -------------------------------------------------- |
+| **[docs/DEVELOPER.md](./docs/DEVELOPER.md)**                           | Technical architecture, setup, and learning guide. |
+| **[docs/README_architecture_en.md](./docs/README_architecture_en.md)** | In-depth details of the CPU architecture.          |
+| **[docs/BUILD.md](./docs/BUILD.md)**                                   | Build system, tooling, and manual configuration.   |
+| **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | Supported CPU instructions and custom extensions.  |
+| **[docs/LCD.md](./docs/LCD.md)**                                       | LCD specifications and controller details.         |
+| **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog coding conventions.                  |
+| **[CLAUDE.md](./CLAUDE.md)**                                           | Guidelines for AI-assisted development.            |
 
 ## 🏗️ Project Structure
 
 ```
 ├── src/                    # SystemVerilog source files
-│   ├── cpu.sv             # Main CPU module (includes modular components)
+│   ├── cpu.sv             # Main CPU module
 │   ├── lcd.sv             # LCD timing and character rendering
 │   ├── top.sv             # Top-level system integration
 │   └── gowin_*/           # Board-specific PLL configurations
@@ -123,140 +104,81 @@ This project implements a complete computer system on FPGA with the following co
 └── docs/                  # Comprehensive documentation
 ```
 
-## 🎯 Board Configuration
-
-The Makefile automatically handles board-specific configurations. For manual setup details, see [docs/BUILD.md](./docs/BUILD.md).
-
-```bash
-# Quick board switching
-make BOARD=9k    # Tang Nano 9K (default)
-make BOARD=20k   # Tang Nano 20K
-
-# Custom tool paths (if needed)
-make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download
-```
-
-## 🎮 Programming Examples
-
-The system supports 6502 assembly programming with the cc65 toolchain:
-
-```bash
-# Install prerequisites
-brew install srecord cc65          # macOS
-sudo apt install srecord cc65      # Linux
-
-# Build and run an example
-cd examples
-make clean && make                  # Builds simple5.s by default
-cd .. && make download             # Program FPGA with example
-```
-
-**Available Examples:**
-
-- `simple.s` - Basic "Hello World" display
-- `simple2.s` - Character printing loop
-- `simple3.s` - Memory operations
-- `simple4.s` - Custom instruction demos
-- `simple5.s` - Advanced graphics example
-- `hello_world.s` / `hello_world_scroll.s` - Text display demos
-
-## 🔧 Development Setup
-
-**Prerequisites:**
-
-```bash
-# macOS
-brew install srecord cc65
-
-# Linux (Ubuntu/Debian)
-sudo apt install srecord cc65 golang gtkwave verilator
-
-# Gowin EDA tools (for FPGA development)
-# Download from Gowin website
-```
-
-**Tool Path Configuration:**
-
-```bash
-# If Gowin tools are not in default locations
-export GWSH=/path/to/gw_sh
-export PRG=/path/to/programmer_cli
-
-# Or specify per command
-make GWSH=/opt/GowinEDA/IDE/bin/gw_sh download
-```
-
 ## 🧠 6502 CPU Implementation
 
-**Standard 6502 Instructions:** All standard opcodes implemented except interrupt-related instructions (BRK, RTI, CLI, SEI)
+### Custom Instructions
 
-**Custom Extensions:**
+In addition to the standard 6502 instruction set, this CPU includes custom opcodes for efficient hardware interaction:
 
-- `0xCF` **CVR** - Clear VRAM (hardware-accelerated screen clear)
-- `0xDF` **IFO** - Info/Debug (display registers and memory)
-- `0xEF` **HLT** - Halt CPU (LCD continues running)
-- `0xFF` **WVS** - Wait VSync (synchronize with display refresh)
+-   `0xCF` **CVR**: Clear VRAM (hardware-accelerated screen clear).
+-   `0xDF` **IFO**: Info/Debug (display registers and memory).
+-   `0xEF` **HLT**: Halt CPU while keeping the LCD active.
+-   `0xFF` **WVS**: Wait for VSync to synchronize with display refresh.
 
-**Memory Map:**
+### Memory Map
 
 ```
-0x0000-0x00FF  Zero Page (256B)
-0x0100-0x01FF  Stack (256B)
+0x0000-0x01FF  Zero Page & Stack (512B)
 0x0200-0x7BFF  Program RAM (30.5KB)
 0x7C00-0x7FFF  Shadow VRAM (1KB, read-only)
 0xE000-0xE3FF  VRAM (1KB, write-only)
-0xF000-0xFFFF  Font ROM (4KB, display controller only)
+0xF000-0xFFFF  Font ROM (4KB, for display controller)
 ```
 
 **Display System:**
 
-- 60×17 character text mode (480×272 pixels)
-- 16×8 pixel font characters with [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed)
-- Hardware accelerated character rendering
+-   60×17 character text mode (480×272 pixels)
+-   16×8 pixel font characters with [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed)
+-   Hardware accelerated character rendering
 
 Complete instruction reference and addressing modes available in [docs/README_architecture_en.md](./docs/README_architecture_en.md).
 
-## 🧪 Testing and Simulation
+## 🎮 Programming Examples
 
-The project includes comprehensive testing infrastructure:
+The `examples/` directory contains several 6502 assembly programs. Use the `cc65` toolchain to build them.
 
 ```bash
-# Run simulation (requires DSIM Studio on Linux/Windows x64)
-# See docs/DEVELOPER.md for detailed setup instructions
+# Install prerequisites (macOS)
+brew install srecord cc65
 
-# Lint and format code
+# Install prerequisites (Linux)
+sudo apt install srecord cc65
+
+# Build and run an example
+cd examples
+make clean && make          # Builds simple5.s by default
+cd ..
+make download               # Program the FPGA with the example
+```
+
+**Online Tools:**
+
+-   [6502 Assembler](https://sokoide.github.io/6502-assembler/)
+-   [6502 Debugger](https://sokoide.github.io/6502-emulator/)
+
+## 🧪 Testing and Simulation
+
+The project includes a comprehensive testing infrastructure.
+
+```bash
+# Run lint and format checks
 make lint
 make format
 ```
 
-**Test Suites:**
-
-- **tb_cpu.sv**: Complete CPU integration tests (9 test cases)
-- **tb_cpu_modules.sv**: Individual module unit tests (25+ tests)
-- **tb_lcd.sv**: LCD controller timing validation
-- **tb_top.sv**: Full system integration tests
+For detailed simulation instructions, see **[docs/DEVELOPER.md](./docs/DEVELOPER.md)**.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see:
-
-- [docs/CODING_STYLE.md](./docs/CODING_STYLE.md) for code standards
-- [docs/DEVELOPER.md](./docs/DEVELOPER.md) for technical architecture
-- [CLAUDE.md](./CLAUDE.md) for AI-assisted development guidelines
+Contributions are welcome! Please review the coding standards and development guidelines in the `docs/` directory.
 
 ## 📄 License
 
-This project uses components with different licenses:
-
-- **Font**: [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost Software License)
-- **Project Code**: Check individual file headers for licensing information
+-   **Font**: [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost Software License)
+-   **Project Code**: See individual file headers for licensing information.
 
 ## 🖼️ Example Output
 
 ![LCD Example](./docs/lcd.jpg)
 
-_The system running a simple text display program on the 480×272 LCD module_
-
----
-
-For detailed technical information, architecture diagrams, and learning materials, see the [docs/](./docs/) directory.
+_The system running a text display program on a 480x272 LCD module._
