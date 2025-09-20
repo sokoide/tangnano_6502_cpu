@@ -1,6 +1,6 @@
-# Tang Nano 6502 CPU LCDディスプレイ搭載
+# Tang Nano 6502 CPU LCD ディスプレイ搭載
 
-Tang Nano FPGAボード向けのLCDコントローラを搭載した6502マイクロプロセッサの完全なSystemVerilog実装です。このプロジェクトは、モジュラーアーキテクチャ、包括的なテスト、カスタムアセンブリプログラムのサポートを特徴としています。
+Tang Nano FPGA ボード向けの LCD コントローラを搭載した 6502 マイクロプロセッサの完全な SystemVerilog 実装です。このプロジェクトは、モジュラーアーキテクチャ、包括的なテスト、カスタムアセンブリプログラムのサポートを特徴としています。
 
 ---
 
@@ -8,60 +8,93 @@ Tang Nano FPGAボード向けのLCDコントローラを搭載した6502マイ�
 
 ## 🚀 クイックスタート
 
-このガイドでは、Tang Nano 9Kおよび20Kボードにプロジェクトをビルドしてデプロイする手順を説明します。
+このガイドでは、Tang Nano 9K および 20K ボードにプロジェクトをビルドしてデプロイする手順を説明します。
 
 ### 前提条件
 
--   **ハードウェア**: Tang Nano 9Kまたは20K
+-   **ハードウェア**: Tang Nano 9K または 20K
 -   **ソフトウェア**: Gowin EDA, cc65, Make
 
 ### 1. リポジトリのクローン
 
 ```bash
 git clone <repository-url>
-cd lcd_cpu_bsram
+cd tangnano_6502_cpu
 ```
 
-### 2. ビルドとダウンロード
+### 2. 20K 用にファイルの修正
 
-Makefileはビルドプロセスを自動化します。デフォルトでは、**Tang Nano 9K**をターゲットとします。
+デフォルトでは、**Tang Nano 9K**をターゲットとします。**Tang Nano 20K**を使う人は、以下の修正を行ってください。
+
+-   For Tang Nano 20K
+
+    -   Update the following files
+
+    -   `lcd_cpu_bsram.gprj`
+
+        ```xml
+        <!-- Tang Nano 9K -->
+        <!-- <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device> -->
+        <!-- Tang Nano 20K -->
+        <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
+
+        <!-- Tang Nano 9K -->
+        <!-- <File path="src/lcd_cpu_bsram_9K.cst" type="file.cst" enable="1"/>
+        <File path="src/gowin_rpll_9K/gowin_rpll40.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll_9K/gowin_rpll9.v" type="file.verilog" enable="1"/> -->
+        <!-- Tang Nano 20K -->
+        <File path="src/lcd_cpu_bsram_20K.cst" type="file.cst" enable="1"/>
+        <File path="src/gowin_rpll_20K/gowin_rpll40.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll_20K/gowin_rpll9.v" type="file.verilog" enable="1"/>
+        ```
+
+    -   `src/top.sv`
+
+    ```systemverilog
+        // Tang Nano 9K:
+        //  wire rst_n = ResetButton;
+        // Tang Nano 20K:
+        wire rst_n = !ResetButton;
+    ```
+
+### 3. ビルドとダウンロード
+
+Makefile はビルドプロセスを自動化します。
 
 ```bash
 # Tang Nano 9K向けにビルドしてダウンロード（デフォルト）
 make download
 ```
 
-**Tang Nano 20K**をターゲットにするには、`BOARD`変数を使用します。
+**Tang Nano 20K**を使っている方は、`BOARD`変数を使用します。
 
 ```bash
 # Tang Nano 20K向けにビルドしてダウンロード
 make BOARD=20k download
 ```
 
-ビルドシステムは、ピン制約やPLL設定など、ボード固有の構成を自動的に処理します。
-
 ## ✨ 特徴
 
--   **完全な6502 CPU**: ハードウェア制御用のカスタム拡張機能を備えた標準命令セットを実装。
--   **LCDテキストディスプレイ**: 480x272 LCDを駆動し、ハードウェアアクセラレーションによるフォントレンダリングで60x17文字を表示。
--   **モジュラー設計**: CPUコア、LCDコントローラ、メモリシステム間のクリーンな分離。
--   **アセンブリプログラミング**: cc65ツールチェーンと統合され、いくつかのサンプルプログラムが含まれています。
+-   **完全な 6502 CPU**: ハードウェア制御用のカスタム拡張機能を備えた標準命令セットを実装。
+-   **LCD テキストディスプレイ**: 480x272 LCD を駆動し、ハードウェアアクセラレーションによるフォントレンダリングで 60x17 文字を表示。
+-   **モジュラー設計**: CPU コア、LCD コントローラ、メモリシステム間のクリーンな分離。
+-   **アセンブリプログラミング**: cc65 ツールチェーンと統合され、いくつかのサンプルプログラムが含まれています。
 -   **包括的なテスト**: ユニットテスト、統合スイート、シミュレーションテストベンチが含まれています。
--   **マルチボードサポート**: Tang Nano 9Kと20Kのターゲットを簡単に切り替え可能。
+-   **マルチボードサポート**: Tang Nano 9K と 20K のターゲットを簡単に切り替え可能。
 
 ## 📚 ドキュメント
 
 詳細については、ドキュメントを参照してください。
 
-| ドキュメント                                                               | 説明                                             |
-| ---------------------------------------------------------------------- | ------------------------------------------------------- |
-| **[docs/DEVELOPER.md](./docs/DEVELOPER.md)**                           | 技術アーキテクチャ、セットアップ、学習ガイド。      |
-| **[docs/README_architecture_ja.md](./docs/README_architecture_ja.md)** | CPUアーキテクチャの詳細。               |
-| **[docs/BUILD.md](./docs/BUILD.md)**                                   | ビルドシステム、ツール、手動設定。        |
-| **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | サポートされているCPU命令とカスタム拡張機能。       |
-| **[docs/LCD.md](./docs/LCD.md)**                                       | LCDの仕様とコントローラの詳細。              |
-| **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilogコーディング規約。                       |
-| **[CLAUDE.md](./CLAUDE.md)**                                           | AI支援開発のガイドライン。                 |
+| ドキュメント                                                           | 説明                                            |
+| ---------------------------------------------------------------------- | ----------------------------------------------- |
+| **[docs/DEVELOPER.md](./docs/DEVELOPER.md)**                           | 技術アーキテクチャ、セットアップ、学習ガイド。  |
+| **[docs/README_architecture_ja.md](./docs/README_architecture_ja.md)** | CPU アーキテクチャの詳細。                      |
+| **[docs/BUILD.md](./docs/BUILD.md)**                                   | ビルドシステム、ツール、手動設定。              |
+| **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | サポートされている CPU 命令とカスタム拡張機能。 |
+| **[docs/LCD.md](./docs/LCD.md)**                                       | LCD の仕様とコントローラの詳細。                |
+| **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog コーディング規約。                |
+| **[CLAUDE.md](./CLAUDE.md)**                                           | AI 支援開発のガイドライン。                     |
 
 ## 🏗️ プロジェクト構成
 
@@ -77,16 +110,16 @@ make BOARD=20k download
 └── docs/                  # 包括的なドキュメント
 ```
 
-## 🧠 6502 CPU実装
+## 🧠 6502 CPU 実装
 
 ### カスタム命令
 
-標準の6502命令セットに加えて、このCPUには効率的なハードウェア対話のためのカスタムオペコードが含まれています。
+標準の 6502 命令セットに加えて、この CPU には効率的なハードウェア対話のためのカスタムオペコードが含まれています。
 
--   `0xCF` **CVR**: VRAMをクリア（ハードウェアアクセラレーションによる画面クリア）。
+-   `0xCF` **CVR**: VRAM をクリア（ハードウェアアクセラレーションによる画面クリア）。
 -   `0xDF` **IFO**: 情報/デバッグ（レジスタとメモリを表示）。
--   `0xEF` **HLT**: LCDをアクティブにしたままCPUを停止。
--   `0xFF` **WVS**: VSyncを待ってディスプレイのリフレッシュと同期。
+-   `0xEF` **HLT**: LCD をアクティブにしたまま CPU を停止。
+-   `0xFF` **WVS**: VSync を待ってディスプレイのリフレッシュと同期。
 
 ### メモリマップ
 
@@ -100,7 +133,7 @@ make BOARD=20k download
 
 ## 🎮 プログラミング例
 
-`examples/`ディレクトリには、いくつかの6502アセンブリプログラムが含まれています。`cc65`ツールチェーンを使用してビルドします。
+`examples/`ディレクトリには、いくつかの 6502 アセンブリプログラムが含まれています。`cc65`ツールチェーンを使用してビルドします。
 
 ```bash
 # 前提条件のインストール（macOS）
@@ -115,8 +148,8 @@ make download               # FPGAにサンプルをプログラム
 
 **オンラインツール:**
 
--   [6502アセンブラ](https://sokoide.github.io/6502-assembler/)
--   [6502デバッガ](https://sokoide.github.io/6502-emulator/)
+-   [6502 アセンブラ](https://sokoide.github.io/6502-assembler/)
+-   [6502 デバッガ](https://sokoide.github.io/6502-emulator/)
 
 ## 🧪 テストとシミュレーション
 
@@ -143,4 +176,4 @@ make format
 
 ![LCD Example](./docs/lcd.jpg)
 
-_480x272 LCDモジュールでテキスト表示プログラムを実行しているシステム。_
+_480x272 LCD モジュールでテキスト表示プログラムを実行しているシステム。_

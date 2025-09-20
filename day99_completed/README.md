@@ -8,19 +8,23 @@ A complete SystemVerilog implementation of a 6502 microprocessor with an LCD con
 
 ## 🚀 Quick Start
 
--   For Tang Nano 9K
+This guide explains how to build and deploy the project on Tang Nano 9K and 20K boards.
 
-    -   Build and Download
+### Prerequisites
 
-        ```bash
-        # Clone and build
-        git clone <repository-url>
-        cd lcd_cpu_bsram
-        make
+-   **Hardware**: Tang Nano 9K or 20K
+-   **Software**: Gowin EDA, cc65, Make
 
-        # Download
-        make download
-        ```
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd tangnano_6502_cpu
+```
+
+### 2. Modify Files for 20K
+
+By default, the project targets the **Tang Nano 9K**. If you are using a **Tang Nano 20K**, please make the following modifications.
 
 -   For Tang Nano 20K
 
@@ -53,19 +57,21 @@ A complete SystemVerilog implementation of a 6502 microprocessor with an LCD con
         wire rst_n = !ResetButton;
     ```
 
-    -   Make
+### 3. Build and Download
 
-        ```bash
-        # BOARD is optional
-        make BOARD=20k download
-        ```
+The Makefile automates the build process.
 
-    -   Download
+```bash
+# Build and download for Tang Nano 9K (default)
+make download
+```
 
-        ```bash
-        # BOARD is mandatory
-        make BOARD=20k download
-        ```
+If you are using a **Tang Nano 20K**, use the `BOARD` variable.
+
+```bash
+# Build and download for Tang Nano 20K
+make BOARD=20k download
+```
 
 ## ✨ Features
 
