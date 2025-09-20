@@ -12,32 +12,34 @@ A comprehensive learning guide for FPGA developers working with the Tang Nano 65
 
 This project demonstrates a complete computer system implementation on FPGA, combining:
 
-- **6502 CPU**: A classic 8-bit microprocessor with custom extensions
-- **Display System**: Hardware-accelerated text rendering on LCD
-- **Memory Hierarchy**: Multiple memory types with different access patterns
-- **Cross-Platform Build**: Support for Tang Nano 9K and 20K boards
+-   **6502 CPU**: A classic 8-bit microprocessor with custom extensions
+-   **Display System**: Hardware-accelerated text rendering on LCD
+-   **Memory Hierarchy**: Multiple memory types with different access patterns
+-   **Cross-Platform Build**: Support for Tang Nano 9K and 20K boards
 
 ### Key Learning Concepts
 
-- **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
-- **Memory Controllers**: SDPB RAM, VRAM, and pROM integration
-- **State Machines**: Complex CPU instruction execution pipeline
-- **Hardware/Software Interface**: Assembly programming meets FPGA implementation
+-   **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
+-   **Memory Controllers**: SDPB RAM, VRAM, and pROM integration
+-   **State Machines**: Complex CPU instruction execution pipeline
+-   **Hardware/Software Interface**: Assembly programming meets FPGA implementation
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 **Hardware Knowledge:**
-- Basic digital logic and state machines
-- Understanding of clocked circuits and timing
-- Familiarity with memory interfaces
+
+-   Basic digital logic and state machines
+-   Understanding of clocked circuits and timing
+-   Familiarity with memory interfaces
 
 **Software Tools:**
-- **Gowin EDA**: FPGA synthesis and place & route
-- **cc65**: 6502 assembler and linker
-- **Make**: Build automation
-- **DSIM Studio** (optional): Advanced simulation environment
+
+-   **Gowin EDA**: FPGA synthesis and place & route
+-   **cc65**: 6502 assembler and linker
+-   **Make**: Build automation
+-   **DSIM Studio** (optional): Advanced simulation environment
 
 ### Quick Setup
 
@@ -128,14 +130,14 @@ The system implements a sophisticated memory hierarchy optimized for both CPU ac
 ```
 CPU Address Space (64KB addressable):
 ┌─────────────────┬─────────────────┬──────────────────────────────────┐
-│ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B     │
-│ 0x0100-0x01FF   │ Stack           │ Hardware stack operations, 256B │
-│ 0x0200-0x7BFF   │ Program RAM     │ Main memory, 30.5KB             │
-│ 0x7C00-0x7FFF   │ Shadow VRAM     │ CPU-readable VRAM copy, 1KB     │
+│ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B      │
+│ 0x0100-0x01FF   │ Stack           │ Hardware stack operations, 256B  │
+│ 0x0200-0x7BFF   │ Program RAM     │ Main memory, 30.5KB              │
+│ 0x7C00-0x7FFF   │ Shadow VRAM     │ CPU-readable VRAM copy, 1KB      │
 │ 0x8000-0xDFFF   │ (Unmapped)      │ Available for expansion          │
-│ 0xE000-0xE3FF   │ Text VRAM       │ CPU-writable display, 1KB       │
+│ 0xE000-0xE3FF   │ Text VRAM       │ CPU-writable display, 1KB        │
 │ 0xE400-0xEFFF   │ (Unmapped)      │ Future display expansion         │
-│ 0xF000-0xFFFF   │ Font ROM        │ Not CPU-accessible, 4KB         │
+│ 0xF000-0xFFFF   │ Font ROM        │ Not CPU-accessible, 4KB          │
 └─────────────────┴─────────────────┴──────────────────────────────────┘
 ```
 
@@ -190,13 +192,13 @@ make GWSH=/custom/path/gw_sh PRG=/custom/path/programmer_cli download
 
 The build system automatically handles board differences:
 
-| Configuration | Tang Nano 9K | Tang Nano 20K |
-|---------------|--------------|---------------|
-| **Device** | GW1NR-9C | GW2AR-18C |
-| **Package** | QN88PC6/I5 | QN88C8/I7 |
-| **Reset Logic** | `rst_n = ResetButton` | `rst_n = !ResetButton` |
+| Configuration   | Tang Nano 9K           | Tang Nano 20K           |
+| --------------- | ---------------------- | ----------------------- |
+| **Device**      | GW1NR-9C               | GW2AR-18C               |
+| **Package**     | QN88PC6/I5             | QN88C8/I7               |
+| **Reset Logic** | `rst_n = ResetButton`  | `rst_n = !ResetButton`  |
 | **Constraints** | `lcd_cpu_bsram_9K.cst` | `lcd_cpu_bsram_20K.cst` |
-| **PLL Files** | `gowin_rpll_9K/*.v` | `gowin_rpll_20K/*.v` |
+| **PLL Files**   | `gowin_rpll_9K/*.v`    | `gowin_rpll_20K/*.v`    |
 
 ### Assembly Program Integration
 
@@ -274,6 +276,7 @@ stateDiagram-v2
 ### Instruction Implementation Examples
 
 **Load Immediate (LDA #$41):**
+
 ```systemverilog
 8'hA9: begin  // LDA immediate
     ra = operands[7:0];              // Load value into accumulator
@@ -284,6 +287,7 @@ end
 ```
 
 **Store Absolute (STA $E000):**
+
 ```systemverilog
 8'h8D: begin  // STA absolute
     automatic logic [15:0] addr = operands[15:0] & 16'hFFFF;
@@ -354,6 +358,7 @@ Frame Rate: 9MHz ÷ (531 × 292) ≈ 58 FPS
 The CPU implements four custom instructions beyond standard 6502:
 
 **CVR (0xCF) - Clear VRAM:**
+
 ```systemverilog
 8'hCF: begin  // CVR - Clear VRAM
     if (clear_vram_addr <= COLUMNS * ROWS) begin
@@ -369,6 +374,7 @@ end
 ```
 
 **WVS (0xFF) - Wait VSync:**
+
 ```systemverilog
 8'hFF: begin  // WVS - Wait for VSync
     if (vsync_stage == operands[7:0]) begin
@@ -404,6 +410,7 @@ end
 ### Test Environment Setup
 
 **DSIM Studio (Recommended):**
+
 ```bash
 # Linux/Windows x64 only (macOS not supported)
 # 1. Install DSIM Studio plugin in VSCode
@@ -416,28 +423,31 @@ end
 ### Available Test Suites
 
 **tb_cpu.sv** - Complete CPU Integration Tests:
-- Basic instruction execution
-- Memory access patterns
-- Custom instruction validation
-- Flag operation verification
-- Stack operations
-- Branch and jump logic
-- Interrupt handling (placeholder)
-- Complex program execution
-- Error condition handling
+
+-   Basic instruction execution
+-   Memory access patterns
+-   Custom instruction validation
+-   Flag operation verification
+-   Stack operations
+-   Branch and jump logic
+-   Interrupt handling (placeholder)
+-   Complex program execution
+-   Error condition handling
 
 **tb_cpu_modules.sv** - Unit Tests:
-- Individual CPU module testing
-- ALU operation verification
-- Memory controller validation
-- Decoder logic testing
-- Register file operations
+
+-   Individual CPU module testing
+-   ALU operation verification
+-   Memory controller validation
+-   Decoder logic testing
+-   Register file operations
 
 **tb_lcd.sv** - Display System Tests:
-- LCD timing validation
-- Character rendering verification
-- VRAM access patterns
-- Font ROM interface testing
+
+-   LCD timing validation
+-   Character rendering verification
+-   VRAM access patterns
+-   Font ROM interface testing
 
 ### Writing Custom Tests
 
@@ -474,6 +484,7 @@ endmodule
 ### Debugging Strategies
 
 **1. Waveform Analysis:**
+
 ```systemverilog
 // Add to testbench for signal capture
 initial begin
@@ -483,6 +494,7 @@ end
 ```
 
 **2. Custom Debug Instructions:**
+
 ```systemverilog
 8'hDF: begin  // IFO - Info/Debug
     $display("PC=%04X A=%02X X=%02X Y=%02X SP=%02X",
@@ -494,6 +506,7 @@ end
 ```
 
 **3. Memory Monitoring:**
+
 ```systemverilog
 // Watch for specific memory access
 always @(posedge clk) begin
@@ -506,23 +519,27 @@ end
 ### Performance Optimization
 
 **1. Clock Domain Optimization:**
-- Minimize cross-domain signals
-- Use proper synchronizers
-- Consider clock enable strategies
+
+-   Minimize cross-domain signals
+-   Use proper synchronizers
+-   Consider clock enable strategies
 
 **2. Memory Access Patterns:**
-- Understand SDPB timing requirements
-- Optimize for burst accesses where possible
-- Consider dual-port usage patterns
+
+-   Understand SDPB timing requirements
+-   Optimize for burst accesses where possible
+-   Consider dual-port usage patterns
 
 **3. Logic Utilization:**
-- Monitor LUT and FF usage in synthesis reports
-- Consider pipeline vs. combinational trade-offs
-- Optimize critical path timing
+
+-   Monitor LUT and FF usage in synthesis reports
+-   Consider pipeline vs. combinational trade-offs
+-   Optimize critical path timing
 
 ### Common Pitfalls
 
 **1. Reset Polarity:**
+
 ```systemverilog
 // Tang Nano 9K vs 20K difference
 // 9K:  wire rst_n = ResetButton;
@@ -530,6 +547,7 @@ end
 ```
 
 **2. Clock Domain Crossing:**
+
 ```systemverilog
 // Wrong: Direct assignment across domains
 // cpu_signal <= lcd_signal;  // Timing violation!
@@ -541,6 +559,7 @@ end
 ```
 
 **3. Memory Initialization:**
+
 ```systemverilog
 // Ensure proper boot sequence
 initial begin
@@ -555,33 +574,35 @@ end
 ### Advanced Topics
 
 1. **FPGA-Specific Optimizations**
-   - Gowin primitive usage
-   - Block RAM configuration
-   - DSP slice utilization
+
+    - Gowin primitive usage
+    - Block RAM configuration
+    - DSP slice utilization
 
 2. **CPU Architecture Extensions**
-   - Adding new instruction sets
-   - Implementing interrupts
-   - Cache design considerations
+
+    - Adding new instruction sets
+    - Implementing interrupts
+    - Cache design considerations
 
 3. **Display System Enhancements**
-   - Sprite rendering
-   - Hardware scrolling
-   - Color palette management
+    - Sprite rendering
+    - Hardware scrolling
+    - Color palette management
 
 ### Recommended Reading
 
-- **6502 Documentation**: Original MOS Technology manuals
-- **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
-- **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
-- **Tang Nano Documentation**: Gowin FPGA user guides and application notes
+-   **6502 Documentation**: Original MOS Technology manuals
+-   **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
+-   **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
+-   **Tang Nano Documentation**: Gowin FPGA user guides and application notes
 
 ### Community and Support
 
-- **Project Repository**: Issues and discussions
-- **Tang Nano Community**: Hardware-specific questions
-- **6502 Forums**: Vintage computing and emulation communities
-- **FPGA Communities**: General FPGA design discussions
+-   **Project Repository**: Issues and discussions
+-   **Tang Nano Community**: Hardware-specific questions
+-   **6502 Forums**: Vintage computing and emulation communities
+-   **FPGA Communities**: General FPGA design discussions
 
 ---
 

@@ -2,6 +2,11 @@
 
 A detailed technical reference for the 6502 CPU core implemented in SystemVerilog on Tang Nano 9K/20K FPGAs. This document is structured to support progressive learning from basic concepts to advanced implementation details.
 
+---
+
+🌐 Available languages:
+[English](./README_architecture_en.md) | [日本語](./README_architecture_ja.md)
+
 ## 📖 Learning Roadmap
 
 **Beginner**: Start with [System Overview](#system-overview) and [Basic Architecture](#basic-architecture)
@@ -13,16 +18,18 @@ A detailed technical reference for the 6502 CPU core implemented in SystemVerilo
 This project demonstrates a complete computer system implementation on FPGA, serving as an educational platform for:
 
 ### Core Components
-- **6502 CPU**: Authentic 6502 microprocessor with custom extension instructions
-- **LCD Display System**: 480×272 pixel character-based text display
-- **Memory Hierarchy**: Integrated RAM, VRAM, and Font ROM subsystems
-- **Assembly Development**: cc65 toolchain for 6502 programming
+
+-   **6502 CPU**: Authentic 6502 microprocessor with custom extension instructions
+-   **LCD Display System**: 480×272 pixel character-based text display
+-   **Memory Hierarchy**: Integrated RAM, VRAM, and Font ROM subsystems
+-   **Assembly Development**: cc65 toolchain for 6502 programming
 
 ### Learning Objectives
-- **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
-- **State Machine Architecture**: Complex CPU instruction execution pipeline
-- **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
-- **Hardware/Software Integration**: Assembly programming with FPGA implementation
+
+-   **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
+-   **State Machine Architecture**: Complex CPU instruction execution pipeline
+-   **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
+-   **Hardware/Software Integration**: Assembly programming with FPGA implementation
 
 ## 🏗️ Basic Architecture
 
@@ -62,7 +69,7 @@ graph TB
 
     subgraph "External Devices"
         BUTTON[Reset Button]
-        DISPLAY[480×272 LCD<br/>043026-N6(ML)]
+        DISPLAY[480×272 LCD<br/>043026-N6#40;ML#41;]
     end
 
     BUTTON --> CPU
@@ -113,14 +120,14 @@ The system implements a sophisticated memory hierarchy optimized for both CPU ac
 ```
 CPU Address Space (64KB addressable):
 ┌─────────────────┬─────────────────┬──────────────────────────────────┐
-│ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B     │
-│ 0x0100-0x01FF   │ Stack           │ Hardware stack operations, 256B │
-│ 0x0200-0x7BFF   │ Program RAM     │ Main memory, 30.5KB             │
-│ 0x7C00-0x7FFF   │ Shadow VRAM     │ CPU-readable VRAM copy, 1KB     │
+│ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B      │
+│ 0x0100-0x01FF   │ Stack           │ Hardware stack operations, 256B  │
+│ 0x0200-0x7BFF   │ Program RAM     │ Main memory, 30.5KB              │
+│ 0x7C00-0x7FFF   │ Shadow VRAM     │ CPU-readable VRAM copy, 1KB      │
 │ 0x8000-0xDFFF   │ (Unmapped)      │ Available for expansion          │
-│ 0xE000-0xE3FF   │ Text VRAM       │ CPU-writable display, 1KB       │
+│ 0xE000-0xE3FF   │ Text VRAM       │ CPU-writable display, 1KB        │
 │ 0xE400-0xEFFF   │ (Unmapped)      │ Future display expansion         │
-│ 0xF000-0xFFFF   │ Font ROM        │ Not CPU-accessible, 4KB         │
+│ 0xF000-0xFFFF   │ Font ROM        │ Not CPU-accessible, 4KB          │
 └─────────────────┴─────────────────┴──────────────────────────────────┘
 ```
 
@@ -206,6 +213,7 @@ stateDiagram-v2
 ### Instruction Implementation Examples
 
 **Load Immediate (LDA #$41):**
+
 ```systemverilog
 8'hA9: begin  // LDA immediate
     ra = operands[7:0];              // Load value into accumulator
@@ -216,6 +224,7 @@ end
 ```
 
 **Store Absolute (STA $E000):**
+
 ```systemverilog
 8'h8D: begin  // STA absolute
     automatic logic [15:0] addr = operands[15:0] & 16'hFFFF;
@@ -231,39 +240,41 @@ end
 The CPU implements the complete standard 6502 instruction set with the following coverage:
 
 **Implemented Instructions:**
-- **Load/Store**: LDA, LDX, LDY, STA, STX, STY (all addressing modes)
-- **Arithmetic**: ADC, SBC with decimal mode support
-- **Logic**: AND, ORA, EOR with all standard addressing modes
-- **Shifts/Rotates**: ASL, LSR, ROL, ROR (accumulator and memory)
-- **Increments/Decrements**: INC, DEC, INX, INY, DEX, DEY
-- **Comparisons**: CMP, CPX, CPY with flag setting
-- **Branches**: BEQ, BNE, BCC, BCS, BPL, BMI, BVC, BVS
-- **Jumps/Subroutines**: JMP (absolute/indirect), JSR, RTS
-- **Stack Operations**: PHA, PLA, PHP, PLP
-- **Register Transfers**: TAX, TAY, TXA, TYA, TSX, TXS
-- **Flag Operations**: CLC, SEC, CLV (CLD, SED, CLI, SEI not implemented)
-- **Miscellaneous**: NOP, BIT
+
+-   **Load/Store**: LDA, LDX, LDY, STA, STX, STY (all addressing modes)
+-   **Arithmetic**: ADC, SBC with decimal mode support
+-   **Logic**: AND, ORA, EOR with all standard addressing modes
+-   **Shifts/Rotates**: ASL, LSR, ROL, ROR (accumulator and memory)
+-   **Increments/Decrements**: INC, DEC, INX, INY, DEX, DEY
+-   **Comparisons**: CMP, CPX, CPY with flag setting
+-   **Branches**: BEQ, BNE, BCC, BCS, BPL, BMI, BVC, BVS
+-   **Jumps/Subroutines**: JMP (absolute/indirect), JSR, RTS
+-   **Stack Operations**: PHA, PLA, PHP, PLP
+-   **Register Transfers**: TAX, TAY, TXA, TYA, TSX, TXS
+-   **Flag Operations**: CLC, SEC, CLV (CLD, SED, CLI, SEI not implemented)
+-   **Miscellaneous**: NOP, BIT
 
 **Not Implemented (Interrupt-Related):**
-- BRK, RTI, CLI, SEI - Interrupt handling not required for this design
+
+-   BRK, RTI, CLI, SEI - Interrupt handling not required for this design
 
 ### Addressing Modes
 
-| Mode | Example | Description |
-|------|---------|-------------|
-| **Immediate** | `LDA #$41` | Operand is the actual value |
-| **Zero Page** | `LDA $10` | 8-bit address in zero page (0x00-0xFF) |
-| **Zero Page,X** | `LDA $10,X` | Zero page address plus X register |
-| **Zero Page,Y** | `LDX $10,Y` | Zero page address plus Y register |
-| **Absolute** | `LDA $1234` | Full 16-bit address |
-| **Absolute,X** | `LDA $1234,X` | Absolute address plus X register |
-| **Absolute,Y** | `LDA $1234,Y` | Absolute address plus Y register |
-| **Indirect** | `JMP ($1234)` | Jump to address stored at given address |
-| **(Indirect,X)** | `LDA ($10,X)` | Indirect address from zero page plus X |
+| Mode             | Example       | Description                                 |
+| ---------------- | ------------- | ------------------------------------------- |
+| **Immediate**    | `LDA #$41`    | Operand is the actual value                 |
+| **Zero Page**    | `LDA $10`     | 8-bit address in zero page (0x00-0xFF)      |
+| **Zero Page,X**  | `LDA $10,X`   | Zero page address plus X register           |
+| **Zero Page,Y**  | `LDX $10,Y`   | Zero page address plus Y register           |
+| **Absolute**     | `LDA $1234`   | Full 16-bit address                         |
+| **Absolute,X**   | `LDA $1234,X` | Absolute address plus X register            |
+| **Absolute,Y**   | `LDA $1234,Y` | Absolute address plus Y register            |
+| **Indirect**     | `JMP ($1234)` | Jump to address stored at given address     |
+| **(Indirect,X)** | `LDA ($10,X)` | Indirect address from zero page plus X      |
 | **(Indirect),Y** | `LDA ($10),Y` | Indirect address from zero page, then add Y |
-| **Relative** | `BEQ $10` | PC-relative offset for branches |
-| **Implied** | `NOP` | No operand required |
-| **Accumulator** | `ASL A` | Operation on accumulator |
+| **Relative**     | `BEQ $10`     | PC-relative offset for branches             |
+| **Implied**      | `NOP`         | No operand required                         |
+| **Accumulator**  | `ASL A`       | Operation on accumulator                    |
 
 ## 🎨 Display System
 
@@ -321,10 +332,11 @@ Frame Rate: 9MHz ÷ (531 × 292) ≈ 58 FPS
 ### Font System
 
 The display system uses the [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed):
-- **Character Size**: 16×8 pixels (height × width)
-- **Character Set**: ASCII 0-127 (128 characters)
-- **Storage**: 4KB pROM (16 bytes × 256 character slots)
-- **Access**: LCD controller only (not CPU-addressable)
+
+-   **Character Size**: 16×8 pixels (height × width)
+-   **Character Set**: ASCII 0-127 (128 characters)
+-   **Storage**: 4KB pROM (16 bytes × 256 character slots)
+-   **Access**: LCD controller only (not CPU-addressable)
 
 ## 🔧 Custom Instructions
 
@@ -333,6 +345,7 @@ The display system uses the [Sweet16Font](https://github.com/kmar/Sweet16Font) (
 Four custom instructions extend the standard 6502 for display and debugging:
 
 **CVR (0xCF) - Clear VRAM:**
+
 ```systemverilog
 8'hCF: begin  // CVR - Clear VRAM
     if (clear_vram_addr <= COLUMNS * ROWS) begin
@@ -348,6 +361,7 @@ end
 ```
 
 **WVS (0xFF) - Wait VSync:**
+
 ```systemverilog
 8'hFF: begin  // WVS - Wait for VSync
     if (vsync_stage == operands[7:0]) begin
@@ -361,6 +375,7 @@ end
 ```
 
 **IFO (0xDF) - Debug Information:**
+
 ```systemverilog
 8'hDF: begin  // IFO - Info/Debug
     // Display register and memory contents
@@ -373,6 +388,7 @@ end
 ```
 
 **HLT (0xEF) - CPU Halt:**
+
 ```systemverilog
 8'hEF: begin  // HLT - Halt CPU
     // Transition CPU to halt state (LCD controller continues)
@@ -405,6 +421,7 @@ end
 ### Test Environment Setup
 
 **DSIM Studio (Recommended):**
+
 ```bash
 # Linux/Windows x64 only (macOS not supported)
 # 1. Install DSIM Studio plugin in VSCode
@@ -417,28 +434,31 @@ end
 ### Available Test Suites
 
 **tb_cpu.sv** - Complete CPU Integration Tests:
-- Basic instruction execution
-- Memory access patterns
-- Custom instruction validation
-- Flag operation verification
-- Stack operations
-- Branch and jump logic
-- Interrupt handling (placeholder)
-- Complex program execution
-- Error condition handling
+
+-   Basic instruction execution
+-   Memory access patterns
+-   Custom instruction validation
+-   Flag operation verification
+-   Stack operations
+-   Branch and jump logic
+-   Interrupt handling (placeholder)
+-   Complex program execution
+-   Error condition handling
 
 **tb_cpu_modules.sv** - Unit Tests:
-- Individual CPU module testing
-- ALU operation verification
-- Memory controller validation
-- Decoder logic testing
-- Register file operations
+
+-   Individual CPU module testing
+-   ALU operation verification
+-   Memory controller validation
+-   Decoder logic testing
+-   Register file operations
 
 **tb_lcd.sv** - Display System Tests:
-- LCD timing validation
-- Character rendering verification
-- VRAM access patterns
-- Font ROM interface testing
+
+-   LCD timing validation
+-   Character rendering verification
+-   VRAM access patterns
+-   Font ROM interface testing
 
 ### Writing Custom Tests
 
@@ -475,6 +495,7 @@ endmodule
 ### Debugging Strategies
 
 **1. Waveform Analysis:**
+
 ```systemverilog
 // Add to testbench for signal capture
 initial begin
@@ -484,6 +505,7 @@ end
 ```
 
 **2. Custom Debug Instructions:**
+
 ```systemverilog
 8'hDF: begin  // IFO - Info/Debug
     $display("PC=%04X A=%02X X=%02X Y=%02X SP=%02X",
@@ -495,6 +517,7 @@ end
 ```
 
 **3. Memory Monitoring:**
+
 ```systemverilog
 // Watch for specific memory access
 always @(posedge clk) begin
@@ -507,23 +530,27 @@ end
 ### Performance Optimization
 
 **1. Clock Domain Optimization:**
-- Minimize cross-domain signals
-- Use proper synchronizers
-- Consider clock enable strategies
+
+-   Minimize cross-domain signals
+-   Use proper synchronizers
+-   Consider clock enable strategies
 
 **2. Memory Access Patterns:**
-- Understand SDPB timing requirements
-- Optimize for burst accesses where possible
-- Consider dual-port usage patterns
+
+-   Understand SDPB timing requirements
+-   Optimize for burst accesses where possible
+-   Consider dual-port usage patterns
 
 **3. Logic Utilization:**
-- Monitor LUT and FF usage in synthesis reports
-- Consider pipeline vs. combinational trade-offs
-- Optimize critical path timing
+
+-   Monitor LUT and FF usage in synthesis reports
+-   Consider pipeline vs. combinational trade-offs
+-   Optimize critical path timing
 
 ### Common Pitfalls
 
 **1. Reset Polarity:**
+
 ```systemverilog
 // Tang Nano 9K vs 20K difference
 // 9K:  wire rst_n = ResetButton;
@@ -531,6 +558,7 @@ end
 ```
 
 **2. Clock Domain Crossing:**
+
 ```systemverilog
 // Wrong: Direct assignment across domains
 // cpu_signal <= lcd_signal;  // Timing violation!
@@ -542,6 +570,7 @@ end
 ```
 
 **3. Memory Initialization:**
+
 ```systemverilog
 // Ensure proper boot sequence
 initial begin
@@ -556,23 +585,27 @@ end
 ### FPGA-Specific Optimizations
 
 **1. Gowin Primitive Usage:**
-- SDPB (Simple Dual Port Block RAM) for memory controllers
-- pROM (Program ROM) for font storage
-- PLL (Phase-Locked Loop) for clock generation
+
+-   SDPB (Simple Dual Port Block RAM) for memory controllers
+-   pROM (Program ROM) for font storage
+-   PLL (Phase-Locked Loop) for clock generation
 
 **2. Resource Utilization:**
-- LUT (Look-Up Table) optimization for combinational logic
-- FF (Flip-Flop) placement for sequential elements
-- DSP slice usage for arithmetic operations
+
+-   LUT (Look-Up Table) optimization for combinational logic
+-   FF (Flip-Flop) placement for sequential elements
+-   DSP slice usage for arithmetic operations
 
 **3. Timing Closure:**
-- Critical path analysis and optimization
-- Clock skew management
-- Setup and hold time considerations
+
+-   Critical path analysis and optimization
+-   Clock skew management
+-   Setup and hold time considerations
 
 ### CPU Architecture Extensions
 
 **1. Instruction Set Extensions:**
+
 ```systemverilog
 // Example: Adding a multiply instruction (0xDB)
 8'hDB: begin  // MUL - Multiply A with operand
@@ -586,6 +619,7 @@ end
 ```
 
 **2. Interrupt Implementation:**
+
 ```systemverilog
 // Interrupt handling framework (not currently implemented)
 logic irq_pending;
@@ -600,6 +634,7 @@ end
 ```
 
 **3. Cache Design Considerations:**
+
 ```systemverilog
 // Simple instruction cache example
 logic [7:0] icache_data[16];
@@ -615,6 +650,7 @@ wire cache_hit = icache_valid[cache_index] &&
 ### Display System Enhancements
 
 **1. Sprite Rendering:**
+
 ```systemverilog
 // Sprite overlay system
 typedef struct {
@@ -628,6 +664,7 @@ sprite_t sprites[8];  // Support for 8 sprites
 ```
 
 **2. Hardware Scrolling:**
+
 ```systemverilog
 // Scrolling offset registers
 logic [5:0] scroll_x;  // Horizontal scroll (0-59)
@@ -639,6 +676,7 @@ wire [4:0] char_row = ((y / CHAR_HEIGHT) + scroll_y) % ROWS;
 ```
 
 **3. Color Palette Management:**
+
 ```systemverilog
 // Programmable color palette
 logic [15:0] color_palette[16];  // 16 colors, RGB565 format
@@ -656,60 +694,64 @@ Complete 6502 instruction set documentation with cycle counts, flags affected, a
 
 ### Memory Map Reference
 
-| Address Range | Size | Purpose | Access |
-|---------------|------|---------|--------|
-| 0x0000-0x00FF | 256B | Zero Page | CPU R/W |
-| 0x0100-0x01FF | 256B | Stack | CPU R/W |
-| 0x0200-0x7BFF | 30.5KB | Program RAM | CPU R/W |
-| 0x7C00-0x7FFF | 1KB | Shadow VRAM | CPU R |
-| 0x8000-0xDFFF | 24KB | Unmapped | - |
-| 0xE000-0xE3FF | 1KB | Text VRAM | CPU W |
-| 0xE400-0xEFFF | 3KB | Unmapped | - |
-| 0xF000-0xFFFF | 4KB | Font ROM | LCD only |
+| Address Range | Size   | Purpose     | Access   |
+| ------------- | ------ | ----------- | -------- |
+| 0x0000-0x00FF | 256B   | Zero Page   | CPU R/W  |
+| 0x0100-0x01FF | 256B   | Stack       | CPU R/W  |
+| 0x0200-0x7BFF | 30.5KB | Program RAM | CPU R/W  |
+| 0x7C00-0x7FFF | 1KB    | Shadow VRAM | CPU R    |
+| 0x8000-0xDFFF | 24KB   | Unmapped    | -        |
+| 0xE000-0xE3FF | 1KB    | Text VRAM   | CPU W    |
+| 0xE400-0xEFFF | 3KB    | Unmapped    | -        |
+| 0xF000-0xFFFF | 4KB    | Font ROM    | LCD only |
 
 ### Register Reference
 
 **CPU Registers:**
-- **PC**: Program Counter (16-bit)
-- **A**: Accumulator (8-bit)
-- **X**: X Index Register (8-bit)
-- **Y**: Y Index Register (8-bit)
-- **SP**: Stack Pointer (8-bit, points into 0x0100-0x01FF)
+
+-   **PC**: Program Counter (16-bit)
+-   **A**: Accumulator (8-bit)
+-   **X**: X Index Register (8-bit)
+-   **Y**: Y Index Register (8-bit)
+-   **SP**: Stack Pointer (8-bit, points into 0x0100-0x01FF)
 
 **Status Flags:**
-- **C**: Carry flag
-- **Z**: Zero flag
-- **I**: Interrupt disable (not used)
-- **D**: Decimal mode (not used)
-- **B**: Break flag (not used)
-- **V**: Overflow flag
-- **N**: Negative flag
+
+-   **C**: Carry flag
+-   **Z**: Zero flag
+-   **I**: Interrupt disable (not used)
+-   **D**: Decimal mode (not used)
+-   **B**: Break flag (not used)
+-   **V**: Overflow flag
+-   **N**: Negative flag
 
 ## 🤝 Contributing
 
 ### Code Standards
 
 Follow the established coding conventions:
-- Use `localparam` for constants
-- Prefix internal signals with module name
-- Document complex state machines
-- Use meaningful signal names
-- Add module headers explaining functionality
+
+-   Use `localparam` for constants
+-   Prefix internal signals with module name
+-   Document complex state machines
+-   Use meaningful signal names
+-   Add module headers explaining functionality
 
 ### Testing Requirements
 
 All new features should include:
-- Unit tests for individual components
-- Integration tests for system-level functionality
-- Waveform verification for timing-critical paths
-- Documentation updates
+
+-   Unit tests for individual components
+-   Integration tests for system-level functionality
+-   Waveform verification for timing-critical paths
+-   Documentation updates
 
 ### Recommended Reading
 
-- **6502 Documentation**: Original MOS Technology manuals and programming guides
-- **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
-- **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
-- **Tang Nano Documentation**: Gowin FPGA user guides and application notes
+-   **6502 Documentation**: Original MOS Technology manuals and programming guides
+-   **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
+-   **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
+-   **Tang Nano Documentation**: Gowin FPGA user guides and application notes
 
 ---
 
