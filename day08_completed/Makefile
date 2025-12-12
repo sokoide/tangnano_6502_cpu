@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := all
-PROJECT = day02
+PROJECT = day08
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 

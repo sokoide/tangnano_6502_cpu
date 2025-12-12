@@ -1,89 +1,115 @@
-// Day 09 Completed: LCD Controller System
-// Complete 6502 CPU with LCD display for register monitoring
+// Day 09 Completed: 480x272 RGB TFT bring-up (color bars)
+//
+// This day is for the 480x272 RGB TFT panel (RGB565 + DEN + CLK).
+// It generates the LCD timing in "SYNC-DE" mode and outputs simple color bars.
+//
+// Pins are defined in tft_*.cst.
+
+`include "board_select.svh"
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,
+    // Clock and Reset
+    input  logic ResetButton,
+    input  logic XTAL_IN,     // 27MHz
 
-    // LCD interface (HD44780 compatible)
-    output wire lcd_rs,     // Register select
-    output wire lcd_rw,     // Read/Write (tied to write)
-    output wire lcd_en,     // Enable
-    output wire [3:0] lcd_data,  // 4-bit data
+    // LCD Interface
+    output logic       LCD_CLK,  // Pixel clock (~9MHz)
+    output logic       LCD_DEN,  // Data enable
+    output logic [4:0] LCD_R,
+    output logic [5:0] LCD_G,
+    output logic [4:0] LCD_B,
 
-    // Debug LEDs
-    output wire [7:0] debug_leds,
-
-    // Additional debug outputs
-    output wire debug_cpu_clk,
-    output wire debug_lcd_ready,
-    output wire debug_cpu_running
+    // Debug
+    output logic led
 );
 
-    // Internal signals
-    logic [7:0]  cpu_reg_a;
-    logic [7:0]  cpu_reg_x;
-    logic [7:0]  cpu_reg_y;
-    logic [15:0] cpu_reg_pc;
-    logic [7:0]  cpu_opcode;
-    logic [2:0]  cpu_state;
-    logic        lcd_ready;
+`ifdef BOARD_20K
+    wire rst_n = !ResetButton;
+`else
+    wire rst_n = ResetButton;
+`endif
 
-    // System status indicators
-    logic [25:0] heartbeat_counter;
-    logic        heartbeat;
-    logic        system_active;
-
-    // CPU + LCD System
-    cpu_lcd_system cpu_lcd (
-        .clk(clk),
-        .rst_n(rst_n),
-        .switches(switches),
-        .lcd_rs(lcd_rs),
-        .lcd_rw(lcd_rw),
-        .lcd_en(lcd_en),
-        .lcd_data(lcd_data),
-        .debug_reg_a(cpu_reg_a),
-        .debug_reg_x(cpu_reg_x),
-        .debug_reg_y(cpu_reg_y),
-        .debug_reg_pc(cpu_reg_pc),
-        .debug_opcode(cpu_opcode),
-        .debug_cpu_state(cpu_state),
-        .debug_lcd_ready(lcd_ready)
+    // 27MHz -> 9MHz pixel clock (PLL IP, board-specific netlist)
+    Gowin_rPLL9 rpll9_inst (
+        .clkout(LCD_CLK),
+        .clkin (XTAL_IN)
     );
 
-    // Heartbeat generator for system activity indication
-    always_ff @(posedge clk or negedge rst_n) begin
+    // 480x272 timing (DE-only mode)
+    localparam int unsigned H_VALID = 480;
+    localparam int unsigned H_BACK  = 43;
+    localparam int unsigned H_FRONT = 8;
+    localparam int unsigned H_TOTAL = H_BACK + H_VALID + H_FRONT;
+
+    localparam int unsigned V_VALID = 272;
+    localparam int unsigned V_BACK  = 12;
+    localparam int unsigned V_FRONT = 8;
+    localparam int unsigned V_TOTAL = V_BACK + V_VALID + V_FRONT;
+
+    logic [15:0] h_count;
+    logic [15:0] v_count;
+
+    always_ff @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) begin
-            heartbeat_counter <= 26'b0;
-            heartbeat <= 1'b0;
+            h_count <= 16'd0;
+            v_count <= 16'd0;
+        end else if (h_count == (H_TOTAL - 1)) begin
+            h_count <= 16'd0;
+            if (v_count == (V_TOTAL - 1)) v_count <= 16'd0;
+            else v_count <= v_count + 16'd1;
         end else begin
-            heartbeat_counter <= heartbeat_counter + 1;
-            heartbeat <= heartbeat_counter[24];  // ~0.6 Hz blink
+            h_count <= h_count + 16'd1;
         end
     end
 
-    // System activity detection
-    always_ff @(posedge clk or negedge rst_n) begin
+    wire active =
+        (h_count >= H_BACK) && (h_count < (H_BACK + H_VALID)) &&
+        (v_count >= V_BACK) && (v_count < (V_BACK + V_VALID));
+
+    assign LCD_DEN = active;
+
+    // Simple color bars inside active region
+    logic [15:0] x;
+    always_comb begin
+        x = (h_count >= H_BACK) ? (h_count - H_BACK[15:0]) : 16'd0;
+    end
+
+    always_ff @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) begin
-            system_active <= 1'b0;
+            LCD_R <= 5'd0;
+            LCD_G <= 6'd0;
+            LCD_B <= 5'd0;
+        end else if (active) begin
+            if (x < 16'd160) begin
+                // Red bar
+                LCD_R <= 5'd31;
+                LCD_G <= 6'd0;
+                LCD_B <= 5'd0;
+            end else if (x < 16'd320) begin
+                // Green bar
+                LCD_R <= 5'd0;
+                LCD_G <= 6'd63;
+                LCD_B <= 5'd0;
+            end else begin
+                // Blue bar
+                LCD_R <= 5'd0;
+                LCD_G <= 6'd0;
+                LCD_B <= 5'd31;
+            end
         end else begin
-            // System is active if CPU is running or LCD is updating
-            system_active <= (cpu_state != 3'b000) || !lcd_ready;
+            // Blanking
+            LCD_R <= 5'd0;
+            LCD_G <= 6'd0;
+            LCD_B <= 5'd0;
         end
     end
 
-    // Debug LED assignments
-    assign debug_leds[0] = heartbeat;           // Heartbeat indicator
-    assign debug_leds[1] = system_active;      // System activity
-    assign debug_leds[2] = lcd_ready;          // LCD ready status
-    assign debug_leds[3] = switches[0];        // Switch echo
-    assign debug_leds[7:4] = cpu_reg_a[3:0];   // Lower nibble of accumulator
-
-    // Additional debug outputs
-    assign debug_cpu_clk = cpu_lcd.cpu_clk;
-    assign debug_lcd_ready = lcd_ready;
-    assign debug_cpu_running = system_active;
+    // Heartbeat LED (open-drain style, works on both boards)
+    logic [25:0] hb_counter;
+    always_ff @(posedge LCD_CLK or negedge rst_n) begin
+        if (!rst_n) hb_counter <= 26'd0;
+        else hb_counter <= hb_counter + 26'd1;
+    end
+    assign led = hb_counter[25] ? 1'b0 : 1'bz;
 
 endmodule

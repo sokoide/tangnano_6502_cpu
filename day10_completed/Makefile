@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := all
-PROJECT = day02
+PROJECT = day10
 BOARD ?= 9k
+TARGET ?= hw
 BUILD_TCL = $(PROJECT)_build.tcl
 
 BASE = /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA
@@ -9,10 +10,18 @@ PRG  ?= $(BASE)/Programmer/bin/programmer_cli
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
+  ifeq ($(TARGET),hd44780)
+    GPRJ = hd44780_20k.gprj
+  else
+    GPRJ = hw_20k.gprj
+  endif
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
+  ifeq ($(TARGET),hd44780)
+    GPRJ = hd44780_9k.gprj
+  else
+    GPRJ = hw_9k.gprj
+  endif
 endif
 
 .PHONY: all clean download help tools-check
@@ -23,6 +32,7 @@ $(PROJECT).fs: $(GPRJ) tools-check
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
 		"set_option -verilog_std sysv2017" \
+		"set_option -use_sspi_as_gpio 1" \
 		"set_option -top_module top" \
 		"run all" \
 		"exit" > $(BUILD_TCL)
@@ -56,4 +66,4 @@ clean:
 
 help:
 	@echo "Targets: make | make download | make clean"
-	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
+	@echo "Vars: BOARD=9k|20k, TARGET=hw|hd44780, GWSH=..., PRG=..."

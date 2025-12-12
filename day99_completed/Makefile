@@ -12,21 +12,18 @@ SRCS= \
 	src/cpu_memory.sv \
 	src/gowin_sdpb/gowin_sdpb.v \
 	src/gowin_sdpb/gowin_sdpb_vram.v \
-	src/gowin_prom/gowin_prom_font.v \
-	impl/pnr/lcd_cpu_bsram.vo
+	src/gowin_prom/gowin_prom_font.v
 
 # src/gowin_rpll_9K/gowin_rpll9.v \
 # src/gowin_rpll_9K/gowin_rpll40.v \
 
 export BASE=lcd_cpu_bsram
-PROJ=$(BASE).gprj
+BOARD ?= 9k
+BASE := lcd_cpu_bsram_$(BOARD)
+PROJ := $(BASE).gprj
+export PROJ
 
 #--------------------------------------------------
-# Board selection and device mapping
-#   Override on command line: `make BOARD=20k`
-#   Or set DEVICE directly:   `make DEVICE=GW2AR-18C`
-#--------------------------------------------------
-BOARD ?= 9k
 ifeq ($(origin DEVICE), undefined)
   ifeq ($(BOARD),9k)
     DEVICE := GW1NR-9C
@@ -37,7 +34,9 @@ ifeq ($(origin DEVICE), undefined)
   endif
 endif
 
-FS=$(PWD)/impl/pnr/$(BASE).fs
+# NOTE: don't use $(PWD) here because `make -C day99_completed ...` keeps PWD as the
+# original shell directory on some systems. $(CURDIR) is the directory Make is operating in.
+FS=$(CURDIR)/impl/pnr/$(BASE).fs
 
 # Tool paths (override if installed elsewhere)
 GWSH ?= /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh
@@ -45,9 +44,21 @@ PRG  ?= /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/Programmer/bin/p
 
 export PATH
 
-.PHONY: clean wave download help lint format format-check tools-check
+all: $(FS)
 
-$(FS): $(SRCS) tools-check
+.PHONY: all clean wave download help lint format format-check tools-check board-config
+
+include/board_select.svh: board-config
+
+board-config:
+	@mkdir -p include
+	@if [ "$(BOARD)" = "20k" ]; then \
+	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`define BOARD_20K 1' '`endif' > include/board_select.svh; \
+	else \
+	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`endif' > include/board_select.svh; \
+	fi
+
+$(FS): $(SRCS) include/board_select.svh tools-check
 	$(GWSH) proj.tcl
 
 # operation_index
@@ -62,7 +73,16 @@ $(FS): $(SRCS) tools-check
 # ...
 download: $(FS)
 	# SRAM
-	$(PRG) --device $(DEVICE) --fsFile $(FS) --operation_index 2
+	@fs="$(FS)"; \
+	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
+	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
+	rc="$$?"; \
+	cat "$$tmp"; \
+	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
+	if grep -q "Finished\\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	rm -f "$$tmp"; \
+	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
+	exit "$$rc"
 
 wave:
 	gtkwave ./waveform.vcd

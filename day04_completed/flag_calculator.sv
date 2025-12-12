@@ -35,7 +35,7 @@ module flag_calculator (
         // Occurs when signs of operands are same but result sign differs
         if (operation) begin
             // For subtraction: A - B, check A and ~B
-            flag_v = (operand_a[7] == (~operand_b)[7]) &&
+            flag_v = (operand_a[7] == (~operand_b[7])) &&
                      (operand_a[7] != result[7]);
         end else begin
             // For addition: A + B

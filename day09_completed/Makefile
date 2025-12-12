@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := all
-PROJECT = day02
+PROJECT = day09
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 
@@ -9,20 +9,32 @@ PRG  ?= $(BASE)/Programmer/bin/programmer_cli
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
+  GPRJ = tft_20k.gprj
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
+  GPRJ = tft_9k.gprj
 endif
 
 .PHONY: all clean download help tools-check
 all: $(PROJECT).fs
 
-$(PROJECT).fs: $(GPRJ) tools-check
+include/board_select.svh: board-config
+
+board-config:
+	@mkdir -p include
+	@if [ "$(BOARD)" = "20k" ]; then \
+	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`define BOARD_20K 1' '`endif' > include/board_select.svh; \
+	else \
+	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`endif' > include/board_select.svh; \
+	fi
+
+$(PROJECT).fs: $(GPRJ) include/board_select.svh tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
+		"set_option -include_path include" \
 		"set_option -verilog_std sysv2017" \
+		"set_option -use_sspi_as_gpio 1" \
 		"set_option -top_module top" \
 		"run all" \
 		"exit" > $(BUILD_TCL)

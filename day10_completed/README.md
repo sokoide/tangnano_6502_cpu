@@ -185,6 +185,16 @@ Integrated system:
 
 ## Build and Execute
 
+### Quick Start (recommended)
+
+If the LCD shows nothing, validate wiring/timing first with the minimal bring-up target:
+
+```bash
+make BOARD=9k TARGET=hd44780 download
+# or
+make BOARD=20k TARGET=hd44780 download
+```
+
 ### Required Files
 
 ```
@@ -196,37 +206,22 @@ day10_completed/
 ├── tb_assembly_system.sv    # System testbench
 ├── Makefile                 # Complete build system
 └── README_ja.md             # This document
-
-Dependencies:
-├── day09_completed/ (LCD controller)
-├── day08_completed/ (CPU core)
-├── day07_completed/ (memory system)
-├── day06_completed/ (ALU, decoder)
-├── day05_completed/ (addressing modes)
-└── day01-04_completed/ (basic components)
 ```
 
 ### Build Commands
 
 ```bash
-# Complete build for Tang Nano 9K
-make tang_nano_9k
+# Minimal hardware build (board check)
+make BOARD=9k
+make BOARD=9k download
 
-# Complete build for Tang Nano 20K
-make tang_nano_20k
+# Minimal hardware build (board check)
+make BOARD=20k
+make BOARD=20k download
 
-# Comprehensive simulation
-make run_sim
-
-# FPGA programming
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
-
-# Generate documentation
-make docs
-
-# Generate constraint file
-make constraints
+# HD44780 LCD bring-up (fixed text)
+make BOARD=9k TARGET=hd44780 download
+make BOARD=20k TARGET=hd44780 download
 ```
 
 ### Verification Procedure

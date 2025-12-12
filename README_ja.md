@@ -30,11 +30,13 @@ Tang Nano FPGA を使用して6502 CPUとLCDコントローラを学ぶための
 ### インストール手順
 
 **macOS:**
+
 ```bash
 brew install srecord cc65
 ```
 
 **Linux (Ubuntu/Debian):**
+
 ```bash
 sudo apt install srecord cc65 golang gtkwave verilator
 ```
@@ -44,13 +46,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ## 📅 10日間の学習計画
 
 ### Day 01: Tang Nano + GoWin EDA 基礎
+
 **学習内容:**
+
 - Tang Nano 9K/20K の基本仕様理解
 - GoWin EDA の基本操作とプロジェクト作成
 - 最初のHDLプロジェクト: LEDチカチカ (Hello World)
 - 制約ファイル (.cst) の基本
 
 **成果物:**
+
 - LEDが点滅するシンプルなプロジェクト
 - GoWin EDAでの合成・配置配線・書き込みの基本手順習得
 
@@ -59,13 +64,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 02: SystemVerilog 基礎 (組み合わせ回路)
+
 **学習内容:**
+
 - SystemVerilogの基本構文とモジュール構造
 - 組み合わせ回路の設計 (論理ゲート、デコーダ、マルチプレクサ)
 - assign文とalways_comb文の使い分け
 - テストベンチの基本
 
 **成果物:**
+
 - 7セグメントデコーダ
 - 4bit ALU (加算、論理演算)
 
@@ -74,7 +82,9 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 03: SystemVerilog 基礎 (順序回路)
+
 **学習内容:**
+
 - クロックとリセットの概念
 - フリップフロップとラッチ
 - always_ff文によるレジスタ設計
@@ -82,6 +92,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - カウンタとタイマー回路
 
 **成果物:**
+
 - 8bit カウンタ
 - LED PWM調光コントローラ
 - シンプルな状態機械
@@ -91,7 +102,9 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 04: 6502 CPU アーキテクチャ概論
+
 **学習内容:**
+
 - 6502 CPUの歴史と特徴
 - レジスタ構成 (A, X, Y, SP, PC, P)
 - メモリマップとアドレッシング
@@ -99,6 +112,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - フラグレジスタとその動作
 
 **成果物:**
+
 - 6502レジスタセットのSystemVerilogモデル
 - 簡単な命令デコーダ (一部命令のみ)
 
@@ -107,7 +121,9 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 05: 6502 命令セットとアドレッシングモード
+
 **学習内容:**
+
 - 6502の13種類のアドレッシングモード詳解
 - 主要命令群の分類と動作
 - ロード/ストア命令 (LDA, STA, etc.)
@@ -115,6 +131,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - 分岐・ジャンプ命令 (BEQ, JMP, JSR, etc.)
 
 **成果物:**
+
 - アドレッシングモード計算器
 - 主要命令のデコードテーブル
 
@@ -123,13 +140,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 06: CPU 実装 Part 1 - デコーダとALU
+
 **学習内容:**
+
 - 命令デコーダの詳細設計
 - ALU (Arithmetic Logic Unit) の実装
 - フラグ計算ロジック (N, Z, C, V)
 - マイクロ命令制御の概念
 
 **成果物:**
+
 - 完全な命令デコーダモジュール
 - 6502互換ALUモジュール
 - フラグ生成ロジック
@@ -139,13 +159,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 07: CPU 実装 Part 2 - メモリインターフェース
+
 **学習内容:**
+
 - メモリバスインターフェース設計
 - スタック操作の実装
 - ゼロページアクセスの最適化
 - メモリマップI/Oの基本
 
 **成果物:**
+
 - メモリコントローラモジュール
 - スタックポインタ制御ロジック
 - アドレス生成ユニット
@@ -155,13 +178,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 08: CPU 実装 Part 3 - 統合とテスト
+
 **学習内容:**
+
 - CPUコアの統合
 - 命令サイクル制御
 - 基本的な6502プログラムによるテスト
 - デバッグ手法とシミュレーション
 
 **成果物:**
+
 - 動作する6502 CPUコア
 - 基本命令セットの動作確認
 - テストプログラム一式
@@ -171,7 +197,9 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 09: LCD制御とシステム統合
+
 **学習内容:**
+
 - LCD タイミング制御の原理
 - RGB信号生成とVGA/LCD出力
 - 文字表示システムの設計
@@ -179,6 +207,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - フォントROMの使用方法
 
 **成果物:**
+
 - LCD コントローラモジュール
 - 文字表示機能付きシステム
 - 480×272解像度での文字出力
@@ -188,7 +217,9 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ---
 
 ### Day 10: アセンブリプログラミングと応用
+
 **学習内容:**
+
 - cc65アセンブラの使用方法
 - 6502アセンブリプログラミング実践
 - カスタム命令の活用 (CVR, IFO, HLT, WVS)
@@ -196,6 +227,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - 応用プログラムの作成
 
 **成果物:**
+
 - "Hello World" 表示プログラム
 - スクロール文字表示
 - インタラクティブなデモプログラム

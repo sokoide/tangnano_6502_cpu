@@ -168,6 +168,16 @@ MEMORY VIEW
 
 ## ビルドと実行
 
+### クイックスタート（推奨）
+
+LCDが何も表示しない場合、まずは配線/タイミング確認用の最小ターゲットで切り分けしてください：
+
+```bash
+make BOARD=9k TARGET=hd44780 download
+# または
+make BOARD=20k TARGET=hd44780 download
+```
+
 ### 必要なファイル
 
 ```
@@ -179,37 +189,22 @@ day10_completed/
 ├── tb_assembly_system.sv    # システムテストベンチ
 ├── Makefile                 # 完全ビルドシステム
 └── README_ja.md             # この文書
-
-依存関係:
-├── day09_completed/ (LCD controller)
-├── day08_completed/ (CPU core)
-├── day07_completed/ (memory system)
-├── day06_completed/ (ALU, decoder)
-├── day05_completed/ (addressing modes)
-└── day01-04_completed/ (基礎コンポーネント)
 ```
 
 ### ビルドコマンド
 
 ```bash
-# Tang Nano 9K用完全ビルド
-make tang_nano_9k
+# 最小ハードウェアビルド（ボード確認）
+make BOARD=9k
+make BOARD=9k download
 
-# Tang Nano 20K用完全ビルド
-make tang_nano_20k
+# 最小ハードウェアビルド（ボード確認）
+make BOARD=20k
+make BOARD=20k download
 
-# 包括的シミュレーション
-make run_sim
-
-# FPGAプログラミング
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
-
-# ドキュメント生成
-make docs
-
-# 制約ファイル生成
-make constraints
+# HD44780 LCD（固定文字表示のBring-up）
+make BOARD=9k TARGET=hd44780 download
+make BOARD=20k TARGET=hd44780 download
 ```
 
 ### 動作確認手順

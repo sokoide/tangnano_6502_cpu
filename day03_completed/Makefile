@@ -1,3 +1,4 @@
+.DEFAULT_GOAL := all
 PROJECT = day03
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
@@ -56,4 +57,3 @@ clean:
 help:
 	@echo "Targets: make | make download | make clean"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
-

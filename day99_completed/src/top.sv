@@ -15,6 +15,7 @@
 // - Tang Nano 9K: rst_n = ResetButton (active high button)
 // - Tang Nano 20K: rst_n = !ResetButton (active low button)
 //
+`include "board_select.svh"
 module top (
     // Clock and Reset
     input logic ResetButton,            // Board reset button (polarity depends on board variant)
@@ -31,11 +32,14 @@ module top (
     output logic MEMORY_CLK             // Memory clock output for debugging (40.5MHz)
 );
 
-  // Board-specific reset polarity configuration
-  // Tang Nano 9K: Button is active high
+  // Board-specific reset polarity configuration:
+  // - Tang Nano 9K: active-high button (rst_n = ResetButton)
+  // - Tang Nano 20K: active-low button (rst_n = !ResetButton)
+`ifdef BOARD_20K
+  wire rst_n = !ResetButton;
+`else
   wire rst_n = ResetButton;
-  // Tang Nano 20K: Button is active low (uncomment line below for 20K)
-  // wire rst_n = !ResetButton;
+`endif
 
   wire rst = !rst_n;
 
@@ -67,6 +71,9 @@ module top (
 
   // LCD
   logic vsync;
+  // VRAM read interface (driven by RAM, consumed by LCD)
+  logic [7:0] v_dout;
+  logic [9:0] v_adb;
 
   lcd lcd_inst (
       .PixelClk(LCD_CLK),
@@ -113,10 +120,9 @@ module top (
   logic [7:0] din;                // RAM write data
 
   // Video RAM (1KB) Interface
-  logic [7:0] v_dout;             // VRAM read data
   logic v_cea, v_ceb, v_oce;      // VRAM control signals
   logic v_reseta, v_resetb;       // VRAM reset signals
-  logic [9:0] v_ada, v_adb;       // VRAM addresses (write/read)
+  logic [9:0] v_ada;              // VRAM write address
   logic [7:0] v_din;              // VRAM write data
 
   ram ram_inst (
