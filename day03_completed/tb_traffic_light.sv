@@ -25,6 +25,10 @@ module tb_traffic_light;
     initial begin
         $display("Starting Traffic Light Controller tests...");
 
+        // Waveform dump (requires Verilator --trace or a simulator that supports VCD)
+        $dumpfile("tb_traffic_light.vcd");
+        $dumpvars(0, tb_traffic_light);
+
         // Reset
         rst_n = 0;
         #20 rst_n = 1;
@@ -47,11 +51,13 @@ module tb_traffic_light;
     end
 
     // Monitor state changes
+    /* verilator lint_off SYNCASYNCNET */
     always @(posedge clk) begin
         if (rst_n) begin
             $display("Time %t: RED=%b, YELLOW=%b, GREEN=%b",
                      $time, red, yellow, green);
         end
     end
+    /* verilator lint_on SYNCASYNCNET */
 
 endmodule

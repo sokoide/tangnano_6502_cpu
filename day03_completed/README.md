@@ -55,7 +55,8 @@ This is the completed project for designing sequential circuits in SystemVerilog
 ### Simulation Test
 
 ```bash
-make test
+make sim
+# (alias) make test
 ```
 
 ### FPGA Build

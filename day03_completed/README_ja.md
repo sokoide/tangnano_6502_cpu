@@ -44,7 +44,8 @@ SystemVerilogの順序回路設計の完成版プロジェクトです。
 
 ### シミュレーションテスト
 ```bash
-make test
+make sim
+# (alias) make test
 ```
 
 ### FPGAビルド
