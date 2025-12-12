@@ -94,6 +94,7 @@ For more details, refer to the documentation:
 | **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | Supported CPU instructions and custom extensions.  |
 | **[docs/LCD.md](./docs/LCD.md)**                                       | LCD specifications and controller details.         |
 | **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog coding conventions.                  |
+| **[docs/MODULE_MAP.md](./docs/MODULE_MAP.md)**                         | Code reading guide (top → cpu/lcd/ram).            |
 | **[CLAUDE.md](./CLAUDE.md)**                                           | Guidelines for AI-assisted development.            |
 
 ## 🏗️ Project Structure

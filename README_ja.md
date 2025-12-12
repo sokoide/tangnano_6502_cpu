@@ -253,6 +253,7 @@ sudo apt install srecord cc65 golang gtkwave verilator
 - [GoWin EDA ドキュメント](https://www.gowinsemi.com/) - FPGA開発ツール
 - [SystemVerilog LRM](https://ieeexplore.ieee.org/document/8299595) - 言語仕様書
 - `day99_completed/docs/` - 詳細な技術資料
+- `day99_completed/docs/MODULE_MAP.md` - コードリーディング用モジュールマップ
 
 ## 🤝 学習サポート
 

@@ -45,6 +45,16 @@
 
 ## 🛠️ 実習: LEDチカチカプロジェクト
 
+実機で「手順通りに動く」ことを優先する場合は、動作確認済みの完成版プロジェクト `day01_completed/` を使うのが最短です：
+
+```bash
+cd day01_completed
+make help
+make BOARD=9k download   # または BOARD=20k
+```
+
+9K/20K の差分や macOS のツールパスなどは `docs/BOARD_SETUP_ja.md` を参照してください。
+
 ### Step 1: プロジェクト作成
 
 1. GoWin EDA を起動

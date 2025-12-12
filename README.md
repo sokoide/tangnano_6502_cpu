@@ -244,11 +244,11 @@ sudo apt install srecord cc65 golang gtkwave verilator
 ## 📁 Directory Structure
 
 ```
-├── README_ja.md                    # This file (main guide)
+├── README.md                       # This file (main guide)
 ├── day99_completed/                # Final completed product (for reference)
 │
 ├── day01/                          # Learning directory
-│   ├── README_ja.md               # Detailed explanation for the day
+│   ├── README.md / README_ja.md    # Detailed explanation for the day
 │   └── (Basic templates)
 ├── day01_completed/               # Complete version
 │   └── (The complete project for the day)
@@ -263,8 +263,8 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 1. **Daily Study**:
 
-    - Learn the theory from `dayXX/README_ja.md`.
-    - Practice with the templates in `dayXX/`.
+    - Learn the theory from `dayXX/README.md` (or `README_ja.md`).
+    - Practice by implementing in `dayXX/` (some days provide templates; if not, use `dayXX_completed/` as your runnable starting point).
     - If you get stuck, refer to `dayXX_completed/`.
 
 2. **On-Device Verification**:
@@ -292,15 +292,27 @@ Upon completing this course, you will have acquired the following skills:
 -   [GoWin EDA Documentation](https://www.gowinsemi.com/) - FPGA development tool
 -   [SystemVerilog LRM](https://ieeexplore.ieee.org/document/8299595) - Language specification
 -   `day99_completed/docs/` - Detailed technical documents
+-   `day99_completed/docs/MODULE_MAP.md` - Code reading guide (top → cpu/lcd/ram)
 
 ## 🤝 Learning Support
 
 Each day's directory contains detailed explanations and practice guides. If you get stuck:
 
-1. Re-read the `README_ja.md` for that day.
+1. Re-read the `README.md` (or `README_ja.md`) for that day.
 2. Refer to the completed version in `dayXX_completed/`.
 3. Check the technical documents in `day99_completed/docs/`.
 
 ---
 
-**When you are ready to start learning, begin with `day01/README_ja.md`!**
+## ✅ Reference Implementation (Day 99)
+
+`day99_completed/` contains the complete integrated system (6502 CPU + LCD controller + build tooling). Start here if you want to run the finished design or cross-check your work.
+
+```bash
+cd day99_completed
+make help
+make
+make download
+```
+
+**When you are ready to start learning, begin with `day01/README.md`!**

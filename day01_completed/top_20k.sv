@@ -1,5 +1,4 @@
-// Day 01 Completed: LED Blink
-// Tang Nano FPGA LED Blink Complete Version
+// Day 01 Completed: LED Blink (Tang Nano 20K)
 
 module top (
     input  wire clk,     // 27MHz clock input
@@ -10,11 +9,12 @@ module top (
     // 27MHz / 2^25 ≈ 0.8Hz
     reg [24:0] counter;
 
-    always_ff @(posedge clk) begin
-        counter <= counter + 1;
+    always @(posedge clk) begin
+        counter <= counter + 25'd1;
     end
 
-    // LED blinking using MSB of counter
+    // Push-pull LED drive
     assign led = counter[24];
 
 endmodule
+

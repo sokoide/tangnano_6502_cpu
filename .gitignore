@@ -1,12 +1,12 @@
 .vscode
-build/*
-impl/*
-!impl/*_process_config.json
-obj_dir/*
+**/build/
+**/impl/
+!**/impl/*_process_config.json
+**/obj_dir/
 *.user
 *_tmp.v
-waveform.vcd
-waveform.view
+**/*.vcd
+**/*.view
 tmp.*
 *.log
 *.html
@@ -15,7 +15,16 @@ tmp.*
 *.o
 *.hex
 *.bin
+*.binx
+*.fs
+*.vg
+*.db
+*.rpt
+*.rpt.txt
+*.timing_paths
 temp
+*_build.tcl
+output.txt
 
 # dsim
 dsim_work/

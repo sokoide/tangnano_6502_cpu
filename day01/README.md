@@ -54,6 +54,16 @@
 
 ## 🛠️ Practice: Blinking LED Project
 
+If you want to run this on real hardware with minimal setup friction, use the working reference project in `day01_completed/`:
+
+```bash
+cd day01_completed
+make help
+make BOARD=9k download   # or BOARD=20k
+```
+
+Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.md`.
+
 ### Step 1: Create Project
 
 1.  Launch GoWin EDA
