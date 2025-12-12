@@ -197,25 +197,20 @@ Dependent files:
 ### Build Commands
 
 ```bash
-# Build for Tang Nano 9K
-make tang_nano_9k
+# Program FPGA
+make BOARD=9k download
+make BOARD=20k download
 
-# Build for Tang Nano 20K
-make tang_nano_20k
-
-# Run ALU simulation
-make run_sim
-
-# Write to FPGA
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
+# Run simulation (Verilator)
+make sim
+# (alias) make test
 ```
 
 ### Run Tests
 
 ```bash
 # ALU unit test
-make run_sim
+make sim
 
 # Integrated system test
 # Verify operation with LEDs and switches on the Tang Nano
@@ -349,8 +344,8 @@ LSR A       ; A = $40 (01000000), C=1
 1.  **Utilize Simulation**:
 
     ```bash
-    make run_sim
-    # Detailed verification in the testbench
+    make sim
+    # Runs Verilator + the testbench (also: make test)
     ```
 
 2.  **Step-by-Step Testing**:

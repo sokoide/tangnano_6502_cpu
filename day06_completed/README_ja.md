@@ -182,25 +182,20 @@ day06_completed/
 ### ビルドコマンド
 
 ```bash
-# Tang Nano 9K用ビルド
-make tang_nano_9k
-
-# Tang Nano 20K用ビルド
-make tang_nano_20k
-
-# ALUシミュレーション実行
-make run_sim
+# ALUシミュレーション（Verilator）
+make sim
+# (alias) make test
 
 # FPGAへの書き込み
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
+make BOARD=9k download
+make BOARD=20k download
 ```
 
 ### テスト実行
 
 ```bash
 # ALU単体テスト
-make run_sim
+make sim
 
 # 統合システムテスト
 # Tang NanoのLEDとスイッチで動作確認
@@ -325,7 +320,7 @@ LSR A       ; A = $40 (01000000), C=1
 
 1. **シミュレーション活用**：
    ```bash
-   make run_sim
+   make sim
    # テストベンチでの詳細確認
    ```
 

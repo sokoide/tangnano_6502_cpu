@@ -2,6 +2,8 @@
 PROJECT = day09
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
+SIM_TOP ?= tb_tft
+VERILATOR ?= verilator
 
 BASE = /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA
 GWSH ?= $(BASE)/IDE/bin/gw_sh
@@ -15,7 +17,7 @@ else
   GPRJ = tft_9k.gprj
 endif
 
-.PHONY: all clean download help tools-check
+.PHONY: all clean download help tools-check tools-check-sim sim-build sim test
 all: $(PROJECT).fs
 
 include/board_select.svh: board-config
@@ -62,10 +64,28 @@ tools-check:
 	@if [ -x "$(PRG)" ] || command -v "$$(basename "$(PRG)")" >/dev/null 2>&1; then : ; \
 	else echo "[ERROR] programmer_cli not found. Set PRG=/path/to/programmer_cli" >&2; exit 1; fi
 
+tools-check-sim:
+	@if command -v "$(VERILATOR)" >/dev/null 2>&1; then : ; \
+	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
+
+sim-build: include/board_select.svh tools-check-sim
+	@echo "[sim] Building with Verilator..."
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
+		-Iinclude \
+		-o V$(SIM_TOP) \
+		tb_tft.sv top.sv sim/Gowin_rPLL9_stub.sv
+
+sim: sim-build
+	@echo "[sim] Running..."
+	@./obj_dir/V$(SIM_TOP)
+
+test: sim
+
 clean:
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
 	rm -rf impl/
 
 help:
 	@echo "Targets: make | make download | make clean"
+	@echo "         make sim | make test"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."

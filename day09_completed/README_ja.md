@@ -26,6 +26,14 @@ make BOARD=20k download
 
 LCDが無表示の場合は、まず **ハートビートLEDが点滅**しているか確認してください（ピンは `tft_*.cst` に定義）。
 
+## シミュレーション（Verilator）
+
+```bash
+make sim
+```
+
+`LCD_DEN` がアサートされ、RGB出力が一度でも非ゼロになることを確認するスモークテストです。シミュレーションではPLLはスタブ化されるため、`LCD_CLK` は実質 `XTAL_IN` と同じになります。
+
 ## 配線
 
 `day99_completed` と同じ配線を使ってください：
@@ -41,4 +49,3 @@ LCDが無表示の場合は、まず **ハートビートLEDが点滅**してい
 - `day09_completed/top.sv`（タイミング生成 + カラーバー）
 - `day09_completed/tft_9k.gprj`, `day09_completed/tft_20k.gprj`
 - `day09_completed/gowin_rpll_9k/gowin_rpll9.v`, `day09_completed/gowin_rpll_20k/gowin_rpll9.v`
-

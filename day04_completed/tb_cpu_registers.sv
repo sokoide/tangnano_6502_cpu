@@ -40,6 +40,9 @@ module tb_cpu_registers;
     initial begin
         $display("Starting 6502 CPU Register tests...");
 
+        $dumpfile("tb_cpu_registers.vcd");
+        $dumpvars(0, tb_cpu_registers);
+
         // Initialize signals
         rst_n = 0;
         {a_write, x_write, y_write, sp_write, pc_write, p_write} = 6'b000000;

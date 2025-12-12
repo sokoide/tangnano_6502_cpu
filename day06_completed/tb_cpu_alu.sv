@@ -25,6 +25,9 @@ module tb_cpu_alu;
     initial begin
         $display("Starting 6502 CPU ALU tests...");
 
+        $dumpfile("tb_cpu_alu.vcd");
+        $dumpvars(0, tb_cpu_alu);
+
         // Test 1: ADD without carry
         operand_a = 8'h50;  // 80 decimal
         operand_b = 8'h30;  // 48 decimal

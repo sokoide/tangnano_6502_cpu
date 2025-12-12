@@ -109,7 +109,19 @@ module cpu_alu (
 
         // Output assignments
         result = temp_result[7:0];
-        carry_out = temp_result[8];
+
+        // Carry flag behavior:
+        // - ADC: carry_out is the 9th bit of the sum
+        // - SBC/CMP/CPX/CPY: carry_out is the inverse of the borrow
+        case (operation)
+            4'b0001, // SBC
+            4'b1101, // CMP
+            4'b1110, // CPX
+            4'b1111: // CPY
+                carry_out = ~temp_result[8];
+            default:
+                carry_out = temp_result[8];
+        endcase
         negative = temp_result[7];
         zero = (temp_result[7:0] == 8'h00);
     end

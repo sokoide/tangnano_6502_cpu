@@ -152,18 +152,13 @@ Dependent files:
 ### Build Commands
 
 ```bash
-# Build for Tang Nano 9K
-make tang_nano_9k
+# Run simulation (Verilator)
+make sim
+# (alias) make test
 
-# Build for Tang Nano 20K
-make tang_nano_20k
-
-# Run simulation
-make run_sim
-
-# Write to FPGA
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
+# Program FPGA
+make BOARD=9k download
+make BOARD=20k download
 ```
 
 ## Debug Outputs

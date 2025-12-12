@@ -136,18 +136,13 @@ day08_completed/
 ### ビルドコマンド
 
 ```bash
-# Tang Nano 9K用ビルド
-make tang_nano_9k
-
-# Tang Nano 20K用ビルド
-make tang_nano_20k
-
-# シミュレーション実行
-make run_sim
+# シミュレーション（Verilator）
+make sim
+# (alias) make test
 
 # FPGAへの書き込み
-make program_9k    # Tang Nano 9K
-make program_20k   # Tang Nano 20K
+make BOARD=9k download
+make BOARD=20k download
 ```
 
 ## デバッグ出力

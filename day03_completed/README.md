@@ -59,6 +59,12 @@ make sim
 # (alias) make test
 ```
 
+#### Simulator notes
+
+- Simulator: Verilator (cross-platform, works on macOS/Linux/Windows).
+- Output: runs `tb_traffic_light.sv` and generates `tb_traffic_light.vcd` (open with `gtkwave tb_traffic_light.vcd`).
+- Requirement: `verilator` must be in `PATH` (macOS example: `brew install verilator`).
+
 ### FPGA Build
 
 ```bash

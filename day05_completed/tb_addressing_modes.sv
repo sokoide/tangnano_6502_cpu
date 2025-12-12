@@ -29,6 +29,9 @@ module tb_addressing_modes;
     initial begin
         $display("Starting 6502 Addressing Mode tests...");
 
+        $dumpfile("tb_addressing_modes.vcd");
+        $dumpvars(0, tb_addressing_modes);
+
         // Initialize registers
         pc = 16'h0200;
         reg_x = 8'h05;

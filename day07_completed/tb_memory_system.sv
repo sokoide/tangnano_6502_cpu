@@ -70,6 +70,63 @@ module tb_memory_system;
     // Clock generation
     always #5 clk = ~clk;
 
+    // Trace external bus writes
+    always_ff @(posedge clk) begin
+        if (rst_n && ext_we) begin
+            $display("  [bus] WRITE addr=$%04X data=$%02X (ram=%b rom=%b io=%b)",
+                     ext_addr, ext_data_out, ram_select, rom_select, io_select);
+        end
+    end
+
+    task automatic cpu_write(input logic [15:0] addr, input logic [7:0] data);
+        // Start on a clean IDLE cycle (cpu_ready can be high in WAIT or IDLE).
+        while (!cpu_ready) @(posedge clk);
+        @(posedge clk);
+        cpu_addr = addr;
+        cpu_data_out = data;
+        cpu_mem_write = 1'b1;
+        @(negedge cpu_ready);
+        @(posedge cpu_ready);
+        cpu_mem_write = 1'b0;
+        #1;
+    endtask
+
+    task automatic cpu_read_expect(input logic [15:0] addr, input logic [7:0] expected);
+        while (!cpu_ready) @(posedge clk);
+        @(posedge clk);
+        cpu_addr = addr;
+        cpu_mem_read = 1'b1;
+        @(negedge cpu_ready);
+        @(posedge cpu_ready);
+        cpu_mem_read = 1'b0;
+        assert (cpu_data_in == expected)
+            else $error("Read failed @ $%04X: expected $%02X, got $%02X", addr, expected, cpu_data_in);
+        #1;
+    endtask
+
+    task automatic stack_push_byte(input logic [7:0] data);
+        while (!cpu_ready) @(posedge clk);
+        @(posedge clk);
+        stack_data_out = data;
+        stack_push = 1'b1;
+        @(negedge cpu_ready);
+        @(posedge cpu_ready);
+        stack_push = 1'b0;
+        #1;
+    endtask
+
+    task automatic stack_pop_expect(input logic [7:0] expected);
+        while (!cpu_ready) @(posedge clk);
+        @(posedge clk);
+        stack_pop = 1'b1;
+        @(negedge cpu_ready);
+        @(posedge cpu_ready);
+        stack_pop = 1'b0;
+        assert (stack_data_in == expected)
+            else $error("Stack pop failed: expected $%02X, got $%02X", expected, stack_data_in);
+        #1;
+    endtask
+
     initial begin
         clk = 0;
         rst_n = 0;
@@ -87,6 +144,9 @@ module tb_memory_system;
         end
 
         $display("Starting 6502 Memory System tests...");
+
+        $dumpfile("tb_memory_system.vcd");
+        $dumpvars(0, tb_memory_system);
 
         // Reset
         #20 rst_n = 1;
@@ -113,104 +173,53 @@ module tb_memory_system;
         // Test 2: RAM write/read
         $display("\nTest 2: RAM write/read operations");
 
-        cpu_addr = 16'h0200;
-        cpu_data_out = 8'h42;
-        cpu_mem_write = 1;
-        #10;
-        wait (cpu_ready);
-        cpu_mem_write = 0;
-        #10;
-
-        cpu_mem_read = 1;
-        #10;
-        wait (cpu_ready);
-        assert (cpu_data_in == 8'h42) else $error("RAM read failed, expected $42, got $%02X", cpu_data_in);
-        cpu_mem_read = 0;
+        cpu_write(16'h0200, 8'h42);
+        cpu_read_expect(16'h0200, 8'h42);
         $display("Test 2 passed: RAM write/read = $%02X", cpu_data_in);
 
         // Test 3: ROM read
         $display("\nTest 3: ROM read operations");
 
-        cpu_addr = 16'hC010;
-        cpu_mem_read = 1;
-        #10;
-        wait (cpu_ready);
-        assert (cpu_data_in == 8'hB5) else $error("ROM read failed, expected $B5, got $%02X", cpu_data_in);
-        cpu_mem_read = 0;
+        cpu_read_expect(16'hC010, 8'hB5);
         $display("Test 3 passed: ROM read = $%02X", cpu_data_in);
 
         // Test 4: Stack push operations
         $display("\nTest 4: Stack push operations");
 
-        stack_data_out = 8'h55;
-        stack_push = 1;
-        #10;
-        wait (cpu_ready);
-        stack_push = 0;
+        stack_push_byte(8'h55);
+        $display("  SP after push #1 = $%02X", stack_pointer);
         assert (stack_pointer == 8'hFE) else $error("Stack pointer not decremented correctly");
         #10;
 
-        stack_data_out = 8'hAA;
-        stack_push = 1;
-        #10;
-        wait (cpu_ready);
-        stack_push = 0;
+        stack_push_byte(8'hAA);
+        $display("  SP after push #2 = $%02X", stack_pointer);
         assert (stack_pointer == 8'hFD) else $error("Stack pointer not decremented correctly");
         $display("Test 4 passed: Stack pushes, SP = $%02X", stack_pointer);
 
         // Test 5: Stack pop operations
         $display("\nTest 5: Stack pop operations");
 
-        stack_pop = 1;
-        #10;
-        wait (cpu_ready);
-        assert (stack_data_in == 8'hAA) else $error("Stack pop failed, expected $AA, got $%02X", stack_data_in);
-        stack_pop = 0;
+        stack_pop_expect(8'hAA);
         assert (stack_pointer == 8'hFE) else $error("Stack pointer not incremented correctly");
         #10;
 
-        stack_pop = 1;
-        #10;
-        wait (cpu_ready);
-        assert (stack_data_in == 8'h55) else $error("Stack pop failed, expected $55, got $%02X", stack_data_in);
-        stack_pop = 0;
+        stack_pop_expect(8'h55);
         assert (stack_pointer == 8'hFF) else $error("Stack pointer not incremented correctly");
         $display("Test 5 passed: Stack pops, SP = $%02X", stack_pointer);
 
         // Test 6: Zero page access
         $display("\nTest 6: Zero page access");
 
-        cpu_addr = 16'h0080;
-        cpu_data_out = 8'h33;
-        cpu_mem_write = 1;
-        #10;
-        wait (cpu_ready);
-        cpu_mem_write = 0;
-        #10;
-
-        cpu_mem_read = 1;
-        #10;
-        wait (cpu_ready);
-        assert (cpu_data_in == 8'h33) else $error("Zero page access failed");
-        cpu_mem_read = 0;
+        cpu_write(16'h0080, 8'h33);
+        $display("  RAM[0080] after write = $%02X", ram_array[16'h0080]);
+        cpu_read_expect(16'h0080, 8'h33);
         $display("Test 6 passed: Zero page write/read = $%02X", cpu_data_in);
 
         // Test 7: Stack page direct access
         $display("\nTest 7: Stack page direct access");
 
-        cpu_addr = 16'h01F0;
-        cpu_data_out = 8'h77;
-        cpu_mem_write = 1;
-        #10;
-        wait (cpu_ready);
-        cpu_mem_write = 0;
-        #10;
-
-        cpu_mem_read = 1;
-        #10;
-        wait (cpu_ready);
-        assert (cpu_data_in == 8'h77) else $error("Stack page access failed");
-        cpu_mem_read = 0;
+        cpu_write(16'h01F0, 8'h77);
+        cpu_read_expect(16'h01F0, 8'h77);
         $display("Test 7 passed: Stack page write/read = $%02X", cpu_data_in);
 
         $display("\nAll 6502 Memory System tests completed successfully!");

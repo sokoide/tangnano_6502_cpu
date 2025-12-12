@@ -33,6 +33,7 @@ module memory_interface (
 
     logic [1:0] state;
     logic [1:0] next_state;
+    logic [7:0] read_latch;
 
     // State machine states
     localparam IDLE  = 2'b00;
@@ -51,8 +52,12 @@ module memory_interface (
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= IDLE;
+            read_latch <= 8'h00;
         end else begin
             state <= next_state;
+            if (state == READ) begin
+                read_latch <= mem_data_in;
+            end
         end
     end
 
@@ -90,7 +95,7 @@ module memory_interface (
         mem_data_out = 8'h00;
         mem_oe = 1'b0;
         mem_we = 1'b0;
-        read_data = 8'h00;
+        read_data = read_latch;
         ready = 1'b0;
 
         case (state)
@@ -101,7 +106,6 @@ module memory_interface (
             READ: begin
                 mem_addr = address;
                 mem_oe = 1'b1;
-                read_data = mem_data_in;
             end
 
             WRITE: begin
@@ -112,9 +116,6 @@ module memory_interface (
 
             WAIT: begin
                 ready = 1'b1;
-                if (state == READ) begin
-                    read_data = mem_data_in;
-                end
             end
         endcase
     end

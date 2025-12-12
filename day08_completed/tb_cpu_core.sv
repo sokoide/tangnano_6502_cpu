@@ -19,6 +19,10 @@ module tb_cpu_core;
     logic [7:0]  debug_opcode;
     logic [2:0]  debug_cpu_state;
     logic debug_system_ready;
+    logic [7:0] initial_sp;
+    int errors;
+    bit saw_a_42;
+    bit saw_a_84;
 
     // Test target instantiation
     top uut (
@@ -45,15 +49,27 @@ module tb_cpu_core;
 
     // Test stimulus
     initial begin
+        errors = 0;
+        saw_a_42 = 0;
+        saw_a_84 = 0;
         clk = 0;
-        rst_n = 0;
+        rst_n = 1;
         switches = 4'b0000;  // Start with slowest CPU clock
 
         $display("Starting 6502 CPU Core integrated test...");
 
+        $dumpfile("tb_cpu_core.vcd");
+        $dumpvars(0, tb_cpu_core);
+
         // Reset sequence
+        #1 rst_n = 0;
         #200 rst_n = 1;
+        #1;
         $display("Reset released, CPU should start from $C000");
+        if (debug_reg_pc !== 16'hC000) begin
+            $display("✗ Reset PC mismatch: PC=$%04X (expected $C000)", debug_reg_pc);
+            errors++;
+        end
 
         // Monitor CPU execution for initial instructions
         repeat (200) begin
@@ -80,15 +96,20 @@ module tb_cpu_core;
         // Test register operations (first few instructions should be LDA, STA)
         $display("\nTesting basic register operations...");
 
-        // Wait for several instruction cycles
-        repeat (100) @(posedge uut.cpu_clk);
-
-        // Check if accumulator has expected value from test program
-        if (debug_reg_a == 8'h42) begin
-            $display("✓ Load immediate test passed: A = $%02X", debug_reg_a);
-        end else begin
-            $display("✗ Load immediate test failed: A = $%02X (expected $42)", debug_reg_a);
+        // Smoke-check that the ROM program executes far enough to load
+        // a couple of immediate values into A.
+        repeat (5000) begin
+            @(posedge clk);
+            if (debug_reg_a == 8'h42) saw_a_42 = 1;
+            if (debug_reg_a == 8'h84) saw_a_84 = 1;
+            if (saw_a_42 && saw_a_84) break;
         end
+
+        if (saw_a_42) $display("✓ Observed A=$42");
+        else begin $display("✗ Did not observe A=$42"); errors++; end
+
+        if (saw_a_84) $display("✓ Observed A=$84");
+        else begin $display("✗ Did not observe A=$84"); errors++; end
 
         // Continue execution to test arithmetic
         $display("\nTesting arithmetic operations...");
@@ -119,7 +140,7 @@ module tb_cpu_core;
 
         // Test stack operations
         $display("\nTesting stack operations...");
-        logic [7:0] initial_sp = debug_reg_sp;
+        initial_sp = debug_reg_sp;
         repeat (200) @(posedge uut.cpu_clk);
 
         if (debug_reg_sp != initial_sp) begin
@@ -159,8 +180,13 @@ module tb_cpu_core;
         $display("✓ Clock domain integration");
         $display("✓ Debug output functionality");
 
-        $display("\nCPU Core test completed successfully!");
-        $finish;
+        if (errors == 0) begin
+            $display("\nCPU Core test completed successfully!");
+            $finish;
+        end else begin
+            $display("\nCPU Core test failed: %0d error(s)", errors);
+            $fatal(1);
+        end
     end
 
     // Monitor for interesting events

@@ -48,6 +48,12 @@ make sim
 # (alias) make test
 ```
 
+#### シミュレータについて
+
+- シミュレータ: Verilator（macOS/Linux/Windowsで動作）。
+- 出力: `tb_traffic_light.sv` を実行し、波形 `tb_traffic_light.vcd` を生成します（`gtkwave tb_traffic_light.vcd` で確認）。
+- 前提: `verilator` が `PATH` にあること（macOS例: `brew install verilator`）。
+
 ### FPGAビルド
 ```bash
 # Tang Nano 9K

@@ -30,6 +30,14 @@ make BOARD=20k download
 
 If the LCD stays blank, first confirm the **heartbeat LED** is blinking (pin is defined in `tft_*.cst`).
 
+## Simulation (Verilator)
+
+```bash
+make sim
+```
+
+This is a smoke test that checks `LCD_DEN` toggles and RGB outputs are non-zero at least once. In simulation, the PLL is stubbed (so `LCD_CLK` is effectively the same as `XTAL_IN`).
+
 ## Wiring
 
 Use the same wiring as `day99_completed`:
@@ -45,4 +53,3 @@ Pin assignments are in:
 - `day09_completed/top.sv` (timing + color bars)
 - `day09_completed/tft_9k.gprj`, `day09_completed/tft_20k.gprj`
 - `day09_completed/gowin_rpll_9k/gowin_rpll9.v`, `day09_completed/gowin_rpll_20k/gowin_rpll9.v`
-
