@@ -47,6 +47,7 @@ export PATH
 all: $(FS)
 
 .PHONY: all clean wave download help lint format format-check tools-check board-config
+.PHONY: sim sim-build sim-ram sim-ram-build tools-check-sim
 
 include/board_select.svh: board-config
 
@@ -120,6 +121,54 @@ tools-check:
 	else \
 	  echo "[ERROR] programmer_cli not found. Set PRG=/path/to/programmer_cli" >&2; exit 1; \
 	fi
+
+#--------------------------------------------------
+# Simulation (Verilator)
+#--------------------------------------------------
+VERILATOR ?= verilator
+SIM_TOP ?= tb_vram_smoke
+
+tools-check-sim:
+	@if command -v "$(VERILATOR)" >/dev/null 2>&1; then : ; \
+	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
+
+# Default: CPU -> VRAM smoke test (education-friendly)
+SIM_SRCS := \
+	src/tb_vram_smoke.sv \
+	src/top.sv src/lcd.sv src/ram.sv \
+	src/cpu.sv src/cpu_decoder.sv src/cpu_alu.sv src/cpu_memory.sv \
+	sim/GSR.sv \
+	sim/gowin_rpll9_stub.sv sim/gowin_rpll40_stub.sv \
+	sim/gowin_prom_font_stub.sv \
+	sim/Gowin_SDPB.sv sim/gowin_sdpb_vram_stub.sv
+
+sim-build: include/board_select.svh tools-check-sim
+	@echo "[sim] Building with Verilator (VRAM smoke test)..."
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
+		-Iinclude -Isrc \
+		-o V$(SIM_TOP) \
+		$(SIM_SRCS)
+
+sim: sim-build
+	@echo "[sim] Running..."
+	@./obj_dir/V$(SIM_TOP)
+
+# Optional: BSRAM (SDPB) smoke test using existing tb
+SIM_RAM_TOP ?= tb_top
+SIM_RAM_SRCS := \
+	src/tb_top.sv \
+	sim/GSR.sv \
+	sim/Gowin_SDPB.sv
+
+sim-ram-build: tools-check-sim
+	@echo "[sim] Building with Verilator (SDPB smoke test)..."
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_RAM_TOP) \
+		-o V$(SIM_RAM_TOP) \
+		$(SIM_RAM_SRCS)
+
+sim-ram: sim-ram-build
+	@echo "[sim] Running..."
+	@./obj_dir/V$(SIM_RAM_TOP)
 
 # Lint (exclude vendor IP and generated verilog outputs)
 LINT_SRCS := $(filter-out src/gowin_% impl/pnr/%,$(SRCS))
