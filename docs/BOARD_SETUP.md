@@ -31,8 +31,8 @@ make BOARD=20k
 Some Makefiles default to tools on `PATH` (e.g., `gw_sh`). If you installed Gowin EDA as an app bundle, you may need to provide explicit paths:
 
 ```bash
-make GWSH=/Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
-     PRG=/Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
+make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
+     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
      download
 ```
 
@@ -45,4 +45,3 @@ Day 01 (LED blink) is your hardware sanity check:
 - LED blinks at a visible rate
 
 If Day 01 is unstable, fix this before moving on; later days build on the same toolchain + board setup.
-

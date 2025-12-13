@@ -13,24 +13,24 @@ In this course, you will learn step-by-step from the basics of FPGAs and SystemV
 
 ## 🎯 Learning Objectives
 
--   **FPGA Development**: Master the basic operations of the GoWin EDA tool and Tang Nano.
--   **SystemVerilog**: Acquire skills from basic to advanced hardware description language.
--   **6502 Architecture**: Understand a classic CPU architecture.
--   **System Design**: Develop skills in integrated design of CPU, memory, and I/O.
--   **Practical Development**: Gain experience with on-device testing and debugging.
+- **FPGA Development**: Master the basic operations of the GoWin EDA tool and Tang Nano.
+- **SystemVerilog**: Acquire skills from basic to advanced hardware description language.
+- **6502 Architecture**: Understand a classic CPU architecture.
+- **System Design**: Develop skills in integrated design of CPU, memory, and I/O.
+- **Practical Development**: Gain experience with on-device testing and debugging.
 
 ## 🛠️ Required Hardware
 
--   **Tang Nano 9K** or **Tang Nano 20K** FPGA development board
--   **043026-N6(ML) 4.3" 480×272 LCD Module** (used from Day 09 onwards)
--   USB-C cable (for programming)
+- **Tang Nano 9K** or **Tang Nano 20K** FPGA development board
+- **043026-N6(ML) 4.3" 480×272 LCD Module** (used from Day 09 onwards)
+- USB-C cable (for programming)
 
 ## 💻 Required Software
 
--   **GoWin EDA** (FPGA synthesis and place & route tool)
--   **cc65** (6502 assembler, used on Day 10)
--   **srecord** (binary conversion tool)
--   **Make** (build system)
+- **GoWin EDA** (FPGA synthesis and place & route tool)
+- **cc65** (6502 assembler, used on Day 10)
+- **srecord** (binary conversion tool)
+- **Make** (build system)
 
 ### Installation Instructions
 
@@ -46,7 +46,38 @@ brew install srecord cc65
 sudo apt install srecord cc65 golang gtkwave verilator
 ```
 
-**GoWin EDA:** Download and install from the official website.
+**GoWin EDA:**
+
+- Download *Gowin V1.9.11.03 Education* for macOS or Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
+- macOS only
+  - First time -> fails to open
+  - macOS settings -> privacy -> scroll to the bottom -> allow anytime
+  - Patch command line tool
+
+```bash
+GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    install_name_tool \
+      -add_rpath @executable_path/../lib \
+      -add_rpath @executable_path/../Frameworks \
+      "$f" 2>/dev/null
+  fi
+done
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    if otool -L "$f" | grep -q '/Library/Frameworks/Tcl.framework'; then
+      install_name_tool \
+        -change \
+        /Library/Frameworks/Tcl.framework/Versions/8.6/Tcl \
+        @rpath/Tcl.framework/Versions/8.6/Tcl \
+        "$f"
+    fi
+  fi
+done
+```
 
 ## 📅 10-Day Learning Plan
 
@@ -54,15 +85,15 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Understanding the basic specifications of Tang Nano 9K/20K
--   Basic operations and project creation in GoWin EDA
--   First HDL project: Blinking LED (Hello World)
--   Basics of constraint files (.cst)
+- Understanding the basic specifications of Tang Nano 9K/20K
+- Basic operations and project creation in GoWin EDA
+- First HDL project: Blinking LED (Hello World)
+- Basics of constraint files (.cst)
 
 **Deliverables:**
 
--   A simple project that blinks an LED
--   Mastery of basic synthesis, place & route, and programming procedures in GoWin EDA
+- A simple project that blinks an LED
+- Mastery of basic synthesis, place & route, and programming procedures in GoWin EDA
 
 **Practice Time:** Approx. 2-3 hours
 
@@ -72,15 +103,15 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Basic syntax and module structure of SystemVerilog
--   Designing combinational circuits (logic gates, decoders, multiplexers)
--   Differentiating between `assign` and `always_comb`
--   Basics of testbenches
+- Basic syntax and module structure of SystemVerilog
+- Designing combinational circuits (logic gates, decoders, multiplexers)
+- Differentiating between `assign` and `always_comb`
+- Basics of testbenches
 
 **Deliverables:**
 
--   7-segment decoder
--   4-bit ALU (addition, logical operations)
+- 7-segment decoder
+- 4-bit ALU (addition, logical operations)
 
 **Practice Time:** Approx. 3-4 hours
 
@@ -90,17 +121,17 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Concepts of clock and reset
--   Flip-flops and latches
--   Register design using `always_ff`
--   Basics of Finite State Machines (FSM)
--   Counters and timer circuits
+- Concepts of clock and reset
+- Flip-flops and latches
+- Register design using `always_ff`
+- Basics of Finite State Machines (FSM)
+- Counters and timer circuits
 
 **Deliverables:**
 
--   8-bit counter
--   LED PWM dimming controller
--   Simple state machine
+- 8-bit counter
+- LED PWM dimming controller
+- Simple state machine
 
 **Practice Time:** Approx. 3-4 hours
 
@@ -110,16 +141,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   History and features of the 6502 CPU
--   Register set (A, X, Y, SP, PC, P)
--   Memory map and addressing
--   Instruction fetch, decode, and execute cycle
--   Flag register and its operation
+- History and features of the 6502 CPU
+- Register set (A, X, Y, SP, PC, P)
+- Memory map and addressing
+- Instruction fetch, decode, and execute cycle
+- Flag register and its operation
 
 **Deliverables:**
 
--   SystemVerilog model of the 6502 register set
--   Simple instruction decoder (for a subset of instructions)
+- SystemVerilog model of the 6502 register set
+- Simple instruction decoder (for a subset of instructions)
 
 **Practice Time:** Approx. 2-3 hours
 
@@ -129,16 +160,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Detailed explanation of the 13 addressing modes of the 6502
--   Classification and operation of major instruction groups
--   Load/store instructions (LDA, STA, etc.)
--   Arithmetic instructions (ADC, SBC, AND, etc.)
--   Branch and jump instructions (BEQ, JMP, JSR, etc.)
+- Detailed explanation of the 13 addressing modes of the 6502
+- Classification and operation of major instruction groups
+- Load/store instructions (LDA, STA, etc.)
+- Arithmetic instructions (ADC, SBC, AND, etc.)
+- Branch and jump instructions (BEQ, JMP, JSR, etc.)
 
 **Deliverables:**
 
--   Addressing mode calculator
--   Decode table for major instructions
+- Addressing mode calculator
+- Decode table for major instructions
 
 **Practice Time:** Approx. 3-4 hours
 
@@ -148,16 +179,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Detailed design of the instruction decoder
--   Implementation of the Arithmetic Logic Unit (ALU)
--   Flag calculation logic (N, Z, C, V)
--   Concept of micro-instruction control
+- Detailed design of the instruction decoder
+- Implementation of the Arithmetic Logic Unit (ALU)
+- Flag calculation logic (N, Z, C, V)
+- Concept of micro-instruction control
 
 **Deliverables:**
 
--   Complete instruction decoder module
--   6502-compatible ALU module
--   Flag generation logic
+- Complete instruction decoder module
+- 6502-compatible ALU module
+- Flag generation logic
 
 **Practice Time:** Approx. 4-5 hours
 
@@ -167,16 +198,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Memory bus interface design
--   Implementation of stack operations
--   Optimization of zero-page access
--   Basics of memory-mapped I/O
+- Memory bus interface design
+- Implementation of stack operations
+- Optimization of zero-page access
+- Basics of memory-mapped I/O
 
 **Deliverables:**
 
--   Memory controller module
--   Stack pointer control logic
--   Address generation unit
+- Memory controller module
+- Stack pointer control logic
+- Address generation unit
 
 **Practice Time:** Approx. 4-5 hours
 
@@ -186,16 +217,16 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Integration of the CPU core
--   Instruction cycle control
--   Testing with basic 6502 programs
--   Debugging techniques and simulation
+- Integration of the CPU core
+- Instruction cycle control
+- Testing with basic 6502 programs
+- Debugging techniques and simulation
 
 **Deliverables:**
 
--   A functional 6502 CPU core
--   Verification of the basic instruction set
--   A set of test programs
+- A functional 6502 CPU core
+- Verification of the basic instruction set
+- A set of test programs
 
 **Practice Time:** Approx. 5-6 hours
 
@@ -205,17 +236,17 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   Principles of LCD timing control
--   RGB signal generation and VGA/LCD output
--   Design of a character display system
--   Implementation of VRAM (Video RAM)
--   How to use a font ROM
+- Principles of LCD timing control
+- RGB signal generation and VGA/LCD output
+- Design of a character display system
+- Implementation of VRAM (Video RAM)
+- How to use a font ROM
 
 **Deliverables:**
 
--   LCD controller module
--   System with character display functionality
--   Character output at 480×272 resolution
+- LCD controller module
+- System with character display functionality
+- Character output at 480×272 resolution
 
 **Practice Time:** Approx. 4-5 hours
 
@@ -225,17 +256,17 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 **Topics:**
 
--   How to use the cc65 assembler
--   Practical 6502 assembly programming
--   Utilizing custom instructions (CVR, IFO, HLT, WVS)
--   Full system testing and debugging
--   Creating application programs
+- How to use the cc65 assembler
+- Practical 6502 assembly programming
+- Utilizing custom instructions (CVR, IFO, HLT, WVS)
+- Full system testing and debugging
+- Creating application programs
 
 **Deliverables:**
 
--   "Hello World" display program
--   Scrolling text display
--   Interactive demo program
+- "Hello World" display program
+- Scrolling text display
+- Interactive demo program
 
 **Practice Time:** Approx. 3-4 hours
 
@@ -280,19 +311,19 @@ sudo apt install srecord cc65 golang gtkwave verilator
 
 Upon completing this course, you will have acquired the following skills:
 
--   **FPGA Development**: Ability to create and debug basic FPGA projects.
--   **SystemVerilog**: Ability to design at an intermediate level of HDL.
--   **CPU Design**: Understanding and ability to design a simple CPU architecture.
--   **System Integration**: Ability to design a system combining CPU, memory, and I/O.
--   **Practical Skills**: Ability to not only understand theory but also test and debug on real hardware.
+- **FPGA Development**: Ability to create and debug basic FPGA projects.
+- **SystemVerilog**: Ability to design at an intermediate level of HDL.
+- **CPU Design**: Understanding and ability to design a simple CPU architecture.
+- **System Integration**: Ability to design a system combining CPU, memory, and I/O.
+- **Practical Skills**: Ability to not only understand theory but also test and debug on real hardware.
 
 ## 📖 Reference Materials
 
--   [6502.org](http://www.6502.org/) - Official 6502 CPU documentation
--   [GoWin EDA Documentation](https://www.gowinsemi.com/) - FPGA development tool
--   [SystemVerilog LRM](https://ieeexplore.ieee.org/document/8299595) - Language specification
--   `day99_completed/docs/` - Detailed technical documents
--   `day99_completed/docs/MODULE_MAP.md` - Code reading guide (top → cpu/lcd/ram)
+- [6502.org](http://www.6502.org/) - Official 6502 CPU documentation
+- [GoWin EDA Documentation](https://www.gowinsemi.com/) - FPGA development tool
+- [SystemVerilog LRM](https://ieeexplore.ieee.org/document/8299595) - Language specification
+- `day99_completed/docs/` - Detailed technical documents
+- `day99_completed/docs/MODULE_MAP.md` - Code reading guide (top → cpu/lcd/ram)
 
 ## 🤝 Learning Support
 

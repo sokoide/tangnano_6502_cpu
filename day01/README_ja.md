@@ -10,11 +10,13 @@
 ## 📚 事前準備
 
 ### ハードウェア
+
 - Tang Nano 9K または Tang Nano 20K
 - USB-C ケーブル
 - PC (Windows/Linux/macOS)
 
 ### ソフトウェア
+
 - GoWin EDA (公式サイトからダウンロード・インストール)
 
 ## 📖 理論学習
@@ -22,6 +24,7 @@
 ### Tang Nano の基本仕様
 
 **Tang Nano 9K:**
+
 - FPGA: Gowin GW1NR-9C
 - 論理エレメント: 8,640 LUT4
 - メモリ: 468Kbit BSRAM
@@ -29,6 +32,7 @@
 - I/Oピン数: 63
 
 **Tang Nano 20K:**
+
 - FPGA: Gowin GW2AR-18C
 - 論理エレメント: 20,736 LUT4
 - メモリ: 828Kbit BSRAM
@@ -92,14 +96,16 @@ endmodule
 `tang_nano.cst` ファイルを作成:
 
 **Tang Nano 9K:**
-```
+
+```systemverilog
 IO_LOC "clk" 52;
 IO_PORT "clk" PULL_MODE=UP;
 IO_LOC "led" 10;
 ```
 
 **Tang Nano 20K:**
-```
+
+```systemverilog
 IO_LOC "clk" 4;
 IO_PORT "clk" PULL_MODE=UP;
 IO_LOC "led" 15;
@@ -137,11 +143,13 @@ IO_LOC "led" 15;
 ## 📝 課題
 
 ### 基礎課題
+
 1. 点滅速度を変更してみる (counterのビット位置を変更)
 2. 2つのLEDを交互に点滅させる
 3. PWMを使ってLEDの明度を変化させる
 
 ### 発展課題
+
 1. スイッチ入力でLEDの点滅速度を制御
 2. 7セグメントディスプレイにカウンタ表示
 3. RGB LEDで様々な色を表示
@@ -158,6 +166,7 @@ IO_LOC "led" 15;
 ## 🎯 明日の予習
 
 Day 02では SystemVerilog の組み合わせ回路について詳しく学習します:
+
 - always_comb文の使い方
 - 条件分岐 (if-else, case)
 - 論理演算とビット操作

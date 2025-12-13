@@ -8,7 +8,7 @@ BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 
 # Tool paths (adjust as needed)
-BASE = /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA
+BASE = /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA
 GWSH ?= $(BASE)/IDE/bin/gw_sh
 PRG ?= $(BASE)/Programmer/bin/programmer_cli
 

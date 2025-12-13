@@ -39,8 +39,8 @@ endif
 FS=$(CURDIR)/impl/pnr/$(BASE).fs
 
 # Tool paths (override if installed elsewhere)
-GWSH ?= /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh
-PRG  ?= /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli
+GWSH ?= /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh
+PRG  ?= /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli
 
 export PATH
 
@@ -63,7 +63,7 @@ $(FS): $(SRCS) include/board_select.svh tools-check
 	$(GWSH) proj.tcl
 
 # operation_index
-# /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli -h
+# /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli -h
 #  --operation_index <int>, --run <int>, -r <int>
 # 0: Read Device Codes;
 # 1: Reprogram;

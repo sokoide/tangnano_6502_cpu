@@ -23,6 +23,8 @@ Tang Nano FPGA を使用して6502 CPUとLCDコントローラを学ぶための
 ## 💻 必要なソフトウェア
 
 - **GoWin EDA** (FPGA合成・配置配線ツール)
+- **Verilator** (SystemVerilogシミュレータ)
+- **GTKWave** (波形表示ツール)
 - **cc65** (6502アセンブラ、Day 10で使用)
 - **srecord** (バイナリ変換ツール)
 - **Make** (ビルドシステム)
@@ -41,7 +43,38 @@ brew install srecord cc65
 sudo apt install srecord cc65 golang gtkwave verilator
 ```
 
-**GoWin EDA:** 公式サイトからダウンロードしてインストール
+**GoWin EDA:**
+
+- Download *Gowin V1.9.11.03 Education* for macOS or Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
+- macOS only
+  - First time -> fails to open
+  - macOS settings -> privacy -> scroll to the bottom -> allow anytime
+  - Patch command line tool
+
+```bash
+GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    install_name_tool \
+      -add_rpath @executable_path/../lib \
+      -add_rpath @executable_path/../Frameworks \
+      "$f" 2>/dev/null
+  fi
+done
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    if otool -L "$f" | grep -q '/Library/Frameworks/Tcl.framework'; then
+      install_name_tool \
+        -change \
+        /Library/Frameworks/Tcl.framework/Versions/8.6/Tcl \
+        @rpath/Tcl.framework/Versions/8.6/Tcl \
+        "$f"
+    fi
+  fi
+done
+```
 
 ## 📅 10日間の学習計画
 

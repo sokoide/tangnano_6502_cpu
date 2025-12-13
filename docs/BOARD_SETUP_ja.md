@@ -31,8 +31,8 @@ make BOARD=20k
 Gowin EDA をアプリとして入れている場合、`gw_sh` / `programmer_cli` が `PATH` に無いことがあります。その場合は `make` にパスを渡します：
 
 ```bash
-make GWSH=/Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
-     PRG=/Applications/GowinEDA.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
+make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
+     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
      download
 ```
 
@@ -45,4 +45,3 @@ Day 01（LEDチカチカ）は実機の健全性チェックです：
 - LED が目視できる速度で点滅する
 
 Day 01 が不安定なまま Day 02 以降へ進むと、原因切り分けが急激に難しくなるので、まずここを確実に通すのがおすすめです。
-

@@ -5,7 +5,7 @@ BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_cpu_alu
 VERILATOR ?= verilator
 
-BASE = /Applications/GowinEDA.app/Contents/Resources/Gowin_EDA
+BASE = /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA
 GWSH ?= $(BASE)/IDE/bin/gw_sh
 PRG  ?= $(BASE)/Programmer/bin/programmer_cli
 
