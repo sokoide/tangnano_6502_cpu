@@ -36,15 +36,17 @@ module top (
     );
 
     // 480x272 timing (DE-only mode)
-    localparam int unsigned H_VALID = 480;
-    localparam int unsigned H_BACK  = 43;
-    localparam int unsigned H_FRONT = 8;
-    localparam int unsigned H_TOTAL = H_BACK + H_VALID + H_FRONT;
+    // Keep these simple (no `int unsigned`) so Gowin GUI builds work even if the
+    // project is not set to SystemVerilog-2017 mode.
+    localparam [15:0] H_VALID = 16'd480;
+    localparam [15:0] H_BACK  = 16'd43;
+    localparam [15:0] H_FRONT = 16'd8;
+    localparam [15:0] H_TOTAL = H_BACK + H_VALID + H_FRONT;
 
-    localparam int unsigned V_VALID = 272;
-    localparam int unsigned V_BACK  = 12;
-    localparam int unsigned V_FRONT = 8;
-    localparam int unsigned V_TOTAL = V_BACK + V_VALID + V_FRONT;
+    localparam [15:0] V_VALID = 16'd272;
+    localparam [15:0] V_BACK  = 16'd12;
+    localparam [15:0] V_FRONT = 16'd8;
+    localparam [15:0] V_TOTAL = V_BACK + V_VALID + V_FRONT;
 
     logic [15:0] h_count;
     logic [15:0] v_count;
@@ -53,9 +55,9 @@ module top (
         if (!rst_n) begin
             h_count <= 16'd0;
             v_count <= 16'd0;
-        end else if (h_count == (H_TOTAL - 1)) begin
+        end else if (h_count == (H_TOTAL - 16'd1)) begin
             h_count <= 16'd0;
-            if (v_count == (V_TOTAL - 1)) v_count <= 16'd0;
+            if (v_count == (V_TOTAL - 16'd1)) v_count <= 16'd0;
             else v_count <= v_count + 16'd1;
         end else begin
             h_count <= h_count + 16'd1;

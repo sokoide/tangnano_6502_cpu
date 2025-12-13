@@ -39,8 +39,12 @@ endif
 FS=$(CURDIR)/impl/pnr/$(BASE).fs
 
 # Tool paths (override if installed elsewhere)
-GWSH ?= /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh
-PRG  ?= /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli
+BASE := $(if \
+  $(wildcard /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh),/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA,$(HOME)/Gowin)
+GWSH := $(BASE)/IDE/bin/gw_sh
+PRG  := $(BASE)/Programmer/bin/programmer_cli
+$(info BASE='$(BASE)')
+$(info GWSH='$(GWSH)')
 
 export PATH
 

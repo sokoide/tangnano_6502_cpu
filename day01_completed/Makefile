@@ -8,9 +8,12 @@ BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 
 # Tool paths (adjust as needed)
-BASE = /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA
-GWSH ?= $(BASE)/IDE/bin/gw_sh
-PRG ?= $(BASE)/Programmer/bin/programmer_cli
+BASE := $(if \
+  $(wildcard /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh),/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA,$(HOME)/Gowin)
+GWSH := $(BASE)/IDE/bin/gw_sh
+PRG  := $(BASE)/Programmer/bin/programmer_cli
+$(info BASE='$(BASE)')
+$(info GWSH='$(GWSH)')
 
 # Board-specific settings
 ifeq ($(BOARD),20k)
