@@ -27,8 +27,8 @@
 // - Separate states for memory operations and custom instructions
 // - Proper handling of different instruction lengths and addressing modes
 //
-`include "consts.svh"
-`include "cpu_pkg.sv"
+`include "../include/consts.svh"
+`include "../include/cpu_pkg.sv"
 module cpu (
     // Clock and Reset
     input logic rst_n,                      // Active-low asynchronous reset
@@ -101,7 +101,7 @@ module cpu (
   fetch_stage_e fetch_stage;
   show_info_stage_e show_info_stage;
 
-  `include "cpu_tasks.sv"
+  `include "../include/cpu_tasks.sv"
 
   // din ratch
   always_ff @(posedge clk) dout_r <= dout;

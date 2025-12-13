@@ -14,7 +14,7 @@
 // - 0x7C00-0x7FFF: Shadow VRAM (1KB, read-only)
 // - 0xE000-0xE3FF: Text VRAM (1KB, write-only)
 //
-`include "consts.svh"
+`include "../include/consts.svh"
 
 module cpu_memory (
     input logic clk,

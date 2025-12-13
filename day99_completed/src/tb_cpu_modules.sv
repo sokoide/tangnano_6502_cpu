@@ -8,7 +8,7 @@
 // Each module is tested independently to ensure correct behavior
 // before integration into the main CPU core.
 //
-`include "consts.svh"
+`include "../include/consts.svh"
 
 module tb_cpu_modules;
 

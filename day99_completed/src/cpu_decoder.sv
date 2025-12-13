@@ -11,7 +11,7 @@
 // - Provides ALU operation codes and control signals
 // - Handles custom instructions: CVR, IFO, HLT, WVS
 //
-`include "consts.svh"
+`include "../include/consts.svh"
 
 module cpu_decoder (
     input logic [7:0] opcode,           // Instruction opcode to decode

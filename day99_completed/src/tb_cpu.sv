@@ -45,7 +45,7 @@ module tb_cpu;
 
 
   // Boot program instance
-  `include "boot_program.sv"
+  `include "../include/boot_program.sv"
 
   cpu dut (
       .rst_n(rst_n),

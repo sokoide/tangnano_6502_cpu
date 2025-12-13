@@ -13,7 +13,7 @@
 // - Increment/Decrement: INC, DEC
 // - Flag operations: bit tests and conditional operations
 //
-`include "consts.svh"
+`include "../include/consts.svh"
 
 module cpu_alu (
     // Inputs

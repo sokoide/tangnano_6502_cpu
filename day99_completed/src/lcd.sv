@@ -13,7 +13,7 @@
 // 3. Fetching character codes from VRAM with proper timing offsets
 // 4. Looking up font bitmaps and rendering pixels
 //
-`include "consts.svh"
+`include "../include/consts.svh"
 module lcd (
     input logic       PixelClk,        // LCD pixel clock (9MHz)
     input logic       nRST,            // Active-low reset

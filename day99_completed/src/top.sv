@@ -151,7 +151,7 @@ module top (
   );
 
   // Boot program instance
-  `include "boot_program.sv"
+  `include "../include/boot_program.sv"
 
   // CPU instance
   cpu cpu_inst (
