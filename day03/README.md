@@ -14,6 +14,24 @@
 
 ## 📚 Theory
 
+### What is a sequential circuit?
+
+Sequential circuits “remember” state. The output depends on current inputs **and** stored values (registers).
+
+```mermaid
+flowchart LR
+  CLK((clk)) --> FF[flip-flops / registers]
+  IN[inputs] --> FF
+  FF --> OUT[outputs]
+```
+
+#### Flip-flop vs latch (why we prefer flip-flops)
+
+- **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
+- **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
+
+In FPGA designs, you typically aim for edge-triggered FFs using `always_ff`.
+
 ### Basics of Clock-Synchronous Circuits
 
 **Clock Edges:**
@@ -39,6 +57,17 @@ always_ff @(posedge clk or negedge rst_n) begin
 end
 ```
 
+#### Why `<=` (non-blocking assignment)?
+
+Inside `always_ff`, use non-blocking assignment `<=` so all registers update “at the same time” on the clock edge. This matches how real flip-flops work and avoids common simulation bugs.
+
+#### Reset naming: `rst_n`
+
+`rst_n` commonly means “reset, active-low”:
+
+- `rst_n = 0` → reset asserted
+- `rst_n = 1` → running
+
 ### Basics of Finite State Machines (FSM)
 
 **State Definition:**
@@ -54,9 +83,29 @@ typedef enum logic [1:0] {
 state_t current_state, next_state;
 ```
 
+#### Classic FSM structure (2-process style)
+
+- `always_ff`: holds the *current* state (register).
+- `always_comb`: computes the *next* state (pure logic).
+
+```mermaid
+flowchart LR
+  CS[current_state] -->|combinational| NS[next_state]
+  NS -->|registered on clk| CS
+```
+
 ## 🛠️ Practice 1: Counter Circuit
 
 ### 8-bit Up Counter
+
+```mermaid
+flowchart LR
+  CLK((clk)) --> C[8-bit counter]
+  EN[enable] --> C
+  RST[rst_n] --> C
+  C --> Q[count[7:0]]
+  C --> OV[overflow]
+```
 
 ```systemverilog
 module counter_8bit (
@@ -87,6 +136,15 @@ endmodule
 -   8-bit duty cycle control
 -   Supports variable frequency
 
+PWM = Pulse Width Modulation. It toggles an output fast and changes the **ON ratio** (duty cycle).
+
+```mermaid
+flowchart LR
+  C[counter 0..255] --> CMP{counter < duty_cycle}
+  D[duty_cycle] --> CMP
+  CMP --> OUT[pwm_out]
+```
+
 ```systemverilog
 module pwm_generator (
     input  logic clk,
@@ -113,6 +171,14 @@ endmodule
 ## 🛠️ Practice 3: Traffic Light Controller
 
 ### Signal Control with a State Machine
+
+```mermaid
+stateDiagram-v2
+  [*] --> RED_STATE
+  RED_STATE --> GREEN_STATE: timer expires
+  GREEN_STATE --> YELLOW_STATE: timer expires
+  YELLOW_STATE --> RED_STATE: timer expires
+```
 
 ```systemverilog
 module traffic_light (
@@ -178,6 +244,28 @@ endmodule
 1.  State machine for a UART transmitter
 2.  Variable-length shift register
 3.  Implement a clock divider
+
+#### What is a shift register?
+
+A shift register moves bits left/right each clock, and is useful for serial I/O.
+
+```mermaid
+flowchart LR
+  IN[serial_in] --> B0[bit0] --> B1[bit1] --> B2[bit2] --> B3[bit3] --> OUT[serial_out]
+  CLK((clk)) --> B0
+  CLK --> B1
+  CLK --> B2
+  CLK --> B3
+```
+
+#### What is a clock divider?
+
+A clock divider creates a slower tick from a fast clock (e.g. for visible LEDs).
+
+```mermaid
+flowchart LR
+  CLK((clk)) --> CNT[counter] --> OUT[divided_clk]
+```
 
 ## 📚 What I Learned Today
 

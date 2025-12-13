@@ -1,5 +1,10 @@
 # Day 02: SystemVerilog 基礎 (組み合わせ回路)
 
+---
+
+🌐 Available languages:
+[English](./README.md) | [日本語](./README_ja.md)
+
 ## 🎯 学習目標
 
 - SystemVerilogの基本構文を理解する
@@ -8,6 +13,20 @@
 - テストベンチの基本を理解する
 
 ## 📚 理論学習
+
+### 組み合わせ回路と順序回路（今日はどっち？）
+
+Day 01では「カウンタ」を作りました。カウンタは **順序回路**（クロックで状態が更新され、値を記憶する回路）です。
+
+Day 02では **組み合わせ回路** を扱います。
+
+- 入力が決まれば出力が一意に決まる（記憶を持たない）
+- RTLでは `assign` または `always_comb` で記述する
+
+```mermaid
+flowchart LR
+  IN[入力] --> LOGIC[組み合わせ回路] --> OUT[出力]
+```
 
 ### SystemVerilog 基本構文
 
@@ -18,6 +37,17 @@ reg [3:0] counter;       // 4bit レジスタ
 logic select;            // 1bit ロジック
 logic [15:0] address;    // 16bit アドレス
 ```
+
+#### `wire` / `reg` / `logic` の違い（初心者向け）
+
+- `wire` は「配線（ネット）」で、`assign` や他モジュールの出力によって駆動されるのが典型です。
+- `reg` は古いVerilogで `always` ブロック内で代入するための型でした。
+- `logic` はSystemVerilogの型で、`reg` の代わりに使えることが多く、基本的に新規コードでは `logic` が無難です。
+
+目安：
+
+- `always_comb` / `always_ff` の中で代入するなら `logic`
+- `assign` で式から直接駆動するなら `wire`
 
 **演算子:**
 ```systemverilog
@@ -56,11 +86,36 @@ always_comb begin
 end
 ```
 
+#### `assign` と `always_comb` の使い分け
+
+- `assign`：1本の式で書ける簡単な配線に向く
+- `always_comb`：`if`/`case` や中間変数が必要なときに向く
+
+```mermaid
+flowchart LR
+  A[入力信号] --> B{assign / always_comb} --> C[出力信号]
+```
+
+#### `always_comb` の中は `=`（ブロッキング代入）／なぜdefaultが必要？
+
+`always_comb` の中では通常 `=` を使います。重要なのは：
+
+- **どの分岐でも必ず出力に値を代入する**（defaultを用意する等）
+
+代入漏れがあると「覚えてしまう回路（ラッチ）」っぽい挙動になり、Day 02の目的（組み合わせ回路）から外れてしまいます。
+
 ## 🛠️ 実習1: 7セグメントデコーダ
 
 ### 仕様
 - 4bit 入力 (0-15) を7セグメント表示用の信号に変換
 - アクティブローで駆動 (0で点灯)
+
+```mermaid
+flowchart LR
+  D[digit 0..15] --> CASE{case (digit)}
+  CASE --> SEG[segments[6:0]<br/>{g,f,e,d,c,b,a}]
+  SEG --> DISP[7セグLED]
+```
 
 ### 実装のヒント
 
@@ -88,6 +143,16 @@ endmodule
 - 2つの4bit入力 (A, B)
 - 2bit操作選択 (OP)
 - 4bit出力 + フラグ (Zero, Carry)
+
+```mermaid
+flowchart LR
+  A[a[3:0]] --> ALU[ALU本体]
+  B[b[3:0]] --> ALU
+  OP[op[1:0]] --> ALU
+  ALU --> R[result[3:0]]
+  ALU --> Z[zero]
+  ALU --> C[carry]
+```
 
 ### 操作
 - 00: A + B (加算)
@@ -132,6 +197,16 @@ endmodule
 ## 🛠️ 実習3: マルチプレクサ
 
 ### 8-to-1 マルチプレクサ
+
+マルチプレクサ（MUX）は「複数の入力のうち、1つだけを選んで出力する回路」です。
+
+```mermaid
+flowchart LR
+  IN[data_in[7:0]] --> MUX[8:1 MUX]
+  SEL[select[2:0]] --> MUX
+  MUX --> OUT[data_out]
+```
+
 ```systemverilog
 module mux_8to1 (
     input  logic [7:0] data_in,
@@ -145,6 +220,8 @@ endmodule
 ```
 
 ## 🧪 テストベンチの基本
+
+テストベンチは **シミュレーション専用** です。`#10` のような「時間待ち」は合成できません（FPGA上の回路にはなりません）。
 
 ### シンプルなテストベンチ例
 
@@ -183,6 +260,16 @@ module tb_alu_4bit;
     end
 
 endmodule
+```
+
+```mermaid
+sequenceDiagram
+  participant TB as Testbench
+  participant UUT as ALU (uut)
+  TB->>UUT: a,b,opを設定
+  Note over TB,UUT: #10（シミュレーション時間を待つ）
+  TB->>TB: assertで結果確認
+  TB->>TB: $finish
 ```
 
 ## 📝 課題

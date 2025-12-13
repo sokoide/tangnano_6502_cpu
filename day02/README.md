@@ -14,6 +14,20 @@
 
 ## 📚 Theory
 
+### Combinational vs. Sequential (what you’re building today)
+
+In Day 01 you used a **counter**, which is a *sequential* circuit (it updates on a clock edge and “remembers” state).
+
+Day 02 focuses on **combinational circuits**:
+
+- Output is determined only by the current inputs (no memory).
+- In RTL, you describe them with `assign` or `always_comb`.
+
+```mermaid
+flowchart LR
+  IN[inputs] --> LOGIC[combinational logic] --> OUT[outputs]
+```
+
 ### SystemVerilog Basic Syntax
 
 **Data Types:**
@@ -24,6 +38,17 @@ reg [3:0] counter;       // 4-bit register
 logic select;            // 1-bit logic
 logic [15:0] address;    // 16-bit address
 ```
+
+#### `wire` vs `reg` vs `logic` (beginner notes)
+
+- `wire` is a “net” (a connection). It is typically driven by `assign` or module outputs.
+- `reg` is the old Verilog type for signals written in `always` blocks.
+- `logic` is the modern SystemVerilog “variable” type. It can replace most `reg` uses and is usually what you want in new code.
+
+Rule of thumb:
+
+- Use `logic` for signals assigned inside `always_comb` / `always_ff`.
+- Use `wire` for pure “wiring” expressions driven by `assign`.
 
 **Operators:**
 
@@ -65,12 +90,37 @@ always_comb begin
 end
 ```
 
+#### `assign` vs `always_comb`
+
+- `assign` is great for simple expressions (a wire driven by one expression).
+- `always_comb` is great when you need `if`/`case` or multiple intermediate values.
+
+```mermaid
+flowchart LR
+  A[input signals] --> B{assign / always_comb} --> C[output signals]
+```
+
+#### Blocking assignment `=` and “why default matters”
+
+Inside `always_comb` you usually use **blocking** assignment `=`. The key rule is:
+
+- Assign *every output* in *every path*.
+
+If you forget to assign an output in some branch, simulation may infer a “memory” (a latch), which is not what you want for Day 02.
+
 ## 🛠️ Practice 1: 7-Segment Decoder
 
 ### Specifications
 
 -   Convert a 4-bit input (0-15) to signals for a 7-segment display
 -   Active-low drive (lights up at 0)
+
+```mermaid
+flowchart LR
+  D[digit 0..15] --> CASE{case (digit)}
+  CASE --> SEG[segments[6:0]<br/>{g,f,e,d,c,b,a}]
+  SEG --> DISP[7-seg LED]
+```
 
 ### Implementation Hint
 
@@ -99,6 +149,16 @@ endmodule
 -   Two 4-bit inputs (A, B)
 -   2-bit operation selection (OP)
 -   4-bit output + flags (Zero, Carry)
+
+```mermaid
+flowchart LR
+  A[a[3:0]] --> ALU[ALU core]
+  B[b[3:0]] --> ALU
+  OP[op[1:0]] --> ALU
+  ALU --> R[result[3:0]]
+  ALU --> Z[zero]
+  ALU --> C[carry]
+```
 
 ### Operations
 
@@ -145,6 +205,15 @@ endmodule
 
 ### 8-to-1 Multiplexer
 
+Multiplexer (MUX) = “select one of many inputs”.
+
+```mermaid
+flowchart LR
+  IN[data_in[7:0]] --> MUX[8:1 MUX]
+  SEL[select[2:0]] --> MUX
+  MUX --> OUT[data_out]
+```
+
 ```systemverilog
 module mux_8to1 (
     input  logic [7:0] data_in,
@@ -158,6 +227,8 @@ endmodule
 ```
 
 ## 🧪 Testbench Basics
+
+Testbenches are for **simulation only**. Things like `#10` delays are not synthesizable.
 
 ### Simple Testbench Example
 
@@ -196,6 +267,16 @@ module tb_alu_4bit;
     end
 
 endmodule
+```
+
+```mermaid
+sequenceDiagram
+  participant TB as Testbench
+  participant UUT as ALU (uut)
+  TB->>UUT: drive a,b,op
+  Note over TB,UUT: #10 (wait simulation time)
+  TB->>TB: assert(result, flags)
+  TB->>TB: $finish
 ```
 
 ## 📝 Assignments
