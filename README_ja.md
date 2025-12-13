@@ -34,18 +34,28 @@ Tang Nano FPGA を使用して6502 CPUとLCDコントローラを学ぶための
 **macOS:**
 
 ```bash
-brew install srecord cc65
+brew update
+brew install -y srecord cc65
 ```
 
 **Linux (Ubuntu/Debian):**
 
 ```bash
-sudo apt install srecord cc65 golang gtkwave verilator
+sudo apt update
+sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
+sudo apt install -y --reinstall \
+  libfreetype6 \
+  libfontconfig1
 ```
 
 **GoWin EDA:**
 
-- Download *Gowin V1.9.11.03 Education* for macOS or Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
+- Download *Gowin V1.9.11.03 Education* for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
+  - Mac users only need macOS version of IDE which includes both compiler & programmer
+  - Install macOS IDE into /Applications/GowinIDE.app
+  - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSLS. WSL cannot use the programmer -> needs Windows version of it
+  - Install Linux IDE into $(HOME)/Gowin/IDE
+  - Install Windows IDE into c:\Gowin
 - macOS only
   - First time -> fails to open
   - macOS settings -> privacy -> scroll to the bottom -> allow anytime
@@ -74,6 +84,18 @@ for f in "$GW/bin/"*; do
     fi
   fi
 done
+```
+- WSL only
+
+```bash
+# install IDE and programmer in $HOME/Gowin
+cd $HOME/Gowin/IDE/lib
+mv libfreetype.so.6 libfreetype.so.6.gowin.bak
+
+# set env var
+export QT_QPA_PLATFORM=minimal
+export QT_OPENGL=software
+export QT_XCB_GL_INTEGRATION=none
 ```
 
 ## 📅 10日間の学習計画
