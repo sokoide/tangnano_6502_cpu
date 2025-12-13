@@ -1,4 +1,4 @@
-`include "board_select.svh"
+`include "../include/board_select.svh"
 
 module tb_vram_smoke;
   logic ResetButton;

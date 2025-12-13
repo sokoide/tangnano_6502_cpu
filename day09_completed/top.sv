@@ -5,7 +5,7 @@
 //
 // Pins are defined in tft_*.cst.
 
-`include "board_select.svh"
+`include "include/board_select.svh"
 
 module top (
     // Clock and Reset

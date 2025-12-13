@@ -5,7 +5,7 @@
 //
 // Pins are defined in tft_*.cst.
 
-`include "board_select.svh"
+`include "include/board_select.svh"
 
 module top (
     input  logic ResetButton,
@@ -113,4 +113,3 @@ module top (
     assign led = hb_counter[25] ? 1'b0 : 1'bz;
 
 endmodule
-

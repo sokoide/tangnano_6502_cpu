@@ -15,7 +15,7 @@
 // - Tang Nano 9K: rst_n = ResetButton (active high button)
 // - Tang Nano 20K: rst_n = !ResetButton (active low button)
 //
-`include "board_select.svh"
+`include "../include/board_select.svh"
 module top (
     // Clock and Reset
     input logic ResetButton,            // Board reset button (polarity depends on board variant)

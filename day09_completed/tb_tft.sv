@@ -1,6 +1,6 @@
 // Simulation testbench for Day09 TFT bring-up (smoke test)
 
-`include "board_select.svh"
+`include "include/board_select.svh"
 
 module tb_tft;
     logic ResetButton;
