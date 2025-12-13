@@ -17,10 +17,10 @@ SRCS= \
 # src/gowin_rpll_9K/gowin_rpll9.v \
 # src/gowin_rpll_9K/gowin_rpll40.v \
 
-export BASE=lcd_cpu_bsram
 BOARD ?= 9k
-BASE := lcd_cpu_bsram_$(BOARD)
-PROJ := $(BASE).gprj
+PROJECT := lcd_cpu_bsram
+BITSTREAM_BASE := $(PROJECT)_$(BOARD)
+PROJ := $(BITSTREAM_BASE).gprj
 export PROJ
 
 #--------------------------------------------------
@@ -36,14 +36,14 @@ endif
 
 # NOTE: don't use $(PWD) here because `make -C day99_completed ...` keeps PWD as the
 # original shell directory on some systems. $(CURDIR) is the directory Make is operating in.
-FS=$(CURDIR)/impl/pnr/$(BASE).fs
+FS := $(CURDIR)/impl/pnr/$(BITSTREAM_BASE).fs
 
 # Tool paths (override if installed elsewhere)
-BASE := $(if \
+GOWIN_BASE := $(if \
   $(wildcard /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh),/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA,$(HOME)/Gowin)
-GWSH := $(BASE)/IDE/bin/gw_sh
-PRG  := $(BASE)/Programmer/bin/programmer_cli
-$(info BASE='$(BASE)')
+GWSH := $(GOWIN_BASE)/IDE/bin/gw_sh
+PRG  := $(GOWIN_BASE)/Programmer/bin/programmer_cli
+$(info GOWIN_BASE='$(GOWIN_BASE)')
 $(info GWSH='$(GWSH)')
 
 export PATH
