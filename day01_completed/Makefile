@@ -82,7 +82,7 @@ tools-check:
 # Clean build artifacts
 clean:
 	rm -f *.fs *.rpt *.log
-	rm -rf impl/
+
 	rm -f $(BUILD_TCL)
 
 # Help

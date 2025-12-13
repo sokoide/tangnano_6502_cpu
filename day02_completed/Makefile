@@ -55,7 +55,7 @@ tools-check:
 
 clean:
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-	rm -rf impl/
+
 
 help:
 	@echo "Targets: make | make download | make clean"

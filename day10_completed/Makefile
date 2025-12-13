@@ -22,10 +22,10 @@ $(info GWSH='$(GWSH)')
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = tft_20k.gprj
+  GPRJ = hw_20k.gprj
 else
   DEVICE = GW1NR-9C
-  GPRJ = tft_9k.gprj
+  GPRJ = hw_9k.gprj
 endif
 
 .PHONY: all clean download help tools-check tools-check-sim sim-build sim test
@@ -94,7 +94,7 @@ test: sim
 
 clean:
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-	rm -rf impl/
+
 
 help:
 	@echo "Targets: make | make download | make clean"
