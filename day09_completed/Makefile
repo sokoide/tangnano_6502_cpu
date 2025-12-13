@@ -6,9 +6,8 @@ else ifneq ($(strip $(board)),)
   # accept lowercase alias: make board=20k
   BOARD := $(board)
 else
-  BOARD := 9k
+BOARD := 9k
 endif
-DESIGN ?= tft
 BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_tft
 VERILATOR ?= verilator
@@ -22,10 +21,10 @@ $(info GWSH='$(GWSH)')
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = $(DESIGN)_20k.gprj
+  GPRJ = tft_20k.gprj
 else
   DEVICE = GW1NR-9C
-  GPRJ = $(DESIGN)_9k.gprj
+  GPRJ = tft_9k.gprj
 endif
 
 .PHONY: all clean download help tools-check tools-check-sim sim-build sim test

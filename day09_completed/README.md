@@ -23,12 +23,12 @@ The bitstream shows **RGB color bars** so you can validate:
 
 ## Build and Download
 
+Use the Makefile to build each board’s TFT demo:
+
 ```bash
 make BOARD=9k download
 make BOARD=20k download
 ```
-
-If the LCD stays blank, first confirm the **heartbeat LED** is blinking (pin is defined in `tft_*.cst`).
 
 ## Simulation (Verilator)
 

@@ -19,12 +19,12 @@
 
 ## ビルド＆書き込み
 
+このプロジェクトでは、以下のコマンドでボードごとにTFTデモをビルド＆書き込みします。
+
 ```bash
 make BOARD=9k download
 make BOARD=20k download
 ```
-
-LCDが無表示の場合は、まず **ハートビートLEDが点滅**しているか確認してください（ピンは `tft_*.cst` に定義）。
 
 ## シミュレーション（Verilator）
 

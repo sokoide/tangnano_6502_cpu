@@ -16,12 +16,12 @@ This directory outputs **animated color bars** to validate:
 
 ## Build and Download
 
+Use the Makefile to build the animated color bars for each board:
+
 ```bash
 make BOARD=9k download
 make BOARD=20k download
 ```
-
-If the LCD is blank, check the heartbeat LED (pin defined in `tft_*.cst`).
 
 ## Simulation (Verilator)
 

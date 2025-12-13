@@ -13,12 +13,12 @@ Day 10 でも `day99_completed` と同じ **480×272 RGB TFTパネル**（RGB565
 
 ## ビルド＆書き込み
 
+このプロジェクトでは、以下のコマンドでボードごとにTFTカラーバーをビルド＆書き込みします。
+
 ```bash
 make BOARD=9k download
 make BOARD=20k download
 ```
-
-LCDが無表示の場合は、まず **ハートビートLED** が点滅しているか確認してください（ピンは `tft_*.cst` に定義）。
 
 ## シミュレーション（Verilator）
 

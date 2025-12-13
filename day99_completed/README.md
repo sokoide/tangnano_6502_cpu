@@ -22,54 +22,15 @@ git clone <repository-url>
 cd tangnano_6502_cpu
 ```
 
-### 2. Modify Files for 20K
+### 2. Build and Download
 
-By default, the project targets the **Tang Nano 9K**. If you are using a **Tang Nano 20K**, please make the following modifications.
-
--   For Tang Nano 20K
-
-    -   Update the following files
-
-    -   `lcd_cpu_bsram.gprj`
-
-        ```xml
-        <!-- Tang Nano 9K -->
-        <!-- <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device> -->
-        <!-- Tang Nano 20K -->
-        <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
-
-        <!-- Tang Nano 9K -->
-        <!-- <File path="src/lcd_cpu_bsram_9K.cst" type="file.cst" enable="1"/>
-        <File path="src/gowin_rpll_9K/gowin_rpll40.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_rpll_9K/gowin_rpll9.v" type="file.verilog" enable="1"/> -->
-        <!-- Tang Nano 20K -->
-        <File path="src/lcd_cpu_bsram_20K.cst" type="file.cst" enable="1"/>
-        <File path="src/gowin_rpll_20K/gowin_rpll40.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_rpll_20K/gowin_rpll9.v" type="file.verilog" enable="1"/>
-        ```
-
-    -   `src/top.sv`
-
-    ```systemverilog
-        // Tang Nano 9K:
-        //  wire rst_n = ResetButton;
-        // Tang Nano 20K:
-        wire rst_n = !ResetButton;
-    ```
-
-### 3. Build and Download
-
-The Makefile automates the build process.
+The Makefile handles both Tang Nano variants. By default it targets **Tang Nano 9K**; pass `BOARD=20k` to build the 20K project.
 
 ```bash
-# Build and download for Tang Nano 9K (default)
+# Tang Nano 9K (default)
 make download
-```
 
-If you are using a **Tang Nano 20K**, use the `BOARD` variable.
-
-```bash
-# Build and download for Tang Nano 20K
+# Tang Nano 20K
 make BOARD=20k download
 ```
 
