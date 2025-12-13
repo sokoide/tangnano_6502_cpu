@@ -13,5 +13,11 @@
         <File path="simple_rom.sv" type="file.verilog" enable="1"/>
         <File path="stack_pointer.sv" type="file.verilog" enable="1"/>
     </FileList>
-</Project>
 
+    <OptionList>
+        <Option type="include_path" value="include"/>
+        <Option type="verilog_language" value="systemverilog"/>
+        <Option type="verilog_standard" value="sysv2017"/>
+    </OptionList>
+
+</Project>

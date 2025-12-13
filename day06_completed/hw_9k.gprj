@@ -11,5 +11,11 @@
         <File path="cpu_decoder.sv" type="file.verilog" enable="1"/>
         <File path="status_register.sv" type="file.verilog" enable="1"/>
     </FileList>
-</Project>
 
+    <OptionList>
+        <Option type="include_path" value="include"/>
+        <Option type="verilog_language" value="systemverilog"/>
+        <Option type="verilog_standard" value="sysv2017"/>
+    </OptionList>
+
+</Project>

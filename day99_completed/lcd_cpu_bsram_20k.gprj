@@ -16,5 +16,9 @@
         <File path="src/gowin_rpll_20K/gowin_rpll40.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll_20K/gowin_rpll9.v" type="file.verilog" enable="1"/>
     </FileList>
+    <OptionList>
+        <Option type="include_path" value="include"/>
+        <Option type="verilog_language" value="systemverilog"/>
+        <Option type="verilog_standard" value="sysv2017"/>
+    </OptionList>
 </Project>
-
