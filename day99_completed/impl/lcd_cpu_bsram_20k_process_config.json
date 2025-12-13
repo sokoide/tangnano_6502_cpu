@@ -82,7 +82,7 @@
  "USERCODE" : "default",
  "Unused_Pin" : "As_input_tri_stated_with_pull_up",
  "VCC" : "1.0",
- "VCCAUX" : 3.3,
+ "VCCAUX" : "3.3",
  "VCCX" : "3.3",
  "VHDL_Standard" : "VHDL_Std_1993",
  "Verilog_Standard" : "Vlg_Std_Sysv2017",
