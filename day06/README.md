@@ -9,6 +9,21 @@
 
 ## 📚 Theory
 
+### For Software Engineers: Parallelism in Hardware
+
+Implementing a decoder and ALU highlights the biggest difference between software and hardware: **Parallelism**.
+
+1.  **The ALU Calculates Everything at Once:**
+    -   In software: `if (op == ADD) return a + b; else if (op == SUB) return a - b;`
+    -   In hardware: We calculate `a + b`, `a - b`, `a & b`, `a | b` **simultaneously**.
+    -   The "Instruction" just tells the multiplexer (selector) which result to pick.
+    -   *Why?* Because gates are cheap, but waiting for a sequential decision tree is slow.
+
+2.  **The Decoder is a Lookup Table:**
+    -   The decoder takes an 8-bit Opcode and outputs ~20 control signals.
+    -   Think of it as a hardcoded Hash Map: `Map<Opcode, ControlSignals>`.
+    -   It purely combinational: `f(opcode) -> signals`. No state, no clock.
+
 ### Instruction Decoder Design Policy
 
 **Hierarchical Decoding:**

@@ -14,6 +14,28 @@
 
 ## 📚 Theory
 
+### For Software Engineers: The Hardware-Software Bridge
+
+In Day 03, we built circuits. Now we are building a *computer*. If you are coming from a high-level language, here is how to translate the concepts:
+
+1.  **Registers are NOT Variables:**
+    -   In C/Python, `int x = 10;` allocates memory in RAM (stack/heap).
+    -   In CPU, `A`, `X`, `Y` are physical storage locations *inside* the silicon. They are ultra-fast "global variables" that the CPU operations directly work on.
+    -   There are very few of them (only 3 general purpose 8-bit registers!). You have to constantly shuffle data between RAM and these registers.
+
+2.  **Memory Map = Address Space:**
+    -   The CPU sees a single flat array of 65,536 bytes (`0x0000` to `0xFFFF`).
+    -   "Memory Mapped I/O": Writing to a specific index in this array (like `0xE000`) might not store a number, but instead turn on a pixel or send a network packet.
+    -   `0x0000-0x00FF` (Zero Page) is like the "L1 Cache" or "Fast Variables" area.
+
+3.  **The "While(True)" Loop:**
+    -   Hardware is one big infinite loop:
+        1.  **Fetch:** Read the byte at `PC` (Program Counter).
+        2.  **Decode:** Look up what that byte means (e.g., `0xA9` means "Load A").
+        3.  **Execute:** Do it (e.g., copy value to A register).
+        4.  **Repeat.**
+    -   Your job in Day 06-08 is to implement this loop in hardware.
+
 ### History of the 6502 CPU
 
 **Development Background:**

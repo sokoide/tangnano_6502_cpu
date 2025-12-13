@@ -26,6 +26,21 @@
 
 ## 📖 Theory
 
+### A Note for Software Engineers: Thinking in Hardware
+
+If you're coming from a software background, the biggest mental shift is this: **you are not writing a program.** You are **describing a hardware circuit.**
+
+-   **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
+-   **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
+-   **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
+
+Keep this in mind as you learn. You are a circuit designer, not just a programmer!
+
+#### Analogy: The Build Process
+
+-   **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
+-   **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly *where* on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
+
 ### Tang Nano Basic Specifications
 
 **Tang Nano 9K:**
@@ -107,6 +122,7 @@ flowchart TD
 ## 🛠️ Practice: Blinking LED Project
 
 If you want to run this on real hardware with minimal setup friction, use the working reference project in `day01_completed/`:
+This completed project contains board-specific files for both Tang Nano 9K and 20K, which is the recommended way to run the examples.
 
 ```bash
 cd day01_completed
@@ -136,7 +152,7 @@ module top (
 );
 
     // Clock divider for visible blinking (approx. 1Hz)
-    reg [24:0] counter;
+    logic [24:0] counter;
 
     always_ff @(posedge clk) begin
         counter <= counter + 1;
@@ -148,7 +164,7 @@ module top (
 endmodule
 ```
 
-#### `wire`, `reg/logic`, `always_ff`, `posedge`, `assign` (what they mean)
+#### `wire`, `logic`, `always_ff`, `posedge`, `assign` (what they mean)
 
 This small module already contains most of the “core grammar” you’ll use later:
 
@@ -159,16 +175,17 @@ flowchart LR
   COMB --> LED((led))
 ```
 
-- `wire` is a **net** (a connection). It is typically driven by `assign` or module outputs.
-- `reg` is the classic Verilog type for a value written in an `always` block (in SystemVerilog you’ll often use `logic` instead).
-- `always_ff` declares a **clocked** block (sequential logic). Think “this becomes flip-flops”.
-- `posedge clk` means “on the rising edge of `clk` (0→1)”.
-- `assign` is a **continuous assignment** (combinational wiring): the output is always equal to the expression.
+- `wire`: A data type that represents a physical wire. It can be continuously driven by something (like the output of a logic gate) but cannot store a value on its own. It must be driven by an `assign` statement or a module output.
+- `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` over `reg`**. It can be driven by `assign` (making it a wire) or used in an `always` block (making it a register).
+- `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. While you see it in the example, `logic` is generally recommended for new SystemVerilog code.
+- `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
+- `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
 
-Important rule of thumb:
+**Important Rule for Software Engineers:**
 
-- Use `<=` (non-blocking assignment) inside `always_ff` so registers update together on the clock edge.
-- Use `assign` (or `always_comb`) for combinational logic.
+-   Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
+-   Think of `assign` as creating a component with **no memory**. Its output changes *instantly* whenever its inputs change. This is the essence of parallel hardware.
+-   Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
 
 ### Step 3: Create Constraint File
 

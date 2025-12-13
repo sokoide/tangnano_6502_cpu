@@ -14,6 +14,10 @@
 
 ## 📚 Theory
 
+### For Software Engineers: Combinational Logic is like a Pure Function
+
+Think of the combinational circuits you are building today as **pure functions** in software. Their outputs depend *only* on their current inputs, with no side effects or memory of past states. `assign` and `always_comb` are the tools you use to describe these "instantaneous" calculations.
+
 ### Combinational vs. Sequential (what you’re building today)
 
 In Day 01 you used a **counter**, which is a *sequential* circuit (it updates on a clock edge and “remembers” state).
@@ -33,22 +37,22 @@ flowchart LR
 **Data Types:**
 
 ```systemverilog
-wire [7:0] data_bus;     // 8-bit wire
-reg [3:0] counter;       // 4-bit register
-logic select;            // 1-bit logic
-logic [15:0] address;    // 16-bit address
+wire [7:0] data_bus;   // 8-bit wire, a net for connections
+logic [3:0] counter;     // 4-bit variable, can be a reg or a wire
+logic select;          // 1-bit variable
+logic [15:0] address;  // 16-bit variable
 ```
 
-#### `wire` vs `reg` vs `logic` (beginner notes)
+#### `wire` vs `logic` (A Simple Rule for Beginners)
 
-- `wire` is a “net” (a connection). It is typically driven by `assign` or module outputs.
-- `reg` is the old Verilog type for signals written in `always` blocks.
-- `logic` is the modern SystemVerilog “variable” type. It can replace most `reg` uses and is usually what you want in new code.
+You learned about this in Day 01, but here's a recap for the context of combinational logic:
 
-Rule of thumb:
+-   `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
+    -   If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
+    -   If you assign to it with `assign`, it acts like a `wire`.
+-   `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
 
-- Use `logic` for signals assigned inside `always_comb` / `always_ff`.
-- Use `wire` for pure “wiring” expressions driven by `assign`.
+The `reg` type is an older Verilog keyword. You can think of `logic` as its more flexible replacement.
 
 **Operators:**
 
@@ -107,6 +111,12 @@ Inside `always_comb` you usually use **blocking** assignment `=`. The key rule i
 - Assign *every output* in *every path*.
 
 If you forget to assign an output in some branch, simulation may infer a “memory” (a latch), which is not what you want for Day 02.
+
+#### Software Engineer Pitfall: The "Implicit Else"
+
+In C/Python, `if (condition) x = 1;` implies "if condition is false, keep x as it is".
+In hardware combinational logic, "keep as it is" requires **memory** (a latch).
+Since we are building circuits *without* memory today, you **must** specify what happens in the `else` case (e.g., `else x = 0;`).
 
 ## 🛠️ Practice 1: 7-Segment Decoder
 

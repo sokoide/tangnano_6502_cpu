@@ -14,6 +14,17 @@
 
 ## 📚 Theory
 
+### For Software Engineers: The Clock is Your Update Loop
+
+In Day 02, you learned that combinational logic is like a pure function. Today, you're adding **state**.
+
+Think of a sequential circuit as an object with private member variables (the registers). The `always_ff @(posedge clk)` block is like a special method that gets called automatically on every clock "tick". This is the **only place where the state should change**.
+
+-   **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
+-   **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
+
+This clock-driven, synchronous nature is what makes hardware design predictable and manageable.
+
 ### What is a sequential circuit?
 
 Sequential circuits “remember” state. The output depends on current inputs **and** stored values (registers).
@@ -60,6 +71,17 @@ end
 #### Why `<=` (non-blocking assignment)?
 
 Inside `always_ff`, use non-blocking assignment `<=` so all registers update “at the same time” on the clock edge. This matches how real flip-flops work and avoids common simulation bugs.
+
+#### Visualizing `<=` vs `=`
+
+*   **`=` (Blocking)**: Works like software variables. `a = 1; b = a;` results in both being 1.
+*   **`<=` (Non-Blocking)**: Works like a "commit" at the end of the step.
+    ```systemverilog
+    // Swapping with <=
+    a <= b;
+    b <= a;
+    ```
+    This successfully swaps `a` and `b` in one clock cycle, without needing a temp variable. It's like calculating the right-hand side for *all* statements first, and *then* updating the left-hand side values simultaneously.
 
 #### Reset naming: `rst_n`
 
