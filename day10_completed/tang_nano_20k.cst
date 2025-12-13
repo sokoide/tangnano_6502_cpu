@@ -1,5 +1,0 @@
-// Tang Nano 20K (minimal: clock + one LED)
-IO_LOC "XTAL_IN" 4;
-IO_PORT "XTAL_IN" IO_TYPE=LVCMOS33 PULL_MODE=UP;
-IO_LOC "led" 15;
-IO_PORT "led" IO_TYPE=LVCMOS33;
