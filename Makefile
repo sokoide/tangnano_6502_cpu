@@ -1,18 +1,28 @@
 BOARD ?= 9k
 DAYS := $(sort $(wildcard day*_completed))
 
-.PHONY: all clean help $(DAYS)
+.PHONY: all clean help sim build
 
-all: $(DAYS)
+all: build
 
-$(DAYS):
-	@echo "Building $@ (BOARD=$(BOARD))"
-	$(MAKE) -C $@ BOARD=$(BOARD)
+build:
+	@echo "Building all projects (BOARD=$(BOARD))"
+	@for day in $(DAYS); do \
+		echo "Building $$day (BOARD=$(BOARD))"; \
+		$(MAKE) -C $$day BOARD=$(BOARD); \
+	done
+
+sim:
+	@echo "Running simulation for all projects (BOARD=$(BOARD))"
+	@for day in $(DAYS); do \
+		echo "Running sim for $$day (BOARD=$(BOARD))"; \
+		$(MAKE) -C $$day BOARD=$(BOARD) sim; \
+	done
 
 clean:
-	@echo "Cleaning $(DAYS)"
+	@echo "Cleaning all projects"
 	@for day in $(DAYS); do \
-		echo "  $$day"; \
+		echo "Cleaning $$day"; \
 		$(MAKE) -C $$day clean; \
 	done
 
@@ -22,8 +32,10 @@ help:
 	@echo "Usage:"
 	@echo "  make BOARD=<9k|20k>"
 	@echo "  make BOARD=20k      # builds each day for 20k"
+	@echo "  make sim            # runs simulation for each day"
 	@echo
 	@echo "Available targets:"
 	@echo "  all    - build every project (default)"
+	@echo "  sim    - run simulation for every project"
 	@echo "  clean  - run clean in every day directory"
 	@echo "  help   - show this message"
