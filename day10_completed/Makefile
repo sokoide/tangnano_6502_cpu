@@ -1,6 +1,13 @@
 .DEFAULT_GOAL := all
 PROJECT = day10
-BOARD ?= 9k
+ifneq ($(strip $(BOARD)),)
+  # BOARD set explicitly (preferred)
+else ifneq ($(strip $(board)),)
+  # accept lowercase alias: make board=20k
+  BOARD := $(board)
+else
+  BOARD := 9k
+endif
 BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_tft
 VERILATOR ?= verilator

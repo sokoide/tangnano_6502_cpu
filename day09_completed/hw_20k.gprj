@@ -7,9 +7,6 @@
     <FileList>
         <File path="hw_top_20k.sv" type="file.verilog" enable="1"/>
         <File path="tang_nano_20k.cst" type="file.cst" enable="1"/>
-        <File path="cpu_lcd_system.sv" type="file.verilog" enable="1"/>
-        <File path="lcd_controller.sv" type="file.verilog" enable="1"/>
-        <File path="lcd_display.sv" type="file.verilog" enable="1"/>
     </FileList>
 
 
