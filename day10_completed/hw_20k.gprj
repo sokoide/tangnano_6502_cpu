@@ -1,4 +1,4 @@
-<?xml version="1" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gowin-fpga-project>
 <Project>
     <Template>FPGA</Template>
@@ -8,4 +8,6 @@
         <File path="hw_top_20k.sv" type="file.verilog" enable="1"/>
         <File path="tang_nano_20k.cst" type="file.cst" enable="1"/>
     </FileList>
+
+
 </Project>

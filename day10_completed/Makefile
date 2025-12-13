@@ -8,6 +8,7 @@ else ifneq ($(strip $(board)),)
 else
   BOARD := 9k
 endif
+DESIGN ?= tft
 BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_tft
 VERILATOR ?= verilator
@@ -22,10 +23,10 @@ $(info GWSH='$(GWSH)')
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
+  GPRJ = $(DESIGN)_20k.gprj
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
+  GPRJ = $(DESIGN)_9k.gprj
 endif
 
 .PHONY: all clean download help tools-check tools-check-sim sim-build sim test
@@ -52,9 +53,15 @@ $(PROJECT).fs: $(GPRJ) include/board_select.svh tools-check
 		"run all" \
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)
-	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
-	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
-	  echo "[ERROR] Bitstream not found under impl/pnr/." >&2; exit 1; fi
+	@expected="$$(basename "$(GPRJ)" .gprj).fs"; \
+	fs="impl/pnr/$$expected"; \
+	if [ -f "$$fs" ]; then \
+	  cp -f "$$fs" "$(PROJECT).fs"; \
+	else \
+	  fs=$$(ls -1 "impl/pnr/$$(basename "$(GPRJ)" .gprj)"*.fs 2>/dev/null | head -n 1); \
+	  if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
+	    echo "[ERROR] Bitstream not found for $(GPRJ) under impl/pnr/." >&2; exit 1; fi; \
+	fi
 
 download: $(PROJECT).fs
 	@echo "Programming Tang Nano $(BOARD)..."
@@ -99,4 +106,4 @@ clean:
 help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"
-	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
+	@echo "Vars: BOARD=9k|20k, DESIGN=tft|hw, GWSH=..., PRG=..."

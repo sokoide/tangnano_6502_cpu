@@ -15,9 +15,7 @@ module top (
     output       LCD_DEN,
     output reg [4:0] LCD_R,
     output reg [5:0] LCD_G,
-    output reg [4:0] LCD_B,
-
-    output led
+    output reg [4:0] LCD_B
 );
 
 `ifdef BOARD_20K
@@ -107,13 +105,5 @@ module top (
             LCD_B <= 5'd0;
         end
     end
-
-    // Heartbeat LED (open-drain style)
-    reg [25:0] hb_counter;
-    always @(posedge LCD_CLK or negedge rst_n) begin
-        if (!rst_n) hb_counter <= 26'd0;
-        else hb_counter <= hb_counter + 26'd1;
-    end
-    assign led = hb_counter[25] ? 1'b0 : 1'bz;
 
 endmodule
