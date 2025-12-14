@@ -10,14 +10,12 @@ loop:
     .byte $CF
 ; store a value of A register at $01
     STA $01
-; display register A's value
-    STA $E000
-; WVS: wait for 1 second
-    .byte $FF, $3A
+; display register A's value at (59, 0)
+    STA $E03B
 ; IFO: show registers and memory at $0000-$007F
     .byte $DF,$00,$00
-; WVS: wait for 1 second
-    .byte $FF, $3A
+; WVS: wait for 2 seconds
+    .byte $FF, $74
 ; inclement A register
     CLC
     ADC #1

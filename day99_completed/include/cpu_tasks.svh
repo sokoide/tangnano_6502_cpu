@@ -47,10 +47,10 @@ task automatic sta_write(input logic [15:0] target_addr, input logic [7:0] data)
 endtask
 
 task automatic vram_write(input logic [15:0] target_addr, input logic [7:0] data);
-    v_ada <= addr & VRAMW;
+    v_ada <= target_addr & VRAMW;
     v_din <= data;
     v_cea <= 1;
-  ada   <= (target_addr + SHADOW_VRAM_START) & RAMW;
+    ada   <= (target_addr + SHADOW_VRAM_START) & RAMW;
     din   <= data;
     cea   <= 1;
 endtask

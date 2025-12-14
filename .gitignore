@@ -25,6 +25,7 @@ tmp.*
 temp
 *_build.tcl
 output.txt
+.cache/
 
 # dsim
 dsim_work/

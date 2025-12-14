@@ -37,13 +37,108 @@ func pad(f *os.File, counter *int) {
 	f.WriteString("'{default:'0}\n")
 }
 
+func dump_ram(f *os.File, counter *int, y int) int {
+	// memory dump heady
+	write_string(f, counter, 0, y, "Memory)")
+	write_string(f, counter, 9, y, "+0+1+2+3 +4+5+6+7")
+	write_string(f, counter, 28, y, "+8+9+A+B +C+D+E+F")
+	// LED indicators
+	write_string(f, counter, 52, y, "76543210")
+	y++
+	write_string(f, counter, 47, y, "0x00:")
+	y++
+	write_string(f, counter, 47, y, "0x01:")
+	y++
+	write_string(f, counter, 47, y, "0x02:")
+	y++
+	write_string(f, counter, 47, y, "0x03:")
+	y++
+	write_string(f, counter, 47, y, "0x04:")
+	y++
+	write_string(f, counter, 47, y, "0x05:")
+	y++
+	write_string(f, counter, 47, y, "0x06:")
+	y++
+	write_string(f, counter, 47, y, "0x07:")
+	for y = 9; y < 17; y++ {
+		f.WriteString(fmt.Sprintf("// LED simulation 0x%02X\n", y-9))
+		write_show_info_rom(f, counter, (y - 9), 8, 0, 0, 0, 1)
+		for x := 52; x < 60; x++ {
+			write_show_info_rom(f, counter, 60*y+x, 1, 4+x-52, 0, 1, 0)
+		}
+	}
+
+	// memory dump data
+	f.WriteString("// Memory dump\n")
+	var prefetch int = 0
+	dx := 9 // first position to write the data
+	for i := 540; i < 60*17; i++ {
+		ada := i
+		switch i % 60 {
+		case 0: // base address
+			write_string(f, counter, 0, i/60, "0x:")
+		case 2:
+			write_show_info_rom(f, counter, ada, 7, 0, 0x10*(i/60-9), 1, 0)
+		case 3:
+			write_show_info_rom(f, counter, ada, 7, 1, 0x10*(i/60-9), 1, 0)
+		case 4:
+			write_show_info_rom(f, counter, ada, 7, 2, 0x10*(i/60-9), 1, 0)
+		case 5:
+			write_show_info_rom(f, counter, ada, 7, 3, 0x10*(i/60-9), 1, 0)
+		case 6:
+			write_string(f, counter, 6, i/60, ":")
+		case 8: // prefetch
+			write_show_info_rom(f, counter, 0, 0, 0, prefetch, 0, 1)
+		case dx, dx + 2, dx + 4, dx + 6, dx + 9, dx + 11, dx + 13, dx + 15, dx + 19, dx + 21, dx + 23, dx + 25, dx + 28, dx + 30, dx + 32, dx + 34: // write high nibble
+			write_show_info_rom(f, counter, ada, 1, 0, 0, 1, 0)
+		case dx + 1, dx + 3, dx + 5, dx + 7, dx + 10, dx + 12, dx + 14, dx + 16, dx + 20, dx + 22, dx + 24, dx + 26, dx + 29, dx + 31, dx + 33: // write low nibble and prefetch
+			prefetch += 1
+			write_show_info_rom(f, counter, ada, 1, 1, prefetch, 1, 1)
+		case dx + 35: // write low nibble
+			write_show_info_rom(f, counter, ada, 1, 1, 0, 1, 0)
+			prefetch += 1
+		}
+	}
+	return y
+}
+
+func write_registers(f *os.File, counter *int, y int) int {
+	write_string(f, counter, 0, y, "Registers)")
+	y++
+	write_string(f, counter, 0, y, "A :0x")
+	write_show_info_rom(f, counter, 65, 2, 0, 0, 1, 0)
+	write_show_info_rom(f, counter, 66, 2, 1, 0, 1, 0)
+	y++
+	write_string(f, counter, 0, y, "X :0x")
+	write_show_info_rom(f, counter, 125, 3, 0, 0, 1, 0)
+	write_show_info_rom(f, counter, 126, 3, 1, 0, 1, 0)
+	y++
+	write_string(f, counter, 0, y, "Y :0x")
+	write_show_info_rom(f, counter, 185, 4, 0, 0, 1, 0)
+	write_show_info_rom(f, counter, 186, 4, 1, 0, 1, 0)
+	y++
+	write_string(f, counter, 0, y, "PC:0x")
+	write_show_info_rom(f, counter, 245, 6, 0, 0, 1, 0)
+	write_show_info_rom(f, counter, 246, 6, 1, 0, 1, 0)
+	write_show_info_rom(f, counter, 247, 6, 2, 0, 1, 0)
+	write_show_info_rom(f, counter, 248, 6, 3, 0, 1, 0)
+	y++
+	write_string(f, counter, 0, y, "SP:0x1")
+	write_show_info_rom(f, counter, 306, 5, 0, 0, 1, 0)
+	write_show_info_rom(f, counter, 307, 5, 1, 0, 1, 0)
+	y++
+	y++
+	y++
+	return y
+}
+
 func gen() {
 	var f *os.File
 	var err error
 
 	counter := 0
 	y := 0
-	var prefetch int = 0
+	// var prefetch int = 0
 
 	f, err = reopen()
 	chkerr(err)
@@ -53,99 +148,9 @@ func gen() {
 	f.WriteString("`define CPU_IFO_AUTO_GENERATED_SVH\n\n")
 	f.WriteString("localparam show_info_cmd_t show_info_rom [1024] = '{\n")
 
-	write_string(f, &counter, 0, y, "Registers)")
-	y++
-	write_string(f, &counter, 0, y, "A :0x")
-	write_show_info_rom(f, &counter, 65, 2, 0, 0, 1, 0)
-	write_show_info_rom(f, &counter, 66, 2, 1, 0, 1, 0)
-	y++
-	write_string(f, &counter, 0, y, "X :0x")
-	write_show_info_rom(f, &counter, 125, 3, 0, 0, 1, 0)
-	write_show_info_rom(f, &counter, 126, 3, 1, 0, 1, 0)
-	y++
-	write_string(f, &counter, 0, y, "Y :0x")
-	write_show_info_rom(f, &counter, 185, 4, 0, 0, 1, 0)
-	write_show_info_rom(f, &counter, 186, 4, 1, 0, 1, 0)
-	y++
-	write_string(f, &counter, 0, y, "PC:0x")
-	write_show_info_rom(f, &counter, 245, 6, 0, 0, 1, 0)
-	write_show_info_rom(f, &counter, 246, 6, 1, 0, 1, 0)
-	write_show_info_rom(f, &counter, 247, 6, 2, 0, 1, 0)
-	write_show_info_rom(f, &counter, 248, 6, 3, 0, 1, 0)
-	y++
-	write_string(f, &counter, 0, y, "SP:0x1")
-	write_show_info_rom(f, &counter, 306, 5, 0, 0, 1, 0)
-	write_show_info_rom(f, &counter, 307, 5, 1, 0, 1, 0)
-	y++
-	y++
-	y++
-
-	// memory dump heady
-	write_string(f, &counter, 0, y, "Memory)")
-	// write_show_info_rom(f, &counter, 60*y+10, 8, 0, 0, 1, 0)
-	// write_show_info_rom(f, &counter, 60*y+11, 8, 1, 0, 1, 0)
-	// write_show_info_rom(f, &counter, 60*y+12, 8, 2, 0, 1, 0)
-	// write_show_info_rom(f, &counter, 60*y+13, 8, 3, 0, 1, 0)
-	// write_string(f, &counter, 14, y, "-")
-	write_string(f, &counter, 9, y, "+0+1+2+3 +4+5+6+7")
-	write_string(f, &counter, 28, y, "+8+9+A+B +C+D+E+F")
-	// LED indicators
-	write_string(f, &counter, 52, y, "76543210")
-	y++
-	write_string(f, &counter, 47, y, "0x00:")
-	y++
-	write_string(f, &counter, 47, y, "0x01:")
-	y++
-	write_string(f, &counter, 47, y, "0x02:")
-	y++
-	write_string(f, &counter, 47, y, "0x03:")
-	y++
-	write_string(f, &counter, 47, y, "0x04:")
-	y++
-	write_string(f, &counter, 47, y, "0x05:")
-	y++
-	write_string(f, &counter, 47, y, "0x06:")
-	y++
-	write_string(f, &counter, 47, y, "0x07:")
-	for y = 9; y < 17; y++ {
-		f.WriteString(fmt.Sprintf("// LED simulation 0x%02X\n", y-9))
-		write_show_info_rom(f, &counter, (y - 9), 8, 0, 0, 0, 1)
-		for x := 52; x < 60; x++ {
-			write_show_info_rom(f, &counter, 60*y+x, 1, 4+x-52, 0, 1, 0)
-		}
-	}
-
-	// memory dump data
-	f.WriteString("// Memory dump\n")
-	prefetch = 0
-	dx := 9 // first position to write the data
-	for i := 540; i < 60*17; i++ {
-		ada := i
-		switch i % 60 {
-		case 0: // base address
-			write_string(f, &counter, 0, i/60, "0x:")
-		case 2:
-			write_show_info_rom(f, &counter, ada, 7, 0, 0x10*(i/60-9), 1, 0)
-		case 3:
-			write_show_info_rom(f, &counter, ada, 7, 1, 0x10*(i/60-9), 1, 0)
-		case 4:
-			write_show_info_rom(f, &counter, ada, 7, 2, 0x10*(i/60-9), 1, 0)
-		case 5:
-			write_show_info_rom(f, &counter, ada, 7, 3, 0x10*(i/60-9), 1, 0)
-		case 6:
-			write_string(f, &counter, 6, i/60, ":")
-		case 8: // prefetch
-			write_show_info_rom(f, &counter, 0, 0, 0, prefetch, 0, 1)
-		case dx, dx + 2, dx + 4, dx + 6, dx + 9, dx + 11, dx + 13, dx + 15, dx + 19, dx + 21, dx + 23, dx + 25, dx + 28, dx + 30, dx + 32, dx + 34: // write high nibble
-			write_show_info_rom(f, &counter, ada, 1, 0, 0, 1, 0)
-		case dx + 1, dx + 3, dx + 5, dx + 7, dx + 10, dx + 12, dx + 14, dx + 16, dx + 20, dx + 22, dx + 24, dx + 26, dx + 29, dx + 31, dx + 33: // write low nibble and prefetch
-			prefetch += 1
-			write_show_info_rom(f, &counter, ada, 1, 1, prefetch, 1, 1)
-		case dx + 35: // write low nibble
-			write_show_info_rom(f, &counter, ada, 1, 1, 0, 1, 0)
-			prefetch += 1
-		}
-	}
+	y = 0
+	y = write_registers(f, &counter, y)
+	y = dump_ram(f, &counter, y)
 	pad(f, &counter)
 	f.WriteString("};\n\n")
 	f.WriteString("`endif\n")
