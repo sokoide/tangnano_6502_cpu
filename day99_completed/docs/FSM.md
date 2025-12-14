@@ -112,3 +112,7 @@
 - `SHOW_INFO2` の状態遷移（`FETCH_REQ/FETCH_DATA` への一時離脱、終了時の `prev_state` への復帰）を `cpu_fsm_next_pkg` 側で計算するように追加。
 - `state_show_info_tasks.sv` から `SHOW_INFO2` における `next_state/next_fetch_stage` 代入を削除し、二重管理を解消。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 の整理（pure next-state 対象選択を関数化）
+- `cpu.sv` 側の「pure next-state で駆動する state 判定」を `cpu_fsm_next_pkg::uses_pure_next(state)` にまとめた（挙動は不変）。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。

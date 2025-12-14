@@ -194,27 +194,15 @@ module cpu (
         counter <= (counter + 1) & 32'hFFFFFFFF;
 
         state_machine_step();
-        unique case (state)
-          INIT,
-          INIT_VRAM,
-          INIT_RAM,
-          HALT,
-          FETCH_REQ,
-          FETCH_WAIT,
-          FETCH_RECV,
-          WRITE_REQ,
-          CLEAR_VRAM,
-          CLEAR_VRAM2,
-          SHOW_INFO,
-          SHOW_INFO2: begin
+        if (cpu_fsm_next_pkg::uses_pure_next(state)) begin
+          begin
             state <= boot_fetch_next.next_state;
             fetch_stage <= boot_fetch_next.next_fetch_stage;
           end
-          default: begin
-            state <= next_state;
-            fetch_stage <= next_fetch_stage;
-          end
-        endcase
+        end else begin
+          state <= next_state;
+          fetch_stage <= next_fetch_stage;
+        end
       end
     end
   end

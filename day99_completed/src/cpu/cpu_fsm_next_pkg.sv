@@ -18,6 +18,14 @@ package cpu_fsm_next_pkg;
     fetch_stage_e next_fetch_stage;
   } fsm_next_t;
 
+  function automatic logic uses_pure_next(input cpu_state_e state);
+    unique case (state)
+      // DECODE_EXECUTE still relies on legacy "next_state" writes from exec tasks.
+      DECODE_EXECUTE: return 1'b0;
+      default: return 1'b1;
+    endcase
+  endfunction
+
   function automatic fsm_next_t calc_boot_fetch_next(
       input cpu_state_e state, input fetch_stage_e fetch_stage,
       input cpu_state_e fetch_resume_state, input cpu_state_e prev_state, input logic [7:0] dout,
