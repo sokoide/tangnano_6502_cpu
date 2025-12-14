@@ -69,11 +69,15 @@ module tb_memory_system;
     // Clock generation
     always #5 clk = ~clk;
 
-    // Trace external bus writes
+    // Trace external bus activity
     always_ff @(posedge clk) begin
-        if (rst_n && ext_we) begin
+        if (ext_we) begin
             $display("  [bus] WRITE addr=$%04X data=$%02X (ram=%b rom=%b io=%b)", ext_addr,
                      ext_data_out, ram_select, rom_select, io_select);
+        end
+        if (ext_oe) begin
+            $display("  [bus] READ  addr=$%04X (ram=%b rom=%b io=%b)", ext_addr, ram_select,
+                     rom_select, io_select);
         end
     end
 
@@ -219,7 +223,7 @@ module tb_memory_system;
         $display("\nTest 6: Zero page access");
 
         cpu_write(16'h0080, 8'h33);
-        $display("  RAM[0080] after write = $%02X", ram_array[16'h0080]);
+        $display("  RAM[0080] after write = $%02X", ram_array[15'h0080]);
         cpu_read_expect(16'h0080, 8'h33);
         $display("Test 6 passed: Zero page write/read = $%02X", cpu_data_in);
 

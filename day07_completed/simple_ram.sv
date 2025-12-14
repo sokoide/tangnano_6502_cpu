@@ -1,6 +1,7 @@
 // Simple RAM Module for 6502 System
 // Implements basic RAM with synchronous read/write
 
+/* verilator lint_off UNUSEDSIGNAL */
 module simple_ram #(
     parameter ADDR_WIDTH = 15,  // 32KB RAM
     parameter DATA_WIDTH = 8
@@ -27,20 +28,20 @@ module simple_ram #(
         end
 
         // Initialize zero page with some test values
-        ram_array[16'h0000] = 8'h00;  // Zero page start
-        ram_array[16'h0001] = 8'h01;
-        ram_array[16'h0002] = 8'h02;
-        ram_array[16'h0003] = 8'h03;
+        ram_array[15'h0000] = 8'h00;  // Zero page start
+        ram_array[15'h0001] = 8'h01;
+        ram_array[15'h0002] = 8'h02;
+        ram_array[15'h0003] = 8'h03;
 
         // Initialize stack page
-        ram_array[16'h0100] = 8'h00;  // Stack page start
-        ram_array[16'h01FF] = 8'hFF;  // Stack top
+        ram_array[15'h0100] = 8'h00;  // Stack page start
+        ram_array[15'h01FF] = 8'hFF;  // Stack top
 
         // Test data area
-        ram_array[16'h0200] = 8'hAA;
-        ram_array[16'h0201] = 8'h55;
-        ram_array[16'h0202] = 8'hFF;
-        ram_array[16'h0203] = 8'h00;
+        ram_array[15'h0200] = 8'hAA;
+        ram_array[15'h0201] = 8'h55;
+        ram_array[15'h0202] = 8'hFF;
+        ram_array[15'h0203] = 8'h00;
     end
 
     // RAM operations
@@ -59,4 +60,5 @@ module simple_ram #(
         end
     end
 
+    /* verilator lint_on UNUSEDSIGNAL */
 endmodule

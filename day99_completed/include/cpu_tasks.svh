@@ -1,3 +1,5 @@
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
 show_info_cmd_t show_info_cmd;
 `include "cpu_ifo_auto_generated.svh"
 
@@ -19,7 +21,6 @@ task automatic fetch_opcode(input logic [1:0] pc_offset);
     state <= FETCH_REQ;
     fetch_stage <= FETCH_OPCODE;
 endtask
-
 task automatic fetch_data(input logic [14:0] in_adb);
     adb <= in_adb;
     state <= FETCH_REQ;
@@ -27,29 +28,32 @@ task automatic fetch_data(input logic [14:0] in_adb);
     next_state <= DECODE_EXECUTE;
 endtask
 
-task automatic sta_write(input logic [15:0] addr, input logic [7:0] data);
+task automatic sta_write(input logic [15:0] target_addr, input logic [7:0] data);
     // Check if the address falls within the VRAM range
     // VRAM size is COLUMNS * ROWS bytes
-    if (addr >= VRAM_START && addr < VRAM_START + (COLUMNS * ROWS)) begin
+    if (target_addr >= VRAM_START && target_addr < VRAM_START + (COLUMNS * ROWS)) begin
         // VRAM write + Shadow VRAM write
-        v_ada <= (addr - VRAM_START) & VRAMW;
+        v_ada <= (target_addr - VRAM_START) & VRAMW;
         v_din <= data;
-        ada   <= (addr - VRAM_START + SHADOW_VRAM_START) & RAMW;
+        ada   <= (target_addr - VRAM_START + SHADOW_VRAM_START) & RAMW;
         din   <= data;
         write_to_vram = 1'b1;
     end else begin
         // Regular RAM write
-        ada <= addr & RAMW;
+        ada <= target_addr & RAMW;
         din <= data;
         write_to_vram = 1'b0;
     end
 endtask
 
-task automatic vram_write(input logic [15:0] addr, input logic [7:0] data);
+task automatic vram_write(input logic [15:0] target_addr, input logic [7:0] data);
     v_ada <= addr & VRAMW;
     v_din <= data;
     v_cea <= 1;
-    ada   <= (addr + SHADOW_VRAM_START) & RAMW;
+  ada   <= (target_addr + SHADOW_VRAM_START) & RAMW;
     din   <= data;
     cea   <= 1;
 endtask
+
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHTRUNC */

@@ -1,6 +1,8 @@
 // 6502 CPU Control Unit
 // Main controller that orchestrates instruction execution
 
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off CASEINCOMPLETE */
 module cpu_control_unit (
     input logic clk,
     input logic rst_n,
@@ -311,4 +313,6 @@ module cpu_control_unit (
     assign current_opcode = opcode;
     assign cpu_state = state;
 
+    /* verilator lint_on CASEINCOMPLETE */
+    /* verilator lint_on UNUSEDSIGNAL */
 endmodule

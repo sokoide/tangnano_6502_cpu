@@ -67,8 +67,8 @@ module top_core (
         if (!rst_n) anim <= 24'd0;
         else anim <= anim + 24'd1;
     end
-    logic [9:0] shift;
-    assign shift = anim[23:14];
+    logic [15:0] shift;
+    assign shift = {6'd0, anim[23:14]};
 
     always @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) begin

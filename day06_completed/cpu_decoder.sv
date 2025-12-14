@@ -1,6 +1,8 @@
 // Complete 6502 CPU Decoder
 // Generates all control signals for CPU operation
 
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNUSEDPARAM */
 module cpu_decoder (
     input logic [7:0] opcode,
     input logic [7:0] status_reg,
@@ -398,4 +400,6 @@ module cpu_decoder (
         endcase
     end
 
+    /* verilator lint_on UNUSEDSIGNAL */
+    /* verilator lint_on UNUSEDPARAM */
 endmodule

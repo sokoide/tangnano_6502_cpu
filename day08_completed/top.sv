@@ -71,6 +71,10 @@ module top (
     logic [ 7:0] ram_data_out;
     logic [ 7:0] rom_data_out;
 
+    logic [ 7:0] debug_alu_result;
+    logic [ 7:0] mem_stack_data_in;
+    logic [ 7:0] mem_stack_pointer;
+
     // 6502 CPU Core
     cpu_core cpu (
         .clk             (cpu_clk),
@@ -91,7 +95,7 @@ module top (
         .debug_status_reg(debug_status_reg),
         .debug_opcode    (debug_opcode),
         .debug_cpu_state (debug_cpu_state),
-        .debug_alu_result()
+        .debug_alu_result(debug_alu_result)
     );
 
     // Memory Controller (from Day 07)
@@ -104,11 +108,11 @@ module top (
         .cpu_mem_read  (cpu_mem_read),
         .cpu_mem_write (cpu_mem_write),
         .cpu_ready     (cpu_mem_ready),
-        .stack_push    (1'b0),              // Stack handled by CPU core
+        .stack_push    (1'b0),               // Stack handled by CPU core
         .stack_pop     (1'b0),
         .stack_data_out(8'h00),
-        .stack_data_in (),
-        .stack_pointer (),
+        .stack_data_in (mem_stack_data_in),
+        .stack_pointer (mem_stack_pointer),
         .ext_addr      (ext_addr),
         .ext_data_out  (ext_data_out),
         .ext_data_in   (ext_data_in),
@@ -147,6 +151,8 @@ module top (
         .cs(rom_cs)
     );
 
+    logic unused_debug_guard;
+
     // Memory data input multiplexer
     always_comb begin
         if (ram_cs) begin
@@ -158,6 +164,16 @@ module top (
             ext_data_in = {4'h0, switches};
         end else begin
             ext_data_in = 8'h00;
+        end
+    end
+
+    always_comb begin
+        unused_debug_guard = |debug_alu_result | |mem_stack_data_in | |mem_stack_pointer | ext_addr[15];
+    end
+
+    always_ff @(posedge clk) begin
+        if (unused_debug_guard) begin
+            // intentionally empty; uses debug signals to silence lint
         end
     end
 

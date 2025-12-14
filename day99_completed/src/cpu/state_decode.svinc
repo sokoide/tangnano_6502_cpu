@@ -4,6 +4,7 @@
             write_to_vram = 0;  // Clear flag unless set by sta_write below
 
             case (opcode)
+              /* verilator lint_off VARHIDDEN */
               `include "cpu/decode_control_flow.svinc"
               `include "cpu/decode_load_store.svinc"
               `include "cpu/decode_store.svinc"
@@ -15,6 +16,7 @@
               `include "cpu/decode_transfers.svinc"
               `include "cpu/decode_branches.svinc"
               `include "cpu/decode_flags_custom.svinc"
+              /* verilator lint_on VARHIDDEN */
               // support more instructions here
 
               default: ;  // No operation.

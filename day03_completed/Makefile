@@ -74,7 +74,6 @@ test: sim
 
 clean:
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-
 	rm -rf obj_dir/
 
 help:

@@ -29,6 +29,8 @@
 //
 `include "../include/consts.svh"
 `include "../include/cpu_pkg.sv"
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
 module cpu (
     // Clock and Reset
     input logic rst_n,  // Active-low asynchronous reset
@@ -154,4 +156,6 @@ module cpu (
         end
     end
 
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
 endmodule

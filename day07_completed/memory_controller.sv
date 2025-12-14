@@ -110,4 +110,13 @@ module memory_controller (
         end
     end
 
+    always_ff @(posedge clk) begin
+        if (stack_overflow) begin
+            $error("Stack overflow detected at addr=%h", stack_address);
+        end
+        if (stack_underflow) begin
+            $error("Stack underflow detected");
+        end
+    end
+
 endmodule

@@ -1,3 +1,4 @@
+/* verilator lint_off DECLFILENAME */
 module Gowin_SDPB_vram (
     output logic [7:0] dout,
     input  logic       clka,
@@ -37,4 +38,4 @@ module Gowin_SDPB_vram (
         end
     end
 endmodule
-
+/* verilator lint_on DECLFILENAME */

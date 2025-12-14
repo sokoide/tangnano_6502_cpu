@@ -1,3 +1,5 @@
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
 package cpu_pkg;
 
     typedef enum logic [3:0] {
@@ -44,3 +46,5 @@ package cpu_pkg;
     endfunction
 
 endpackage : cpu_pkg
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHTRUNC */

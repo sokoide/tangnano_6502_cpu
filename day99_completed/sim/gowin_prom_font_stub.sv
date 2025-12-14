@@ -1,3 +1,4 @@
+/* verilator lint_off DECLFILENAME */
 module Gowin_pROM_font (
     output logic [ 7:0] dout,
     input  logic        clk,
@@ -23,4 +24,4 @@ module Gowin_pROM_font (
         end
     end
 endmodule
-
+/* verilator lint_on DECLFILENAME */

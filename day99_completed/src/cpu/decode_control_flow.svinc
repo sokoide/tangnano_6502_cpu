@@ -4,9 +4,9 @@
               end
               // JMP absolute
               8'h4C: begin
-                automatic logic [15:0] addr = operands[15:0] & RAMW;
-                pc <= addr;
-                adb <= addr;
+                automatic logic [15:0] jmp_addr = operands[15:0] & RAMW;
+                pc <= jmp_addr;
+                adb <= jmp_addr;
                 state <= FETCH_REQ;
                 fetch_stage <= FETCH_OPCODE;
               end
@@ -20,12 +20,12 @@
                     fetched_data[7:0] = dout_r;
                     fetch_data((operands[15:0] + 1) & RAMW);
                   end
-                  2: begin
+                    2: begin
                     // relative data is already in little endian.
-                    automatic logic [15:0] addr = {dout_r, fetched_data[7:0]} & RAMW;
+                    automatic logic [15:0] ind_addr = {dout_r, fetched_data[7:0]} & RAMW;
                     fetched_data[15:8] = dout_r;
-                    pc <= addr;
-                    adb <= addr;
+                    pc <= ind_addr;
+                    adb <= ind_addr;
                     state <= FETCH_REQ;
                     fetch_stage <= FETCH_OPCODE;
                   end
@@ -54,12 +54,12 @@
                     cea   <= 1;
                     state <= WRITE_REQ;
                   end
-                  2: begin
+                    2: begin
                     // you can do this step in 1, but followed 6502.
                     // operands is in big endian.
-                    automatic logic [15:0] addr = operands[15:0] & RAMW;
-                    pc <= addr;
-                    adb <= addr;
+                    automatic logic [15:0] jsr_addr = operands[15:0] & RAMW;
+                    pc <= jsr_addr;
+                    adb <= jsr_addr;
                     state <= FETCH_REQ;
                     fetch_stage <= FETCH_OPCODE;
                   end

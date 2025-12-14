@@ -1,6 +1,7 @@
 // Testbench for Complete 6502 CPU Core
 // Tests integrated CPU with memory system
 
+/* verilator lint_off UNUSEDSIGNAL */
 module tb_cpu_core;
 
     logic clk, rst_n;
@@ -216,3 +217,4 @@ module tb_cpu_core;
     end
 
 endmodule
+/* verilator lint_on UNUSEDSIGNAL */

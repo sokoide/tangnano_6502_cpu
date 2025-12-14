@@ -1,6 +1,7 @@
 // Complete 6502 CPU Core
 // Integrates all components into a working CPU
 
+/* verilator lint_off UNUSEDSIGNAL */
 module cpu_core (
     input logic clk,
     input logic rst_n,
@@ -176,4 +177,5 @@ module cpu_core (
     assign debug_status_reg = status_reg;
     assign debug_alu_result = alu_result;
 
+    /* verilator lint_on UNUSEDSIGNAL */
 endmodule
