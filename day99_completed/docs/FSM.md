@@ -94,3 +94,7 @@
 ### 2025-12-14: Step 3 を拡大（CLEAR_VRAM/CLEAR_VRAM2 まで next-state 関数で駆動）
 - `CLEAR_VRAM` / `CLEAR_VRAM2` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 を拡大（SHOW_INFO まで next-state 関数で駆動）
+- `SHOW_INFO`（入口のみ）も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大。
+  - `SHOW_INFO2` は内部に stage/counter/mem_read があり、次状態だけでなく副作用も絡むため現時点では既存タスクに残す。

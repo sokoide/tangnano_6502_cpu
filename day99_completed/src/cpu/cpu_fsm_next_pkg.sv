@@ -220,6 +220,10 @@ package cpu_fsm_next_pkg;
         end
       end
 
+      SHOW_INFO: begin
+        r.next_state = SHOW_INFO2;
+      end
+
       INIT_VRAM: begin
         if (v_ada_u32 <= (COLUMNS * ROWS)) begin
           r.next_state = INIT_VRAM;
