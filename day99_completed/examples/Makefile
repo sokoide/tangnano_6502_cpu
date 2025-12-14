@@ -4,8 +4,8 @@
 
 # SRCS = simple.s
 # SRCS = simple2.s
-SRCS = simple3.s
-# SRCS = simple4.s
+# SRCS = simple3.s
+SRCS = simple4.s
 # SRCS = simple5.s
 # SRCS = hello_world.s
 # SRCS = hello_world_scroll.s

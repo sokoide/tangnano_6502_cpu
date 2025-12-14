@@ -73,3 +73,7 @@
   - 副作用（RAM 書き込みなど）は従来どおり `state_machine_step()` 側で実行し、**状態更新だけを置き換える**最小の差分にしている。
   - 次は `FETCH_*` 系の状態も同様に段階的に置き換えていく（実機での確認を挟みながら進める）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 を拡大（FETCH_REQ / FETCH_WAIT まで next-state 関数で駆動）
+- `FETCH_REQ` / `FETCH_WAIT` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
