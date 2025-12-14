@@ -38,7 +38,7 @@ flowchart LR
 
 ```systemverilog
 wire [7:0] data_bus;   // 8-bit wire, a net for connections
-logic [3:0] counter;     // 4-bit variable, can be a reg or a wire
+logic [3:0] counter;     // 4-bit variable, can be a register or a wire
 logic select;          // 1-bit variable
 logic [15:0] address;  // 16-bit variable
 ```
@@ -52,7 +52,7 @@ You learned about this in Day 01, but here's a recap for the context of combinat
     -   If you assign to it with `assign`, it acts like a `wire`.
 -   `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
 
-The `reg` type is an older Verilog keyword. You can think of `logic` as its more flexible replacement.
+
 
 **Operators:**
 

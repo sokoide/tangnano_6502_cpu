@@ -147,8 +147,8 @@ Create a `top.sv` file and write the following code:
 
 ```systemverilog
 module top (
-    input  wire clk,     // 27MHz clock
-    output wire led      // LED output
+    input  logic clk,    // 27MHz clock
+    output logic led     // LED output
 );
 
     // Clock divider for visible blinking (approx. 1Hz)
@@ -170,14 +170,14 @@ This small module already contains most of the “core grammar” you’ll use l
 
 ```mermaid
 flowchart LR
-  CLK((clk)) --> FF["FFs: counter register<br/>always_ff @ posedge clk"]
-  FF -->|"counter[24]"| COMB[combinational wiring<br/>assign led = ...]
-  COMB --> LED((led))
+  CLK(("clk<br/>(input logic)")) --> FF["FFs: logic [24:0] counter<br/>(always_ff @ posedge clk)"]
+  FF -->|"counter[24]"| COMB["combinational wiring<br/>(assign led = ...)"]
+  COMB --> LED(("led<br/>(output logic)"))
 ```
 
 - `wire`: A data type that represents a physical wire. It can be continuously driven by something (like the output of a logic gate) but cannot store a value on its own. It must be driven by an `assign` statement or a module output.
 - `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` over `reg`**. It can be driven by `assign` (making it a wire) or used in an `always` block (making it a register).
-- `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. While you see it in the example, `logic` is generally recommended for new SystemVerilog code.
+
 - `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
 - `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
 

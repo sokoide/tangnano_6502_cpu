@@ -9,7 +9,7 @@ module top (
     output wire led      // LED output (tri-stated when "off")
 );
 
-    reg [24:0] counter;
+    logic [24:0] counter;
 
     always @(posedge clk) begin
         counter <= counter + 25'd1;

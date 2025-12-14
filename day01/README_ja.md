@@ -142,8 +142,8 @@ make BOARD=9k download   # または BOARD=20k
 
 ```systemverilog
 module top (
-    input  wire clk,     // 27MHz clock
-    output wire led      // LED output
+    input  logic clk,    // 27MHz clock
+    output logic led     // LED output
 );
 
     // Clock divider for visible blinking (約1Hz)
@@ -165,14 +165,14 @@ endmodule
 
 ```mermaid
 flowchart LR
-  CLK((clk)) --> FF["FF群: counterレジスタ<br/>always_ff @ posedge clk"]
-  FF -->|"counter[24]"| COMB["組み合わせ配線<br/>assign led = ..."]
-  COMB --> LED((led))
+  CLK(("clk<br/>(input logic)")) --> FF["FF群: logic [24:0] counter<br/>(always_ff @ posedge clk)"]
+  FF -->|"counter[24]"| COMB["組み合わせ配線<br/>(assign led = ...)"]
+  COMB --> LED(("led<br/>(output logic)"))
 ```
 
 - `wire`: 物理的な配線を表すデータ型です。ロジックゲートの出力などで継続的に駆動されますが、それ自体に値を保持することはできません。`assign`文かモジュール出力によって駆動される必要があります。
 - `logic`: 最近のSystemVerilogで使われるデータ型で、配線とレジスタの両方に使えます。初心者向けのルールとして、**`reg` よりも `logic` を使うことを推奨します**。`assign` で駆動すれば配線として振る舞い、`always` ブロックで使えばレジスタとして振る舞います。
-- `reg`: 古いVerilogで値を保持する変数のためのデータ型で、`always` ブロック内で使われます。サンプルコードでは `reg` を使っていますが、新しいSystemVerilogのコードでは一般的に `logic` が推奨されます。
+
 - `always_ff @(posedge clk)`: これは**シーケンシャル（順序）かつクロック同期**のロジックブロックを記述します。このブロック内のコードは、`clk` 信号の立ち上がりエッジ（0から1への遷移）でのみ実行されます。これにより、状態を保持する**レジスタ**（フリップフロップなど）が作られます。
 - `assign`: このキーワードは**組み合わせ（Combinational）ロジック**を作ります。これは、直接的な配線接続やロジックゲートのように、常に真である関係を記述します。例えば、`assign led = counter[24];` は、`counter` レジスタの25番目のビットを `led` 出力に直接接続する配線を生成します。
 

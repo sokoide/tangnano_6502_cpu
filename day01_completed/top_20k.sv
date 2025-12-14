@@ -7,7 +7,7 @@ module top (
 
     // Clock divider for visible blinking (~0.8Hz)
     // 27MHz / 2^25 ≈ 0.8Hz
-    reg [24:0] counter;
+    logic [24:0] counter;
 
     always @(posedge clk) begin
         counter <= counter + 25'd1;

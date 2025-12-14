@@ -132,11 +132,11 @@ flowchart LR
 - **`=` (blocking assignment)** is mainly used inside combinational `always_comb` logic, or for temporary variables in a procedural block.
 - **`<=` (non-blocking assignment)** is the standard for flip-flops (clocked logic).
 - A signal driven by `assign ...` must be a net type (`wire`) or an `output` that behaves like a net.
-- A signal assigned inside an `always` block is typically declared as `reg` (Verilog) or `logic` (SystemVerilog).
+- A signal assigned inside an `always` block is typically declared as `logic` (SystemVerilog).
 
 In other words, this pattern is common and correct:
 
-- `counter` is written in an `always @(posedge clk)` block → declare it as `reg`/`logic`.
+- `counter` is written in an `always @(posedge clk)` block → declare it as `logic`.
 - `led` is driven by `assign` → declare it as `wire` (or an output net).
 
 ### Why does the 9K version use `1'bz`?

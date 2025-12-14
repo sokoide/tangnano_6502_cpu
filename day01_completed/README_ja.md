@@ -131,7 +131,7 @@ flowchart LR
 結論から言うと、「どこで代入するか」で使い分けます。
 
 - **クロック同期回路**（`always @(posedge clk)` など）では `<=` を使うのが基本  
-  → 代入される信号は `reg`（Verilog）/`logic`（SystemVerilog）で宣言します。
+  → 代入される信号は `logic`（SystemVerilog）で宣言します。
 - **`assign` で駆動する信号**は、`wire`（ネット）として扱うのが自然  
   → `output wire led` を `assign` で駆動する、という形がよくあります。
 

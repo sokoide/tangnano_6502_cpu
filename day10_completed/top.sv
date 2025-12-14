@@ -13,9 +13,9 @@ module top (
 
     output       LCD_CLK,  // Pixel clock (~9MHz)
     output       LCD_DEN,
-    output reg [4:0] LCD_R,
-    output reg [5:0] LCD_G,
-    output reg [4:0] LCD_B
+    output logic [4:0] LCD_R,
+    output logic [5:0] LCD_G,
+    output logic [4:0] LCD_B
 );
 
 `ifdef BOARD_20K
@@ -45,8 +45,8 @@ module top (
     localparam [15:0] V_FRONT = 16'd8;
     localparam [15:0] V_TOTAL = V_BACK + V_VALID + V_FRONT;
 
-    reg [15:0] h_count;
-    reg [15:0] v_count;
+    logic [15:0] h_count;
+    logic [15:0] v_count;
 
     always @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) begin
@@ -72,7 +72,7 @@ module top (
     assign x = (h_count >= H_BACK) ? (h_count - H_BACK) : 16'd0;
 
     // Animate the bar boundary for a visible "alive" pattern.
-    reg [23:0] anim;
+    logic [23:0] anim;
     always @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) anim <= 24'd0;
         else anim <= anim + 24'd1;

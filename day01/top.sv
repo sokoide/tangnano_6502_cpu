@@ -9,7 +9,7 @@ module top (
     // TODO: Clock divider implementation
     // Hint: How to divide 27MHz to approximately 1Hz?
 
-    reg [24:0] counter;
+    logic [24:0] counter;
 
     always_ff @(posedge clk) begin
         // TODO: Write counter increment logic here
