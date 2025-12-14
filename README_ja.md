@@ -150,7 +150,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - LEDが点滅するシンプルなプロジェクト
 - GoWin EDAでの合成・配置配線・書き込みの基本手順習得
 
-**実習時間:** 約2-3時間
+**実習時間:** 約1時間
 
 ---
 
@@ -168,7 +168,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 7セグメントデコーダ
 - 4bit ALU (加算、論理演算)
 
-**実習時間:** 約3-4時間
+**実習時間:** 約2時間
 
 - シミュレーション波形の表示
   ![Wave](./docs/day02_wave.png)
@@ -191,7 +191,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - LED PWM調光コントローラ
 - シンプルな状態機械
 
-**実習時間:** 約3-4時間
+**実習時間:** 約2時間
 
 ---
 
@@ -210,7 +210,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 6502レジスタセットのSystemVerilogモデル
 - 簡単な命令デコーダ (一部命令のみ)
 
-**実習時間:** 約2-3時間
+**実習時間:** 約1時間
 
 ---
 
@@ -229,7 +229,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - アドレッシングモード計算器
 - 主要命令のデコードテーブル
 
-**実習時間:** 約3-4時間
+**実習時間:** 約2時間
 
 ---
 
@@ -248,7 +248,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 6502互換ALUモジュール
 - フラグ生成ロジック
 
-**実習時間:** 約4-5時間
+**実習時間:** 約3時間
 
 ---
 
@@ -267,7 +267,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - スタックポインタ制御ロジック
 - アドレス生成ユニット
 
-**実習時間:** 約4-5時間
+**実習時間:** 約3時間
 
 ---
 
@@ -286,7 +286,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 基本命令セットの動作確認
 - テストプログラム一式
 
-**実習時間:** 約5-6時間
+**実習時間:** 約4時間
 
 ---
 
@@ -306,7 +306,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 文字表示機能付きシステム
 - 480×272解像度での文字出力
 
-**実習時間:** 約4-5時間
+**実習時間:** 約3時間
 
 ---
 
@@ -326,7 +326,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - スクロール文字表示
 - インタラクティブなデモプログラム
 
-**実習時間:** 約3-4時間
+**実習時間:** 約2時間
 
 ---
 

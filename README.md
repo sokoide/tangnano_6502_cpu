@@ -153,7 +153,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - A simple project that blinks an LED
 - Mastery of basic synthesis, place & route, and programming procedures in GoWin EDA
 
-**Practice Time:** Approx. 2-3 hours
+**Practice Time:** Approx. 1 hour
 
 ---
 
@@ -171,7 +171,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 7-segment decoder
 - 4-bit ALU (addition, logical operations)
 
-**Practice Time:** Approx. 3-4 hours
+**Practice Time:** Approx. 2 hours
 
 - Simulation waveform display
   ![Wave](./docs/day02_wave.png)
@@ -194,7 +194,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - LED PWM dimming controller
 - Simple state machine
 
-**Practice Time:** Approx. 3-4 hours
+**Practice Time:** Approx. 2 hours
 
 ---
 
@@ -213,7 +213,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - SystemVerilog model of the 6502 register set
 - Simple instruction decoder (for a subset of instructions)
 
-**Practice Time:** Approx. 2-3 hours
+**Practice Time:** Approx. 1 hour
 
 ---
 
@@ -232,7 +232,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - Addressing mode calculator
 - Decode table for major instructions
 
-**Practice Time:** Approx. 3-4 hours
+**Practice Time:** Approx. 2 hours
 
 ---
 
@@ -251,7 +251,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 6502-compatible ALU module
 - Flag generation logic
 
-**Practice Time:** Approx. 4-5 hours
+**Practice Time:** Approx. 3 hours
 
 ---
 
@@ -270,7 +270,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - Stack pointer control logic
 - Address generation unit
 
-**Practice Time:** Approx. 4-5 hours
+**Practice Time:** Approx. 3 hours
 
 ---
 
@@ -289,7 +289,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - Verification of the basic instruction set
 - A set of test programs
 
-**Practice Time:** Approx. 5-6 hours
+**Practice Time:** Approx. 4 hours
 
 ---
 
@@ -309,7 +309,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - System with character display functionality
 - Character output at 480×272 resolution
 
-**Practice Time:** Approx. 4-5 hours
+**Practice Time:** Approx. 3 hours
 
 ---
 
@@ -329,7 +329,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - Scrolling text display
 - Interactive demo program
 
-**Practice Time:** Approx. 3-4 hours
+**Practice Time:** Approx. 2 hours
 
 ---
 
