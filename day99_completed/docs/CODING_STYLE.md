@@ -12,5 +12,6 @@
   - `src/gowin_*/`, `impl/pnr/*.vo`
 
 Formatting tools (optional):
+
 - `verible-verilog-format --inplace ...` for formatting
 - `verilator --lint-only -Wall ...` for linting feedback

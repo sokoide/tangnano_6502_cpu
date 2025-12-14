@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Master how to use the cc65 assembler toolchain
--   Practice 6502 assembly programming
--   Utilize custom instructions (CVR, IFO, HLT, WVS)
--   Create practical demo programs
+- Master how to use the cc65 assembler toolchain
+- Practice 6502 assembly programming
+- Utilize custom instructions (CVR, IFO, HLT, WVS)
+- Create practical demo programs
 
 ## 📚 Theory
 
@@ -18,16 +18,16 @@
 
 **Components:**
 
--   **ca65**: Assembler (6502 assembly -> object file)
--   **ld65**: Linker (object file -> executable file)
--   **cc65**: C compiler (C language -> assembly)
+- **ca65**: Assembler (6502 assembly -> object file)
+- **ld65**: Linker (object file -> executable file)
+- **cc65**: C compiler (C language -> assembly)
 
 **File Formats:**
 
--   `.s`: Assembly source file
--   `.o`: Object file
--   `.bin`: Binary file
--   `.hex`: Intel HEX file
+- `.s`: Assembly source file
+- `.o`: Object file
+- `.bin`: Binary file
+- `.hex`: Intel HEX file
 
 ### 6502 Assembly Notation
 
@@ -88,7 +88,7 @@ MESSAGE:
 
 ### Build Configuration File (build.cfg)
 
-```
+```bash
 # cc65 configuration for Tang Nano 6502
 
 FEATURES {
@@ -394,23 +394,23 @@ all: $(HEXFILE)
 
 # Assembly to object
 %.o: %.s
-	$(CA65) -t none -o $@ $<
+ $(CA65) -t none -o $@ $<
 
 # Link to binary
 $(BINARY): $(OBJECTS)
-	$(LD65) -C $(CONFIG) -o $@ $^
+ $(LD65) -C $(CONFIG) -o $@ $^
 
 # Convert to Intel HEX
 $(HEXFILE): $(BINARY)
-	$(SREC) $< -binary -offset 0x0200 -o $@ -intel
+ $(SREC) $< -binary -offset 0x0200 -o $@ -intel
 
 # Generate SystemVerilog include file
 include: $(HEXFILE)
-	python3 ../utils/hex_to_sv.py $(HEXFILE) > ../include/boot_program.sv
+ python3 ../utils/hex_to_sv.py $(HEXFILE) > ../include/boot_program.sv
 
 # Clean
 clean:
-	rm -f *.o *.bin *.hex
+ rm -f *.o *.bin *.hex
 
 # Program targets
 hello: PROGRAM = hello_world
@@ -481,15 +481,15 @@ if __name__ == "__main__":
 
 ### Basic Assignments
 
-1.  Calculator program (simple arithmetic)
-2.  Digital clock display
-3.  Pattern generator
+1. Calculator program (simple arithmetic)
+2. Digital clock display
+3. Pattern generator
 
 ### Advanced Assignments
 
-1.  Tetris-style puzzle game
-2.  UART communication program
-3.  Music player program
+1. Tetris-style puzzle game
+2. UART communication program
+3. Music player program
 
 ## 🔧 Development Workflow
 
@@ -524,25 +524,25 @@ make download
 
 ### Common Errors
 
-1.  **Assembly error**: Check syntax, check for duplicate labels
-2.  **Linker error**: Check for duplicate addresses, check for size overflow
-3.  **Execution error**: Check memory map, check for infinite loops
+1. **Assembly error**: Check syntax, check for duplicate labels
+2. **Linker error**: Check for duplicate addresses, check for size overflow
+3. **Execution error**: Check memory map, check for infinite loops
 
 ### Debugging Techniques
 
-1.  **IFO instruction**: Check the state of registers and memory
-2.  **Step-by-step execution**: Test step-by-step from small parts
-3.  **Simulation**: Verify with a testbench before running on hardware
+1. **IFO instruction**: Check the state of registers and memory
+2. **Step-by-step execution**: Test step-by-step from small parts
+3. **Simulation**: Verify with a testbench before running on hardware
 
 ## 📚 What I Learned Today
 
--   [ ] How to use the cc65 toolchain
--   [ ] Practical assembly programming
--   [ ] Effective use of custom instructions
--   [ ] Building a build system
--   [ ] Debugging and troubleshooting
+- [ ] How to use the cc65 toolchain
+- [ ] Practical assembly programming
+- [ ] Effective use of custom instructions
+- [ ] Building a build system
+- [ ] Debugging and troubleshooting
 
-## 🎓 Course Complete!
+## 🎓 Course Complete
 
 Congratulations! Through 10 days of learning, you have acquired the following:
 
@@ -556,9 +556,9 @@ Congratulations! Through 10 days of learning, you have acquired the following:
 
 ### Next Steps
 
--   Challenge a more complex CPU architecture
--   Add your own custom instructions
--   Performance optimization
--   Application to other FPGA projects
+- Challenge a more complex CPU architecture
+- Add your own custom instructions
+- Performance optimization
+- Application to other FPGA projects
 
 **Enjoy your wonderful journey of FPGA development!**

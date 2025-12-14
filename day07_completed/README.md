@@ -12,27 +12,24 @@ In Day 07, we will implement the memory interface and stack management, which ar
 ### What You Will Learn Today
 
 1. **Memory Mapping**
-
-    - Dividing the address space for RAM, ROM, and I/O
-    - Generating chip select signals
-    - Address decoding
+   - Dividing the address space for RAM, ROM, and I/O
+   - Generating chip select signals
+   - Address decoding
 
 2. **Memory Interface**
-
-    - Controlling memory reads and writes
-    - Appropriate timing control
-    - Connecting to external memory
+   - Controlling memory reads and writes
+   - Appropriate timing control
+   - Connecting to external memory
 
 3. **Stack Pointer Management**
-
-    - 6502 stack operation (grows downwards from $01FF)
-    - PUSH and POP operations
-    - Stack overflow/underflow detection
+   - 6502 stack operation (grows downwards from $01FF)
+   - PUSH and POP operations
+   - Stack overflow/underflow detection
 
 4. **Memory Controller**
-    - Arbitration between CPU and stack operations
-    - Priority control
-    - Integrated memory access
+   - Arbitration between CPU and stack operations
+   - Priority control
+   - Integrated memory access
 
 ## Implementation Details
 

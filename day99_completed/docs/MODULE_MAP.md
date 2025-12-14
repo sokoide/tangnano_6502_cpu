@@ -1,6 +1,6 @@
 # Module Map (Code Reading Guide)
 
-This document helps you navigate the *final integrated* design in `day99_completed/` by showing where each major concept lives in code and how the pieces connect.
+This document helps you navigate the _final integrated_ design in `day99_completed/` by showing where each major concept lives in code and how the pieces connect.
 
 ## Big picture
 
@@ -49,4 +49,3 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 1. Add a new CPU-visible debug register and expose it via the existing “info/debug” path.
 2. Modify the memory map (e.g., reserve a small I/O page) and document the change in `docs/INSTRUCTIONS.md`.
 3. Write a tiny program in `examples/` that uses a custom instruction (e.g., `WVS`) and verify behavior in simulation.
-

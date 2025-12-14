@@ -1,7 +1,7 @@
 BOARD ?= 9k
 DAYS := $(sort $(wildcard day*_completed))
 
-.PHONY: all clean help sim build
+.PHONY: all clean help test  lint format build
 
 all: build
 
@@ -12,12 +12,21 @@ build:
 		$(MAKE) -C $$day BOARD=$(BOARD); \
 	done
 
-sim:
+test:
 	@echo "Running simulation for all projects (BOARD=$(BOARD))"
 	@for day in $(DAYS); do \
 		echo "Running sim for $$day (BOARD=$(BOARD))"; \
 		$(MAKE) -C $$day BOARD=$(BOARD) sim; \
 	done
+
+lint:
+	@echo "Linting all projects"
+	npx markdownlint "**/*.md" --fix
+
+format:
+	@echo "Formatting all projects"
+	npx prettier --write "**/*.md"
+
 
 clean:
 	@echo "Cleaning all projects"

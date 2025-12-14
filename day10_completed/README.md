@@ -10,6 +10,7 @@
 Day 10 uses the same **480×272 RGB TFT panel** as `day99_completed` (RGB565 + `LCD_DEN` + `LCD_CLK`).
 
 This directory outputs **animated color bars** to validate:
+
 - Pin wiring
 - Pixel clock generation (~9MHz)
 - `LCD_DEN` active area timing
@@ -34,10 +35,12 @@ This is a smoke test that checks `LCD_DEN` toggles and RGB outputs are non-zero 
 ## Wiring
 
 Use the same wiring as `day99_completed`:
+
 - `LCD_CLK`, `LCD_DEN`
 - `LCD_R[4:0]`, `LCD_G[5:0]`, `LCD_B[4:0]`
 
 Pin assignments:
+
 - `day10_completed/tft_9k.cst`
 - `day10_completed/tft_20k.cst`
 

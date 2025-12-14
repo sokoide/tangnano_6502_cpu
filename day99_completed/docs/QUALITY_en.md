@@ -7,11 +7,13 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ## 🏗️ Architecture Strengths
 
 ### Modular Design Excellence
+
 - **Clean separation**: CPU core split into logical modules (`cpu_alu.sv`, `cpu_decoder.sv`, `cpu_memory.sv`)
 - **Clear interfaces**: Well-defined module boundaries with appropriate signal naming
 - **Hierarchical organization**: Top-level integration (`top.sv`) properly orchestrates subsystems
 
 ### Memory Architecture
+
 - **Proper clock domain handling**: Dual-clock design (9MHz LCD, 40.5MHz CPU/memory)
 - **Memory map clarity**: Well-documented memory regions with proper address decoding
 - **VRAM abstraction**: Clean separation between CPU-accessible shadow VRAM and LCD VRAM
@@ -19,16 +21,19 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ## 🎯 Code Quality Highlights
 
 ### Documentation Standards
+
 - **Comprehensive headers**: Every module has detailed purpose and functionality descriptions
 - **Inline comments**: Complex logic sections well-documented
 - **Constants file**: Centralized parameter definitions in `include/consts.svh`
 
 ### Coding Practices
+
 - **Consistent naming**: SystemVerilog conventions followed throughout
 - **No code smells**: Zero TODO/FIXME/HACK comments detected
 - **Proper clock management**: 7 synchronous always_ff blocks identified, no async issues
 
 ### Type Safety
+
 - **Package-based enums**: CPU states defined in `cpu_pkg.sv` for type safety
 - **Proper bit widths**: Consistent use of explicit bit width specifications
 - **Logic vs net**: Appropriate use of SystemVerilog logic type
@@ -36,6 +41,7 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ## 🔧 Testing Infrastructure
 
 ### Comprehensive Test Coverage
+
 - **tb_cpu.sv**: CPU integration tests
 - **tb_cpu_modules.sv**: Unit tests for modular components
 - **tb_lcd.sv**: LCD controller validation
@@ -44,6 +50,7 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ## ⚡ Performance Considerations
 
 ### Clock Domain Design
+
 - **Optimized frequencies**: 9MHz LCD timing, 40.5MHz processing
 - **Proper synchronization**: Cross-domain signals handled correctly
 - **Pipeline efficiency**: Multi-stage fetch/decode/execute pipeline
@@ -51,6 +58,7 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ## 🔍 Areas for Potential Enhancement
 
 ### Minor Opportunities
+
 1. **Generated files**: `cpu_ifo_auto_generated.sv` could benefit from generation timestamp comments
 2. **Board configuration**: Tang Nano 9K/20K switching could be automated via parameters
 3. **Constraint files**: Board-specific `.cst` files could be better documented
@@ -72,7 +80,8 @@ The recent font rendering fix (changing `CHAR_RENDER_OFFSET` from `-1` to `1`) d
 ## File Structure Analysis
 
 ### Core SystemVerilog Modules
-```
+
+```bash
 src/
 ├── cpu.sv              # Main 6502 CPU implementation
 ├── cpu_alu.sv          # Arithmetic Logic Unit
@@ -84,7 +93,8 @@ src/
 ```
 
 ### Test Infrastructure
-```
+
+```bash
 src/
 ├── tb_cpu.sv           # CPU integration tests
 ├── tb_cpu_modules.sv   # Unit tests for CPU modules
@@ -93,7 +103,8 @@ src/
 ```
 
 ### Include Files
-```
+
+```bash
 include/
 ├── consts.svh              # System constants and parameters
 ├── cpu_pkg.sv              # CPU state enumerations

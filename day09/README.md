@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Principle and implementation of LCD timing control
--   RGB signal generation and VGA/LCD output
--   Design and implementation of a character display system
--   Building a VRAM (Video RAM) system
+- Principle and implementation of LCD timing control
+- RGB signal generation and VGA/LCD output
+- Design and implementation of a character display system
+- Building a VRAM (Video RAM) system
 
 ## 📚 Theory
 
@@ -18,14 +18,14 @@
 
 **Basic Specifications of a 480x272 LCD:**
 
--   Resolution: 480x272 pixels
--   Refresh Rate: 60Hz
--   Pixel Clock: Approx. 9MHz
--   Sync Signals: HSYNC, VSYNC, DE (Data Enable)
+- Resolution: 480x272 pixels
+- Refresh Rate: 60Hz
+- Pixel Clock: Approx. 9MHz
+- Sync Signals: HSYNC, VSYNC, DE (Data Enable)
 
 **Timing Parameters:**
 
-```
+```bash
 Horizontal Timing:
 - Active Period: 480 pixels
 - Front Porch: 5 pixels
@@ -45,10 +45,10 @@ Vertical Timing:
 
 **Character Mode Specifications:**
 
--   Character Size: 8x16 pixels
--   Display Area: 60x17 characters
--   Font ROM: 4KB (256 characters x 16 bytes)
--   VRAM: 1KB (60x17 = 1020 bytes)
+- Character Size: 8x16 pixels
+- Display Area: 60x17 characters
+- Font ROM: 4KB (256 characters x 16 bytes)
+- VRAM: 1KB (60x17 = 1020 bytes)
 
 ## 🛠️ Practice 1: LCD Timing Controller
 
@@ -411,28 +411,28 @@ endmodule
 
 ### Basic Assignments
 
-1.  Implement a scroll display function
-2.  Support for color display (character color/background color)
-3.  Cursor display function
+1. Implement a scroll display function
+2. Support for color display (character color/background color)
+3. Cursor display function
 
 ### Advanced Assignments
 
-1.  Implement a graphics mode
-2.  Sprite function
-3.  Hardware scrolling
+1. Implement a graphics mode
+2. Sprite function
+3. Hardware scrolling
 
 ## 📚 What I Learned Today
 
--   [ ] Implementation of LCD timing control
--   [ ] Design of a character display system
--   [ ] Dual-access control of VRAM
--   [ ] How to use a font ROM
--   [ ] Integration of the entire system
+- [ ] Implementation of LCD timing control
+- [ ] Design of a character display system
+- [ ] Dual-access control of VRAM
+- [ ] How to use a font ROM
+- [ ] Integration of the entire system
 
 ## 🎯 Preview for Tomorrow
 
 As the final day, in Day 10 we will learn about assembly programming and applications:
 
--   How to use the cc65 assembler
--   Utilizing custom instructions
--   Creating practical programs
+- How to use the cc65 assembler
+- Utilizing custom instructions
+- Creating practical programs

@@ -77,13 +77,13 @@ Inside `always_ff`, use non-blocking assignment `<=` so all registers update “
 - **`=` (Blocking)**: Works like software variables. `a = 1; b = a;` results in both being 1.
 - **`<=` (Non-Blocking)**: Works like a "commit" at the end of the step.
 
-    ```systemverilog
-    // Swapping with <=
-    a <= b;
-    b <= a;
-    ```
+  ```systemverilog
+  // Swapping with <=
+  a <= b;
+  b <= a;
+  ```
 
-    This successfully swaps `a` and `b` in one clock cycle, without needing a temp variable. It's like calculating the right-hand side for *all* statements first, and *then* updating the left-hand side values simultaneously.
+  This successfully swaps `a` and `b` in one clock cycle, without needing a temp variable. It's like calculating the right-hand side for _all_ statements first, and _then_ updating the left-hand side values simultaneously.
 
 #### Reset naming: `rst_n`
 
@@ -109,8 +109,8 @@ state_t current_state, next_state;
 
 #### Classic FSM structure (2-process style)
 
-- `always_ff`: holds the *current* state (register).
-- `always_comb`: computes the *next* state (pure logic).
+- `always_ff`: holds the _current_ state (register).
+- `always_comb`: computes the _next_ state (pure logic).
 
 ```mermaid
 flowchart LR

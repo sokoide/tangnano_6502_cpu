@@ -19,17 +19,17 @@ This project demonstrates a complete computer system implementation on FPGA, ser
 
 ### Core Components
 
--   **6502 CPU**: Authentic 6502 microprocessor with custom extension instructions
--   **LCD Display System**: 480×272 pixel character-based text display
--   **Memory Hierarchy**: Integrated RAM, VRAM, and Font ROM subsystems
--   **Assembly Development**: cc65 toolchain for 6502 programming
+- **6502 CPU**: Authentic 6502 microprocessor with custom extension instructions
+- **LCD Display System**: 480×272 pixel character-based text display
+- **Memory Hierarchy**: Integrated RAM, VRAM, and Font ROM subsystems
+- **Assembly Development**: cc65 toolchain for 6502 programming
 
 ### Learning Objectives
 
--   **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
--   **State Machine Architecture**: Complex CPU instruction execution pipeline
--   **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
--   **Hardware/Software Integration**: Assembly programming with FPGA implementation
+- **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
+- **State Machine Architecture**: Complex CPU instruction execution pipeline
+- **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
+- **Hardware/Software Integration**: Assembly programming with FPGA implementation
 
 ## 🏗️ Basic Architecture
 
@@ -117,7 +117,7 @@ graph LR
 
 The system implements a sophisticated memory hierarchy optimized for both CPU access and display rendering:
 
-```
+```bash
 CPU Address Space (64KB addressable):
 ┌─────────────────┬─────────────────┬──────────────────────────────────┐
 │ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B      │
@@ -139,7 +139,7 @@ CPU Address Space (64KB addressable):
 
 ### File Organization
 
-```
+```bash
 src/
 ├── top.sv              # System integration and clock management
 ├── cpu.sv              # Modular 6502 CPU core design
@@ -241,22 +241,22 @@ The CPU implements the complete standard 6502 instruction set with the following
 
 **Implemented Instructions:**
 
--   **Load/Store**: LDA, LDX, LDY, STA, STX, STY (all addressing modes)
--   **Arithmetic**: ADC, SBC with decimal mode support
--   **Logic**: AND, ORA, EOR with all standard addressing modes
--   **Shifts/Rotates**: ASL, LSR, ROL, ROR (accumulator and memory)
--   **Increments/Decrements**: INC, DEC, INX, INY, DEX, DEY
--   **Comparisons**: CMP, CPX, CPY with flag setting
--   **Branches**: BEQ, BNE, BCC, BCS, BPL, BMI, BVC, BVS
--   **Jumps/Subroutines**: JMP (absolute/indirect), JSR, RTS
--   **Stack Operations**: PHA, PLA, PHP, PLP
--   **Register Transfers**: TAX, TAY, TXA, TYA, TSX, TXS
--   **Flag Operations**: CLC, SEC, CLV (CLD, SED, CLI, SEI not implemented)
--   **Miscellaneous**: NOP, BIT
+- **Load/Store**: LDA, LDX, LDY, STA, STX, STY (all addressing modes)
+- **Arithmetic**: ADC, SBC with decimal mode support
+- **Logic**: AND, ORA, EOR with all standard addressing modes
+- **Shifts/Rotates**: ASL, LSR, ROL, ROR (accumulator and memory)
+- **Increments/Decrements**: INC, DEC, INX, INY, DEX, DEY
+- **Comparisons**: CMP, CPX, CPY with flag setting
+- **Branches**: BEQ, BNE, BCC, BCS, BPL, BMI, BVC, BVS
+- **Jumps/Subroutines**: JMP (absolute/indirect), JSR, RTS
+- **Stack Operations**: PHA, PLA, PHP, PLP
+- **Register Transfers**: TAX, TAY, TXA, TYA, TSX, TXS
+- **Flag Operations**: CLC, SEC, CLV (CLD, SED, CLI, SEI not implemented)
+- **Miscellaneous**: NOP, BIT
 
 **Not Implemented (Interrupt-Related):**
 
--   BRK, RTI, CLI, SEI - Interrupt handling not required for this design
+- BRK, RTI, CLI, SEI - Interrupt handling not required for this design
 
 ### Addressing Modes
 
@@ -313,7 +313,7 @@ sequenceDiagram
 
 The LCD controller generates precise timing for the 480×272 display:
 
-```
+```bash
 Horizontal Timing (9MHz pixel clock):
 ├─ Back Porch: 43 pixels
 ├─ Active Area: 480 pixels
@@ -333,10 +333,10 @@ Frame Rate: 9MHz ÷ (531 × 292) ≈ 58 FPS
 
 The display system uses the [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed):
 
--   **Character Size**: 16×8 pixels (height × width)
--   **Character Set**: ASCII 0-127 (128 characters)
--   **Storage**: 4KB pROM (16 bytes × 256 character slots)
--   **Access**: LCD controller only (not CPU-addressable)
+- **Character Size**: 16×8 pixels (height × width)
+- **Character Set**: ASCII 0-127 (128 characters)
+- **Storage**: 4KB pROM (16 bytes × 256 character slots)
+- **Access**: LCD controller only (not CPU-addressable)
 
 ## 🔧 Custom Instructions
 
@@ -435,30 +435,30 @@ end
 
 **tb_cpu.sv** - Complete CPU Integration Tests:
 
--   Basic instruction execution
--   Memory access patterns
--   Custom instruction validation
--   Flag operation verification
--   Stack operations
--   Branch and jump logic
--   Interrupt handling (placeholder)
--   Complex program execution
--   Error condition handling
+- Basic instruction execution
+- Memory access patterns
+- Custom instruction validation
+- Flag operation verification
+- Stack operations
+- Branch and jump logic
+- Interrupt handling (placeholder)
+- Complex program execution
+- Error condition handling
 
 **tb_cpu_modules.sv** - Unit Tests:
 
--   Individual CPU module testing
--   ALU operation verification
--   Memory controller validation
--   Decoder logic testing
--   Register file operations
+- Individual CPU module testing
+- ALU operation verification
+- Memory controller validation
+- Decoder logic testing
+- Register file operations
 
 **tb_lcd.sv** - Display System Tests:
 
--   LCD timing validation
--   Character rendering verification
--   VRAM access patterns
--   Font ROM interface testing
+- LCD timing validation
+- Character rendering verification
+- VRAM access patterns
+- Font ROM interface testing
 
 ### Writing Custom Tests
 
@@ -531,21 +531,21 @@ end
 
 **1. Clock Domain Optimization:**
 
--   Minimize cross-domain signals
--   Use proper synchronizers
--   Consider clock enable strategies
+- Minimize cross-domain signals
+- Use proper synchronizers
+- Consider clock enable strategies
 
 **2. Memory Access Patterns:**
 
--   Understand SDPB timing requirements
--   Optimize for burst accesses where possible
--   Consider dual-port usage patterns
+- Understand SDPB timing requirements
+- Optimize for burst accesses where possible
+- Consider dual-port usage patterns
 
 **3. Logic Utilization:**
 
--   Monitor LUT and FF usage in synthesis reports
--   Consider pipeline vs. combinational trade-offs
--   Optimize critical path timing
+- Monitor LUT and FF usage in synthesis reports
+- Consider pipeline vs. combinational trade-offs
+- Optimize critical path timing
 
 ### Common Pitfalls
 
@@ -586,21 +586,21 @@ end
 
 **1. Gowin Primitive Usage:**
 
--   SDPB (Simple Dual Port Block RAM) for memory controllers
--   pROM (Program ROM) for font storage
--   PLL (Phase-Locked Loop) for clock generation
+- SDPB (Simple Dual Port Block RAM) for memory controllers
+- pROM (Program ROM) for font storage
+- PLL (Phase-Locked Loop) for clock generation
 
 **2. Resource Utilization:**
 
--   LUT (Look-Up Table) optimization for combinational logic
--   FF (Flip-Flop) placement for sequential elements
--   DSP slice usage for arithmetic operations
+- LUT (Look-Up Table) optimization for combinational logic
+- FF (Flip-Flop) placement for sequential elements
+- DSP slice usage for arithmetic operations
 
 **3. Timing Closure:**
 
--   Critical path analysis and optimization
--   Clock skew management
--   Setup and hold time considerations
+- Critical path analysis and optimization
+- Clock skew management
+- Setup and hold time considerations
 
 ### CPU Architecture Extensions
 
@@ -709,21 +709,21 @@ Complete 6502 instruction set documentation with cycle counts, flags affected, a
 
 **CPU Registers:**
 
--   **PC**: Program Counter (16-bit)
--   **A**: Accumulator (8-bit)
--   **X**: X Index Register (8-bit)
--   **Y**: Y Index Register (8-bit)
--   **SP**: Stack Pointer (8-bit, points into 0x0100-0x01FF)
+- **PC**: Program Counter (16-bit)
+- **A**: Accumulator (8-bit)
+- **X**: X Index Register (8-bit)
+- **Y**: Y Index Register (8-bit)
+- **SP**: Stack Pointer (8-bit, points into 0x0100-0x01FF)
 
 **Status Flags:**
 
--   **C**: Carry flag
--   **Z**: Zero flag
--   **I**: Interrupt disable (not used)
--   **D**: Decimal mode (not used)
--   **B**: Break flag (not used)
--   **V**: Overflow flag
--   **N**: Negative flag
+- **C**: Carry flag
+- **Z**: Zero flag
+- **I**: Interrupt disable (not used)
+- **D**: Decimal mode (not used)
+- **B**: Break flag (not used)
+- **V**: Overflow flag
+- **N**: Negative flag
 
 ## 🤝 Contributing
 
@@ -731,27 +731,27 @@ Complete 6502 instruction set documentation with cycle counts, flags affected, a
 
 Follow the established coding conventions:
 
--   Use `localparam` for constants
--   Prefix internal signals with module name
--   Document complex state machines
--   Use meaningful signal names
--   Add module headers explaining functionality
+- Use `localparam` for constants
+- Prefix internal signals with module name
+- Document complex state machines
+- Use meaningful signal names
+- Add module headers explaining functionality
 
 ### Testing Requirements
 
 All new features should include:
 
--   Unit tests for individual components
--   Integration tests for system-level functionality
--   Waveform verification for timing-critical paths
--   Documentation updates
+- Unit tests for individual components
+- Integration tests for system-level functionality
+- Waveform verification for timing-critical paths
+- Documentation updates
 
 ### Recommended Reading
 
--   **6502 Documentation**: Original MOS Technology manuals and programming guides
--   **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
--   **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
--   **Tang Nano Documentation**: Gowin FPGA user guides and application notes
+- **6502 Documentation**: Original MOS Technology manuals and programming guides
+- **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
+- **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
+- **Tang Nano Documentation**: Gowin FPGA user guides and application notes
 
 ---
 

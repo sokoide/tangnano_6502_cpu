@@ -78,7 +78,7 @@ sudo apt install -y --reinstall \
 
 **GoWin EDA:**
 
-- Download *Gowin V1.9.11.03 Education* for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
+- Download _Gowin V1.9.11.03 Education_ for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
   - Mac users only need macOS version of IDE which includes both compiler & programmer
   - Install macOS IDE into /Applications/GowinIDE.app
   - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSLS. WSL cannot use the programmer -> needs Windows version of it
@@ -332,7 +332,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 
 ## 📁 Directory Structure
 
-```
+```bash
 ├── README.md                       # This file (main guide)
 ├── day99_completed/                # Final completed product (for reference)
 │
@@ -351,19 +351,17 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 ## 🚀 How to Proceed with Learning
 
 1. **Daily Study**:
-
-    - Learn the theory from `dayXX/README.md` (or `README_ja.md`).
-    - Practice by implementing in `dayXX/` (some days provide templates; if not, use `dayXX_completed/` as your runnable starting point).
-    - If you get stuck, refer to `dayXX_completed/`.
+   - Learn the theory from `dayXX/README.md` (or `README_ja.md`).
+   - Practice by implementing in `dayXX/` (some days provide templates; if not, use `dayXX_completed/` as your runnable starting point).
+   - If you get stuck, refer to `dayXX_completed/`.
 
 2. **On-Device Verification**:
-
-    - Test each day's deliverables on the actual Tang Nano.
-    - Experience the differences between simulation and real hardware.
+   - Test each day's deliverables on the actual Tang Nano.
+   - Experience the differences between simulation and real hardware.
 
 3. **Step-by-Step Understanding**:
-    - Make sure you understand the content of the previous day before moving on.
-    - Don't hesitate to refer to the completed version if you don't understand something.
+   - Make sure you understand the content of the previous day before moving on.
+   - Don't hesitate to refer to the completed version if you don't understand something.
 
 ## 🎓 Skill Level After Completion
 

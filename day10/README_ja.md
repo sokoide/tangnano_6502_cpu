@@ -12,11 +12,13 @@
 ### cc65 ツールチェーン
 
 **構成要素:**
+
 - **ca65**: アセンブラ (6502アセンブリ → オブジェクトファイル)
 - **ld65**: リンカ (オブジェクトファイル → 実行ファイル)
 - **cc65**: Cコンパイラ (C言語 → アセンブリ)
 
 **ファイル形式:**
+
 - `.s`: アセンブリソースファイル
 - `.o`: オブジェクトファイル
 - `.bin`: バイナリファイル
@@ -25,6 +27,7 @@
 ### 6502アセンブリ記法
 
 **基本構文:**
+
 ```assembly
 ; コメント
 LABEL:              ; ラベル定義
@@ -35,6 +38,7 @@ LABEL:              ; ラベル定義
 ```
 
 **擬似命令:**
+
 ```assembly
 .org $0200          ; アドレス設定
 .byte $01, $02      ; バイトデータ
@@ -79,7 +83,7 @@ MESSAGE:
 
 ### ビルド設定ファイル (build.cfg)
 
-```
+```bash
 # cc65 configuration for Tang Nano 6502
 
 FEATURES {
@@ -385,23 +389,23 @@ all: $(HEXFILE)
 
 # Assembly to object
 %.o: %.s
-	$(CA65) -t none -o $@ $<
+ $(CA65) -t none -o $@ $<
 
 # Link to binary
 $(BINARY): $(OBJECTS)
-	$(LD65) -C $(CONFIG) -o $@ $^
+ $(LD65) -C $(CONFIG) -o $@ $^
 
 # Convert to Intel HEX
 $(HEXFILE): $(BINARY)
-	$(SREC) $< -binary -offset 0x0200 -o $@ -intel
+ $(SREC) $< -binary -offset 0x0200 -o $@ -intel
 
 # Generate SystemVerilog include file
 include: $(HEXFILE)
-	python3 ../utils/hex_to_sv.py $(HEXFILE) > ../include/boot_program.sv
+ python3 ../utils/hex_to_sv.py $(HEXFILE) > ../include/boot_program.sv
 
 # Clean
 clean:
-	rm -f *.o *.bin *.hex
+ rm -f *.o *.bin *.hex
 
 # Program targets
 hello: PROGRAM = hello_world
@@ -471,11 +475,13 @@ if __name__ == "__main__":
 ## 📝 課題
 
 ### 基礎課題
+
 1. 電卓プログラム (簡単な演算)
 2. デジタル時計表示
 3. パターン生成器
 
 ### 発展課題
+
 1. テトリス風パズルゲーム
 2. UART通信プログラム
 3. 音楽演奏プログラム
@@ -483,12 +489,14 @@ if __name__ == "__main__":
 ## 🔧 開発ワークフロー
 
 ### 1. プログラム作成
+
 ```bash
 # アセンブリファイル編集
 vim hello_world.s
 ```
 
 ### 2. ビルド
+
 ```bash
 # ビルド実行
 make hello
@@ -498,6 +506,7 @@ make include
 ```
 
 ### 3. FPGA書き込み
+
 ```bash
 # プロジェクトディレクトリに戻る
 cd ..
@@ -509,11 +518,13 @@ make download
 ## 📚 トラブルシューティング
 
 ### よくあるエラー
+
 1. **アセンブルエラー**: 構文チェック、ラベル重複確認
 2. **リンクエラー**: アドレス重複、サイズ超過確認
 3. **実行エラー**: メモリマップ確認、無限ループチェック
 
 ### デバッグ技法
+
 1. **IFO命令**: レジスタとメモリの状態確認
 2. **段階的実行**: 小さな部分から段階的にテスト
 3. **シミュレーション**: 実機前にテストベンチで確認
@@ -526,11 +537,12 @@ make download
 - [ ] ビルドシステムの構築
 - [ ] デバッグとトラブルシューティング
 
-## 🎓 コース完了！
+## 🎓 コース完了
 
 おめでとうございます！10日間の学習を通じて以下を習得しました:
 
 ### 習得スキル
+
 ✅ **FPGA開発**: GoWin EDAによる基本的な開発フロー
 ✅ **SystemVerilog**: 中級レベルのHDL設計能力
 ✅ **CPU設計**: 6502アーキテクチャの完全な理解と実装
@@ -538,6 +550,7 @@ make download
 ✅ **実機開発**: 理論と実践を結ぶ実装能力
 
 ### 次のステップ
+
 - より複雑なCPUアーキテクチャへの挑戦
 - 独自のカスタム命令追加
 - パフォーマンス最適化

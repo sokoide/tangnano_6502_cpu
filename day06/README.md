@@ -13,25 +13,27 @@
 
 Implementing a decoder and ALU highlights the biggest difference between software and hardware: **Parallelism**.
 
-1.  **The ALU Calculates Everything at Once:**
-    -   In software: `if (op == ADD) return a + b; else if (op == SUB) return a - b;`
-    -   In hardware: We calculate `a + b`, `a - b`, `a & b`, `a | b` **simultaneously**.
-    -   The "Instruction" just tells the multiplexer (selector) which result to pick.
-    -   *Why?* Because gates are cheap, but waiting for a sequential decision tree is slow.
+1. **The ALU Calculates Everything at Once:**
+   - In software: `if (op == ADD) return a + b; else if (op == SUB) return a - b;`
+   - In hardware: We calculate `a + b`, `a - b`, `a & b`, `a | b` **simultaneously**.
+   - The "Instruction" just tells the multiplexer (selector) which result to pick.
+   - _Why?_ Because gates are cheap, but waiting for a sequential decision tree is slow.
 
-2.  **The Decoder is a Lookup Table:**
-    -   The decoder takes an 8-bit Opcode and outputs ~20 control signals.
-    -   Think of it as a hardcoded Hash Map: `Map<Opcode, ControlSignals>`.
-    -   It purely combinational: `f(opcode) -> signals`. No state, no clock.
+2. **The Decoder is a Lookup Table:**
+   - The decoder takes an 8-bit Opcode and outputs ~20 control signals.
+   - Think of it as a hardcoded Hash Map: `Map<Opcode, ControlSignals>`.
+   - It purely combinational: `f(opcode) -> signals`. No state, no clock.
 
 ### Instruction Decoder Design Policy
 
 **Hierarchical Decoding:**
-1.  **First Stage**: Determine the instruction type (Load/Store/ALU, etc.)
-2.  **Second Stage**: Determine the addressing mode
-3.  **Third Stage**: Generate control signals
+
+1. **First Stage**: Determine the instruction type (Load/Store/ALU, etc.)
+2. **Second Stage**: Determine the addressing mode
+3. **Third Stage**: Generate control signals
 
 **Types of Control Signals:**
+
 - ALU operation selection
 - Register write control
 - Memory access control
@@ -40,6 +42,7 @@ Implementing a decoder and ALU highlights the biggest difference between softwar
 ### ALU Design Requirements
 
 **Supported Operations:**
+
 - Arithmetic operations: ADD, SUB (with carry)
 - Logical operations: AND, OR, XOR
 - Shift operations: ASL, LSR, ROL, ROR
@@ -338,14 +341,16 @@ endmodule
 ## 📝 Assignments
 
 ### Basic Assignments
-1.  Implement the remaining arithmetic/logical instructions
-2.  Implement all shift/rotate instructions
-3.  Implement the compare instructions (CMP, CPX, CPY)
+
+1. Implement the remaining arithmetic/logical instructions
+2. Implement all shift/rotate instructions
+3. Implement the compare instructions (CMP, CPX, CPY)
 
 ### Advanced Assignments
-1.  Implement BCD (Binary Coded Decimal) arithmetic
-2.  Define the behavior of unimplemented instructions
-3.  Optimize the instruction execution cycle
+
+1. Implement BCD (Binary Coded Decimal) arithmetic
+2. Define the behavior of unimplemented instructions
+3. Optimize the instruction execution cycle
 
 ## 📚 What I Learned Today
 
@@ -357,6 +362,7 @@ endmodule
 ## 🎯 Preview for Tomorrow
 
 In Day 07, we will implement the memory interface and stack control:
+
 - Memory bus design
 - Implementation of stack operations
 - Address generation unit

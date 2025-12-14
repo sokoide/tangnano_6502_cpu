@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Design and implement a memory bus interface
--   Detailed implementation of stack operations
--   Implementation of an address generation unit
--   Basic understanding of memory-mapped I/O
+- Design and implement a memory bus interface
+- Detailed implementation of stack operations
+- Implementation of an address generation unit
+- Basic understanding of memory-mapped I/O
 
 ## 📚 Theory
 
@@ -18,31 +18,31 @@
 
 **Instruction Fetch:**
 
--   Reading an instruction from the PC
--   Variable length of 1-3 bytes
+- Reading an instruction from the PC
+- Variable length of 1-3 bytes
 
 **Data Access:**
 
--   Reading/writing data with Load/Store instructions
--   Depends on the addressing mode
+- Reading/writing data with Load/Store instructions
+- Depends on the addressing mode
 
 **Stack Access:**
 
--   PUSH/POP operations
--   Saving/restoring addresses with JSR/RTS
+- PUSH/POP operations
+- Saving/restoring addresses with JSR/RTS
 
 **Indirect Addressing:**
 
--   JMP ($nnnn)
--   (zp,X) / (zp),Y addressing
+- JMP ($nnnn)
+- (zp,X) / (zp),Y addressing
 
 ### Stack Operation
 
 **Features of the 6502 Stack:**
 
--   Fixed area: $0100-$01FF
--   Downward: From high addresses to low addresses
--   8-bit stack pointer: $FF -> $00
+- Fixed area: $0100-$01FF
+- Downward: From high addresses to low addresses
+- 8-bit stack pointer: $FF -> $00
 
 ## 🛠️ Practice 1: Memory Controller
 
@@ -392,28 +392,28 @@ endmodule
 
 ### Basic Assignments
 
-1.  Implement PHA/PLA (push/pop register to/from stack)
-2.  Reproduce the page boundary bug in indirect addressing
-3.  Implement memory access wait cycles
+1. Implement PHA/PLA (push/pop register to/from stack)
+2. Reproduce the page boundary bug in indirect addressing
+3. Implement memory access wait cycles
 
 ### Advanced Assignments
 
-1.  Coordinated operation with a DMA controller
-2.  Implement memory protection features
-3.  Basic design of a cache memory
+1. Coordinated operation with a DMA controller
+2. Implement memory protection features
+3. Basic design of a cache memory
 
 ## 📚 What I Learned Today
 
--   [ ] Memory bus interface design
--   [ ] Detailed implementation of stack operations
--   [ ] The complexity of address generation
--   [ ] State machine implementation of JSR/RTS
--   [ ] Basics of memory-mapped I/O
+- [ ] Memory bus interface design
+- [ ] Detailed implementation of stack operations
+- [ ] The complexity of address generation
+- [ ] State machine implementation of JSR/RTS
+- [ ] Basics of memory-mapped I/O
 
 ## 🎯 Preview for Tomorrow
 
 In Day 08, we will integrate and test the CPU core:
 
--   Combining the various modules
--   Instruction execution cycle control
--   Verifying operation with a basic program
+- Combining the various modules
+- Instruction execution cycle control
+- Verifying operation with a basic program

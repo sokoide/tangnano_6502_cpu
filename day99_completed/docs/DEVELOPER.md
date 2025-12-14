@@ -12,17 +12,17 @@ A comprehensive learning guide for FPGA developers working with the Tang Nano 65
 
 This project demonstrates a complete computer system implementation on FPGA, combining:
 
--   **6502 CPU**: A classic 8-bit microprocessor with custom extensions
--   **Display System**: Hardware-accelerated text rendering on LCD
--   **Memory Hierarchy**: Multiple memory types with different access patterns
--   **Cross-Platform Build**: Support for Tang Nano 9K and 20K boards
+- **6502 CPU**: A classic 8-bit microprocessor with custom extensions
+- **Display System**: Hardware-accelerated text rendering on LCD
+- **Memory Hierarchy**: Multiple memory types with different access patterns
+- **Cross-Platform Build**: Support for Tang Nano 9K and 20K boards
 
 ### Key Learning Concepts
 
--   **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
--   **Memory Controllers**: SDPB RAM, VRAM, and pROM integration
--   **State Machines**: Complex CPU instruction execution pipeline
--   **Hardware/Software Interface**: Assembly programming meets FPGA implementation
+- **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
+- **Memory Controllers**: SDPB RAM, VRAM, and pROM integration
+- **State Machines**: Complex CPU instruction execution pipeline
+- **Hardware/Software Interface**: Assembly programming meets FPGA implementation
 
 ## 🚀 Getting Started
 
@@ -30,16 +30,16 @@ This project demonstrates a complete computer system implementation on FPGA, com
 
 **Hardware Knowledge:**
 
--   Basic digital logic and state machines
--   Understanding of clocked circuits and timing
--   Familiarity with memory interfaces
+- Basic digital logic and state machines
+- Understanding of clocked circuits and timing
+- Familiarity with memory interfaces
 
 **Software Tools:**
 
--   **Gowin EDA**: FPGA synthesis and place & route
--   **cc65**: 6502 assembler and linker
--   **Make**: Build automation
--   **DSIM Studio** (optional): Advanced simulation environment
+- **Gowin EDA**: FPGA synthesis and place & route
+- **cc65**: 6502 assembler and linker
+- **Make**: Build automation
+- **DSIM Studio** (optional): Advanced simulation environment
 
 ### Quick Setup
 
@@ -127,7 +127,7 @@ graph TB
 
 The system implements a sophisticated memory hierarchy optimized for both CPU access and display rendering:
 
-```
+```bash
 CPU Address Space (64KB addressable):
 ┌─────────────────┬─────────────────┬──────────────────────────────────┐
 │ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B      │
@@ -149,7 +149,7 @@ CPU Address Space (64KB addressable):
 
 ### Module Hierarchy
 
-```
+```bash
 src/
 ├── top.sv              # System integration and clock management
 ├── cpu.sv              # 6502 CPU core with modular components
@@ -335,7 +335,7 @@ sequenceDiagram
 
 The LCD controller generates precise timing for the 480×272 display:
 
-```
+```bash
 Horizontal Timing (9MHz pixel clock):
 ├─ Back Porch: 43 pixels
 ├─ Active Area: 480 pixels
@@ -424,30 +424,30 @@ end
 
 **tb_cpu.sv** - Complete CPU Integration Tests:
 
--   Basic instruction execution
--   Memory access patterns
--   Custom instruction validation
--   Flag operation verification
--   Stack operations
--   Branch and jump logic
--   Interrupt handling (placeholder)
--   Complex program execution
--   Error condition handling
+- Basic instruction execution
+- Memory access patterns
+- Custom instruction validation
+- Flag operation verification
+- Stack operations
+- Branch and jump logic
+- Interrupt handling (placeholder)
+- Complex program execution
+- Error condition handling
 
 **tb_cpu_modules.sv** - Unit Tests:
 
--   Individual CPU module testing
--   ALU operation verification
--   Memory controller validation
--   Decoder logic testing
--   Register file operations
+- Individual CPU module testing
+- ALU operation verification
+- Memory controller validation
+- Decoder logic testing
+- Register file operations
 
 **tb_lcd.sv** - Display System Tests:
 
--   LCD timing validation
--   Character rendering verification
--   VRAM access patterns
--   Font ROM interface testing
+- LCD timing validation
+- Character rendering verification
+- VRAM access patterns
+- Font ROM interface testing
 
 ### Writing Custom Tests
 
@@ -520,21 +520,21 @@ end
 
 **1. Clock Domain Optimization:**
 
--   Minimize cross-domain signals
--   Use proper synchronizers
--   Consider clock enable strategies
+- Minimize cross-domain signals
+- Use proper synchronizers
+- Consider clock enable strategies
 
 **2. Memory Access Patterns:**
 
--   Understand SDPB timing requirements
--   Optimize for burst accesses where possible
--   Consider dual-port usage patterns
+- Understand SDPB timing requirements
+- Optimize for burst accesses where possible
+- Consider dual-port usage patterns
 
 **3. Logic Utilization:**
 
--   Monitor LUT and FF usage in synthesis reports
--   Consider pipeline vs. combinational trade-offs
--   Optimize critical path timing
+- Monitor LUT and FF usage in synthesis reports
+- Consider pipeline vs. combinational trade-offs
+- Optimize critical path timing
 
 ### Common Pitfalls
 
@@ -574,35 +574,33 @@ end
 ### Advanced Topics
 
 1. **FPGA-Specific Optimizations**
-
-    - Gowin primitive usage
-    - Block RAM configuration
-    - DSP slice utilization
+   - Gowin primitive usage
+   - Block RAM configuration
+   - DSP slice utilization
 
 2. **CPU Architecture Extensions**
-
-    - Adding new instruction sets
-    - Implementing interrupts
-    - Cache design considerations
+   - Adding new instruction sets
+   - Implementing interrupts
+   - Cache design considerations
 
 3. **Display System Enhancements**
-    - Sprite rendering
-    - Hardware scrolling
-    - Color palette management
+   - Sprite rendering
+   - Hardware scrolling
+   - Color palette management
 
 ### Recommended Reading
 
--   **6502 Documentation**: Original MOS Technology manuals
--   **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
--   **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
--   **Tang Nano Documentation**: Gowin FPGA user guides and application notes
+- **6502 Documentation**: Original MOS Technology manuals
+- **FPGA Design**: "Digital Design and Computer Architecture" by Harris & Harris
+- **SystemVerilog**: "SystemVerilog for Design" by Sutherland, Davidmann & Flake
+- **Tang Nano Documentation**: Gowin FPGA user guides and application notes
 
 ### Community and Support
 
--   **Project Repository**: Issues and discussions
--   **Tang Nano Community**: Hardware-specific questions
--   **6502 Forums**: Vintage computing and emulation communities
--   **FPGA Communities**: General FPGA design discussions
+- **Project Repository**: Issues and discussions
+- **Tang Nano Community**: Hardware-specific questions
+- **6502 Forums**: Vintage computing and emulation communities
+- **FPGA Communities**: General FPGA design discussions
 
 ---
 

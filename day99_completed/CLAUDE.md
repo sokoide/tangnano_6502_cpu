@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Tang Nano 9K/20K FPGA project implementing a 6502 CPU with LCD controller and BSRAM. It displays text on a 480x272 LCD module using a custom 6502 CPU implementation in SystemVerilog.
 
 **Key Components:**
+
 - 6502 CPU core (`src/cpu.sv`) with most standard instructions plus custom extensions
 - LCD controller (`src/lcd.sv`) for 480x272 display timing
 - Text-based VRAM system with font ROM
@@ -15,6 +16,7 @@ This is a Tang Nano 9K/20K FPGA project implementing a 6502 CPU with LCD control
 ## Build Commands
 
 ### FPGA Synthesis and Programming
+
 ```bash
 # Build FPGA bitstream
 make
@@ -27,6 +29,7 @@ make clean
 ```
 
 ### Assembly Programs
+
 ```bash
 cd examples
 # Prerequisites: brew install srecord cc65 (or apt install on Linux)
@@ -44,20 +47,23 @@ make
 ## Architecture
 
 ### Memory Map
+
 - `0x0000-0x00FF`: Zero Page (256B)
-- `0x0100-0x01FF`: Stack (256B) 
+- `0x0100-0x01FF`: Stack (256B)
 - `0x0200-0x7BFF`: RAM (30.5KB) - Program starts at 0x0200
 - `0x7C00-0x7FFF`: Shadow VRAM (1KB) - CPU-readable copy of VRAM
 - `0xE000-0xE3FF`: Text VRAM (1KB) - Write-only for CPU
 - `0xF000-0xFFFF`: Font ROM (4KB) - Not CPU accessible, used by LCD controller
 
 ### Custom 6502 Instructions
+
 - `0xCF`: CVR - Clear VRAM
 - `0xDF`: IFO - Info (show registers and memory for debugging)
 - `0xEF`: HLT - Halt CPU
 - `0xFF`: WVS - Wait for VSync
 
 ### Text Display
+
 - 60 columns × 17 rows text mode
 - 16×8 pixel font characters
 - Font data from Sweet16Font (boost licensed)
@@ -72,6 +78,7 @@ make
 ## Testing
 
 **Simulation**: Use DSIM Studio on Linux/Windows x64 (not macOS):
+
 - Open `lcd_cpu_bsram.dpf` project
 - Run "library configuration" then `tb_cpu` simulation
 - Testbenches: `tb_cpu.sv`, `tb_lcd.sv`, `tb_top.sv`
@@ -79,8 +86,9 @@ make
 ## Device Variants
 
 **Tang Nano 9K vs 20K**: Three files need modification:
+
 1. `Makefile`: DEVICE variable
-2. `lcd_cpu_bsram.gprj`: Device and constraint file selection  
+2. `lcd_cpu_bsram.gprj`: Device and constraint file selection
 3. `src/top.sv`: Reset button polarity (`rst_n = ResetButton` vs `rst_n = !ResetButton`)
 
 ## Key Files

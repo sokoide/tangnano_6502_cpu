@@ -62,13 +62,13 @@ For example, in `tang_nano_9k.cst`:
   The I/O standard (voltage level + electrical behavior).
   - `LVCMOS33`: 3.3V CMOS logic levels.
   - `LVCMOS18`: 1.8V CMOS logic levels.
-  Your board may have different banks powered at different voltages, so output pins often *must* match the bank voltage.
+    Your board may have different banks powered at different voltages, so output pins often _must_ match the bank voltage.
 - `PULL_MODE=...`
   Built-in weak pull resistor configuration (when the pin is not actively driven).
   - `UP`: weak pull-up.
   - `DOWN`: weak pull-down.
   - `NONE`: no pull resistor.
-  For clock inputs you usually want `NONE` (external oscillator drives it). For buttons/switches, a pull-up/down can make the signal stable when not pressed.
+    For clock inputs you usually want `NONE` (external oscillator drives it). For buttons/switches, a pull-up/down can make the signal stable when not pressed.
 - `DRIVE=...` (for outputs)
   Output drive strength (mA). Higher is “stronger”, but can increase noise/EMI; use what your board needs.
 
@@ -106,7 +106,7 @@ flowchart LR
 
 ### `always_ff` / `posedge` (clocked logic)
 
-In this project, the counter is a *register* that updates on the rising edge of the clock:
+In this project, the counter is a _register_ that updates on the rising edge of the clock:
 
 - `posedge clk` means “when `clk` goes from 0 → 1”.
 - In a clocked block you typically use **non-blocking assignment** `<=`:
@@ -151,23 +151,20 @@ That’s why `top_9k.sv` uses `assign led = counter[24] ? 1'b0 : 1'bz;`.
 ## Learning Points
 
 1. **Basic SystemVerilog Syntax**
-
-    - Module definition
-    - Clock-synchronous circuits using `always_ff` / `posedge`
-    - Combinational circuits using `assign`
+   - Module definition
+   - Clock-synchronous circuits using `always_ff` / `posedge`
+   - Combinational circuits using `assign`
 
 2. **Clock Division**
-
-    - Divider circuit using a counter
-    - Calculation of bit width (27MHz / 2^25 ≈ 0.8Hz)
+   - Divider circuit using a counter
+   - Calculation of bit width (27MHz / 2^25 ≈ 0.8Hz)
 
 3. **FPGA Development Flow**
-
-    - Synthesis
-    - Place & Route
-    - Bitstream Generation
-    - Programming
+   - Synthesis
+   - Place & Route
+   - Bitstream Generation
+   - Programming
 
 4. **Constraint File**
-    - Specifying pin assignments
-    - Setting electrical properties
+   - Specifying pin assignments
+   - Setting electrical properties

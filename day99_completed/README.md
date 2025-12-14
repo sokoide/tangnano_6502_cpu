@@ -12,8 +12,8 @@ This guide explains how to build and deploy the project on Tang Nano 9K and 20K 
 
 ### Prerequisites
 
--   **Hardware**: Tang Nano 9K or 20K
--   **Software**: Gowin EDA, cc65, Make
+- **Hardware**: Tang Nano 9K or 20K
+- **Software**: Gowin EDA, cc65, Make
 
 ### 1. Clone the Repository
 
@@ -36,12 +36,12 @@ make BOARD=20k download
 
 ## ✨ Features
 
--   **Complete 6502 CPU**: Implements the standard instruction set with custom extensions for hardware control.
--   **LCD Text Display**: Drives a 480x272 LCD to display 60x17 characters with hardware-accelerated font rendering.
--   **Modular Design**: Clean separation between the CPU core, LCD controller, and memory systems.
--   **Assembly Programming**: Integrated with the cc65 toolchain, with several example programs included.
--   **Comprehensive Testing**: Includes unit tests, integration suites, and simulation testbenches.
--   **Multi-Board Support**: Easily switch between Tang Nano 9K and 20K targets.
+- **Complete 6502 CPU**: Implements the standard instruction set with custom extensions for hardware control.
+- **LCD Text Display**: Drives a 480x272 LCD to display 60x17 characters with hardware-accelerated font rendering.
+- **Modular Design**: Clean separation between the CPU core, LCD controller, and memory systems.
+- **Assembly Programming**: Integrated with the cc65 toolchain, with several example programs included.
+- **Comprehensive Testing**: Includes unit tests, integration suites, and simulation testbenches.
+- **Multi-Board Support**: Easily switch between Tang Nano 9K and 20K targets.
 
 ## 📚 Documentation
 
@@ -60,7 +60,7 @@ For more details, refer to the documentation:
 
 ## 🏗️ Project Structure
 
-```
+```bash
 ├── src/                    # SystemVerilog source files
 │   ├── cpu.sv             # Main CPU module
 │   ├── lcd.sv             # LCD timing and character rendering
@@ -78,14 +78,14 @@ For more details, refer to the documentation:
 
 In addition to the standard 6502 instruction set, this CPU includes custom opcodes for efficient hardware interaction:
 
--   `0xCF` **CVR**: Clear VRAM (hardware-accelerated screen clear).
--   `0xDF` **IFO**: Info/Debug (display registers and memory).
--   `0xEF` **HLT**: Halt CPU while keeping the LCD active.
--   `0xFF` **WVS**: Wait for VSync to synchronize with display refresh.
+- `0xCF` **CVR**: Clear VRAM (hardware-accelerated screen clear).
+- `0xDF` **IFO**: Info/Debug (display registers and memory).
+- `0xEF` **HLT**: Halt CPU while keeping the LCD active.
+- `0xFF` **WVS**: Wait for VSync to synchronize with display refresh.
 
 ### Memory Map
 
-```
+```bash
 0x0000-0x01FF  Zero Page & Stack (512B)
 0x0200-0x7BFF  Program RAM (30.5KB)
 0x7C00-0x7FFF  Shadow VRAM (1KB, read-only)
@@ -95,9 +95,9 @@ In addition to the standard 6502 instruction set, this CPU includes custom opcod
 
 **Display System:**
 
--   60×17 character text mode (480×272 pixels)
--   16×8 pixel font characters with [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed)
--   Hardware accelerated character rendering
+- 60×17 character text mode (480×272 pixels)
+- 16×8 pixel font characters with [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed)
+- Hardware accelerated character rendering
 
 Complete instruction reference and addressing modes available in [docs/README_architecture_en.md](./docs/README_architecture_en.md).
 
@@ -121,8 +121,8 @@ make download               # Program the FPGA with the example
 
 **Online Tools:**
 
--   [6502 Assembler](https://sokoide.github.io/6502-assembler/)
--   [6502 Debugger](https://sokoide.github.io/6502-emulator/)
+- [6502 Assembler](https://sokoide.github.io/6502-assembler/)
+- [6502 Debugger](https://sokoide.github.io/6502-emulator/)
 
 ## 🧪 Testing and Simulation
 
@@ -142,8 +142,8 @@ Contributions are welcome! Please review the coding standards and development gu
 
 ## 📄 License
 
--   **Font**: [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost Software License)
--   **Project Code**: See individual file headers for licensing information.
+- **Font**: [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost Software License)
+- **Project Code**: See individual file headers for licensing information.
 
 ## 🖼️ Example Output
 

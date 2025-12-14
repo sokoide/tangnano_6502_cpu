@@ -12,28 +12,25 @@ In Day 06, we will implement the core of the 6502 CPU: the instruction decoder a
 ### What You Will Learn Today
 
 1. **Instruction Decoder Design**
-
-    - Analysis of the 6502 instruction set
-    - Generating control signals from opcodes
-    - Determining the addressing mode
+   - Analysis of the 6502 instruction set
+   - Generating control signals from opcodes
+   - Determining the addressing mode
 
 2. **ALU Implementation**
-
-    - Arithmetic operations (ADD, SUB)
-    - Logical operations (AND, OR, XOR)
-    - Shift and rotate operations
-    - Flag generation (N, Z, C, V)
+   - Arithmetic operations (ADD, SUB)
+   - Logical operations (AND, OR, XOR)
+   - Shift and rotate operations
+   - Flag generation (N, Z, C, V)
 
 3. **Status Register Management**
-
-    - Accurate implementation of the 6502 flags
-    - Flag update control for each instruction
-    - Implementation of the NV-BDIZC format
+   - Accurate implementation of the 6502 flags
+   - Flag update control for each instruction
+   - Implementation of the NV-BDIZC format
 
 4. **System Integration**
-    - Coordination of the decoder, ALU, and status register
-    - Execution of actual 6502 instructions
-    - Debugging and testing
+   - Coordination of the decoder, ALU, and status register
+   - Execution of actual 6502 instructions
+   - Debugging and testing
 
 ## Implementation Details
 
@@ -180,7 +177,7 @@ TXA         // A = X, N=X[7], Z=(X==0)
 
 ### Required Files
 
-```
+```bash
 day06_completed/
 ├── cpu_decoder.sv           # Instruction decoder
 ├── cpu_alu.sv              # Arithmetic logic unit
@@ -282,98 +279,90 @@ LSR A       ; A = $40 (01000000), C=1
 ### Instruction Decoding
 
 1. **Opcode Analysis**:
-
-    - Identify instruction from 8-bit opcode
-    - Determine addressing mode
-    - Determine immediate/memory access
+   - Identify instruction from 8-bit opcode
+   - Determine addressing mode
+   - Determine immediate/memory access
 
 2. **Control Signal Generation**:
-    - ALU operation selection
-    - Datapath control
-    - Memory access control
+   - ALU operation selection
+   - Datapath control
+   - Memory access control
 
 ### ALU Design
 
 1. **Operation Implementation**:
-
-    - Parallel operations in a combinational circuit
-    - Consideration of carry propagation
-    - Overflow detection logic
+   - Parallel operations in a combinational circuit
+   - Consideration of carry propagation
+   - Overflow detection logic
 
 2. **Flag Generation**:
-    - Flag update rules for each operation
-    - 6502-specific behavior (INC/DEC do not affect carry)
+   - Flag update rules for each operation
+   - 6502-specific behavior (INC/DEC do not affect carry)
 
 ### System Integration
 
 1. **Inter-Module Coordination**:
-
-    - Decoder -> ALU -> Status
-    - Appropriate timing control
-    - Ensuring debuggability
+   - Decoder -> ALU -> Status
+   - Appropriate timing control
+   - Ensuring debuggability
 
 2. **On-Device Verification**:
-    - Verifying operation on the Tang Nano
-    - Status display with LEDs
-    - Control with switches
+   - Verifying operation on the Tang Nano
+   - Status display with LEDs
+   - Control with switches
 
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Flags are not set correctly**
-
-    - Check the flag generation logic of the ALU
-    - Check the update control of the status register
-    - Check the flag update rules for each instruction
+   - Check the flag generation logic of the ALU
+   - Check the update control of the status register
+   - Check the flag update rules for each instruction
 
 2. **Operation result is not as expected**
-
-    - Check the operation logic within the ALU
-    - Check the setting of the carry input
-    - Check the operand selection
+   - Check the operation logic within the ALU
+   - Check the setting of the carry input
+   - Check the operand selection
 
 3. **Instruction is not decoded correctly**
-    - Check the opcode pattern matching
-    - Check the completeness of the `case` statement
-    - Check the appropriateness of the default behavior
+   - Check the opcode pattern matching
+   - Check the completeness of the `case` statement
+   - Check the appropriateness of the default behavior
 
 ### Debugging Methods
 
 1. **Utilize Simulation**:
 
-    ```bash
-    make test
-    # Runs Verilator + the testbench (also: make test)
-    ```
+   ```bash
+   make test
+   # Runs Verilator + the testbench (also: make test)
+   ```
 
 2. **Step-by-Step Testing**:
-
-    - ALU unit test
-    - Decoder unit test
-    - Integration test
+   - ALU unit test
+   - Decoder unit test
+   - Integration test
 
 3. **On-Device Verification**:
-    - Status verification with LEDs
-    - Manual control with switches
+   - Status verification with LEDs
+   - Manual control with switches
 
 ## Advanced Assignments
 
 ### Feature Extensions
 
 1. **Add Instructions**:
-
-    - Add unimplemented instructions
-    - Extended instruction set
+   - Add unimplemented instructions
+   - Extended instruction set
 
 2. **Optimization**:
-
-    - Timing improvement
-    - Resource efficiency
+   - Timing improvement
+   - Resource efficiency
 
 3. **Debug Features**:
-    - Breakpoints
-    - Step execution
+   - Breakpoints
+   - Step execution
 
 ### Next Steps
 

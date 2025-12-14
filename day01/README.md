@@ -39,7 +39,7 @@ Keep this in mind as you learn. You are a circuit designer, not just a programme
 #### Analogy: The Build Process
 
 - **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
-- **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly *where* on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
+- **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly _where_ on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
 
 ### Tang Nano Basic Specifications
 
@@ -138,8 +138,8 @@ Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.m
 2. Select "File" → "New Project"
 3. Project name: `led_blink`
 4. Device selection:
-    - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
-    - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
+   - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
+   - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
 
 ### Step 2: Create HDL Code
 
@@ -176,8 +176,8 @@ flowchart LR
 ```
 
 - `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` for almost everything**.
-    - If you drive it with `assign`, it acts like a wire.
-    - If you drive it inside `always_ff`, it acts like a register.
+  - If you drive it with `assign`, it acts like a wire.
+  - If you drive it inside `always_ff`, it acts like a register.
 - `wire`: The older Verilog type for connecting components. You only strictly need it for signals with multiple drivers (like bidirectional buses), which we don't use here.
 - `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. `logic` is generally recommended for new SystemVerilog code.
 
@@ -187,7 +187,7 @@ flowchart LR
 **Important Rule for Software Engineers:**
 
 - Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
-- Think of `assign` as creating a component with **no memory**. Its output changes *instantly* whenever its inputs change. This is the essence of parallel hardware.
+- Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
 - Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
 
 ### Step 3: Create Constraint File
@@ -196,7 +196,7 @@ Create a `tang_nano.cst` file:
 
 **Tang Nano 9K:**
 
-```
+```systemverilog
 IO_LOC "clk" 52;
 IO_LOC "led" 10;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
@@ -205,7 +205,7 @@ IO_PORT "led" IO_TYPE=LVCMOS18;
 
 **Tang Nano 20K:**
 
-```
+```systemverilog
 IO_LOC "clk" 4;
 IO_LOC "led" 15;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
@@ -247,18 +247,16 @@ Clock input pins are normally driven strongly by the board oscillator, so `PULL_
 ### Common Issues
 
 1. **Device not recognized**
-
-    - Check if the USB driver is installed correctly
-    - Check if the switch on the Tang Nano is in the correct position
+   - Check if the USB driver is installed correctly
+   - Check if the switch on the Tang Nano is in the correct position
 
 2. **Synthesis error**
-
-    - Check for syntax errors in the SystemVerilog code
-    - Confirm that the module name and file name match
+   - Check for syntax errors in the SystemVerilog code
+   - Confirm that the module name and file name match
 
 3. **Place & Route error**
-    - Check if the pin numbers in the constraint file are correct
-    - Confirm that the constraint file corresponds to the board you are using
+   - Check if the pin numbers in the constraint file are correct
+   - Confirm that the constraint file corresponds to the board you are using
 
 ## 📝 Assignments
 

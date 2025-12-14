@@ -7,24 +7,24 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the 13 addressing modes of the 6502
--   Learn the classification and operation of major instruction groups
--   Master how to implement effective address calculation
--   Understand actual instruction encoding
+- Understand the 13 addressing modes of the 6502
+- Learn the classification and operation of major instruction groups
+- Master how to implement effective address calculation
+- Understand actual instruction encoding
 
 ## 📚 Theory
 
 ### Addressing Mode List
 
-1.  **Implied** - No operand (TAX, RTS)
-2.  **Accumulator** - A register operation (ASL A)
-3.  **Immediate** - Immediate value (LDA #$80)
-4.  **Zero Page** - Zero page (LDA $80)
-5.  **Zero Page,X** - Zero page + X (LDA $80,X)
-6.  **Zero Page,Y** - Zero page + Y (LDX $80,Y)
-7.  **Absolute** - Absolute address (LDA $1234)
-8.  **Absolute,X** - Absolute + X (LDA $1234,X)
-9.  **Absolute,Y** - Absolute + Y (LDA $1234,Y)
+1. **Implied** - No operand (TAX, RTS)
+2. **Accumulator** - A register operation (ASL A)
+3. **Immediate** - Immediate value (LDA #$80)
+4. **Zero Page** - Zero page (LDA $80)
+5. **Zero Page,X** - Zero page + X (LDA $80,X)
+6. **Zero Page,Y** - Zero page + Y (LDX $80,Y)
+7. **Absolute** - Absolute address (LDA $1234)
+8. **Absolute,X** - Absolute + X (LDA $1234,X)
+9. **Absolute,Y** - Absolute + Y (LDA $1234,Y)
 10. **Indirect** - Indirect (JMP ($1234))
 11. **Indexed Indirect** - (zp,X) (LDA ($80,X))
 12. **Indirect Indexed** - (zp),Y (LDA ($80),Y)
@@ -34,20 +34,20 @@
 
 **Data Transfer:**
 
--   LDA, LDX, LDY (Load)
--   STA, STX, STY (Store)
--   TAX, TAY, TXA, TYA, TSX, TXS (Transfer)
+- LDA, LDX, LDY (Load)
+- STA, STX, STY (Store)
+- TAX, TAY, TXA, TYA, TSX, TXS (Transfer)
 
 **Arithmetic:**
 
--   ADC, SBC (Add/Subtract)
--   AND, ORA, EOR (Logical operations)
--   ASL, LSR, ROL, ROR (Shift/Rotate)
+- ADC, SBC (Add/Subtract)
+- AND, ORA, EOR (Logical operations)
+- ASL, LSR, ROL, ROR (Shift/Rotate)
 
 **Branch/Jump:**
 
--   BEQ, BNE, BCS, BCC, BMI, BPL, BVS, BVC (Conditional branch)
--   JMP, JSR, RTS (Jump/Subroutine)
+- BEQ, BNE, BCS, BCC, BMI, BPL, BVS, BVC (Conditional branch)
+- JMP, JSR, RTS (Jump/Subroutine)
 
 ## 🛠️ Practice 1: Addressing Mode Calculator
 
@@ -226,15 +226,15 @@ endmodule
 
 ### Basic Assignments
 
-1.  Implement all addressing modes
-2.  Complete decoder for major instructions
-3.  Create test cases for branch instructions
+1. Implement all addressing modes
+2. Complete decoder for major instructions
+3. Create test cases for branch instructions
 
 ### Advanced Assignments
 
-1.  Instruction cycle count calculator
-2.  Detection of page boundary crossing
-3.  Illegal instruction detection function
+1. Instruction cycle count calculator
+2. Detection of page boundary crossing
+3. Illegal instruction detection function
 
 ## 📚 Important Implementation Points
 
@@ -242,7 +242,7 @@ endmodule
 
 The 6502 stores 16-bit addresses in little-endian format:
 
-```
+```bash
 Address $1234 is stored in memory as [34] [12]
 ```
 
@@ -250,29 +250,29 @@ Address $1234 is stored in memory as [34] [12]
 
 Some addressing modes require an extra cycle if a page boundary is crossed:
 
--   Absolute,X / Absolute,Y
--   (zp),Y
+- Absolute,X / Absolute,Y
+- (zp),Y
 
 ### Branch Calculation
 
 Relative branches are a signed offset from the current PC:
 
--   Positive value: Forward branch
--   Negative value: Backward branch
--   Range: -128 to +127
+- Positive value: Forward branch
+- Negative value: Backward branch
+- Range: -128 to +127
 
 ## 📚 What I Learned Today
 
--   [ ] 13 types of addressing modes
--   [ ] Classification and features of instructions
--   [ ] How to calculate effective addresses
--   [ ] Handling of little-endian
--   [ ] Implementation of branch calculation
+- [ ] 13 types of addressing modes
+- [ ] Classification and features of instructions
+- [ ] How to calculate effective addresses
+- [ ] Handling of little-endian
+- [ ] Implementation of branch calculation
 
 ## 🎯 Preview for Tomorrow
 
 In Day 06, as the first stage of CPU implementation, we will implement the decoder and ALU in detail:
 
--   Complete instruction decoder
--   ALU design and implementation
--   Flag generation logic
+- Complete instruction decoder
+- ALU design and implementation
+- Flag generation logic

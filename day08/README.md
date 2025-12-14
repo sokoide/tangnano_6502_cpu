@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Integration and connection of each CPU module
--   Implementation of the instruction execution cycle control
--   Operational testing with a basic 6502 program
--   Mastering debugging methods and simulation techniques
+- Integration and connection of each CPU module
+- Implementation of the instruction execution cycle control
+- Operational testing with a basic 6502 program
+- Mastering debugging methods and simulation techniques
 
 ## 📚 Theory
 
@@ -18,26 +18,26 @@
 
 **Basic Cycle (minimum 2 clocks):**
 
-1.  **Fetch**: Read opcode from PC
-2.  **Decode**: Analyze instruction and read operand
-3.  **Execute**: Perform ALU operation and update registers
-4.  **Writeback**: Write back the result
+1. **Fetch**: Read opcode from PC
+2. **Decode**: Analyze instruction and read operand
+3. **Execute**: Perform ALU operation and update registers
+4. **Writeback**: Write back the result
 
 **Variable Number of Cycles:**
 
--   2-7 cycles depending on the addressing mode
--   +1 cycle for page boundary crossing
--   +1 cycle for a successful branch
+- 2-7 cycles depending on the addressing mode
+- +1 cycle for page boundary crossing
+- +1 cycle for a successful branch
 
 ### CPU State Machine
 
 **Main States:**
 
--   FETCH: Instruction fetch
--   DECODE: Instruction decode and address calculation
--   EXECUTE: Execute ALU operation
--   MEMORY: Memory access
--   WRITEBACK: Write back result
+- FETCH: Instruction fetch
+- DECODE: Instruction decode and address calculation
+- EXECUTE: Execute ALU operation
+- MEMORY: Memory access
+- WRITEBACK: Write back result
 
 ## 🛠️ Practice 1: CPU Integration Module
 
@@ -401,29 +401,29 @@ end
 
 ### Basic Assignments
 
-1.  Implement and test branch instructions
-2.  Test stack operations (JSR/RTS)
-3.  Verify flag behavior of arithmetic operations
+1. Implement and test branch instructions
+2. Test stack operations (JSR/RTS)
+3. Verify flag behavior of arithmetic operations
 
 ### Advanced Assignments
 
-1.  Basic implementation of interrupt handling
-2.  Performance optimization
-3.  Add error detection features
+1. Basic implementation of interrupt handling
+2. Performance optimization
+3. Add error detection features
 
 ## 🔧 Debugging Techniques
 
 ### 1. Waveform Analysis
 
--   Verifying operation on a clock-cycle basis
--   Timing relationship of signals
--   Verifying state transitions
+- Verifying operation on a clock-cycle basis
+- Timing relationship of signals
+- Verifying state transitions
 
 ### 2. Assertions
 
--   Comparison with expected values
--   Detection of illegal states
--   Verifying the validity of register values
+- Comparison with expected values
+- Detection of illegal states
+- Verifying the validity of register values
 
 ### 3. Log Output
 
@@ -438,16 +438,16 @@ end
 
 ## 📚 What I Learned Today
 
--   [ ] How to integrate each CPU module
--   [ ] Implementation of the instruction execution cycle
--   [ ] Control with a state machine
--   [ ] Design of a testbench
--   [ ] Utilization of debugging techniques
+- [ ] How to integrate each CPU module
+- [ ] Implementation of the instruction execution cycle
+- [ ] Control with a state machine
+- [ ] Design of a testbench
+- [ ] Utilization of debugging techniques
 
 ## 🎯 Preview for Tomorrow
 
 In Day 09, we will learn about LCD control and system integration:
 
--   LCD timing control
--   Character display system
--   Implementation of VRAM
+- LCD timing control
+- Character display system
+- Implementation of VRAM

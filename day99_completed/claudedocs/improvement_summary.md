@@ -167,9 +167,9 @@ LCD_RED_BORDER, LCD_GREEN_BORDER, LCD_BLUE_BORDER
 
 ### Priority 2 (Enhancements)
 
-4. **Parameter Validation**: Add design-time parameter checking
-5. **Test Documentation**: Document verification strategy
-6. **Performance Optimization**: Add timing constraint documentation
+1. **Parameter Validation**: Add design-time parameter checking
+2. **Test Documentation**: Document verification strategy
+3. **Performance Optimization**: Add timing constraint documentation
 
 ## Success Metrics
 

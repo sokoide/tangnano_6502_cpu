@@ -12,27 +12,24 @@ In Day 08, we will integrate all the components created so far to implement a fu
 ### What You Will Learn Today
 
 1. **CPU Architecture Integration**
-
-    - Datapath design
-    - Control unit implementation
-    - Register file management
+   - Datapath design
+   - Control unit implementation
+   - Register file management
 
 2. **Instruction Execution Pipeline**
-
-    - FETCH -> DECODE -> EXECUTE -> MEMORY -> WRITEBACK
-    - State machine control
-    - Appropriate timing control
+   - FETCH -> DECODE -> EXECUTE -> MEMORY -> WRITEBACK
+   - State machine control
+   - Appropriate timing control
 
 3. **Memory Interface Integration**
-
-    - Connecting the CPU and memory system
-    - Bus arbitration and timing
-    - Debugging and monitoring
+   - Connecting the CPU and memory system
+   - Bus arbitration and timing
+   - Debugging and monitoring
 
 4. **Executing a Real 6502 Program**
-    - Test ROM program
-    - Verifying the operation of the instruction set
-    - Performance optimization
+   - Test ROM program
+   - Verifying the operation of the instruction set
+   - Performance optimization
 
 ## Implementation Details
 
@@ -114,22 +111,22 @@ A comprehensive test sequence stored in ROM:
 
 ### Advanced Tests
 
-5. **Compare**: `CMP` instruction and flag setting
-6. **Register Transfer**: `TAX`, `TAY`, `TXA`, `TYA`
-7. **Stack**: `PHA`, `PLA` operations
-8. **Control Flow**: `JMP`, `JSR`, `RTS`
+1. **Compare**: `CMP` instruction and flag setting
+2. **Register Transfer**: `TAX`, `TAY`, `TXA`, `TYA`
+3. **Stack**: `PHA`, `PLA` operations
+4. **Control Flow**: `JMP`, `JSR`, `RTS`
 
 ### Practical Tests
 
-9. **Loop**: Implementation of a loop with a counter
-10. **I/O**: Reading switches
-11. **Memory Test**: Pattern writing/reading
+1. **Loop**: Implementation of a loop with a counter
+2. **I/O**: Reading switches
+3. **Memory Test**: Pattern writing/reading
 
 ## Build and Execute
 
 ### Required Files
 
-```
+```bash
 day08_completed/
 ├── cpu_core.sv              # Main CPU core
 ├── cpu_datapath.sv          # Datapath
@@ -184,7 +181,7 @@ CPU states that can be monitored on the Tang Nano pins:
 
 ### CPU State After Initialization
 
-```
+```bash
 PC=$C000: Program start
 A=$00 X=$00 Y=$00 SP=$FF: Initial register values
 Status=$24: I=1, unused=1, others=0
@@ -192,7 +189,7 @@ Status=$24: I=1, unused=1, others=0
 
 ### Test Program Execution
 
-```
+```bash
 PC=$C000: LDA #$42    → A=$42
 PC=$C002: STA $80     → [$0080]=$42
 PC=$C004: LDA #$84    → A=$84
@@ -229,21 +226,19 @@ PC=$C00B: ADC $81     → A=$C6, Status=$A0 (N=1)
 ### Common Issues
 
 1. **CPU does not run**
-
-    - Check the reset signal
-    - Check the clock supply
-    - Check the initial PC value ($C000)
+   - Check the reset signal
+   - Check the clock supply
+   - Check the initial PC value ($C000)
 
 2. **Instruction does not execute correctly**
-
-    - Check the decoder output
-    - Check the ALU operation
-    - Check the memory interface
+   - Check the decoder output
+   - Check the ALU operation
+   - Check the memory interface
 
 3. **Register value is abnormal**
-    - Check the write enable signal
-    - Check the datapath connection
-    - Investigate timing issues
+   - Check the write enable signal
+   - Check the datapath connection
+   - Investigate timing issues
 
 ## Next Steps
 

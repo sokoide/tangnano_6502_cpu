@@ -7,69 +7,69 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the history and features of the 6502 CPU
--   Learn the register set and their roles
--   Understand the basics of memory maps and addressing
--   Grasp the flow of the instruction execution cycle
+- Understand the history and features of the 6502 CPU
+- Learn the register set and their roles
+- Understand the basics of memory maps and addressing
+- Grasp the flow of the instruction execution cycle
 
 ## 📚 Theory
 
 ### For Software Engineers: The Hardware-Software Bridge
 
-In Day 03, we built circuits. Now we are building a *computer*. If you are coming from a high-level language, here is how to translate the concepts:
+In Day 03, we built circuits. Now we are building a _computer_. If you are coming from a high-level language, here is how to translate the concepts:
 
-1.  **Registers are NOT Variables:**
-    -   In C/Python, `int x = 10;` allocates memory in RAM (stack/heap).
-    -   In CPU, `A`, `X`, `Y` are physical storage locations *inside* the silicon. They are ultra-fast "global variables" that the CPU operations directly work on.
-    -   There are very few of them (only 3 general purpose 8-bit registers!). You have to constantly shuffle data between RAM and these registers.
+1. **Registers are NOT Variables:**
+   - In C/Python, `int x = 10;` allocates memory in RAM (stack/heap).
+   - In CPU, `A`, `X`, `Y` are physical storage locations _inside_ the silicon. They are ultra-fast "global variables" that the CPU operations directly work on.
+   - There are very few of them (only 3 general purpose 8-bit registers!). You have to constantly shuffle data between RAM and these registers.
 
-2.  **Memory Map = Address Space:**
-    -   The CPU sees a single flat array of 65,536 bytes (`0x0000` to `0xFFFF`).
-    -   "Memory Mapped I/O": Writing to a specific index in this array (like `0xE000`) might not store a number, but instead turn on a pixel or send a network packet.
-    -   `0x0000-0x00FF` (Zero Page) is like the "L1 Cache" or "Fast Variables" area.
+2. **Memory Map = Address Space:**
+   - The CPU sees a single flat array of 65,536 bytes (`0x0000` to `0xFFFF`).
+   - "Memory Mapped I/O": Writing to a specific index in this array (like `0xE000`) might not store a number, but instead turn on a pixel or send a network packet.
+   - `0x0000-0x00FF` (Zero Page) is like the "L1 Cache" or "Fast Variables" area.
 
-3.  **The "While(True)" Loop:**
-    -   Hardware is one big infinite loop:
-        1.  **Fetch:** Read the byte at `PC` (Program Counter).
-        2.  **Decode:** Look up what that byte means (e.g., `0xA9` means "Load A").
-        3.  **Execute:** Do it (e.g., copy value to A register).
-        4.  **Repeat.**
-    -   Your job in Day 06-08 is to implement this loop in hardware.
+3. **The "While(True)" Loop:**
+   - Hardware is one big infinite loop:
+     1. **Fetch:** Read the byte at `PC` (Program Counter).
+     2. **Decode:** Look up what that byte means (e.g., `0xA9` means "Load A").
+     3. **Execute:** Do it (e.g., copy value to A register).
+     4. **Repeat.**
+   - Your job in Day 06-08 is to implement this loop in hardware.
 
 ### History of the 6502 CPU
 
 **Development Background:**
 
--   Developed by MOS Technology in 1975
--   Innovatively low price for its time ($25)
--   Used in the Apple II, Commodore 64, NES, etc.
--   Simple design, also ideal for educational purposes
+- Developed by MOS Technology in 1975
+- Innovatively low price for its time ($25)
+- Used in the Apple II, Commodore 64, NES, etc.
+- Simple design, also ideal for educational purposes
 
 ### Register Set
 
 **8-bit Registers:**
 
--   **A (Accumulator)**: The main player in arithmetic operations, used by many instructions
--   **X, Y (Index)**: For indexing in addressing
--   **SP (Stack Pointer)**: Points to the stack location (0x0100-0x01FF)
+- **A (Accumulator)**: The main player in arithmetic operations, used by many instructions
+- **X, Y (Index)**: For indexing in addressing
+- **SP (Stack Pointer)**: Points to the stack location (0x0100-0x01FF)
 
 **16-bit Register:**
 
--   **PC (Program Counter)**: The address of the next instruction to be executed
+- **PC (Program Counter)**: The address of the next instruction to be executed
 
 **1-bit Flags (P Register):**
 
--   **N (Negative)**: Set when the result is negative
--   **V (Overflow)**: Set on signed overflow
--   **B (Break)**: Set when a BRK instruction is executed
--   **D (Decimal)**: BCD arithmetic mode (usually unused)
--   **I (Interrupt)**: Interrupt disable flag
--   **Z (Zero)**: Set when the result is zero
--   **C (Carry)**: Set on carry/borrow
+- **N (Negative)**: Set when the result is negative
+- **V (Overflow)**: Set on signed overflow
+- **B (Break)**: Set when a BRK instruction is executed
+- **D (Decimal)**: BCD arithmetic mode (usually unused)
+- **I (Interrupt)**: Interrupt disable flag
+- **Z (Zero)**: Set when the result is zero
+- **C (Carry)**: Set on carry/borrow
 
 ### Memory Map Basics
 
-```
+```bash
 0x0000-0x00FF : Zero Page (high-speed access area)
 0x0100-0x01FF : Stack (stack area)
 0x0200-0x7FFF : General RAM
@@ -211,43 +211,43 @@ endmodule
 
 ### Basic Assignments
 
-1.  Testbench to verify the operation of all registers
-2.  Extend the classification function for major instructions
-3.  Implement calculation logic for all flags
+1. Testbench to verify the operation of all registers
+2. Extend the classification function for major instructions
+3. Implement calculation logic for all flags
 
 ### Advanced Assignments
 
-1.  Addressing mode detector
-2.  Instruction length calculator
-3.  Stack operation simulator
+1. Addressing mode detector
+2. Instruction length calculator
+3. Stack operation simulator
 
 ## 📚 Important Points
 
 ### Features of the 6502
 
--   **Simple Design**: No complex instructions
--   **Memory-Mapped I/O**: No special I/O instructions needed
--   **Zero Page**: The first 256 bytes, which can be accessed quickly
--   **Fixed Stack**: Fixed at 0x0100-0x01FF
+- **Simple Design**: No complex instructions
+- **Memory-Mapped I/O**: No special I/O instructions needed
+- **Zero Page**: The first 256 bytes, which can be accessed quickly
+- **Fixed Stack**: Fixed at 0x0100-0x01FF
 
 ### Architectural Advantages
 
--   **Educational Value**: Easy-to-understand structure
--   **Implementation Cost**: Low number of transistors
--   **Programmability**: Intuitive instruction set
+- **Educational Value**: Easy-to-understand structure
+- **Implementation Cost**: Low number of transistors
+- **Programmability**: Intuitive instruction set
 
 ## 📚 What I Learned Today
 
--   [ ] History and features of the 6502 CPU
--   [ ] Register set and their roles
--   [ ] Basics of the memory map
--   [ ] How to classify instructions
--   [ ] How flag calculation works
+- [ ] History and features of the 6502 CPU
+- [ ] Register set and their roles
+- [ ] Basics of the memory map
+- [ ] How to classify instructions
+- [ ] How flag calculation works
 
 ## 🎯 Preview for Tomorrow
 
 In Day 05, we will learn in detail about the 6502 instruction set and addressing modes:
 
--   13 types of addressing modes
--   Operation of major instructions
--   Effective address calculation
+- 13 types of addressing modes
+- Operation of major instructions
+- Effective address calculation

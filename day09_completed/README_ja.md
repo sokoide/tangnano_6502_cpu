@@ -37,10 +37,12 @@ make test
 ## 配線
 
 `day99_completed` と同じ配線を使ってください：
+
 - `LCD_CLK`, `LCD_DEN`
 - `LCD_R[4:0]`, `LCD_G[5:0]`, `LCD_B[4:0]`
 
 ピン割り当ては以下：
+
 - `day09_completed/tft_9k.cst`
 - `day09_completed/tft_20k.cst`
 
