@@ -1,10 +1,5 @@
 task automatic state_fetch_req();
   begin
-    if (fetch_stage == FETCH_OPCODE) begin
-      next_state = FETCH_RECV;
-    end else begin
-      next_state = FETCH_WAIT;
-    end
     // timing improvement to avoid redundant pc calculations elsewhere.
     pc_plus1 <= (pc + 16'd1) & RAMW;
     pc_plus2 <= (pc + 16'd2) & RAMW;
@@ -16,9 +11,6 @@ task automatic state_fetch_wait();
   begin
     if (fetch_stage == FETCH_DATA) begin
       fetched_data_bytes <= fetched_data_bytes + 1'd1;
-      next_state = fetch_resume_state;
-    end else begin
-      next_state = FETCH_RECV;
     end
   end
 endtask
@@ -58,9 +50,8 @@ task automatic state_fetch_recv();
                 8'h18,
                 8'hB8,
                 8'h38,
-                8'hCF,
+                    8'hCF,
                     8'hEF: begin
-            next_state = DECODE_EXECUTE;
           end
 
           // Instructions with 1-byte operand
@@ -138,33 +129,25 @@ task automatic state_fetch_recv();
                 8'hB0,
                 8'hFF: begin
             adb <= pc_plus1 & RAMW;
-            next_fetch_stage = FETCH_OPERAND1;
-            next_state = FETCH_REQ;
           end
 
           default: begin
             adb <= pc_plus1 & RAMW;
-            next_fetch_stage = FETCH_OPERAND1OF2;
-            next_state = FETCH_REQ;
           end
         endcase
       end
 
       FETCH_OPERAND1: begin
         operands[7:0] <= dout;
-        next_state = DECODE_EXECUTE;
       end
 
       FETCH_OPERAND1OF2: begin
         operands[7:0] <= dout;
         adb <= pc_plus2 & RAMW;
-        next_fetch_stage = FETCH_OPERAND2;
-        next_state = FETCH_REQ;
       end
 
       FETCH_OPERAND2: begin
         operands[15:8] <= dout;
-        next_state = DECODE_EXECUTE;
       end
 
       default: begin

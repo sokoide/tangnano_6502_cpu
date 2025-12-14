@@ -103,3 +103,7 @@
 ### 2025-12-14: Step 3 を拡大（HALT まで next-state 関数で駆動）
 - `HALT` も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大（挙動は state を保持するのみ）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 の整理（pure next-state 対象の二重管理を削除）
+- pure next-state で駆動済みの状態（Boot/FETCH/WRITE_REQ/CLEAR_VRAM/SHOW_INFO/HALT など）について、task 側の `next_state/next_fetch_stage` 代入を削除し、状態遷移の責務を `cpu_fsm_next_pkg` 側へ寄せた。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。

@@ -1,7 +1,6 @@
 task automatic state_show_info_init();
   begin
     show_info_counter <= 0;
-    next_state = SHOW_INFO2;
   end
 endtask
 

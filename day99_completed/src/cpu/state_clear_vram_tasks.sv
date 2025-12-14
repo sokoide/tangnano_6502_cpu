@@ -1,7 +1,6 @@
 task automatic state_clear_vram_init();
   begin
     vram_write(0, 8'h20);
-    next_state = CLEAR_VRAM2;
   end
 endtask
 
@@ -15,12 +14,10 @@ task automatic state_clear_vram_loop();
       din   <= 8'h20;
       cea   <= 1;
     end else begin
-      pc  <= pc_plus1;
+      pc <= pc_plus1;
       adb <= pc_plus1 & RAMW;
-      next_state = FETCH_REQ;
-      next_fetch_stage = FETCH_OPCODE;
       v_cea <= 0;
-      cea   <= 0;
+      cea <= 0;
     end
   end
 endtask
