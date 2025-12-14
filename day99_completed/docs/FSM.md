@@ -66,3 +66,9 @@
 - `src/cpu/cpu_fsm_next_pkg.sv` を追加し、まず Boot/FETCH 周りの「次状態のみ（副作用なし）」ロジックを `function` として切り出し開始。
   - 目的: 今後 `always_comb` に移したときに、状態遷移が副作用に引きずられて壊れないようにする。
   - まだ `cpu.sv` には接続していない（段階移行のため）。
+
+### 2025-12-14: Step 3 を部分配線（Boot の一部だけ next-state 関数で駆動）
+- `cpu_fsm_next_pkg` に `consts_pkg` を取り込み、`COLUMNS/ROWS` 等を package 内で参照できるようにした。
+- `cpu.sv` に `calc_boot_fetch_next()` の呼び出し（`always_comb`）を追加し、まず `INIT/INIT_RAM` だけは `state <= boot_fetch_next.next_state` を使うようにした。
+  - 副作用（RAM 書き込みなど）は従来どおり `state_machine_step()` 側で実行し、**状態更新だけを置き換える**最小の差分にしている。
+  - 次は `FETCH_*` 系の状態も同様に段階的に置き換えていく（実機での確認を挟みながら進める）。

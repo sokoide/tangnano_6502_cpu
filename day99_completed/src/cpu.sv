@@ -29,6 +29,7 @@
 //
 `include "../include/consts.svh"
 `include "../include/cpu_pkg.sv"
+`include "cpu/cpu_fsm_next_pkg.sv"
 `include "cpu/cpu_exec_transfers_pkg.sv"
 `include "cpu/cpu_exec_flags_custom_pkg.sv"
 `include "cpu/cpu_exec_branches_pkg.sv"
@@ -67,6 +68,7 @@ module cpu (
 );
 
   import cpu_pkg::*;
+  import cpu_fsm_next_pkg::*;
 
   /* verilator lint_off UNUSEDSIGNAL */
   // 6502 CPU Registers
@@ -116,6 +118,7 @@ module cpu (
   fetch_stage_e fetch_stage;
   fetch_stage_e next_fetch_stage;
   show_info_stage_e show_info_stage;
+  fsm_next_t boot_fetch_next;
   /* verilator lint_on UNUSEDSIGNAL */
 
   `include "../include/cpu_tasks.svh"
@@ -129,6 +132,19 @@ module cpu (
 
   // din ratch
   always_ff @(posedge clk) dout_r <= dout;
+
+  always_comb begin
+    boot_fetch_next = cpu_fsm_next_pkg::calc_boot_fetch_next(
+      state,
+      fetch_stage,
+      fetch_resume_state,
+      dout_r,
+      boot_idx,
+      boot_program_length,
+      boot_write,
+      v_ada
+    );
+  end
 
   // Sequential logic: use an asynchronous active-low rst_n.
   always_ff @(posedge clk or negedge rst_n) begin
@@ -174,8 +190,16 @@ module cpu (
         counter <= (counter + 1) & 32'hFFFFFFFF;
 
         state_machine_step();
-        state <= next_state;
-        fetch_stage <= next_fetch_stage;
+        unique case (state)
+          INIT, INIT_RAM: begin
+            state <= boot_fetch_next.next_state;
+            fetch_stage <= boot_fetch_next.next_fetch_stage;
+          end
+          default: begin
+            state <= next_state;
+            fetch_stage <= next_fetch_stage;
+          end
+        endcase
       end
     end
   end

@@ -7,8 +7,11 @@
 //
 // Note: this is not fully wired into `cpu.sv` yet. We will migrate state-by-state.
 
+`include "consts_pkg.sv"
+
 package cpu_fsm_next_pkg;
   import cpu_pkg::*;
+  import consts_pkg::*;
 
   typedef struct packed {
     cpu_state_e   next_state;
@@ -20,6 +23,12 @@ package cpu_fsm_next_pkg;
       input cpu_state_e fetch_resume_state, input logic [7:0] dout, input logic [14:0] boot_idx,
       input logic [15:0] boot_program_length, input logic boot_write, input logic [9:0] v_ada);
     fsm_next_t r;
+    logic [15:0] boot_idx_u16;
+    int unsigned v_ada_u32;
+
+    boot_idx_u16 = {1'b0, boot_idx};
+    v_ada_u32 = {22'd0, v_ada};
+
     r.next_state = state;
     r.next_fetch_stage = fetch_stage;
 
@@ -30,7 +39,7 @@ package cpu_fsm_next_pkg;
 
       INIT_RAM: begin
         if (!boot_write) begin
-          if (boot_idx == boot_program_length) begin
+          if (boot_idx_u16 == boot_program_length) begin
             r.next_state = FETCH_REQ;
             r.next_fetch_stage = FETCH_OPCODE;
           end else begin
@@ -195,7 +204,7 @@ package cpu_fsm_next_pkg;
       end
 
       INIT_VRAM: begin
-        if (v_ada <= (COLUMNS * ROWS)) begin
+        if (v_ada_u32 <= (COLUMNS * ROWS)) begin
           r.next_state = INIT_VRAM;
         end else begin
           r.next_state = HALT;
@@ -210,4 +219,3 @@ package cpu_fsm_next_pkg;
     return r;
   endfunction
 endpackage
-
