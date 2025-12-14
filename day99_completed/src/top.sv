@@ -100,7 +100,7 @@ module top (
   logic [9:0] v_adb_sync2;      // Second synchronizer stage (stable output)
 
   // Two-stage synchronizer running in the memory clock domain
-  always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+  always_ff @(posedge MEMORY_CLK) begin
     if (!rst_n) begin
       v_adb_sync1 <= 10'd0;      // Clear on reset
       v_adb_sync2 <= 10'd0;

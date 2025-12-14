@@ -48,7 +48,7 @@ module top (
     logic [15:0] h_count;
     logic [15:0] v_count;
 
-    always_ff @(posedge LCD_CLK or negedge rst_n) begin
+    always_ff @(posedge LCD_CLK) begin
         if (!rst_n) begin
             h_count <= 16'd0;
             v_count <= 16'd0;
@@ -74,7 +74,7 @@ module top (
         x = (h_count >= H_BACK) ? (h_count - H_BACK[15:0]) : 16'd0;
     end
 
-    always_ff @(posedge LCD_CLK or negedge rst_n) begin
+    always_ff @(posedge LCD_CLK) begin
         if (!rst_n) begin
             LCD_R <= 5'd0;
             LCD_G <= 6'd0;
