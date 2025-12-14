@@ -125,8 +125,8 @@ Since we are building circuits _without_ memory today, you **must** specify what
 
 ```mermaid
 flowchart LR
-  D[digit 0..15] --> CASE{case (digit)}
-  CASE --> SEG[segments[6:0]<br/>{g,f,e,d,c,b,a}]
+  D[digit 0..15] --> CASE{"case (digit)"}
+  CASE --> SEG["segments[6:0]<br/>{g,f,e,d,c,b,a}"]
   SEG --> DISP[7-seg LED]
 ```
 
@@ -160,10 +160,10 @@ endmodule
 
 ```mermaid
 flowchart LR
-  A[a[3:0]] --> ALU[ALU core]
-  B[b[3:0]] --> ALU
-  OP[op[1:0]] --> ALU
-  ALU --> R[result[3:0]]
+  A["a[3:0]"] --> ALU[ALU core]
+  B["b[3:0]"] --> ALU
+  OP["op[1:0]"] --> ALU
+  ALU --> R["result[3:0]"]
   ALU --> Z[zero]
   ALU --> C[carry]
 ```

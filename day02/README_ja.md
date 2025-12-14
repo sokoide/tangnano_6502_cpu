@@ -125,8 +125,8 @@ CやPythonで `if (condition) x = 1;` と書くと、「条件が偽なら x は
 
 ```mermaid
 flowchart LR
-  D[digit 0..15] --> CASE{case (digit)}
-  CASE --> SEG[segments[6:0]<br/>{g,f,e,d,c,b,a}]
+  D[digit 0..15] --> CASE{"case (digit)"}
+  CASE --> SEG["segments[6:0]<br/>{g,f,e,d,c,b,a}"]
   SEG --> DISP[7セグLED]
 ```
 
@@ -160,10 +160,10 @@ endmodule
 
 ```mermaid
 flowchart LR
-  A[a[3:0]] --> ALU[ALU本体]
-  B[b[3:0]] --> ALU
-  OP[op[1:0]] --> ALU
-  ALU --> R[result[3:0]]
+  A["a[3:0]"] --> ALU[ALU本体]
+  B["b[3:0]"] --> ALU
+  OP["op[1:0]"] --> ALU
+  ALU --> R["result[3:0]"]
   ALU --> Z[zero]
   ALU --> C[carry]
 ```
@@ -217,8 +217,8 @@ endmodule
 
 ```mermaid
 flowchart LR
-  IN[data_in[7:0]] --> MUX[8:1 MUX]
-  SEL[select[2:0]] --> MUX
+  IN["data_in[7:0]"] --> MUX[8:1 MUX]
+  SEL["select[2:0]"] --> MUX
   MUX --> OUT[data_out]
 ```
 
