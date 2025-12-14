@@ -527,7 +527,7 @@ always @(posedge clk) begin
 end
 ```
 
-### Performance Optimization
+### Optimization Techniques
 
 **1. Clock Domain Optimization:**
 
