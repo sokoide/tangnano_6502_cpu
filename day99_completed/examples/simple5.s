@@ -3,8 +3,8 @@
     .org $0200
 
 start:
-; load 'A' into A register
-    LDA #$41
+; load ' ' (#$20) into A register
+    LDA #$20
 loop:
 ; CVR: clear VRAM
     .byte $CF
@@ -14,15 +14,16 @@ loop:
     STA $E03B
 ; IFO: show registers and memory at $0000-$007F
     .byte $DF,$00,$00
-; WVS: wait for 2 seconds
-    .byte $FF, $74
+; WVS: wait for 0.3 seconds ($12 == 18 frames)
+; $3A == 58 frames per second
+    .byte $FF, $12
 ; inclement A register
     CLC
     ADC #1
-; if A != 'F' (#$46), goto loop
-    CMP #$46
+; if A != #$7F (next char of ~), goto loop
+    CMP #$7F
     BNE loop
-; else A='A' (#$41)
-    LDA #$41
+; else A=' ' (#$20)
+    LDA #$20
 ; loop
     JMP loop
