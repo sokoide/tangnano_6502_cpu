@@ -33,36 +33,36 @@ module ram (
     input  logic [7:0] v_din      // VRAM write data
 );
 
-    // RAM 32KB, address 32768, data width 8, bypass
+  // RAM 32KB, address 32768, data width 8, bypass
 
-    Gowin_SDPB ram_inst (
-        .dout(dout),  //output [7:0] dout, read data
-        .clka(MEMORY_CLK),  //input clka
-        .cea(cea),  //input cea, write enable
-        .reseta(reseta),  //input reseta
-        .clkb(MEMORY_CLK),  //input clkb
-        .ceb(ceb),  //input ceb, read enable
-        .resetb(resetb),  //input resetb
-        .oce(oce),  //input oce, timing when the read value is reflected on dout
-        .ada(ada),  //input [12:0] ada, for write
-        .din(din),  //input [7:0] din, written data
-        .adb(adb)  //input [12:0] adb, for read
-    );
+  Gowin_SDPB ram_inst (
+      .dout(dout),  //output [7:0] dout, read data
+      .clka(MEMORY_CLK),  //input clka
+      .cea(cea),  //input cea, write enable
+      .reseta(reseta),  //input reseta
+      .clkb(MEMORY_CLK),  //input clkb
+      .ceb(ceb),  //input ceb, read enable
+      .resetb(resetb),  //input resetb
+      .oce(oce),  //input oce, timing when the read value is reflected on dout
+      .ada(ada),  //input [12:0] ada, for write
+      .din(din),  //input [7:0] din, written data
+      .adb(adb)  //input [12:0] adb, for read
+  );
 
-    // Text VRAM, address 1024, data width 8, bypass
+  // Text VRAM, address 1024, data width 8, bypass
 
-    Gowin_SDPB_vram vram_inst (
-        .dout(v_dout),  //output [7:0] dout, read data
-        .clka(MEMORY_CLK),  //input clka
-        .cea(v_cea),  //input cea, write enable
-        .reseta(v_reseta),  //input reseta
-        .clkb(MEMORY_CLK),  //input clkb
-        .ceb(v_ceb),  //input ceb, read enable
-        .resetb(v_resetb),  //input resetb
-        .oce(v_oce),  //input oce, timing when the read value is reflected on dout
-        .ada(v_ada),  //input [9:0] ada, for write
-        .din(v_din),  //input [7:0] din, written data
-        .adb(v_adb)  //input [9:0] adb, for read
-    );
+  Gowin_SDPB_vram vram_inst (
+      .dout(v_dout),  //output [7:0] dout, read data
+      .clka(MEMORY_CLK),  //input clka
+      .cea(v_cea),  //input cea, write enable
+      .reseta(v_reseta),  //input reseta
+      .clkb(MEMORY_CLK),  //input clkb
+      .ceb(v_ceb),  //input ceb, read enable
+      .resetb(v_resetb),  //input resetb
+      .oce(v_oce),  //input oce, timing when the read value is reflected on dout
+      .ada(v_ada),  //input [9:0] ada, for write
+      .din(v_din),  //input [7:0] din, written data
+      .adb(v_adb)  //input [9:0] adb, for read
+  );
 
 endmodule

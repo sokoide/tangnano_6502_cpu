@@ -1,41 +1,41 @@
 task automatic state_fetch_req();
-    begin
-        if (fetch_stage == FETCH_OPCODE) begin
-            state <= FETCH_RECV;
-        end else begin
-            state <= FETCH_WAIT;
-        end
-        // timing improvement to avoid redundant pc calculations elsewhere.
-        pc_plus1 <= (pc + 16'd1) & RAMW;
-        pc_plus2 <= (pc + 16'd2) & RAMW;
-        pc_plus3 <= (pc + 16'd3) & RAMW;
+  begin
+    if (fetch_stage == FETCH_OPCODE) begin
+      next_state = FETCH_RECV;
+    end else begin
+      next_state = FETCH_WAIT;
     end
+    // timing improvement to avoid redundant pc calculations elsewhere.
+    pc_plus1 <= (pc + 16'd1) & RAMW;
+    pc_plus2 <= (pc + 16'd2) & RAMW;
+    pc_plus3 <= (pc + 16'd3) & RAMW;
+  end
 endtask
 
 task automatic state_fetch_wait();
-    begin
-        if (fetch_stage == FETCH_DATA) begin
-            fetched_data_bytes <= fetched_data_bytes + 1'd1;
-            state <= next_state;
-        end else begin
-            state <= FETCH_RECV;
-        end
+  begin
+    if (fetch_stage == FETCH_DATA) begin
+      fetched_data_bytes <= fetched_data_bytes + 1'd1;
+      next_state = fetch_resume_state;
+    end else begin
+      next_state = FETCH_RECV;
     end
+  end
 endtask
 
 task automatic state_fetch_recv();
-    begin
-        unique case (fetch_stage)
-            FETCH_OPCODE: begin
-                opcode <= dout;
-                fetched_data_bytes <= 0;
-                written_data_bytes <= 0;
-                cea <= 0;
-                v_cea <= 0;
+  begin
+    unique case (fetch_stage)
+      FETCH_OPCODE: begin
+        opcode <= dout;
+        fetched_data_bytes <= 0;
+        written_data_bytes <= 0;
+        cea <= 0;
+        v_cea <= 0;
 
-                case (dout)
-                    // No operand instructions
-                    8'hEA,
+        case (dout)
+          // No operand instructions
+          8'hEA,
                 8'h60,
                 8'h48,
                 8'h68,
@@ -59,12 +59,12 @@ task automatic state_fetch_recv();
                 8'hB8,
                 8'h38,
                 8'hCF,
-                8'hEF: begin
-                        state <= DECODE_EXECUTE;
-                    end
+                    8'hEF: begin
+            next_state = DECODE_EXECUTE;
+          end
 
-                    // Instructions with 1-byte operand
-                    8'hA9,
+          // Instructions with 1-byte operand
+          8'hA9,
                 8'hA5,
                 8'hB5,
                 8'hA2,
@@ -137,62 +137,62 @@ task automatic state_fetch_recv();
                 8'h90,
                 8'hB0,
                 8'hFF: begin
-                        adb <= pc_plus1 & RAMW;
-                        fetch_stage <= FETCH_OPERAND1;
-                        state <= FETCH_REQ;
-                    end
+            adb <= pc_plus1 & RAMW;
+            next_fetch_stage = FETCH_OPERAND1;
+            next_state = FETCH_REQ;
+          end
 
-                    default: begin
-                        adb <= pc_plus1 & RAMW;
-                        fetch_stage <= FETCH_OPERAND1OF2;
-                        state <= FETCH_REQ;
-                    end
-                endcase
-            end
-
-            FETCH_OPERAND1: begin
-                operands[7:0] <= dout;
-                state <= DECODE_EXECUTE;
-            end
-
-            FETCH_OPERAND1OF2: begin
-                operands[7:0] <= dout;
-                adb <= pc_plus2 & RAMW;
-                fetch_stage <= FETCH_OPERAND2;
-                state <= FETCH_REQ;
-            end
-
-            FETCH_OPERAND2: begin
-                operands[15:8] <= dout;
-                state <= DECODE_EXECUTE;
-            end
-
-            default: begin
-                // Should not reach here.
-            end
+          default: begin
+            adb <= pc_plus1 & RAMW;
+            next_fetch_stage = FETCH_OPERAND1OF2;
+            next_state = FETCH_REQ;
+          end
         endcase
-    end
+      end
+
+      FETCH_OPERAND1: begin
+        operands[7:0] <= dout;
+        next_state = DECODE_EXECUTE;
+      end
+
+      FETCH_OPERAND1OF2: begin
+        operands[7:0] <= dout;
+        adb <= pc_plus2 & RAMW;
+        next_fetch_stage = FETCH_OPERAND2;
+        next_state = FETCH_REQ;
+      end
+
+      FETCH_OPERAND2: begin
+        operands[15:8] <= dout;
+        next_state = DECODE_EXECUTE;
+      end
+
+      default: begin
+        // Should not reach here.
+      end
+    endcase
+  end
 endtask
 
 task automatic state_fetch_operand1();
-    begin
-        operands[7:0] <= dout;
-        state <= DECODE_EXECUTE;
-    end
+  begin
+    operands[7:0] <= dout;
+    next_state = DECODE_EXECUTE;
+  end
 endtask
 
 task automatic state_fetch_operand1of2();
-    begin
-        operands[7:0] <= dout;
-        adb <= pc_plus2 & RAMW;
-        fetch_stage <= FETCH_OPERAND2;
-        state <= FETCH_REQ;
-    end
+  begin
+    operands[7:0] <= dout;
+    adb <= pc_plus2 & RAMW;
+    next_fetch_stage = FETCH_OPERAND2;
+    next_state = FETCH_REQ;
+  end
 endtask
 
 task automatic state_fetch_operand2();
-    begin
-        operands[15:8] <= dout;
-        state <= DECODE_EXECUTE;
-    end
+  begin
+    operands[15:8] <= dout;
+    next_state = DECODE_EXECUTE;
+  end
 endtask

@@ -1,6 +1,8 @@
 task automatic state_machine_step();
     begin : STATE_MACHINE_STEP
         /* verilator lint_off BLKSEQ */
+        next_state = state;
+        next_fetch_stage = fetch_stage;
         /* verilator lint_off CASEOVERLAP */
         case (state)
             INIT: state_boot_init();

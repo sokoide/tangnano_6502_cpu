@@ -18,14 +18,14 @@ task automatic fetch_opcode(input logic [1:0] pc_offset);
             adb <= pc_plus3 & RAMW;
         end
     endcase
-    state <= FETCH_REQ;
-    fetch_stage <= FETCH_OPCODE;
+    next_state = FETCH_REQ;
+    next_fetch_stage = FETCH_OPCODE;
 endtask
 task automatic fetch_data(input logic [14:0] in_adb);
     adb <= in_adb;
-    state <= FETCH_REQ;
-    fetch_stage <= FETCH_DATA;
-    next_state <= DECODE_EXECUTE;
+    next_state = FETCH_REQ;
+    next_fetch_stage = FETCH_DATA;
+    fetch_resume_state <= DECODE_EXECUTE;
 endtask
 
 task automatic sta_write(input logic [15:0] target_addr, input logic [7:0] data);
