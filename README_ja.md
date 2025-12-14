@@ -20,6 +20,31 @@ Tang Nano FPGA を使用して6502 CPUとLCDコントローラを学ぶための
 - **043026-N6(ML) 4.3" 480×272 LCD モジュール** (Day 09以降で使用)
 - USB-Cケーブル (プログラミング用)
 
+**Tang Nano 9K:**
+
+- FPGA: Gowin GW1NR-9C
+- 論理エレメント: 8,640 LUT4
+- メモリ: 468Kbit BSRAM
+- PLL: 2個
+- I/Oピン数: 63
+
+**Tang Nano 20K:**
+
+- FPGA: Gowin GW2AR-18C
+- 論理エレメント: 20,736 LUT4
+- メモリ: 828Kbit BSRAM
+- PLL: 4個
+- I/Oピン数: 107
+
+### ボードの選択
+
+本プロジェクトは両方のボードに対応しています。Makefileを使用する際、ボードを指定できます：
+
+```bash
+make BOARD=9k   # デフォルト
+make BOARD=20k
+```
+
 ## 💻 必要なソフトウェア
 
 - **GoWin EDA** (FPGA合成・配置配線ツール)
@@ -85,6 +110,7 @@ for f in "$GW/bin/"*; do
   fi
 done
 ```
+
 - WSL only
 
 ```bash
@@ -96,6 +122,16 @@ mv libfreetype.so.6 libfreetype.so.6.gowin.bak
 export QT_QPA_PLATFORM=minimal
 export QT_OPENGL=software
 export QT_XCB_GL_INTEGRATION=none
+```
+
+### macOS のツールパスに関する注意
+
+Gowin EDA をアプリとしてインストールしており、`gw_sh` や `programmer_cli` が `PATH` に通っていない場合、make実行時にパスを指定可能です：
+
+```bash
+make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
+     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
+     download
 ```
 
 ## 📅 10日間の学習計画

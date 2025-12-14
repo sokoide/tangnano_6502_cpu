@@ -30,16 +30,16 @@
 
 If you're coming from a software background, the biggest mental shift is this: **you are not writing a program.** You are **describing a hardware circuit.**
 
--   **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
--   **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
--   **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
+- **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
+- **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
+- **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
 
 Keep this in mind as you learn. You are a circuit designer, not just a programmer!
 
 #### Analogy: The Build Process
 
--   **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
--   **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly *where* on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
+- **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
+- **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly *where* on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
 
 ### Tang Nano Basic Specifications
 
@@ -76,7 +76,7 @@ In practice, your `.sv` files (like `top.sv`) are RTL.
 
 FPGA chips are built from configurable building blocks:
 
-- **LUT (Look-Up Table)**: implements small boolean logic (like AND/OR/XOR and small truth tables).  
+- **LUT (Look-Up Table)**: implements small boolean logic (like AND/OR/XOR and small truth tables).
   Many designs are “mapped” into LUTs.
 - **FF (Flip-Flop)**: a 1-bit register that stores state and updates on a clock edge (`posedge`/`negedge`).
 - **RAM / BSRAM (Block SRAM)**: on-chip memory blocks (used for ROM/RAM/FIFOs, etc.).
@@ -85,13 +85,13 @@ Later, when we say “Synthesis maps RTL into LUT/FF/RAM”, this is what we mea
 
 #### Pull-up / Pull-down (why inputs need them)
 
-If an input pin is not driven by anything, it can “float” and randomly read as 0 or 1.  
+If an input pin is not driven by anything, it can “float” and randomly read as 0 or 1.
 A **pull-up** biases it weakly toward 1, and a **pull-down** biases it weakly toward 0.
 
 ```mermaid
 flowchart LR
   subgraph Floating
-    F[Input pin] --> Q1[can read 0 or 1<br/>(unstable)]
+    F[Input pin] --> Q1["can read 0 or 1<br/>(unstable)"]
   end
   subgraph Pull-up
     PU[Input pin] --> R1[weak resistor to VCC] --> ONE[stable '1' when not driven]
@@ -107,9 +107,9 @@ On FPGA pins, pull-ups/downs are often configured via constraints (see `PULL_MOD
 
 ```mermaid
 flowchart TD
-  A[RTL in SystemVerilog<br/>(top.sv)] --> B[Synthesis<br/>RTL → LUT/FF/RAM netlist]
+  A["RTL in SystemVerilog<br/>(top.sv)"] --> B["Synthesis<br/>RTL → LUT/FF/RAM netlist"]
   B --> C[Place & Route<br/>place cells + route wires]
-  C --> D[Bitstream generation<br/>(.fs)]
+  C --> D["Bitstream generation<br/>(.fs)"]
   D --> E[Programming<br/>download to FPGA]
 ```
 
@@ -170,8 +170,8 @@ This small module already contains most of the “core grammar” you’ll use l
 
 ```mermaid
 flowchart LR
-  CLK((clk)) --> FF[FFs: counter register<br/>always_ff @ posedge clk]
-  FF -->|counter[24]| COMB[combinational wiring<br/>assign led = ...]
+  CLK((clk)) --> FF["FFs: counter register<br/>always_ff @ posedge clk"]
+  FF -->|"counter[24]"| COMB[combinational wiring<br/>assign led = ...]
   COMB --> LED((led))
 ```
 
@@ -183,9 +183,9 @@ flowchart LR
 
 **Important Rule for Software Engineers:**
 
--   Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
--   Think of `assign` as creating a component with **no memory**. Its output changes *instantly* whenever its inputs change. This is the essence of parallel hardware.
--   Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
+- Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
+- Think of `assign` as creating a component with **no memory**. Its output changes *instantly* whenever its inputs change. This is the essence of parallel hardware.
+- Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
 
 ### Step 3: Create Constraint File
 

@@ -25,6 +25,31 @@ In this course, you will learn step-by-step from the basics of FPGAs and SystemV
 - **043026-N6(ML) 4.3" 480×272 LCD Module** (used from Day 09 onwards)
 - USB-C cable (for programming)
 
+**Tang Nano 9K:**
+
+- FPGA: Gowin GW1NR-9C
+- Logic Elements: 8,640 LUT4
+- Memory: 468Kbit BSRAM
+- PLL: 2
+- I/O Pins: 63
+
+**Tang Nano 20K:**
+
+- FPGA: Gowin GW2AR-18C
+- Logic Elements: 20,736 LUT4
+- Memory: 828Kbit BSRAM
+- PLL: 4
+- I/O Pins: 107
+
+### Board Selection
+
+This project supports both boards. When using the provided Makefiles, you can specify the board:
+
+```bash
+make BOARD=9k   # Default
+make BOARD=20k
+```
+
 ## 💻 Required Software
 
 - **GoWin EDA** (FPGA synthesis and place & route tool)
@@ -88,6 +113,7 @@ for f in "$GW/bin/"*; do
   fi
 done
 ```
+
 - WSL only
 
 ```bash
@@ -99,6 +125,16 @@ mv libfreetype.so.6 libfreetype.so.6.gowin.bak
 export QT_QPA_PLATFORM=minimal
 export QT_OPENGL=software
 export QT_XCB_GL_INTEGRATION=none
+```
+
+### macOS Tool Paths
+
+If you installed Gowin EDA as an app bundle and the tools (`gw_sh`, `programmer_cli`) are not in your `PATH`, you can pass them explicitly to `make`:
+
+```bash
+make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
+     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
+     download
 ```
 
 ## 📅 10-Day Learning Plan
