@@ -107,3 +107,8 @@
 ### 2025-12-14: Step 3 の整理（pure next-state 対象の二重管理を削除）
 - pure next-state で駆動済みの状態（Boot/FETCH/WRITE_REQ/CLEAR_VRAM/SHOW_INFO/HALT など）について、task 側の `next_state/next_fetch_stage` 代入を削除し、状態遷移の責務を `cpu_fsm_next_pkg` 側へ寄せた。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 を拡大（SHOW_INFO2 の状態遷移を pure next-state へ移行）
+- `SHOW_INFO2` の状態遷移（`FETCH_REQ/FETCH_DATA` への一時離脱、終了時の `prev_state` への復帰）を `cpu_fsm_next_pkg` 側で計算するように追加。
+- `state_show_info_tasks.sv` から `SHOW_INFO2` における `next_state/next_fetch_stage` 代入を削除し、二重管理を解消。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。

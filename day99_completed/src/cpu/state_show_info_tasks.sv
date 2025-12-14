@@ -112,8 +112,6 @@ task automatic state_show_info_step();
           end else begin
             adb <= (operands[15:0] + show_info_cmd.diff) & RAMW;
           end
-          next_state = FETCH_REQ;
-          next_fetch_stage = FETCH_DATA;
           fetch_resume_state <= SHOW_INFO2;
         end
 
@@ -121,7 +119,6 @@ task automatic state_show_info_step();
 
         if (show_info_counter == 1020) begin
           show_info_counter <= 0;
-          next_state = prev_state;
           operands[15:0] <= 16'hFFFF;
           v_cea <= 0;
           cea <= 0;

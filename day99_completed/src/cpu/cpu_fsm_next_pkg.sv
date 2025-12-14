@@ -20,8 +20,10 @@ package cpu_fsm_next_pkg;
 
   function automatic fsm_next_t calc_boot_fetch_next(
       input cpu_state_e state, input fetch_stage_e fetch_stage,
-      input cpu_state_e fetch_resume_state, input logic [7:0] dout, input logic [14:0] boot_idx,
-      input logic [15:0] boot_program_length, input logic boot_write, input logic [9:0] v_ada);
+      input cpu_state_e fetch_resume_state, input cpu_state_e prev_state, input logic [7:0] dout,
+      input logic [14:0] boot_idx, input logic [15:0] boot_program_length, input logic boot_write,
+      input logic [9:0] v_ada, input logic [31:0] show_info_counter,
+      input show_info_stage_e show_info_stage, input logic show_info_mem_read);
     fsm_next_t r;
     logic [15:0] boot_idx_u16;
     int unsigned v_ada_u32;
@@ -226,6 +228,21 @@ package cpu_fsm_next_pkg;
 
       SHOW_INFO: begin
         r.next_state = SHOW_INFO2;
+      end
+
+      SHOW_INFO2: begin
+        if (show_info_stage == SHOW_INFO_EXECUTE) begin
+          if (show_info_counter == 1020) begin
+            r.next_state = prev_state;
+          end else if (show_info_mem_read) begin
+            r.next_state = FETCH_REQ;
+            r.next_fetch_stage = FETCH_DATA;
+          end else begin
+            r.next_state = SHOW_INFO2;
+          end
+        end else begin
+          r.next_state = SHOW_INFO2;
+        end
       end
 
       INIT_VRAM: begin

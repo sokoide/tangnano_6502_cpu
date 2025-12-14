@@ -134,9 +134,20 @@ module cpu (
   always_ff @(posedge clk) dout_r <= dout;
 
   always_comb begin
-    boot_fetch_next =
-        cpu_fsm_next_pkg::calc_boot_fetch_next(state, fetch_stage, fetch_resume_state, dout,
-                                               boot_idx, boot_program_length, boot_write, v_ada);
+    boot_fetch_next = cpu_fsm_next_pkg::calc_boot_fetch_next(
+      state,
+      fetch_stage,
+      fetch_resume_state,
+      prev_state,
+      dout,
+      boot_idx,
+      boot_program_length,
+      boot_write,
+      v_ada,
+      show_info_counter,
+      show_info_stage,
+      show_info_cmd.mem_read
+    );
   end
 
   // Sequential logic: use an asynchronous active-low rst_n.
@@ -194,7 +205,8 @@ module cpu (
           WRITE_REQ,
           CLEAR_VRAM,
           CLEAR_VRAM2,
-          SHOW_INFO: begin
+          SHOW_INFO,
+          SHOW_INFO2: begin
             state <= boot_fetch_next.next_state;
             fetch_stage <= boot_fetch_next.next_fetch_stage;
           end
