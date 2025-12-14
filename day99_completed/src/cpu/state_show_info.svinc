@@ -127,6 +127,6 @@
                   show_info_stage <= SHOW_INFO_FETCH;
                 end
               end
+            default: begin end
             endcase
           end
-

@@ -155,6 +155,8 @@ sim: sim-build
 	@echo "[sim] Running..."
 	@./obj_dir/V$(SIM_TOP)
 
+test: sim
+
 # Optional: BSRAM (SDPB) smoke test using existing tb
 SIM_RAM_TOP ?= tb_top
 SIM_RAM_SRCS := \

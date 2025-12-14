@@ -31,8 +31,6 @@ module top_core (
     output logic MEMORY_CLK  // Memory clock output for debugging (40.5MHz)
 );
 
-    logic rst = !rst_n;
-
     // Clock Generation via Phase-Locked Loops (PLLs)
     // LCD timing: (480+43+8) * (272+8+12) * 58.05Hz ≈ 9MHz
     // CPU/Memory: Higher frequency for processing performance
@@ -90,12 +88,12 @@ module top_core (
     logic [9:0] v_adb_sync2;  // Second synchronizer stage (stable output)
 
     // Two-stage synchronizer running in the memory clock domain
-    always_ff @(posedge MEMORY_CLK) begin
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
         if (!rst_n) begin
             v_adb_sync1 <= 10'd0;  // Clear on reset
             v_adb_sync2 <= 10'd0;
         end else begin
-            v_adb_sync1 <= lcd_inst.v_adb;  // Capture LCD domain signal
+            v_adb_sync1 <= v_adb;  // Capture LCD domain signal
             v_adb_sync2 <= v_adb_sync1;  // Stabilize through second register
         end
     end

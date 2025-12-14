@@ -57,7 +57,6 @@ localparam logic [5:0] LCD_GREEN_BORDER = 6'b111111;
 localparam logic [4:0] LCD_BLUE_BORDER = 5'b00000;
 
 // Character code limits
-localparam int CHAR_CODE_MIN = 0;
 localparam int CHAR_CODE_MAX = 127;
 
 `endif

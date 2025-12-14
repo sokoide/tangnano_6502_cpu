@@ -149,13 +149,17 @@ module cpu (
                 counter <= (counter + 1) & 32'hFFFFFFFF;
 
                 // --- case(state) ---
+                /* verilator lint_off BLKSEQ */
                 case (state)
                     `include "cpu/state_machine.svh"
+                    default: begin
+                    end
                 endcase
+                /* verilator lint_on BLKSEQ */
             end
         end
     end
 
-/* verilator lint_on WIDTHTRUNC */
-/* verilator lint_on WIDTHEXPAND */
+    /* verilator lint_on WIDTHTRUNC */
+    /* verilator lint_on WIDTHEXPAND */
 endmodule

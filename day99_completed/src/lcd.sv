@@ -14,6 +14,8 @@
 // 4. Looking up font bitmaps and rendering pixels
 //
 `include "../include/consts.svh"
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
 module lcd (
     input logic       PixelClk,  // LCD pixel clock (9MHz)
     input logic       nRST,      // Active-low reset
@@ -79,7 +81,7 @@ module lcd (
     logic active_area;
 
     always_comb begin
-        automatic logic signed [31:0] x_full, y_full;
+        automatic logic signed [15:0] x_full, y_full;
         x_full = H_PixelCount - H_BackPorch + CHAR_WIDTH;
         y_full = V_PixelCount - V_BackPorch;
         x = x_full[15:0];
@@ -116,7 +118,7 @@ module lcd (
             // get fontline
 
             // Render character pixels
-            if (char >= CHAR_CODE_MIN && char <= CHAR_CODE_MAX) begin
+            if (char <= CHAR_CODE_MAX) begin
                 if (fontline[7-(x+CHAR_RENDER_OFFSET)%CHAR_WIDTH] == 1'b1) begin
                     // Foreground pixel (green)
                     LCD_R <= LCD_RED_ON;
@@ -141,5 +143,7 @@ module lcd (
             LCD_B <= LCD_BLUE_BORDER;
         end
     end
-
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */

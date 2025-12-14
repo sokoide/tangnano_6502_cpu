@@ -1,3 +1,4 @@
+/* verilator lint_off UNUSEDSIGNAL */
 module tb_vram_smoke;
     logic       ResetButton;
     logic       XTAL_IN;
@@ -79,3 +80,5 @@ module tb_vram_smoke;
         $finish;
     end
 endmodule
+
+/* verilator lint_on UNUSEDSIGNAL */
