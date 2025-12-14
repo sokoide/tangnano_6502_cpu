@@ -75,6 +75,15 @@ The ALU testbench tests the following:
 5. AND operation (12 & 10 = 8)
 6. OR operation (12 | 10 = 14)
 
+## 🧪 Simulation Flow (Verilator)
+
+- `make test` executes `tb_alu_4bit.sv` together with `alu_4bit.sv` by invoking Verilator, producing `Vtb_alu_4bit` and running it. The simulator prints each assertion or `$display` message from the testbench.
+- The testbench drives inputs with `initial begin`, waits `#10` for the combinational logic to settle, and checks counts (`assert`) before calling `$finish`.
+- You can inspect the generated waveform by running `gtkwave tb_alu_4bit.vcd` after the simulation if you added `$dumpfile`/`$dumpvars`.
+- Introducing new modules? Follow the same pattern: instantiate the DUT, sequence input stimuli, verify outputs with `assert`, and keep every branch assigned to avoid inferred latches.
+
+If you need a specific Verilator version, run `VERILATOR=/path/to/verilator make test`.
+
 ## Learning Points
 
 ### SystemVerilog Syntax

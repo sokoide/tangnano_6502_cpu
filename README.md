@@ -164,7 +164,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - Basic syntax and module structure of SystemVerilog
 - Designing combinational circuits (logic gates, decoders, multiplexers)
 - Differentiating between `assign` and `always_comb`
-- Basics of testbenches
+- Basics of testbenches, Verilator for simulation
 
 **Deliverables:**
 

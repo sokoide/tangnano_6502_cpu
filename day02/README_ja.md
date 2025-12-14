@@ -301,6 +301,21 @@ sequenceDiagram
 2. 優先エンコーダの実装
 3. パリティ生成器の実装
 
+## 🧪 Verilatorシミュレーションと `make test`
+
+`make test` は `tb_alu_4bit.sv` と `alu_4bit.sv` を Verilator でビルド・実行します。
+
+- Verilator は SystemVerilog を C++ に変換してコンパイルし、`Vtb_alu_4bit` という実行ファイルを作るツールです。
+- テストベンチは `initial begin` で入力をドライブし、`#10` で評価して `assert`/`$display` で検証しています。`$finish` で正常終了、`assert` に失敗するとエラーになります。
+- `tb_alu_4bit.vcd` を吐き出すようにすれば GTKWave で波形確認ができます（`gtkwave tb_alu_4bit.vcd`）。
+
+テストベンチを自作する手順：
+
+1. DUT（たとえば `alu_4bit`）をインスタンス化する。
+2. `initial` ブロックで入力値セット → `#10` → 出力を `assert` する構造にする。
+3. `assert`、`$display` で期待値/ログを記録し、`$finish` を最後に呼ぶ。
+4. `VERILATOR=~/bin/verilator make test` のようにすれば別バージョンの Verilator を使えます。
+
 ## 🔧 デバッグのヒント
 
 1. **合成エラー対策**

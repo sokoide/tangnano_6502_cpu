@@ -70,6 +70,15 @@ ALUテストベンチで以下をテスト:
 5. AND演算 (12 & 10 = 8)
 6. OR演算 (12 | 10 = 14)
 
+## 🧪 シミュレーションと Verilator
+
+- `make test` は `alu_4bit.sv` と `tb_alu_4bit.sv` を Verilator でビルドし、`Vtb_alu_4bit` を実行します。テストベンチに書かれた `$display` や `assert` の結果がログに出ます。
+- テストベンチは `initial begin` で入力の組を順に与え、`#10` で評価する流れです。出力は `assert` で確認し、最後に `$finish` します。
+- `gtkwave tb_alu_4bit.vcd` を使えば必要に応じて波形を観察できます（テストベンチで `$dumpfile`/`$dumpvars` を追加）。
+- 新しいモジュールをテストする際も同じやり方で DUT をインスタンス化し、入力・期待値・アサーションを順に記述してください。分岐ごとにすべての出力を更新しないとラッチが入るので注意。
+
+別バージョンの Verilator を使いたい場合は `VERILATOR=/path/to/verilator make test` とします。
+
 ## 学習ポイント
 
 ### SystemVerilog構文

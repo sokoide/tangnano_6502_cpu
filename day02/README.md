@@ -301,6 +301,23 @@ sequenceDiagram
 2. Implement a priority encoder
 3. Implement a parity generator
 
+## 🧪 Verilator Simulation & How to Run Tests
+
+`make test` executes `tb_alu_4bit.sv` with Verilator. The target compiles `alu_4bit.sv` + `tb_alu_4bit.sv` into `Vtb_alu_4bit` and runs the generated binary.
+
+- Verilator translates SystemVerilog into C++/object files, compiles them, and links the simulator executable (`Vtb_alu_4bit`).
+- The testbench contains an `initial begin` that drives input vectors, waits (`#10`), and uses `$display` plus `assert` to report pass/fail per test.
+- Once `$finish` executes, Verilator exits cleanly; any failed `assert` prints an error and stops the run.
+
+When you write your own testbench:
+
+1. Instantiate the DUT (`alu_4bit` in `tb_alu_4bit.sv`).
+2. Drive inputs inside `initial begin` and give the circuit time to settle (`#10` is enough for combinational logic).
+3. Check outputs with `$display` or `assert`.
+4. Optionally emit a waveform file with `$dumpfile`/`$dumpvars` and view it in GTKWave (`gtkwave tb_alu_4bit.vcd`).
+
+You can override the Verilator binary by running `VERILATOR=verilator-5.42 make test` if you need a version other than the default one in your PATH.
+
 ## 🔧 Debugging Tips
 
 1. **Synthesis Error Countermeasures**

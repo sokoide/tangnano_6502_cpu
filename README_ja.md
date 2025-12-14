@@ -161,7 +161,7 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - SystemVerilogの基本構文とモジュール構造
 - 組み合わせ回路の設計 (論理ゲート、デコーダ、マルチプレクサ)
 - assign文とalways_comb文の使い分け
-- テストベンチの基本
+- テストベンチの基本、Verilatorによるシミュレーション
 
 **成果物:**
 
