@@ -35,8 +35,8 @@
  "INCREMENTAL_PLACE_AND_ROUTING" : "0",
  "INCREMENTAL_PLACE_ONLY" : "0",
  "IncludePath" : [
-  "include"
- ],
+
+],
  "Incremental_Compile" : "",
  "Initialize_Primitives" : false,
  "JTAG" : false,

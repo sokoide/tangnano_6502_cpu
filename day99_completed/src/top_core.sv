@@ -15,10 +15,9 @@
 // - Tang Nano 9K: rst_n = ResetButton (active high button)
 // - Tang Nano 20K: rst_n = !ResetButton (active low button)
 //
-`include "../include/board_select.svh"
-module top (
+module top_core (
     // Clock and Reset
-    input logic ResetButton,            // Board reset button (polarity depends on board variant)
+    input logic rst_n,                  // Active-low reset
     input logic XTAL_IN,                // 27MHz crystal oscillator input
 
     // LCD Interface
@@ -31,15 +30,6 @@ module top (
     // Debug/Test Outputs
     output logic MEMORY_CLK             // Memory clock output for debugging (40.5MHz)
 );
-
-  // Board-specific reset polarity configuration:
-  // - Tang Nano 9K: active-high button (rst_n = ResetButton)
-  // - Tang Nano 20K: active-low button (rst_n = !ResetButton)
-`ifdef BOARD_20K
-  logic rst_n = !ResetButton;
-`else
-  logic rst_n = ResetButton;
-`endif
 
   logic rst = !rst_n;
 

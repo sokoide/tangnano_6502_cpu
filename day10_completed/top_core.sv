@@ -5,11 +5,9 @@
 //
 // Pins are defined in tft_*.cst.
 
-`include "include/board_select.svh"
-
-module top (
-    input  ResetButton,
-    input  XTAL_IN,     // 27MHz
+module top_core (
+    input  logic rst_n,
+    input  logic XTAL_IN,     // 27MHz
 
     output       LCD_CLK,  // Pixel clock (~9MHz)
     output       LCD_DEN,
@@ -17,14 +15,6 @@ module top (
     output logic [5:0] LCD_G,
     output logic [4:0] LCD_B
 );
-
-`ifdef BOARD_20K
-    logic rst_n;
-    assign rst_n = !ResetButton;
-`else
-    logic rst_n;
-    assign rst_n = ResetButton;
-`endif
 
     // 27MHz -> 9MHz pixel clock (PLL IP, board-specific netlist)
     Gowin_rPLL9 rpll9_inst (

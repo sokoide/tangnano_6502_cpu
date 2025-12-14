@@ -31,21 +31,10 @@ endif
 .PHONY: all clean download help tools-check tools-check-sim sim-build sim test
 all: $(PROJECT).fs
 
-include/board_select.svh: board-config
-
-board-config:
-	@mkdir -p include
-	@if [ "$(BOARD)" = "20k" ]; then \
-	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`define BOARD_20K 1' '`endif' > include/board_select.svh; \
-	else \
-	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`endif' > include/board_select.svh; \
-	fi
-
-$(PROJECT).fs: $(GPRJ) include/board_select.svh tools-check
+$(PROJECT).fs: $(GPRJ) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
-		"set_option -include_path include" \
 		"set_option -verilog_std sysv2017" \
 		"set_option -use_sspi_as_gpio 1" \
 		"set_option -top_module top" \
@@ -85,12 +74,19 @@ tools-check-sim:
 	@if command -v "$(VERILATOR)" >/dev/null 2>&1; then : ; \
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
 
-sim-build: include/board_select.svh tools-check-sim
+ifeq ($(BOARD),20k)
+  TOP_SV := top_20k.sv
+  SIM_DEFS := -DBOARD_20K
+else
+  TOP_SV := top_9k.sv
+  SIM_DEFS :=
+endif
+
+sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
-		-Iinclude \
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) $(SIM_DEFS) \
 		-o V$(SIM_TOP) \
-		tb_tft.sv top.sv sim/Gowin_rPLL9_stub.sv
+		tb_tft.sv $(TOP_SV) top_core.sv sim/Gowin_rPLL9_stub.sv
 
 sim: sim-build
 	@echo "[sim] Running..."

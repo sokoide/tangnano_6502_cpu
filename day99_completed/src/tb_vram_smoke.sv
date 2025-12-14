@@ -1,5 +1,3 @@
-`include "../include/board_select.svh"
-
 module tb_vram_smoke;
   logic ResetButton;
   logic XTAL_IN;
@@ -53,10 +51,10 @@ module tb_vram_smoke;
     for (cycles = 0; cycles < 300000; cycles++) begin
       @(posedge MEMORY_CLK);
 
-      if (uut.v_cea) begin
+      if (uut.u_core.v_cea) begin
         vram_writes++;
         if (vram_writes <= 16) begin
-          $display("[vram] write #%0d addr=%0d data=%02x", vram_writes, uut.v_ada, uut.v_din);
+          $display("[vram] write #%0d addr=%0d data=%02x", vram_writes, uut.u_core.v_ada, uut.u_core.v_din);
         end
       end
 

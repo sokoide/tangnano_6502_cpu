@@ -25,7 +25,6 @@ tmp.*
 temp
 *_build.tcl
 output.txt
-board_select.svh
 
 # dsim
 dsim_work/

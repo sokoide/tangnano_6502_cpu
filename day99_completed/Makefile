@@ -3,7 +3,7 @@ SRCS= \
 	include/boot_program.sv \
 	include/cpu_ifo_auto_generated.sv \
 	include/cpu_tasks.sv \
-	src/top.sv \
+	src/top_core.sv \
 	src/lcd.sv \
 	src/ram.sv \
 	src/cpu.sv \
@@ -50,20 +50,18 @@ export PATH
 
 all: $(FS)
 
-.PHONY: all clean wave download help lint format format-check tools-check board-config
+.PHONY: all clean wave download help lint format format-check tools-check
 .PHONY: sim sim-build sim-ram sim-ram-build tools-check-sim
 
-include/board_select.svh: board-config
+ifeq ($(BOARD),20k)
+  TOP_WRAPPER := src/top_20k.sv
+  SIM_DEFS := -DBOARD_20K
+else
+  TOP_WRAPPER := src/top_9k.sv
+  SIM_DEFS :=
+endif
 
-board-config:
-	@mkdir -p include
-	@if [ "$(BOARD)" = "20k" ]; then \
-	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`define BOARD_20K 1' '`endif' > include/board_select.svh; \
-	else \
-	  printf '%s\n' '`ifndef BOARD_SELECT_SVH' '`define BOARD_SELECT_SVH' '`endif' > include/board_select.svh; \
-	fi
-
-$(FS): $(SRCS) include/board_select.svh tools-check
+$(FS): $(SRCS) $(TOP_WRAPPER) tools-check
 	$(GWSH) proj.tcl
 
 # operation_index
@@ -109,7 +107,7 @@ help:
 	@echo "Variables:"
 	@echo "  BOARD=9k|20k        - Select board (maps DEVICE if DEVICE unset)"
 	@echo "  DEVICE=...          - Override explicit device code"
-	@echo "Note: Also update lcd_cpu_bsram.gprj and src/top.sv for board switch."
+	@echo "Note: Board selection is encoded in the per-board .gprj (top_9k/top_20k wrapper)."
 
 # Tool availability check (portable): accepts absolute path or PATH lookup
 tools-check:
@@ -139,16 +137,16 @@ tools-check-sim:
 # Default: CPU -> VRAM smoke test (education-friendly)
 SIM_SRCS := \
 	src/tb_vram_smoke.sv \
-	src/top.sv src/lcd.sv src/ram.sv \
+	$(TOP_WRAPPER) src/top_core.sv src/lcd.sv src/ram.sv \
 	src/cpu.sv src/cpu_decoder.sv src/cpu_alu.sv src/cpu_memory.sv \
 	sim/GSR.sv \
 	sim/gowin_rpll9_stub.sv sim/gowin_rpll40_stub.sv \
 	sim/gowin_prom_font_stub.sv \
 	sim/Gowin_SDPB.sv sim/gowin_sdpb_vram_stub.sv
 
-sim-build: include/board_select.svh tools-check-sim
+sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator (VRAM smoke test)..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) $(SIM_DEFS) \
 		-Iinclude -Isrc \
 		-o V$(SIM_TOP) \
 		$(SIM_SRCS)
