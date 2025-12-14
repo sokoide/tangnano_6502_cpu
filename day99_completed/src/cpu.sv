@@ -191,7 +191,7 @@ module cpu (
 
         state_machine_step();
         unique case (state)
-          INIT, INIT_RAM: begin
+          INIT, INIT_RAM, FETCH_REQ, FETCH_WAIT: begin
             state <= boot_fetch_next.next_state;
             fetch_stage <= boot_fetch_next.next_fetch_stage;
           end

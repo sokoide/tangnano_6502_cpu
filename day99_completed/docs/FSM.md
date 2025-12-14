@@ -72,3 +72,4 @@
 - `cpu.sv` に `calc_boot_fetch_next()` の呼び出し（`always_comb`）を追加し、まず `INIT/INIT_RAM` だけは `state <= boot_fetch_next.next_state` を使うようにした。
   - 副作用（RAM 書き込みなど）は従来どおり `state_machine_step()` 側で実行し、**状態更新だけを置き換える**最小の差分にしている。
   - 次は `FETCH_*` 系の状態も同様に段階的に置き換えていく（実機での確認を挟みながら進める）。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
