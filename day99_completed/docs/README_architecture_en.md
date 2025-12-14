@@ -13,7 +13,7 @@ A detailed technical reference for the 6502 CPU core implemented in SystemVerilo
 **Intermediate**: Study [CPU Implementation](#cpu-implementation) and [Memory System](#memory-system)
 **Advanced**: Explore [Custom Instructions](#custom-instructions) and [Optimization Techniques](#optimization-techniques)
 
-## 🎯 System Overview
+## System Overview
 
 This project demonstrates a complete computer system implementation on FPGA, serving as an educational platform for:
 
@@ -31,7 +31,7 @@ This project demonstrates a complete computer system implementation on FPGA, ser
 - **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
 - **Hardware/Software Integration**: Assembly programming with FPGA implementation
 
-## 🏗️ Basic Architecture
+## Basic Architecture
 
 ### System Block Diagram
 
@@ -111,7 +111,7 @@ graph LR
     PROG --> FPGA[Tang Nano FPGA]
 ```
 
-## 🧠 Memory System
+## Memory System
 
 ### Address Space Design
 
@@ -154,7 +154,7 @@ include/
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
-## ⚙️ CPU Implementation
+## CPU Implementation
 
 ### 6502 Core Architecture
 
@@ -338,7 +338,7 @@ The display system uses the [Sweet16Font](https://github.com/kmar/Sweet16Font) (
 - **Storage**: 4KB pROM (16 bytes × 256 character slots)
 - **Access**: LCD controller only (not CPU-addressable)
 
-## 🔧 Custom Instructions
+## Custom Instructions
 
 ### Extension Instruction Set
 
