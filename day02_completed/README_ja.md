@@ -56,6 +56,9 @@ make BOARD=20k download
 make test
 
 # 波形表示 (GTKWave必要)
+# WSL High Resolution Display User Only
+# export GDK_SCALE=2        # Window scale
+# export GDK_DPI_SCALE=1.0  # Font scale
 gtkwave tb_alu_4bit.vcd
 ```
 
