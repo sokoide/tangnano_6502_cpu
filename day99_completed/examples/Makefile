@@ -2,12 +2,12 @@
 #  Mac) brew install srecord cc65 golang
 #  WSL / Linux) sudo apt install srecord cc65 golang
 
-# SRCS = simple.s
+SRCS = simple.s
 # SRCS = simple2.s
 # SRCS = simple3.s
 # SRCS = simple4.s
 # SRCS = simple5.s
-SRCS = hello_world.s
+# SRCS = hello_world.s
 # SRCS = hello_world_scroll.s
 
 # target System Verilogy file path which is included by src/top.sv

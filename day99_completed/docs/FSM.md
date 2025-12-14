@@ -61,3 +61,8 @@
 
 ### 次にやること（Step 3〜）
 - Step 3（always_comb で次状態計算）に進むには、状態遷移だけでなく **PC/ADB/WE 等の“副作用”も next 値として持つ** 必要があるため、`cpu_ctx_t cur/next` に段階的に寄せていく（`cpu_2proc_skeleton.sv` の方針）。
+
+### 2025-12-14: Step 3 の着手（次状態ロジックの切り出し開始）
+- `src/cpu/cpu_fsm_next_pkg.sv` を追加し、まず Boot/FETCH 周りの「次状態のみ（副作用なし）」ロジックを `function` として切り出し開始。
+  - 目的: 今後 `always_comb` に移したときに、状態遷移が副作用に引きずられて壊れないようにする。
+  - まだ `cpu.sv` には接続していない（段階移行のため）。
