@@ -61,7 +61,8 @@ module top (
         end
     end
 
-    logic active =
+    logic active;
+    assign active =
         (h_count >= H_BACK) && (h_count < (H_BACK + H_VALID)) &&
         (v_count >= V_BACK) && (v_count < (V_BACK + V_VALID));
 

@@ -11,7 +11,6 @@ module tb_tft;
     logic [4:0]  LCD_R;
     logic [5:0]  LCD_G;
     logic [4:0]  LCD_B;
-    logic        led;
 
     top uut (
         .ResetButton(ResetButton),
@@ -20,8 +19,7 @@ module tb_tft;
         .LCD_DEN(LCD_DEN),
         .LCD_R(LCD_R),
         .LCD_G(LCD_G),
-        .LCD_B(LCD_B),
-        .led(led)
+        .LCD_B(LCD_B)
     );
 
     // 27MHz clock
