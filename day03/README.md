@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the concept of clock-synchronous circuits
--   Learn the difference between flip-flops and latches
--   Master register design using `always_ff`
--   Understand the basics of Finite State Machines (FSM)
+- Understand the concept of clock-synchronous circuits
+- Learn the difference between flip-flops and latches
+- Master register design using `always_ff`
+- Understand the basics of Finite State Machines (FSM)
 
 ## 📚 Theory
 
@@ -20,8 +20,8 @@ In Day 02, you learned that combinational logic is like a pure function. Today, 
 
 Think of a sequential circuit as an object with private member variables (the registers). The `always_ff @(posedge clk)` block is like a special method that gets called automatically on every clock "tick". This is the **only place where the state should change**.
 
--   **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
--   **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
+- **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
+- **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
 
 This clock-driven, synchronous nature is what makes hardware design predictable and manageable.
 
@@ -74,13 +74,15 @@ Inside `always_ff`, use non-blocking assignment `<=` so all registers update “
 
 #### Visualizing `<=` vs `=`
 
-*   **`=` (Blocking)**: Works like software variables. `a = 1; b = a;` results in both being 1.
-*   **`<=` (Non-Blocking)**: Works like a "commit" at the end of the step.
+- **`=` (Blocking)**: Works like software variables. `a = 1; b = a;` results in both being 1.
+- **`<=` (Non-Blocking)**: Works like a "commit" at the end of the step.
+
     ```systemverilog
     // Swapping with <=
     a <= b;
     b <= a;
     ```
+
     This successfully swaps `a` and `b` in one clock cycle, without needing a temp variable. It's like calculating the right-hand side for *all* statements first, and *then* updating the left-hand side values simultaneously.
 
 #### Reset naming: `rst_n`
@@ -125,7 +127,7 @@ flowchart LR
   CLK((clk)) --> C[8-bit counter]
   EN[enable] --> C
   RST[rst_n] --> C
-  C --> Q[count[7:0]]
+  C --> Q["count[7:0]"]
   C --> OV[overflow]
 ```
 
@@ -155,8 +157,8 @@ endmodule
 
 ### Specifications
 
--   8-bit duty cycle control
--   Supports variable frequency
+- 8-bit duty cycle control
+- Supports variable frequency
 
 PWM = Pulse Width Modulation. It toggles an output fast and changes the **ON ratio** (duty cycle).
 
@@ -257,15 +259,15 @@ endmodule
 
 ### Basic Assignments
 
-1.  Implement an up/down counter
-2.  Control LED brightness with PWM
-3.  Complete the traffic light controller
+1. Implement an up/down counter
+2. Control LED brightness with PWM
+3. Complete the traffic light controller
 
 ### Advanced Assignments
 
-1.  State machine for a UART transmitter
-2.  Variable-length shift register
-3.  Implement a clock divider
+1. State machine for a UART transmitter
+2. Variable-length shift register
+3. Implement a clock divider
 
 #### What is a shift register?
 
@@ -291,15 +293,15 @@ flowchart LR
 
 ## 📚 What I Learned Today
 
--   [ ] Basics of clock-synchronous circuits
--   [ ] How to use `always_ff`
--   [ ] State machine design methods
--   [ ] Implementation of timers and counters
+- [ ] Basics of clock-synchronous circuits
+- [ ] How to use `always_ff`
+- [ ] State machine design methods
+- [ ] Implementation of timers and counters
 
 ## 🎯 Preview for Tomorrow
 
 In Day 04, we will learn about the 6502 CPU architecture:
 
--   Basic components of a CPU
--   Relationship between registers and memory
--   Instruction execution cycle
+- Basic components of a CPU
+- Relationship between registers and memory
+- Instruction execution cycle

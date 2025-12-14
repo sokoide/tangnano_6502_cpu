@@ -48,6 +48,7 @@ Day 06では、6502 CPUの中核となる命令デコーダーとALU（算術論
 ```
 
 **制御信号生成**：
+
 - ALU操作選択（alu_op[3:0]）
 - レジスタ書き込み制御
 - メモリアクセス制御
@@ -59,12 +60,14 @@ Day 06では、6502 CPUの中核となる命令デコーダーとALU（算術論
 完全な6502互換ALU：
 
 #### 算術演算
+
 ```systemverilog
 ALU_ADD: ADC命令（キャリー付き加算）
 ALU_SUB: SBC命令（ボロー付き減算）
 ```
 
 #### 論理演算
+
 ```systemverilog
 ALU_AND: AND命令
 ALU_OR:  ORA命令
@@ -72,6 +75,7 @@ ALU_XOR: EOR命令
 ```
 
 #### シフト・ローテート
+
 ```systemverilog
 ALU_ASL: 算術左シフト
 ALU_LSR: 論理右シフト
@@ -80,6 +84,7 @@ ALU_ROR: 右ローテート（キャリー経由）
 ```
 
 #### その他
+
 ```systemverilog
 ALU_INC: インクリメント（キャリーに影響しない）
 ALU_DEC: デクリメント（キャリーに影響しない）
@@ -102,6 +107,7 @@ ALU_CMP: 比較（減算結果のフラグのみ使用）
 | 0 | C | Carry | キャリー/ボロー |
 
 **特徴**：
+
 - 命令ごとの適切なフラグ更新
 - SEC/CLC命令での手動制御
 - 条件分岐での参照
@@ -109,6 +115,7 @@ ALU_CMP: 比較（減算結果のフラグのみ使用）
 ### 4. Integration Test (`top.sv`)
 
 統合テストシステム：
+
 - 各コンポーネントの連携確認
 - 実際の6502命令シーケンス実行
 - デバッグ出力による動作確認
@@ -184,7 +191,6 @@ day06_completed/
 ```bash
 # ALUシミュレーション（Verilator）
 make test
-# (alias) make test
 
 # FPGAへの書き込み
 make BOARD=9k download
@@ -206,6 +212,7 @@ make test
 Tang Nanoのピンでモニターできる信号：
 
 ### ALU状態
+
 - `debug_alu_result[7:0]` - ALU演算結果
 - `debug_alu_carry` - キャリー出力
 - `debug_alu_zero` - ゼロフラグ
@@ -213,12 +220,14 @@ Tang Nanoのピンでモニターできる信号：
 - `debug_alu_overflow` - オーバーフローフラグ
 
 ### デコーダー状態
+
 - `debug_alu_op[3:0]` - ALU操作コード
 - `debug_reg_a_write` - Aレジスタ書き込み
 - `debug_mem_read` - メモリ読み取り
 - `debug_mem_write` - メモリ書き込み
 
 ### システム状態
+
 - `debug_opcode[7:0]` - 現在の命令コード
 - `debug_inst_length[1:0]` - 命令長
 
@@ -319,6 +328,7 @@ LSR A       ; A = $40 (01000000), C=1
 ### デバッグ手法
 
 1. **シミュレーション活用**：
+
    ```bash
    make test
    # テストベンチでの詳細確認

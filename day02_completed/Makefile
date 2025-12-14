@@ -2,6 +2,8 @@
 PROJECT = day02
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
+SIM_TOP = tb_alu_4bit
+VERILATOR ?= verilator
 
 BASE := $(if \
   $(wildcard /Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh),/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA,$(HOME)/Gowin)
@@ -18,7 +20,7 @@ else
   GPRJ = hw_9k.gprj
 endif
 
-.PHONY: all clean download help tools-check
+.PHONY: all clean download help tools-check sim sim-build test tools-check-sim
 all: $(PROJECT).fs
 
 $(PROJECT).fs: $(GPRJ) tools-check
@@ -53,10 +55,29 @@ tools-check:
 	@if [ -x "$(PRG)" ] || command -v "$$(basename "$(PRG)")" >/dev/null 2>&1; then : ; \
 	else echo "[ERROR] programmer_cli not found. Set PRG=/path/to/programmer_cli" >&2; exit 1; fi
 
+tools-check-sim:
+	@if command -v "$(VERILATOR)" >/dev/null 2>&1; then : ; \
+	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
+
+sim-build: tools-check-sim
+	@echo "[sim] Building with Verilator..."
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary \
+		-o V$(SIM_TOP) \
+		tb_alu_4bit.sv alu_4bit.sv
+
+sim: sim-build
+	@echo "[sim] Running..."
+	@./obj_dir/V$(SIM_TOP)
+
+# README compatibility
+test: sim
+
 clean:
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
+	rm -rf obj_dir/
 
 
 help:
 	@echo "Targets: make | make download | make clean"
+	@echo "         make sim | make test"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."

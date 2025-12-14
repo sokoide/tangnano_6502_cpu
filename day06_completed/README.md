@@ -11,29 +11,29 @@ In Day 06, we will implement the core of the 6502 CPU: the instruction decoder a
 
 ### What You Will Learn Today
 
-1.  **Instruction Decoder Design**
+1. **Instruction Decoder Design**
 
-    -   Analysis of the 6502 instruction set
-    -   Generating control signals from opcodes
-    -   Determining the addressing mode
+    - Analysis of the 6502 instruction set
+    - Generating control signals from opcodes
+    - Determining the addressing mode
 
-2.  **ALU Implementation**
+2. **ALU Implementation**
 
-    -   Arithmetic operations (ADD, SUB)
-    -   Logical operations (AND, OR, XOR)
-    -   Shift and rotate operations
-    -   Flag generation (N, Z, C, V)
+    - Arithmetic operations (ADD, SUB)
+    - Logical operations (AND, OR, XOR)
+    - Shift and rotate operations
+    - Flag generation (N, Z, C, V)
 
-3.  **Status Register Management**
+3. **Status Register Management**
 
-    -   Accurate implementation of the 6502 flags
-    -   Flag update control for each instruction
-    -   Implementation of the NV-BDIZC format
+    - Accurate implementation of the 6502 flags
+    - Flag update control for each instruction
+    - Implementation of the NV-BDIZC format
 
-4.  **System Integration**
-    -   Coordination of the decoder, ALU, and status register
-    -   Execution of actual 6502 instructions
-    -   Debugging and testing
+4. **System Integration**
+    - Coordination of the decoder, ALU, and status register
+    - Execution of actual 6502 instructions
+    - Debugging and testing
 
 ## Implementation Details
 
@@ -57,11 +57,11 @@ A complete decoder for 6502 instructions:
 
 **Control Signal Generation**:
 
--   ALU operation selection (alu_op[3:0])
--   Register write control
--   Memory access control
--   Flag update control
--   Datapath selection
+- ALU operation selection (alu_op[3:0])
+- Register write control
+- Memory access control
+- Flag update control
+- Datapath selection
 
 ### 2. CPU ALU (`cpu_alu.sv`)
 
@@ -116,17 +116,17 @@ ALU_CMP: Compare (only uses flags from the subtraction result)
 
 **Features**:
 
--   Appropriate flag updates for each instruction
--   Manual control with SEC/CLC instructions
--   Referenced in conditional branches
+- Appropriate flag updates for each instruction
+- Manual control with SEC/CLC instructions
+- Referenced in conditional branches
 
 ### 4. Integration Test (`top.sv`)
 
 Integrated test system:
 
--   Verifies the coordination of each component
--   Executes a sequence of actual 6502 instructions
--   Verifies operation with debug outputs
+- Verifies the coordination of each component
+- Executes a sequence of actual 6502 instructions
+- Verifies operation with debug outputs
 
 ## 6502 Instruction Set Implementation
 
@@ -203,7 +203,6 @@ make BOARD=20k download
 
 # Run simulation (Verilator)
 make test
-# (alias) make test
 ```
 
 ### Run Tests
@@ -222,23 +221,23 @@ Signals that can be monitored on the Tang Nano pins:
 
 ### ALU State
 
--   `debug_alu_result[7:0]` - ALU operation result
--   `debug_alu_carry` - Carry output
--   `debug_alu_zero` - Zero flag
--   `debug_alu_negative` - Negative flag
--   `debug_alu_overflow` - Overflow flag
+- `debug_alu_result[7:0]` - ALU operation result
+- `debug_alu_carry` - Carry output
+- `debug_alu_zero` - Zero flag
+- `debug_alu_negative` - Negative flag
+- `debug_alu_overflow` - Overflow flag
 
 ### Decoder State
 
--   `debug_alu_op[3:0]` - ALU operation code
--   `debug_reg_a_write` - A register write
--   `debug_mem_read` - Memory read
--   `debug_mem_write` - Memory write
+- `debug_alu_op[3:0]` - ALU operation code
+- `debug_reg_a_write` - A register write
+- `debug_mem_read` - Memory read
+- `debug_mem_write` - Memory write
 
 ### System State
 
--   `debug_opcode[7:0]` - Current instruction code
--   `debug_inst_length[1:0]` - Instruction length
+- `debug_opcode[7:0]` - Current instruction code
+- `debug_inst_length[1:0]` - Instruction length
 
 ## Example Test Programs
 
@@ -282,99 +281,99 @@ LSR A       ; A = $40 (01000000), C=1
 
 ### Instruction Decoding
 
-1.  **Opcode Analysis**:
+1. **Opcode Analysis**:
 
-    -   Identify instruction from 8-bit opcode
-    -   Determine addressing mode
-    -   Determine immediate/memory access
+    - Identify instruction from 8-bit opcode
+    - Determine addressing mode
+    - Determine immediate/memory access
 
-2.  **Control Signal Generation**:
-    -   ALU operation selection
-    -   Datapath control
-    -   Memory access control
+2. **Control Signal Generation**:
+    - ALU operation selection
+    - Datapath control
+    - Memory access control
 
 ### ALU Design
 
-1.  **Operation Implementation**:
+1. **Operation Implementation**:
 
-    -   Parallel operations in a combinational circuit
-    -   Consideration of carry propagation
-    -   Overflow detection logic
+    - Parallel operations in a combinational circuit
+    - Consideration of carry propagation
+    - Overflow detection logic
 
-2.  **Flag Generation**:
-    -   Flag update rules for each operation
-    -   6502-specific behavior (INC/DEC do not affect carry)
+2. **Flag Generation**:
+    - Flag update rules for each operation
+    - 6502-specific behavior (INC/DEC do not affect carry)
 
 ### System Integration
 
-1.  **Inter-Module Coordination**:
+1. **Inter-Module Coordination**:
 
-    -   Decoder -> ALU -> Status
-    -   Appropriate timing control
-    -   Ensuring debuggability
+    - Decoder -> ALU -> Status
+    - Appropriate timing control
+    - Ensuring debuggability
 
-2.  **On-Device Verification**:
-    -   Verifying operation on the Tang Nano
-    -   Status display with LEDs
-    -   Control with switches
+2. **On-Device Verification**:
+    - Verifying operation on the Tang Nano
+    - Status display with LEDs
+    - Control with switches
 
 ## Troubleshooting
 
 ### Common Issues
 
-1.  **Flags are not set correctly**
+1. **Flags are not set correctly**
 
-    -   Check the flag generation logic of the ALU
-    -   Check the update control of the status register
-    -   Check the flag update rules for each instruction
+    - Check the flag generation logic of the ALU
+    - Check the update control of the status register
+    - Check the flag update rules for each instruction
 
-2.  **Operation result is not as expected**
+2. **Operation result is not as expected**
 
-    -   Check the operation logic within the ALU
-    -   Check the setting of the carry input
-    -   Check the operand selection
+    - Check the operation logic within the ALU
+    - Check the setting of the carry input
+    - Check the operand selection
 
-3.  **Instruction is not decoded correctly**
-    -   Check the opcode pattern matching
-    -   Check the completeness of the `case` statement
-    -   Check the appropriateness of the default behavior
+3. **Instruction is not decoded correctly**
+    - Check the opcode pattern matching
+    - Check the completeness of the `case` statement
+    - Check the appropriateness of the default behavior
 
 ### Debugging Methods
 
-1.  **Utilize Simulation**:
+1. **Utilize Simulation**:
 
     ```bash
     make test
     # Runs Verilator + the testbench (also: make test)
     ```
 
-2.  **Step-by-Step Testing**:
+2. **Step-by-Step Testing**:
 
-    -   ALU unit test
-    -   Decoder unit test
-    -   Integration test
+    - ALU unit test
+    - Decoder unit test
+    - Integration test
 
-3.  **On-Device Verification**:
-    -   Status verification with LEDs
-    -   Manual control with switches
+3. **On-Device Verification**:
+    - Status verification with LEDs
+    - Manual control with switches
 
 ## Advanced Assignments
 
 ### Feature Extensions
 
-1.  **Add Instructions**:
+1. **Add Instructions**:
 
-    -   Add unimplemented instructions
-    -   Extended instruction set
+    - Add unimplemented instructions
+    - Extended instruction set
 
-2.  **Optimization**:
+2. **Optimization**:
 
-    -   Timing improvement
-    -   Resource efficiency
+    - Timing improvement
+    - Resource efficiency
 
-3.  **Debug Features**:
-    -   Breakpoints
-    -   Step execution
+3. **Debug Features**:
+    - Breakpoints
+    - Step execution
 
 ### Next Steps
 
@@ -382,7 +381,7 @@ In Day 07, we will implement the memory interface and stack operations, moving t
 
 ## Reference Materials
 
--   6502 Instruction Set Reference
--   6502 Status Register Specification
--   SystemVerilog ALU Design Patterns
--   CPU Architecture Design Principles
+- 6502 Instruction Set Reference
+- 6502 Status Register Specification
+- SystemVerilog ALU Design Patterns
+- CPU Architecture Design Principles

@@ -11,28 +11,28 @@ In Day 08, we will integrate all the components created so far to implement a fu
 
 ### What You Will Learn Today
 
-1.  **CPU Architecture Integration**
+1. **CPU Architecture Integration**
 
-    -   Datapath design
-    -   Control unit implementation
-    -   Register file management
+    - Datapath design
+    - Control unit implementation
+    - Register file management
 
-2.  **Instruction Execution Pipeline**
+2. **Instruction Execution Pipeline**
 
-    -   FETCH -> DECODE -> EXECUTE -> MEMORY -> WRITEBACK
-    -   State machine control
-    -   Appropriate timing control
+    - FETCH -> DECODE -> EXECUTE -> MEMORY -> WRITEBACK
+    - State machine control
+    - Appropriate timing control
 
-3.  **Memory Interface Integration**
+3. **Memory Interface Integration**
 
-    -   Connecting the CPU and memory system
-    -   Bus arbitration and timing
-    -   Debugging and monitoring
+    - Connecting the CPU and memory system
+    - Bus arbitration and timing
+    - Debugging and monitoring
 
-4.  **Executing a Real 6502 Program**
-    -   Test ROM program
-    -   Verifying the operation of the instruction set
-    -   Performance optimization
+4. **Executing a Real 6502 Program**
+    - Test ROM program
+    - Verifying the operation of the instruction set
+    - Performance optimization
 
 ## Implementation Details
 
@@ -51,55 +51,55 @@ A complete 6502 CPU core:
 
 Data flow control:
 
--   ALU input selection (A/X/Y/memory)
--   Register data source selection
--   Integration of ALU and register file
+- ALU input selection (A/X/Y/memory)
+- Register data source selection
+- Integration of ALU and register file
 
 ### 3. Control Unit (`cpu_control_unit.sv`)
 
 Instruction execution control:
 
--   5-state machine implementation
--   Addressing mode control
--   Memory access arbitration
+- 5-state machine implementation
+- Addressing mode control
+- Memory access arbitration
 
 ### 4. Register File (`cpu_registers.sv`)
 
 6502 register set:
 
--   A, X, Y registers
--   Program Counter (PC)
--   Stack Pointer (SP)
+- A, X, Y registers
+- Program Counter (PC)
+- Stack Pointer (SP)
 
 ### 5. Test ROM (`test_rom.sv`)
 
 A comprehensive test program:
 
--   Basic load/store operations
--   Arithmetic and logical operations
--   Register transfers
--   Stack operations
--   Branches and jumps
--   Subroutine calls
+- Basic load/store operations
+- Arithmetic and logical operations
+- Register transfers
+- Stack operations
+- Branches and jumps
+- Subroutine calls
 
 ## CPU States
 
 ### Execution Cycle
 
-1.  **FETCH**: Fetch instruction from the PC location
-2.  **DECODE**: Read operands (if necessary)
-3.  **EXECUTE**: Calculate effective address, generate control signals
-4.  **MEMORY**: Execute memory access
-5.  **WRITEBACK**: Write the result back to a register
+1. **FETCH**: Fetch instruction from the PC location
+2. **DECODE**: Read operands (if necessary)
+3. **EXECUTE**: Calculate effective address, generate control signals
+4. **MEMORY**: Execute memory access
+5. **WRITEBACK**: Write the result back to a register
 
 ### Clock Control
 
 CPU clock speed controllable by switches:
 
--   `00`: Lowest speed (1.69MHz) - for debugging
--   `01`: Low speed (3.375MHz) - for observation
--   `10`: Medium speed (6.75MHz) - normal operation
--   `11`: Highest speed (27MHz) - full performance
+- `00`: Lowest speed (1.69MHz) - for debugging
+- `01`: Low speed (3.375MHz) - for observation
+- `10`: Medium speed (6.75MHz) - normal operation
+- `11`: Highest speed (27MHz) - full performance
 
 ## Test Program
 
@@ -107,21 +107,21 @@ A comprehensive test sequence stored in ROM:
 
 ### Basic Tests
 
-1.  **Load/Store**: `LDA #$42`, `STA $80`
-2.  **Arithmetic**: `ADC`, `SBC` operations
-3.  **Logical**: `AND`, `OR`, `EOR` operations
-4.  **Shift**: `ASL`, `LSR` operations
+1. **Load/Store**: `LDA #$42`, `STA $80`
+2. **Arithmetic**: `ADC`, `SBC` operations
+3. **Logical**: `AND`, `OR`, `EOR` operations
+4. **Shift**: `ASL`, `LSR` operations
 
 ### Advanced Tests
 
-5.  **Compare**: `CMP` instruction and flag setting
-6.  **Register Transfer**: `TAX`, `TAY`, `TXA`, `TYA`
-7.  **Stack**: `PHA`, `PLA` operations
-8.  **Control Flow**: `JMP`, `JSR`, `RTS`
+5. **Compare**: `CMP` instruction and flag setting
+6. **Register Transfer**: `TAX`, `TAY`, `TXA`, `TYA`
+7. **Stack**: `PHA`, `PLA` operations
+8. **Control Flow**: `JMP`, `JSR`, `RTS`
 
 ### Practical Tests
 
-9.  **Loop**: Implementation of a loop with a counter
+9. **Loop**: Implementation of a loop with a counter
 10. **I/O**: Reading switches
 11. **Memory Test**: Pattern writing/reading
 
@@ -154,7 +154,6 @@ Dependent files:
 ```bash
 # Run simulation (Verilator)
 make test
-# (alias) make test
 
 # Program FPGA
 make BOARD=9k download
@@ -167,19 +166,19 @@ CPU states that can be monitored on the Tang Nano pins:
 
 ### Register State
 
--   `debug_reg_a[7:0]` - Accumulator
--   `debug_reg_x[7:0]` - X register
--   `debug_reg_y[7:0]` - Y register
--   `debug_reg_sp[7:0]` - Stack pointer
--   `debug_reg_pc[15:0]` - Program counter
--   `debug_status_reg[7:0]` - Status register
+- `debug_reg_a[7:0]` - Accumulator
+- `debug_reg_x[7:0]` - X register
+- `debug_reg_y[7:0]` - Y register
+- `debug_reg_sp[7:0]` - Stack pointer
+- `debug_reg_pc[15:0]` - Program counter
+- `debug_status_reg[7:0]` - Status register
 
 ### Execution State
 
--   `debug_opcode[7:0]` - Current instruction
--   `debug_cpu_state[2:0]` - CPU state
--   `debug_mem_addr[15:0]` - Memory address
--   `debug_mem_data[7:0]` - Memory data
+- `debug_opcode[7:0]` - Current instruction
+- `debug_cpu_state[2:0]` - CPU state
+- `debug_mem_addr[15:0]` - Memory address
+- `debug_mem_data[7:0]` - Memory data
 
 ## Execution Example
 
@@ -207,44 +206,44 @@ PC=$C00B: ADC $81     → A=$C6, Status=$A0 (N=1)
 
 ### Architecture Integration
 
-1.  **Modular Design**: Independence of each component
-2.  **Interface Standardization**: Consistent signal naming
-3.  **Hierarchical Structure**: Top-down design
-4.  **Reusability**: Utilizing components from previous days
+1. **Modular Design**: Independence of each component
+2. **Interface Standardization**: Consistent signal naming
+3. **Hierarchical Structure**: Top-down design
+4. **Reusability**: Utilizing components from previous days
 
 ### Execution Control
 
-1.  **State Machine**: Clear state transitions
-2.  **Timing Control**: Appropriate clock management
-3.  **Error Handling**: Detection of illegal states
-4.  **Debuggability**: Visualization of internal states
+1. **State Machine**: Clear state transitions
+2. **Timing Control**: Appropriate clock management
+3. **Error Handling**: Detection of illegal states
+4. **Debuggability**: Visualization of internal states
 
 ### Performance
 
-1.  **Clock Efficiency**: Execution with the minimum number of cycles
-2.  **Memory Efficiency**: Appropriate memory access patterns
-3.  **Resource Efficiency**: Optimal use of FPGA resources
+1. **Clock Efficiency**: Execution with the minimum number of cycles
+2. **Memory Efficiency**: Appropriate memory access patterns
+3. **Resource Efficiency**: Optimal use of FPGA resources
 
 ## Troubleshooting
 
 ### Common Issues
 
-1.  **CPU does not run**
+1. **CPU does not run**
 
-    -   Check the reset signal
-    -   Check the clock supply
-    -   Check the initial PC value ($C000)
+    - Check the reset signal
+    - Check the clock supply
+    - Check the initial PC value ($C000)
 
-2.  **Instruction does not execute correctly**
+2. **Instruction does not execute correctly**
 
-    -   Check the decoder output
-    -   Check the ALU operation
-    -   Check the memory interface
+    - Check the decoder output
+    - Check the ALU operation
+    - Check the memory interface
 
-3.  **Register value is abnormal**
-    -   Check the write enable signal
-    -   Check the datapath connection
-    -   Investigate timing issues
+3. **Register value is abnormal**
+    - Check the write enable signal
+    - Check the datapath connection
+    - Investigate timing issues
 
 ## Next Steps
 
@@ -252,7 +251,7 @@ In Day 09, we will add an LCD controller system to visually display the CPU's ou
 
 ## Reference Materials
 
--   6502 CPU Architecture Specification
--   SystemVerilog CPU Design Patterns
--   FPGA Timing Constraint Design
--   Debugging and Testing Methods
+- 6502 CPU Architecture Specification
+- SystemVerilog CPU Design Patterns
+- FPGA Timing Constraint Design
+- Debugging and Testing Methods

@@ -11,28 +11,28 @@ In Day 07, we will implement the memory interface and stack management, which ar
 
 ### What You Will Learn Today
 
-1.  **Memory Mapping**
+1. **Memory Mapping**
 
-    -   Dividing the address space for RAM, ROM, and I/O
-    -   Generating chip select signals
-    -   Address decoding
+    - Dividing the address space for RAM, ROM, and I/O
+    - Generating chip select signals
+    - Address decoding
 
-2.  **Memory Interface**
+2. **Memory Interface**
 
-    -   Controlling memory reads and writes
-    -   Appropriate timing control
-    -   Connecting to external memory
+    - Controlling memory reads and writes
+    - Appropriate timing control
+    - Connecting to external memory
 
-3.  **Stack Pointer Management**
+3. **Stack Pointer Management**
 
-    -   6502 stack operation (grows downwards from $01FF)
-    -   PUSH and POP operations
-    -   Stack overflow/underflow detection
+    - 6502 stack operation (grows downwards from $01FF)
+    - PUSH and POP operations
+    - Stack overflow/underflow detection
 
-4.  **Memory Controller**
-    -   Arbitration between CPU and stack operations
-    -   Priority control
-    -   Integrated memory access
+4. **Memory Controller**
+    - Arbitration between CPU and stack operations
+    - Priority control
+    - Integrated memory access
 
 ## Implementation Details
 
@@ -45,9 +45,9 @@ In Day 07, we will implement the memory interface and stack management, which ar
 // $C000-$FFFF: ROM (16KB)
 ```
 
--   Address decoding
--   Memory read/write state machine
--   Appropriate interface with external memory
+- Address decoding
+- Memory read/write state machine
+- Appropriate interface with external memory
 
 ### 2. Stack Pointer (`stack_pointer.sv`)
 
@@ -58,44 +58,43 @@ In Day 07, we will implement the memory interface and stack management, which ar
 // - SP is only the lower 8 bits
 ```
 
--   Stack operations (PUSH/POP)
--   Overflow/underflow detection
--   Appropriate address generation
+- Stack operations (PUSH/POP)
+- Overflow/underflow detection
+- Appropriate address generation
 
 ### 3. Memory Controller (`memory_controller.sv`)
 
--   Integration of CPU and stack operations
--   Priority control for memory access
--   Simple RAM and ROM modules
+- Integration of CPU and stack operations
+- Priority control for memory access
+- Simple RAM and ROM modules
 
 ### 4. Test System (`top.sv`)
 
 A demonstration to test the actual memory system:
 
--   RAM read/write test
--   ROM read test
--   Stack operation test
--   Address mapping verification
+- RAM read/write test
+- ROM read test
+- Stack operation test
+- Address mapping verification
 
 ## Build and Execute
 
 ### Required Files
 
--   `memory_interface.sv` - Memory interface control
--   `stack_pointer.sv` - Stack pointer management
--   `memory_controller.sv` - Integrated memory controller
--   `simple_ram.sv` - Simple RAM module
--   `simple_rom.sv` - Simple ROM module
--   `top.sv` - Test system
--   `tb_memory_system.sv` - Testbench
--   `Makefile` - Build system
+- `memory_interface.sv` - Memory interface control
+- `stack_pointer.sv` - Stack pointer management
+- `memory_controller.sv` - Integrated memory controller
+- `simple_ram.sv` - Simple RAM module
+- `simple_rom.sv` - Simple ROM module
+- `top.sv` - Test system
+- `tb_memory_system.sv` - Testbench
+- `Makefile` - Build system
 
 ### Build Commands
 
 ```bash
 # Run simulation (Verilator)
 make test
-# (alias) make test
 
 # Program FPGA
 make BOARD=9k download
@@ -106,24 +105,24 @@ make BOARD=20k download
 
 Signals that can be monitored with LEDs or pins on the Tang Nano:
 
--   `debug_mem_addr[15:0]` - Current memory address
--   `debug_mem_data[7:0]` - Memory data
--   `debug_mem_read` - Memory read signal
--   `debug_mem_write` - Memory write signal
--   `debug_stack_ptr[7:0]` - Stack pointer value
--   `debug_stack_push/pop` - Stack operation signals
+- `debug_mem_addr[15:0]` - Current memory address
+- `debug_mem_data[7:0]` - Memory data
+- `debug_mem_read` - Memory read signal
+- `debug_mem_write` - Memory write signal
+- `debug_stack_ptr[7:0]` - Stack pointer value
+- `debug_stack_push/pop` - Stack operation signals
 
 ## Test Sequence
 
 Test patterns that can be controlled with switches:
 
-1.  **RAM Write Test** - Write test data to RAM
-2.  **RAM Read Test** - Read data from RAM
-3.  **ROM Read Test** - Read program data from ROM
-4.  **Stack Push Test** - Push data onto the stack
-5.  **Stack Pop Test** - Pop data from the stack
-6.  **Zero Page Access** - Read/write to zero-page memory
-7.  **Stack Page Access** - Direct access to the stack page
+1. **RAM Write Test** - Write test data to RAM
+2. **RAM Read Test** - Read data from RAM
+3. **ROM Read Test** - Read program data from ROM
+4. **Stack Push Test** - Push data onto the stack
+5. **Stack Pop Test** - Pop data from the stack
+6. **Zero Page Access** - Read/write to zero-page memory
+7. **Stack Page Access** - Direct access to the stack page
 
 ## Learning Points
 
@@ -131,11 +130,11 @@ Test patterns that can be controlled with switches:
 
 Standard memory layout of a 6502 system:
 
--   **Zero Page** ($0000-$00FF): High-speed access
--   **Stack Page** ($0100-$01FF): Dedicated to the stack
--   **RAM Area** ($0200-$7FFF): General data and programs
--   **I/O Area** ($8000-$BFFF): Peripherals
--   **ROM Area** ($C000-$FFFF): Program and interrupt vectors
+- **Zero Page** ($0000-$00FF): High-speed access
+- **Stack Page** ($0100-$01FF): Dedicated to the stack
+- **RAM Area** ($0200-$7FFF): General data and programs
+- **I/O Area** ($8000-$BFFF): Peripherals
+- **ROM Area** ($C000-$FFFF): Program and interrupt vectors
 
 ### Details of Stack Operations
 
@@ -146,9 +145,9 @@ Standard memory layout of a 6502 system:
 
 ### Memory Access Timing
 
--   Appropriate setup/hold times
--   Control of chip select signals
--   Synchronization of read/write signals
+- Appropriate setup/hold times
+- Control of chip select signals
+- Synchronization of read/write signals
 
 ## Next Steps
 
@@ -156,7 +155,7 @@ In Day 08, we will integrate all the components created so far to implement a co
 
 ## Reference Materials
 
--   6502 Memory Map Design Guide
--   Tang Nano Memory Interface Specification
--   SystemVerilog Memory Modeling
--   FPGA RAM/ROM Implementation Patterns
+- 6502 Memory Map Design Guide
+- Tang Nano Memory Interface Specification
+- SystemVerilog Memory Modeling
+- FPGA RAM/ROM Implementation Patterns
