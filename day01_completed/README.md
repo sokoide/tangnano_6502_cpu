@@ -9,18 +9,18 @@ This is the completed version of the simple LED blinking project for the Tang Na
 
 ## File Structure
 
--   `top_9k.sv` - Top module for Tang Nano 9K (LED blink, open-drain style output)
--   `top_20k.sv` - Top module for Tang Nano 20K (LED blink, push-pull output)
--   `tang_nano_9k.cst` - Pin constraints for Tang Nano 9K
--   `tang_nano_20k.cst` - Pin constraints for Tang Nano 20K
--   `led_blink_9k.gprj`, `led_blink_20k.gprj` - GoWin EDA project files
--   `Makefile` - Build automation
+- `top_9k.sv` - Top module for Tang Nano 9K (LED blink, open-drain style output)
+- `top_20k.sv` - Top module for Tang Nano 20K (LED blink, push-pull output)
+- `tang_nano_9k.cst` - Pin constraints for Tang Nano 9K
+- `tang_nano_20k.cst` - Pin constraints for Tang Nano 20K
+- `led_blink_9k.gprj`, `led_blink_20k.gprj` - GoWin EDA project files
+- `Makefile` - Build automation
 
 ## Functionality
 
--   Divides the 27MHz clock with a 25-bit counter
--   Blinks the LED at approximately 0.8Hz (about 1.25-second intervals)
--   Compatible with both Tang Nano 9K and 20K
+- Divides the 27MHz clock with a 25-bit counter
+- Blinks the LED at approximately 0.8Hz (about 1.25-second intervals)
+- Compatible with both Tang Nano 9K and 20K
 
 ## How to Build
 
@@ -46,9 +46,9 @@ FPGA designs don’t run on a “generic board”. The same RTL can be wired to 
 
 Gowin uses `.cst` files for this. You will typically see:
 
-- `IO_LOC "signal" <pin>;`  
+- `IO_LOC "signal" <pin>;`
   Assigns a design port (or top-level signal) to a physical package pin number.
-- `IO_PORT "signal" ...;`  
+- `IO_PORT "signal" ...;`
   Sets electrical I/O properties for that pin.
 
 For example, in `tang_nano_9k.cst`:
@@ -58,18 +58,18 @@ For example, in `tang_nano_9k.cst`:
 
 ### Common `IO_PORT` options (beginner-friendly)
 
-- `IO_TYPE=...`  
+- `IO_TYPE=...`
   The I/O standard (voltage level + electrical behavior).
   - `LVCMOS33`: 3.3V CMOS logic levels.
   - `LVCMOS18`: 1.8V CMOS logic levels.
   Your board may have different banks powered at different voltages, so output pins often *must* match the bank voltage.
-- `PULL_MODE=...`  
+- `PULL_MODE=...`
   Built-in weak pull resistor configuration (when the pin is not actively driven).
   - `UP`: weak pull-up.
   - `DOWN`: weak pull-down.
   - `NONE`: no pull resistor.
   For clock inputs you usually want `NONE` (external oscillator drives it). For buttons/switches, a pull-up/down can make the signal stable when not pressed.
-- `DRIVE=...` (for outputs)  
+- `DRIVE=...` (for outputs)
   Output drive strength (mA). Higher is “stronger”, but can increase noise/EMI; use what your board needs.
 
 ## FPGA build flow: Synthesis vs Place & Route
@@ -80,17 +80,17 @@ FPGA toolchains typically do:
 flowchart TD
   A[SystemVerilog RTL<br/>top_9k.sv / top_20k.sv] --> B[Synthesis<br/>RTL → LUT/FF/RAM netlist]
   B --> C[Place & Route<br/>place cells + route wires]
-  C --> D[Bitstream generation<br/>.fs (configuration data)]
-  D --> E[Programming<br/>download to FPGA (SRAM)]
+  C --> D["Bitstream generation<br/>.fs (configuration data)"]
+  D --> E["Programming<br/>download to FPGA (SRAM)"]
 ```
 
-1. **Synthesis**  
+1. **Synthesis**
    Converts your SystemVerilog into a network of logic primitives (LUTs, flip-flops, RAM blocks, etc.).
-2. **Place & Route (P&R)**  
+2. **Place & Route (P&R)**
    Physically places those primitives onto actual resources on the FPGA chip and routes the wires between them, meeting timing constraints if possible.
-3. **Bitstream generation**  
+3. **Bitstream generation**
    Produces a configuration file (e.g. `.fs`) that programs the FPGA.
-4. **Programming**  
+4. **Programming**
    Downloads the bitstream into the FPGA (SRAM) so it starts running on hardware.
 
 ## SystemVerilog basics used here
@@ -98,8 +98,8 @@ flowchart TD
 ```mermaid
 flowchart LR
   subgraph Clocked logic
-    clk((clk)) --> ff[Counter register<br/>(flip-flops)]
-    ff -->|counter[24]| comb[Combinational logic]
+    clk((clk)) --> ff["Counter register<br/>(flip-flops)"]
+    ff -->|"counter[24]"| comb[Combinational logic]
   end
   comb --> led((led))
 ```
@@ -124,7 +124,7 @@ You’ll see `always @(posedge clk)` here; many codebases prefer `always_ff @(po
 
 ```mermaid
 flowchart LR
-  C[counter[24]] -->|"assign"| L[led]
+  C["counter[24]"] -->|"assign"| L[led]
 ```
 
 ### “Can I just write `=`? Do I need `wire`?”
@@ -150,24 +150,24 @@ That’s why `top_9k.sv` uses `assign led = counter[24] ? 1'b0 : 1'bz;`.
 
 ## Learning Points
 
-1.  **Basic SystemVerilog Syntax**
+1. **Basic SystemVerilog Syntax**
 
-    -   Module definition
-    -   Clock-synchronous circuits using `always_ff` / `posedge`
-    -   Combinational circuits using `assign`
+    - Module definition
+    - Clock-synchronous circuits using `always_ff` / `posedge`
+    - Combinational circuits using `assign`
 
-2.  **Clock Division**
+2. **Clock Division**
 
-    -   Divider circuit using a counter
-    -   Calculation of bit width (27MHz / 2^25 ≈ 0.8Hz)
+    - Divider circuit using a counter
+    - Calculation of bit width (27MHz / 2^25 ≈ 0.8Hz)
 
-3.  **FPGA Development Flow**
+3. **FPGA Development Flow**
 
-    -   Synthesis
-    -   Place & Route
-    -   Bitstream Generation
-    -   Programming
+    - Synthesis
+    - Place & Route
+    - Bitstream Generation
+    - Programming
 
-4.  **Constraint File**
-    -   Specifying pin assignments
-    -   Setting electrical properties
+4. **Constraint File**
+    - Specifying pin assignments
+    - Setting electrical properties

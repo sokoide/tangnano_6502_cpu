@@ -23,7 +23,7 @@ make BOARD=20k download
 ## シミュレーション（Verilator）
 
 ```bash
-make sim
+make test
 ```
 
 `LCD_DEN` がアサートされ、RGB出力が一度でも非ゼロになることを確認するスモークテストです。シミュレーションではPLLはスタブ化されるため、`LCD_CLK` は実質 `XTAL_IN` と同じになります。

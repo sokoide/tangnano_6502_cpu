@@ -183,7 +183,7 @@ day06_completed/
 
 ```bash
 # ALUシミュレーション（Verilator）
-make sim
+make test
 # (alias) make test
 
 # FPGAへの書き込み
@@ -195,7 +195,7 @@ make BOARD=20k download
 
 ```bash
 # ALU単体テスト
-make sim
+make test
 
 # 統合システムテスト
 # Tang NanoのLEDとスイッチで動作確認
@@ -320,7 +320,7 @@ LSR A       ; A = $40 (01000000), C=1
 
 1. **シミュレーション活用**：
    ```bash
-   make sim
+   make test
    # テストベンチでの詳細確認
    ```
 

@@ -44,7 +44,7 @@ SystemVerilogの順序回路設計の完成版プロジェクトです。
 
 ### シミュレーションテスト
 ```bash
-make sim
+make test
 # (alias) make test
 ```
 
@@ -66,7 +66,7 @@ make BOARD=20k download
 ### 個別テスト
 ```bash
 # 交通信号シミュレーション
-make sim
+make test
 
 # 波形表示
 gtkwave tb_traffic_light.vcd

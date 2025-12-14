@@ -86,7 +86,7 @@ Day 07では、6502 CPUシステムの重要なコンポーネントであるメ
 
 ```bash
 # シミュレーション（Verilator）
-make sim
+make test
 # (alias) make test
 
 # FPGAへの書き込み

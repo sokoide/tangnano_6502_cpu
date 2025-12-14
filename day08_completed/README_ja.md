@@ -137,7 +137,7 @@ day08_completed/
 
 ```bash
 # シミュレーション（Verilator）
-make sim
+make test
 # (alias) make test
 
 # FPGAへの書き込み

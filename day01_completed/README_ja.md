@@ -25,11 +25,13 @@ Tang Nano FPGA用のシンプルなLEDチカチカプロジェクトの完成版
 ## ビルド方法
 
 ### Tang Nano 9K の場合
+
 ```bash
 make BOARD=9k download
 ```
 
 ### Tang Nano 20K の場合
+
 ```bash
 make BOARD=20k download
 ```
@@ -40,14 +42,14 @@ make BOARD=20k download
 
 ## `.cst`（制約ファイル）とは？
 
-FPGAは「RTLを書けば勝手にピンにつながる」わけではありません。  
+FPGAは「RTLを書けば勝手にピンにつながる」わけではありません。
 トップモジュールのポート名（例：`clk`, `led`）を、FPGAの**物理ピン番号**へ結び付ける必要があります。
 
 Gowinではその指定を `.cst` に書きます。
 
-- `IO_LOC "信号名" ピン番号;`  
+- `IO_LOC "信号名" ピン番号;`
   その信号をどの物理ピンに出す/入れるかを指定します。
-- `IO_PORT "信号名" ...;`  
+- `IO_PORT "信号名" ...;`
   そのピンの電気特性（電圧、プルアップ、ドライブ強度など）を指定します。
 
 例：`tang_nano_9k.cst`
@@ -57,18 +59,18 @@ Gowinではその指定を `.cst` に書きます。
 
 ### よく使う `IO_PORT` の項目（初心者向け）
 
-- `IO_TYPE=...`  
+- `IO_TYPE=...`
   I/O規格（電圧レベルなど）です。
   - `LVCMOS33`: 3.3V CMOS
-  - `LVCMOS18`: 1.8V CMOS  
+  - `LVCMOS18`: 1.8V CMOS
   FPGA内部は「バンク」という単位でI/O電圧が決まることが多く、**そのバンクの電圧と一致するIO_TYPE**を選ぶ必要があります。
-- `PULL_MODE=...`  
+- `PULL_MODE=...`
   ピンが未駆動のときに効く弱い抵抗です。
   - `UP`: 弱いプルアップ
   - `DOWN`: 弱いプルダウン
-  - `NONE`: なし  
+  - `NONE`: なし
   ボタン入力などはプルアップ/ダウンで安定させます。クロック入力は外部発振器が駆動するので `NONE` が多いです。
-- `DRIVE=...`（主に出力）  
+- `DRIVE=...`（主に出力）
   出力の駆動強度(mA)です。強すぎるとノイズが増えることがあるため、ボードに合う値を使います。
 
 ## FPGA開発フロー：合成と配置配線は何をしている？
@@ -83,14 +85,14 @@ flowchart TD
   D --> E[書き込み（Programming）<br/>FPGAへダウンロード（SRAM）]
 ```
 
-1. **合成（Synthesis）**  
+1. **合成（Synthesis）**
    SystemVerilogを、FPGA内部の部品（LUT、FF、RAMなど）のつながりに変換します。
-2. **配置配線（Place & Route / P&R）**  
-   その部品をFPGAのどこに置くか（配置）と、配線をどう通すか（配線）を決めます。  
+2. **配置配線（Place & Route / P&R）**
+   その部品をFPGAのどこに置くか（配置）と、配線をどう通すか（配線）を決めます。
    このときタイミング（動作周波数）が満たせるかも評価されます。
-3. **ビットストリーム生成**  
+3. **ビットストリーム生成**
    FPGAに書き込むための設定データ（例：`.fs`）を作ります。
-4. **書き込み（Programming）**  
+4. **書き込み（Programming）**
    ボードのFPGAにダウンロードして動かします。
 
 ## SystemVerilogの基本（このDayで出てくるところ）
@@ -99,7 +101,7 @@ flowchart TD
 flowchart LR
   subgraph クロック同期回路
     clk((clk)) --> ff[カウンタ（レジスタ）<br/>＝フリップフロップ]
-    ff -->|counter[24]| comb[組み合わせ回路]
+    ff -->|"counter[24]"| comb[組み合わせ回路]
   end
   comb --> led((led))
 ```
@@ -123,23 +125,23 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  C[counter[24]] -->|"assign"| L[led]
+  C["counter[24]"] -->|"assign"| L[led]
 ```
 
 ### `=`で代入しちゃだめ？ `wire`にしないとだめ？
 
 結論から言うと、「どこで代入するか」で使い分けます。
 
-- **クロック同期回路**（`always @(posedge clk)` など）では `<=` を使うのが基本  
+- **クロック同期回路**（`always @(posedge clk)` など）では `<=` を使うのが基本
   → 代入される信号は `logic`（SystemVerilog）で宣言します。
-- **`assign` で駆動する信号**は、`wire`（ネット）として扱うのが自然  
+- **`assign` で駆動する信号**は、`wire`（ネット）として扱うのが自然
   → `output wire led` を `assign` で駆動する、という形がよくあります。
 
 「`wire`してはいけない」わけではなく、**`always`ブロックで代入する信号を`wire`にすると（古いVerilogでは）扱えない**、というのがポイントです。
 
 ### 9K版で `1'bz` を出している理由
 
-Tang Nano 9Kでは、LEDピンが1.8Vバンクにあり、`1`で強く駆動すると挙動が微妙になるケースがあります。  
+Tang Nano 9Kでは、LEDピンが1.8Vバンクにあり、`1`で強く駆動すると挙動が微妙になるケースがあります。
 そのため `top_9k.sv` は open-drain風にして、
 
 - `0` を出す → LED ON（電流を吸い込む）

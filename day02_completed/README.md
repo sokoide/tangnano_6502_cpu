@@ -9,32 +9,32 @@ This is the completed project for designing combinational circuits in SystemVeri
 
 ## File Structure
 
--   `seven_seg_decoder.sv` - 7-segment decoder
--   `alu_4bit.sv` - 4-bit ALU
--   `mux_8to1.sv` - 8-to-1 Multiplexer
--   `top.sv` - Integrated test module
--   `tb_alu_4bit.sv` - ALU testbench
--   `Makefile` - Build and test automation
+- `seven_seg_decoder.sv` - 7-segment decoder
+- `alu_4bit.sv` - 4-bit ALU
+- `mux_8to1.sv` - 8-to-1 Multiplexer
+- `top.sv` - Integrated test module
+- `tb_alu_4bit.sv` - ALU testbench
+- `Makefile` - Build and test automation
 
 ## Implemented Modules
 
 ### 1. 7-Segment Decoder
 
--   Converts a 4-bit input (0-F) to signals for a 7-segment display
--   Active-low output (lights up at 0)
--   Supports hexadecimal display
+- Converts a 4-bit input (0-F) to signals for a 7-segment display
+- Active-low output (lights up at 0)
+- Supports hexadecimal display
 
 ### 2. 4-bit ALU
 
--   Four types of operations: Addition, Subtraction, AND, OR
--   Flag outputs: Zero, Carry
--   Overflow/underflow detection
+- Four types of operations: Addition, Subtraction, AND, OR
+- Flag outputs: Zero, Carry
+- Overflow/underflow detection
 
 ### 3. 8-to-1 Multiplexer
 
--   Selects one of 8 inputs
--   3-bit select signal
--   Implemented using a `case` statement
+- Selects one of 8 inputs
+- 3-bit select signal
+- Implemented using a `case` statement
 
 ## How to Build and Test
 
@@ -58,7 +58,7 @@ make BOARD=20k download
 
 ```bash
 # ALU Simulation
-make sim
+make test
 
 # Display waveform (requires GTKWave)
 gtkwave tb_alu_4bit.vcd
@@ -79,27 +79,27 @@ The ALU testbench tests the following:
 
 ### SystemVerilog Syntax
 
--   Combinational circuits using `always_comb`
--   Conditional branching using `case` statements
--   Specifying bit widths and carry calculation
--   Testing with assertions (`assert`)
+- Combinational circuits using `always_comb`
+- Conditional branching using `case` statements
+- Specifying bit widths and carry calculation
+- Testing with assertions (`assert`)
 
 ### Design Methods
 
--   Modular design and interface definition
--   Functional verification with testbenches
--   Hierarchical circuit structure
+- Modular design and interface definition
+- Functional verification with testbenches
+- Hierarchical circuit structure
 
 ### Debugging Techniques
 
--   Verifying operation with simulation
--   Signal analysis with waveforms
--   Identifying problems from error messages
+- Verifying operation with simulation
+- Signal analysis with waveforms
+- Identifying problems from error messages
 
 ## Advanced Assignments
 
-1.  **BCD Decoder**: Implement a decoder for Binary Coded Decimal
-2.  **Priority Encoder**: Output the position of the most significant '1' bit
-3.  **Parity Generator**: Calculate even/odd parity
+1. **BCD Decoder**: Implement a decoder for Binary Coded Decimal
+2. **Priority Encoder**: Output the position of the most significant '1' bit
+3. **Parity Generator**: Calculate even/odd parity
 
 These basic modules will be important building blocks in the later CPU design.

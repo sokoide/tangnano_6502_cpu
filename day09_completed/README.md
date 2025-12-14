@@ -33,7 +33,7 @@ make BOARD=20k download
 ## Simulation (Verilator)
 
 ```bash
-make sim
+make test
 ```
 
 This is a smoke test that checks `LCD_DEN` toggles and RGB outputs are non-zero at least once. In simulation, the PLL is stubbed (so `LCD_CLK` is effectively the same as `XTAL_IN`).

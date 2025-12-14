@@ -94,7 +94,7 @@ A demonstration to test the actual memory system:
 
 ```bash
 # Run simulation (Verilator)
-make sim
+make test
 # (alias) make test
 
 # Program FPGA

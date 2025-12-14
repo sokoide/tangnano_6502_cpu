@@ -55,7 +55,7 @@ This is the completed project for designing sequential circuits in SystemVerilog
 ### Simulation Test
 
 ```bash
-make sim
+make test
 # (alias) make test
 ```
 
@@ -79,7 +79,7 @@ make BOARD=20k download
 
 ```bash
 # Traffic light simulation
-make sim
+make test
 
 # Display waveform
 gtkwave tb_traffic_light.vcd

@@ -202,7 +202,7 @@ make BOARD=9k download
 make BOARD=20k download
 
 # Run simulation (Verilator)
-make sim
+make test
 # (alias) make test
 ```
 
@@ -210,7 +210,7 @@ make sim
 
 ```bash
 # ALU unit test
-make sim
+make test
 
 # Integrated system test
 # Verify operation with LEDs and switches on the Tang Nano
@@ -344,7 +344,7 @@ LSR A       ; A = $40 (01000000), C=1
 1.  **Utilize Simulation**:
 
     ```bash
-    make sim
+    make test
     # Runs Verilator + the testbench (also: make test)
     ```
 
