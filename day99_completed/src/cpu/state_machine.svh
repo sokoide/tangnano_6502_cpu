@@ -13,9 +13,6 @@ task automatic state_machine_step();
             FETCH_REQ: state_fetch_req();
             FETCH_WAIT: state_fetch_wait();
             FETCH_RECV: state_fetch_recv();
-            FETCH_OPERAND1: state_fetch_operand1();
-            FETCH_OPERAND1OF2: state_fetch_operand1of2();
-            FETCH_OPERAND2: state_fetch_operand2();
 
             DECODE_EXECUTE: state_decode_execute();
 

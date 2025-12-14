@@ -203,6 +203,10 @@ package cpu_fsm_next_pkg;
         endcase
       end
 
+      WRITE_REQ: begin
+        r.next_state = DECODE_EXECUTE;
+      end
+
       INIT_VRAM: begin
         if (v_ada_u32 <= (COLUMNS * ROWS)) begin
           r.next_state = INIT_VRAM;
