@@ -75,14 +75,66 @@ The ALU testbench tests the following:
 5. AND operation (12 & 10 = 8)
 6. OR operation (12 | 10 = 14)
 
-## 🧪 Simulation Flow (Verilator)
+## 🧪 What is a Testbench? (A "Unit Test" for Hardware)
 
-- `make test` executes `tb_alu_4bit.sv` together with `alu_4bit.sv` by invoking Verilator, producing `Vtb_alu_4bit` and running it. The simulator prints each assertion or `$display` message from the testbench.
-- The testbench drives inputs with `initial begin`, waits `#10` for the combinational logic to settle, and checks counts (`assert`) before calling `$finish`.
-- You can inspect the generated waveform by running `gtkwave tb_alu_4bit.vcd` after the simulation if you added `$dumpfile`/`$dumpvars`.
-- Introducing new modules? Follow the same pattern: instantiate the DUT, sequence input stimuli, verify outputs with `assert`, and keep every branch assigned to avoid inferred latches.
+A **testbench** is a SystemVerilog module that exists **only for simulation**. Its job is to "wrap around" your design (the "Design Under Test" or DUT), feed it inputs, and check if the outputs are correct. This code is **never synthesized** into an actual FPGA circuit.
 
-If you need a specific Verilator version, run `VERILATOR=/path/to/verilator make test`.
+A testbench typically does three things:
+
+1. **Instantiate the DUT**: Create an instance of the module you want to test (e.g., `alu_4bit`).
+2. **Provide Stimulus**: Drive the input ports of your DUT with various values. The `#10` is a simulation-only delay to give the circuit time to react.
+3. **Check Results**: Use `assert` to verify that the DUT's outputs match expected values.
+
+## 🔬 What is Verilator? (The Hardware "Transpiler")
+
+**Verilator** is a simulator that acts like a **transpiler**. It converts your SystemVerilog code into a C++ model that behaves exactly like your hardware. This C++ code is then compiled into a normal executable program that you can run to see the test results.
+
+The `make test` command automates this entire flow:
+
+```mermaid
+flowchart LR
+    subgraph Your Code
+        A["alu_4bit.sv (Your Design)"]
+        B["tb_alu_4bit.sv (Your Testbench)"]
+    end
+
+    subgraph "make test" Automation
+        direction LR
+        C(Verilator Tool)
+        D{C++ Compiler<br/>(like g++)}
+        E[Executable<br/>Sim-Program]
+        F[Run Program]
+    end
+
+    subgraph Result
+        G["'Test Passed!' or<br/>'Test Failed!'"]
+    end
+
+    A -- feeds --> C
+    B -- feeds --> C
+    C -- generates --> D
+    D -- compiles --> E
+    E -- is run by --> F
+    F -- produces --> G
+```
+
+### How to View Waveforms
+
+To debug your design visually, you can generate a waveform file. The included `tb_alu_4bit.sv` already has the necessary lines:
+
+```systemverilog
+initial begin
+    $dumpfile("tb_alu_4bit.vcd");
+    $dumpvars(0, tb_alu_4bit);
+    // ... rest of the test cases
+end
+```
+
+After running `make test`, you can open the generated `tb_alu_4bit.vcd` file with a viewer like GTKWave:
+
+```bash
+gtkwave tb_alu_4bit.vcd
+```
 
 ## Learning Points
 

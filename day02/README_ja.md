@@ -234,44 +234,50 @@ module mux_8to1 (
 endmodule
 ```
 
-## 🧪 テストベンチの基本
+## 🧪 テストベンチとは？ (ハードウェアの「ユニットテスト」)
 
-テストベンチは **シミュレーション専用** です。`#10` のような「時間待ち」は合成できません（FPGA上の回路にはなりません）。
+ソフトウェアエンジニアの方なら、**テストベンチ**を**ハードウェアモジュール用のユニットテスト**のようなものだと考えてください。
 
-### シンプルなテストベンチ例
+テストベンチは、**シミュレーションのためだけ**に存在する、独立したSystemVerilogファイルです。その役割は、あなたが設計した回路（デザイン）を「包み込み」、様々な入力を与え、出力が正しいかを確認することです。このコードがFPGAチップ上の実際の回路になる（**合成される**）ことはありません。
+
+テストベンチは、通常3つのことを行います。
+
+1. **DUTをインスタンス化する**: "DUT" は "Design Under Test" (テスト対象デザイン) の略です。テストしたいモジュール（例: `alu_4bit`）のインスタンスをテストベンチ内に作成します。
+2. **刺激 (Stimulus) を与える**: DUTの入力ポートに様々な値を設定し、異なるシナリオをシミュレートします（例: `a = 5; b = 3;`）。`#10` は**シミュレーション専用の遅延**で、回路が新しい入力に反応する時間を与えます。
+3. **結果をチェックする**: `assert` や `$display` を使い、DUTの出力ポートが期待通りの値になったかを確認します。`assert` が失敗すると、シミュレーションはエラーを報告して停止します。
 
 ```systemverilog
+// これはテストベンチモジュールです。合成はされません！
 module tb_alu_4bit;
 
+    // 1. DUTに接続するための信号を用意する
     logic [3:0] a, b;
     logic [1:0] op;
     logic [3:0] result;
     logic zero, carry;
 
-    // テスト対象のインスタンス化
+    // 2. テスト対象デザイン (DUT) をインスタンス化する
+    //    C++なら alu_4bit uut = new alu_4bit(); のようなイメージ
     alu_4bit uut (
-        .a(a),
-        .b(b),
-        .op(op),
-        .result(result),
-        .zero(zero),
-        .carry(carry)
+        .a(a), .b(b), .op(op),         // 入力を与える
+        .result(result), .zero(zero), .carry(carry) // 出力を観測する
     );
 
+    // 3. 刺激を与え、結果をチェックする
     initial begin
         // テストケース1: 5 + 3 = 8
         a = 4'd5;
         b = 4'd3;
         op = 2'b00;
-        #10;
+        #10; // 組み合わせ回路の出力が安定するまで待つ
 
-        // 結果チェック
-        assert (result == 4'd8) else $error("Test failed: 5+3");
+        // 結果をチェック。もし正しくなければエラーメッセージを表示
+        assert (result == 4'd8) else $error("Test failed: 5+3 != 8");
 
-        // TODO: 他のテストケースを追加
+        // TODO: 他のテストケースをここに追加...
 
-        $display("All tests completed");
-        $finish;
+        $display("すべてのテストが成功しました！");
+        $finish; // シミュレーションを終了
     end
 
 endmodule
@@ -279,42 +285,80 @@ endmodule
 
 ```mermaid
 sequenceDiagram
-  participant TB as Testbench
-  participant UUT as ALU (uut)
-  TB->>UUT: a,b,opを設定
-  Note over TB,UUT: #10（シミュレーション時間を待つ）
-  TB->>TB: assertで結果確認
-  TB->>TB: $finish
+  participant TB as テストベンチ
+  participant UUT as ALU (あなたの設計)
+  TB->>UUT: 入力 a=5, b=3, op=0 を設定
+  Note over TB,UUT: 少しだけ待つ (#10)
+  UUT->>TB: 'result' と 'flags' を出力
+  TB->>TB: 'result' が 8 であることを確認
+  TB->>TB: $finish (シミュレーション終了)
 ```
 
-## 📝 課題
+## 🔬 Verilatorとは？ (ハードウェアの「トランスパイラ」)
 
-### 基礎課題
+では、どうやってテストベンチを動かすのでしょうか？SystemVerilogはそのままでは「実行」できません。**シミュレータ**というツールが必要です。**Verilator**は、広く使われている高性能なオープンソースのシミュレータです。
 
-1. 7セグメントデコーダを完成させる (0-F表示)
-2. 4bit ALUの全操作を実装する
-3. 各モジュールのテストベンチを作成する
+Verilatorを**トランスパイラ**のようなものだと考えてください。あなたのSystemVerilogコードを、ハードウェア設計と全く同じように動作するC++のモデルに変換します。そのC++コードがコンパイルされ、実行可能なプログラムが作られます。このプログラムを実行することで、シミュレーションが行われます。
 
-### 発展課題
+`make test` コマンドは、この一連の流れをすべて自動化してくれます。
 
-1. BCD (Binary Coded Decimal) デコーダの実装
-2. 優先エンコーダの実装
-3. パリティ生成器の実装
+```mermaid
+flowchart LR
+    subgraph あなたのコード
+        A["alu_4bit.sv (設計本体)"]
+        B["tb_alu_4bit.sv (テストベンチ)"]
+    end
 
-## 🧪 Verilatorシミュレーションと `make test`
+    subgraph "make test" の自動化フロー
+        direction LR
+        C(Verilator ツール)
+        D{"C++コンパイラ<br/>(g++など)"}
+        E[実行可能な<br/>シミュレーションプログラム]
+        F[プログラム実行]
+    end
 
-`make test` は `tb_alu_4bit.sv` と `alu_4bit.sv` を Verilator でビルド・実行します。
+    subgraph 結果
+        G["「テスト成功！」または<br/>「テスト失敗！」"]
+    end
 
-- Verilator は SystemVerilog を C++ に変換してコンパイルし、`Vtb_alu_4bit` という実行ファイルを作るツールです。
-- テストベンチは `initial begin` で入力をドライブし、`#10` で評価して `assert`/`$display` で検証しています。`$finish` で正常終了、`assert` に失敗するとエラーになります。
-- `tb_alu_4bit.vcd` を吐き出すようにすれば GTKWave で波形確認ができます（`gtkwave tb_alu_4bit.vcd`）。
+    A -- 入力 --> C
+    B -- 入力 --> C
+    C -- 生成 --> D
+    D -- コンパイル --> E
+    E -- 実行される --> F
+    F -- 出力 --> G
+```
 
-テストベンチを自作する手順：
+### テストの実行とデバッグ方法
 
-1. DUT（たとえば `alu_4bit`）をインスタンス化する。
-2. `initial` ブロックで入力値セット → `#10` → 出力を `assert` する構造にする。
-3. `assert`、`$display` で期待値/ログを記録し、`$finish` を最後に呼ぶ。
-4. `VERILATOR=~/bin/verilator make test` のようにすれば別バージョンの Verilator を使えます。
+1. **シミュレーションの実行:**
+
+   ```bash
+   make test
+   ```
+
+   このコマンドで、上で説明したVerilatorのフローが実行されます。テストベンチ内の `$display` や `assert` からのメッセージが出力されます。
+
+2. **波形表示 (任意ですが推奨):**
+   「成功」か「失敗」かだけでは、なぜ間違っているのかわからないことがあります。信号が時間と共に*どのように*変化しているかを見る必要があります。波形は、回路の信号をグラフにしたものです。
+
+   波形を生成するには、テストベンチの `initial begin` ブロックに以下の2行を追加します。
+
+   ```systemverilog
+   $dumpfile("tb_alu_4bit.vcd");
+   $dumpvars(0, tb_alu_4bit);
+   ```
+
+   `make test` を実行すると、`tb_alu_4bit.vcd` というファイルが生成されます。これを **GTKWave** のような波形ビューアで開くことができます。
+
+   ```bash
+   gtkwave tb_alu_4bit.vcd
+   ```
+
+   以下のように`a`, `b`, `carry`, `zero`, `result`の波形が時間軸に沿って表示されます。
+   ![Wave](../docs/day02_wave.png)
+
+   これは、期待通りの値にならない原因を突き止めるのに非常に役立ちます。
 
 ## 🔧 デバッグのヒント
 

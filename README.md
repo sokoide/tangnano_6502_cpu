@@ -173,6 +173,9 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 
 **Practice Time:** Approx. 3-4 hours
 
+- Simulation waveform display
+  ![Wave](./docs/day02_wave.png)
+
 ---
 
 ### Day 03: SystemVerilog Basics (Sequential Circuits)

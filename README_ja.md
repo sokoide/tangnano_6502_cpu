@@ -170,6 +170,9 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 
 **実習時間:** 約3-4時間
 
+- シミュレーション波形の表示
+  ![Wave](./docs/day02_wave.png)
+
 ---
 
 ### Day 03: SystemVerilog 基礎 (順序回路)
