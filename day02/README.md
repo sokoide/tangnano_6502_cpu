@@ -37,7 +37,7 @@ flowchart LR
 **Data Types:**
 
 ```systemverilog
-wire [7:0] data_bus;   // 8-bit wire, a net for connections
+logic [7:0] data_bus;   // 8-bit wire, a net for connections
 logic [3:0] counter;     // 4-bit variable, can be a register or a wire
 logic select;          // 1-bit variable
 logic [15:0] address;  // 16-bit variable

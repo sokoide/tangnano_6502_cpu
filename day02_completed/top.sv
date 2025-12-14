@@ -2,12 +2,12 @@
 // Integrated test module for combinational circuits
 
 module top (
-    input  wire clk,
-    input  wire [3:0] switches,    // Input switches (virtual)
-    output wire [6:0] segments,    // 7-segment output
-    output wire led_zero,          // Zero flag
-    output wire led_carry,         // Carry flag
-    output wire mux_out            // Multiplexer output
+    input  logic clk,
+    input  logic [3:0] switches,    // Input switches (virtual)
+    output logic [6:0] segments,    // 7-segment output
+    output logic led_zero,          // Zero flag
+    output logic led_carry,         // Carry flag
+    output logic mux_out            // Multiplexer output
 );
 
     // Internal signals

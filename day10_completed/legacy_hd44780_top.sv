@@ -9,24 +9,24 @@
 // Complete 6502 development system with program selection and enhanced display
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,        // Program selector
-    input  wire program_start_btn,     // Start button
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,        // Program selector
+    input  logic program_start_btn,     // Start button
 
     // LCD interface (HD44780 compatible)
-    output wire lcd_rs,     // Register select
-    output wire lcd_rw,     // Read/Write (tied to write)
-    output wire lcd_en,     // Enable
-    output wire [3:0] lcd_data,  // 4-bit data
+    output logic lcd_rs,     // Register select
+    output logic lcd_rw,     // Read/Write (tied to write)
+    output logic lcd_en,     // Enable
+    output logic [3:0] lcd_data,  // 4-bit data
 
     // Debug LEDs
-    output wire [7:0] debug_leds,
+    output logic [7:0] debug_leds,
 
     // Additional debug outputs
-    output wire debug_cpu_clk,
-    output wire debug_program_running,
-    output wire debug_lcd_ready
+    output logic debug_cpu_clk,
+    output logic debug_program_running,
+    output logic debug_lcd_ready
 );
 
     // Internal signals

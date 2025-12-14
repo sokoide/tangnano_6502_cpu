@@ -31,7 +31,7 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 ### Type Safety
 - **Package-based enums**: CPU states defined in `cpu_pkg.sv` for type safety
 - **Proper bit widths**: Consistent use of explicit bit width specifications
-- **Logic vs wire**: Appropriate use of SystemVerilog logic type
+- **Logic vs net**: Appropriate use of SystemVerilog logic type
 
 ## 🔧 Testing Infrastructure
 

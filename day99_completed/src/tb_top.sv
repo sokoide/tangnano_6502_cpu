@@ -8,7 +8,7 @@ module tb_top;
   // 20ns clock (#10 means 10ns) == 50MHz
   always #10 clk = ~clk;
 
-  wire rst = !rst_n;
+  logic rst = !rst_n;
 
   // BSRAM 8KB, address 8192, data width 8
   logic cea, ceb, oce;

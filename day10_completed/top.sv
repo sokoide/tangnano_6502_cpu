@@ -19,10 +19,10 @@ module top (
 );
 
 `ifdef BOARD_20K
-    wire rst_n;
+    logic rst_n;
     assign rst_n = !ResetButton;
 `else
-    wire rst_n;
+    logic rst_n;
     assign rst_n = ResetButton;
 `endif
 
@@ -61,14 +61,14 @@ module top (
         end
     end
 
-    wire active;
+    logic active;
     assign active =
         (h_count >= H_BACK) && (h_count < (H_BACK + H_VALID)) &&
         (v_count >= V_BACK) && (v_count < (V_BACK + V_VALID));
 
     assign LCD_DEN = active;
 
-    wire [15:0] x;
+    logic [15:0] x;
     assign x = (h_count >= H_BACK) ? (h_count - H_BACK) : 16'd0;
 
     // Animate the bar boundary for a visible "alive" pattern.
@@ -77,7 +77,7 @@ module top (
         if (!rst_n) anim <= 24'd0;
         else anim <= anim + 24'd1;
     end
-    wire [9:0] shift;
+    logic [9:0] shift;
     assign shift = anim[23:14];
 
     always @(posedge LCD_CLK or negedge rst_n) begin

@@ -2,28 +2,28 @@
 // Complete CPU system with memory and peripherals
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,
 
     // CPU debug outputs
-    output wire [7:0]  debug_reg_a,
-    output wire [7:0]  debug_reg_x,
-    output wire [7:0]  debug_reg_y,
-    output wire [7:0]  debug_reg_sp,
-    output wire [15:0] debug_reg_pc,
-    output wire [7:0]  debug_status_reg,
+    output logic [7:0]  debug_reg_a,
+    output logic [7:0]  debug_reg_x,
+    output logic [7:0]  debug_reg_y,
+    output logic [7:0]  debug_reg_sp,
+    output logic [15:0] debug_reg_pc,
+    output logic [7:0]  debug_status_reg,
 
     // Memory debug outputs
-    output wire [15:0] debug_mem_addr,
-    output wire [7:0]  debug_mem_data,
-    output wire debug_mem_read,
-    output wire debug_mem_write,
+    output logic [15:0] debug_mem_addr,
+    output logic [7:0]  debug_mem_data,
+    output logic debug_mem_read,
+    output logic debug_mem_write,
 
     // System debug outputs
-    output wire [7:0]  debug_opcode,
-    output wire [2:0]  debug_cpu_state,
-    output wire debug_system_ready
+    output logic [7:0]  debug_opcode,
+    output logic [2:0]  debug_cpu_state,
+    output logic debug_system_ready
 );
 
     // Clock divider for CPU (slower than memory for debugging)

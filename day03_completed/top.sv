@@ -2,16 +2,16 @@
 // Integrated test module for sequential circuits
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,        // Input switches
-    output wire [7:0] count_out,       // Counter output
-    output wire pwm_out,               // PWM output
-    output wire red_led,               // Traffic light red
-    output wire yellow_led,            // Traffic light yellow
-    output wire green_led,             // Traffic light green
-    output wire shift_serial_out,      // Shift register serial output
-    output wire div_clk_out            // Divided clock output
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,        // Input switches
+    output logic [7:0] count_out,       // Counter output
+    output logic pwm_out,               // PWM output
+    output logic red_led,               // Traffic light red
+    output logic yellow_led,            // Traffic light yellow
+    output logic green_led,             // Traffic light green
+    output logic shift_serial_out,      // Shift register serial output
+    output logic div_clk_out            // Divided clock output
 );
 
     // Internal signals

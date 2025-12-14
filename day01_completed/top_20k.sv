@@ -1,8 +1,8 @@
 // Day 01 Completed: LED Blink (Tang Nano 20K)
 
 module top (
-    input  wire clk,     // 27MHz clock input
-    output wire led      // LED output
+    input  logic clk,     // 27MHz clock input
+    output logic led      // LED output
 );
 
     // Clock divider for visible blinking (~0.8Hz)
@@ -17,4 +17,3 @@ module top (
     assign led = counter[24];
 
 endmodule
-

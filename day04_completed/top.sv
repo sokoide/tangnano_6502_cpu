@@ -2,24 +2,24 @@
 // Test module for register set and basic instruction decoding
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,           // Input switches for control
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,           // Input switches for control
 
     // Debug outputs
-    output wire [7:0] debug_reg_a,        // A register
-    output wire [7:0] debug_reg_x,        // X register
-    output wire [7:0] debug_reg_y,        // Y register
-    output wire [7:0] debug_reg_sp,       // Stack pointer
-    output wire [7:0] debug_reg_pc_low,   // PC low byte
-    output wire [7:0] debug_reg_pc_high,  // PC high byte
-    output wire [7:0] debug_flags,        // Status flags
+    output logic [7:0] debug_reg_a,        // A register
+    output logic [7:0] debug_reg_x,        // X register
+    output logic [7:0] debug_reg_y,        // Y register
+    output logic [7:0] debug_reg_sp,       // Stack pointer
+    output logic [7:0] debug_reg_pc_low,   // PC low byte
+    output logic [7:0] debug_reg_pc_high,  // PC high byte
+    output logic [7:0] debug_flags,        // Status flags
 
     // Instruction classification outputs
-    output wire led_load,                 // Load instruction indicator
-    output wire led_store,                // Store instruction indicator
-    output wire led_arithmetic,           // Arithmetic instruction indicator
-    output wire led_branch                // Branch instruction indicator
+    output logic led_load,                 // Load instruction indicator
+    output logic led_store,                // Store instruction indicator
+    output logic led_arithmetic,           // Arithmetic instruction indicator
+    output logic led_branch                // Branch instruction indicator
 );
 
     // Internal signals

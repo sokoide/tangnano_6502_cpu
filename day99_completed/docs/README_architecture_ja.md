@@ -498,8 +498,8 @@ end
 
 ```systemverilog
 // Tang Nano 9K vs 20K の違い
-// 9K:  wire rst_n = ResetButton;
-// 20K: wire rst_n = !ResetButton;
+// 9K:  logic rst_n = ResetButton;
+// 20K: logic rst_n = !ResetButton;
 ```
 
 **2. クロックドメインクロッシング:**

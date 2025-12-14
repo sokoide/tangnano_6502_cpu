@@ -5,8 +5,8 @@
 // open-drain style output: drive LOW to turn LED on, Hi-Z to turn it off.
 
 module top (
-    input  wire clk,     // 27MHz clock input
-    output wire led      // LED output (tri-stated when "off")
+    input  logic clk,     // 27MHz clock input
+    output logic led      // LED output (tri-stated when "off")
 );
 
     logic [24:0] counter;
@@ -19,4 +19,3 @@ module top (
     assign led = counter[24] ? 1'b0 : 1'bz;
 
 endmodule
-

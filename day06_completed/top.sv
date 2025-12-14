@@ -2,29 +2,29 @@
 // Test module for complete 6502 decoder and ALU implementation
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,           // Control switches
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,           // Control switches
 
     // Debug outputs for ALU
-    output wire [7:0] debug_alu_result,   // ALU result
-    output wire debug_alu_carry,          // ALU carry output
-    output wire debug_alu_zero,           // ALU zero flag
-    output wire debug_alu_negative,       // ALU negative flag
-    output wire debug_alu_overflow,       // ALU overflow flag
+    output logic [7:0] debug_alu_result,   // ALU result
+    output logic debug_alu_carry,          // ALU carry output
+    output logic debug_alu_zero,           // ALU zero flag
+    output logic debug_alu_negative,       // ALU negative flag
+    output logic debug_alu_overflow,       // ALU overflow flag
 
     // Debug outputs for decoder
-    output wire [3:0] debug_alu_op,       // ALU operation
-    output wire debug_reg_a_write,        // A register write enable
-    output wire debug_mem_read,           // Memory read enable
-    output wire debug_mem_write,          // Memory write enable
+    output logic [3:0] debug_alu_op,       // ALU operation
+    output logic debug_reg_a_write,        // A register write enable
+    output logic debug_mem_read,           // Memory read enable
+    output logic debug_mem_write,          // Memory write enable
 
     // Status register output
-    output wire [7:0] debug_status_reg,   // Processor status
+    output logic [7:0] debug_status_reg,   // Processor status
 
     // Instruction info
-    output wire [7:0] debug_opcode,       // Current opcode
-    output wire [1:0] debug_inst_length   // Instruction length
+    output logic [7:0] debug_opcode,       // Current opcode
+    output logic [1:0] debug_inst_length   // Instruction length
 );
 
     // Test sequence control

@@ -2,27 +2,27 @@
 // Complete memory system with RAM, ROM, and stack operations
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,           // Control switches
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,           // Control switches
 
     // Debug outputs for memory system
-    output wire [15:0] debug_mem_addr,    // Current memory address
-    output wire [7:0]  debug_mem_data,    // Memory data
-    output wire debug_mem_read,           // Memory read signal
-    output wire debug_mem_write,          // Memory write signal
-    output wire debug_ram_select,         // RAM chip select
-    output wire debug_rom_select,         // ROM chip select
+    output logic [15:0] debug_mem_addr,    // Current memory address
+    output logic [7:0]  debug_mem_data,    // Memory data
+    output logic debug_mem_read,           // Memory read signal
+    output logic debug_mem_write,          // Memory write signal
+    output logic debug_ram_select,         // RAM chip select
+    output logic debug_rom_select,         // ROM chip select
 
     // Debug outputs for stack
-    output wire [7:0]  debug_stack_ptr,   // Stack pointer value
-    output wire [15:0] debug_stack_addr,  // Stack address
-    output wire debug_stack_push,         // Stack push operation
-    output wire debug_stack_pop,          // Stack pop operation
+    output logic [7:0]  debug_stack_ptr,   // Stack pointer value
+    output logic [15:0] debug_stack_addr,  // Stack address
+    output logic debug_stack_push,         // Stack push operation
+    output logic debug_stack_pop,          // Stack pop operation
 
     // System status
-    output wire [7:0]  debug_system_state,// System state indicator
-    output wire debug_ready               // System ready
+    output logic [7:0]  debug_system_state,// System state indicator
+    output logic debug_ready               // System ready
 );
 
     // Test sequence control

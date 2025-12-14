@@ -2,27 +2,27 @@
 // Test module for addressing mode calculation and instruction decoding
 
 module top (
-    input  wire clk,
-    input  wire rst_n,
-    input  wire [3:0] switches,           // Control switches
+    input  logic clk,
+    input  logic rst_n,
+    input  logic [3:0] switches,           // Control switches
 
     // Debug outputs for addressing
-    output wire [7:0] debug_addr_low,     // Effective address low
-    output wire [7:0] debug_addr_high,    // Effective address high
-    output wire [2:0] debug_addr_mode,    // Addressing mode
-    output wire [1:0] debug_inst_length,  // Instruction length
-    output wire debug_page_crossed,       // Page boundary crossed
+    output logic [7:0] debug_addr_low,     // Effective address low
+    output logic [7:0] debug_addr_high,    // Effective address high
+    output logic [2:0] debug_addr_mode,    // Addressing mode
+    output logic [1:0] debug_inst_length,  // Instruction length
+    output logic debug_page_crossed,       // Page boundary crossed
 
     // Instruction type indicators
-    output wire led_load,                 // Load instruction
-    output wire led_store,                // Store instruction
-    output wire led_arithmetic,           // Arithmetic instruction
-    output wire led_branch,               // Branch instruction
+    output logic led_load,                 // Load instruction
+    output logic led_store,                // Store instruction
+    output logic led_arithmetic,           // Arithmetic instruction
+    output logic led_branch,               // Branch instruction
 
     // Additional debug
-    output wire [7:0] debug_opcode,       // Current opcode
-    output wire [7:0] debug_operand1,     // First operand
-    output wire [7:0] debug_operand2      // Second operand
+    output logic [7:0] debug_opcode,       // Current opcode
+    output logic [7:0] debug_operand1,     // First operand
+    output logic [7:0] debug_operand2      // Second operand
 );
 
     // Test sequence control

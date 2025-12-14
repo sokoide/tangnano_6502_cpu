@@ -36,12 +36,12 @@ module top (
   // - Tang Nano 9K: active-high button (rst_n = ResetButton)
   // - Tang Nano 20K: active-low button (rst_n = !ResetButton)
 `ifdef BOARD_20K
-  wire rst_n = !ResetButton;
+  logic rst_n = !ResetButton;
 `else
-  wire rst_n = ResetButton;
+  logic rst_n = ResetButton;
 `endif
 
-  wire rst = !rst_n;
+  logic rst = !rst_n;
 
   // Clock Generation via Phase-Locked Loops (PLLs)
   // LCD timing: (480+43+8) * (272+8+12) * 58.05Hz ≈ 9MHz

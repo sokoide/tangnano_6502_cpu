@@ -6,12 +6,12 @@ module tb_tft;
     logic ResetButton;
     logic XTAL_IN;
 
-    wire        LCD_CLK;
-    wire        LCD_DEN;
-    wire [4:0]  LCD_R;
-    wire [5:0]  LCD_G;
-    wire [4:0]  LCD_B;
-    wire        led;
+    logic        LCD_CLK;
+    logic        LCD_DEN;
+    logic [4:0]  LCD_R;
+    logic [5:0]  LCD_G;
+    logic [4:0]  LCD_B;
+    logic        led;
 
     top uut (
         .ResetButton(ResetButton),

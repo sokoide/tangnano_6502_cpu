@@ -553,8 +553,8 @@ end
 
 ```systemverilog
 // Tang Nano 9K vs 20K difference
-// 9K:  wire rst_n = ResetButton;
-// 20K: wire rst_n = !ResetButton;
+// 9K:  logic rst_n = ResetButton;
+// 20K: logic rst_n = !ResetButton;
 ```
 
 **2. Clock Domain Crossing:**
@@ -642,8 +642,8 @@ logic [11:0] icache_tags[16];
 logic icache_valid[16];
 
 // Cache lookup logic
-wire [3:0] cache_index = pc[3:0];
-wire cache_hit = icache_valid[cache_index] &&
+logic [3:0] cache_index = pc[3:0];
+logic cache_hit = icache_valid[cache_index] &&
                  icache_tags[cache_index] == pc[15:4];
 ```
 
@@ -671,8 +671,8 @@ logic [5:0] scroll_x;  // Horizontal scroll (0-59)
 logic [4:0] scroll_y;  // Vertical scroll (0-16)
 
 // Modify character position calculation
-wire [5:0] char_col = ((x / CHAR_WIDTH) + scroll_x) % COLUMNS;
-wire [4:0] char_row = ((y / CHAR_HEIGHT) + scroll_y) % ROWS;
+logic [5:0] char_col = ((x / CHAR_WIDTH) + scroll_x) % COLUMNS;
+logic [4:0] char_row = ((y / CHAR_HEIGHT) + scroll_y) % ROWS;
 ```
 
 **3. Color Palette Management:**
@@ -682,8 +682,8 @@ wire [4:0] char_row = ((y / CHAR_HEIGHT) + scroll_y) % ROWS;
 logic [15:0] color_palette[16];  // 16 colors, RGB565 format
 
 // Color lookup based on character attributes
-wire [3:0] color_index = char_attributes[3:0];
-wire [15:0] pixel_color = color_palette[color_index];
+logic [3:0] color_index = char_attributes[3:0];
+logic [15:0] pixel_color = color_palette[color_index];
 ```
 
 ## 📖 Reference Materials

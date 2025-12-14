@@ -21,9 +21,9 @@ module top (
 );
 
 `ifdef BOARD_20K
-    wire rst_n = !ResetButton;
+    logic rst_n = !ResetButton;
 `else
-    wire rst_n = ResetButton;
+    logic rst_n = ResetButton;
 `endif
 
     // 27MHz -> 9MHz pixel clock (PLL IP, board-specific netlist)
@@ -61,7 +61,7 @@ module top (
         end
     end
 
-    wire active =
+    logic active =
         (h_count >= H_BACK) && (h_count < (H_BACK + H_VALID)) &&
         (v_count >= V_BACK) && (v_count < (V_BACK + V_VALID));
 

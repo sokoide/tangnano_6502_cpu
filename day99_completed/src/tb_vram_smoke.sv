@@ -4,12 +4,12 @@ module tb_vram_smoke;
   logic ResetButton;
   logic XTAL_IN;
 
-  wire        LCD_CLK;
-  wire        LCD_DEN;
-  wire [4:0]  LCD_R;
-  wire [5:0]  LCD_G;
-  wire [4:0]  LCD_B;
-  wire        MEMORY_CLK;
+  logic        LCD_CLK;
+  logic        LCD_DEN;
+  logic [4:0]  LCD_R;
+  logic [5:0]  LCD_G;
+  logic [4:0]  LCD_B;
+  logic        MEMORY_CLK;
 
   top uut (
       .ResetButton(ResetButton),

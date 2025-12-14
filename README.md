@@ -63,7 +63,7 @@ make BOARD=20k
 
 ```bash
 brew update
-brew install -y srecord cc65
+brew install -y srecord cc65 golang gtkwave verilator
 ```
 
 **Linux (Ubuntu/Debian):**
