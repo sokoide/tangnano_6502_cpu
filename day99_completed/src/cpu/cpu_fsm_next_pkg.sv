@@ -207,6 +207,19 @@ package cpu_fsm_next_pkg;
         r.next_state = DECODE_EXECUTE;
       end
 
+      CLEAR_VRAM: begin
+        r.next_state = CLEAR_VRAM2;
+      end
+
+      CLEAR_VRAM2: begin
+        if (v_ada_u32 <= (COLUMNS * ROWS)) begin
+          r.next_state = CLEAR_VRAM2;
+        end else begin
+          r.next_state = FETCH_REQ;
+          r.next_fetch_stage = FETCH_OPCODE;
+        end
+      end
+
       INIT_VRAM: begin
         if (v_ada_u32 <= (COLUMNS * ROWS)) begin
           r.next_state = INIT_VRAM;

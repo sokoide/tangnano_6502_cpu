@@ -86,3 +86,11 @@
 - `WRITE_REQ` も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大（副作用は従来どおりタスク側）。
 - `state_machine.svh` から `FETCH_OPERAND*` の誤った重複 case を削除（`fetch_stage` は `state` ではないため）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 を拡大（INIT_VRAM まで next-state 関数で駆動）
+- `INIT_VRAM` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 を拡大（CLEAR_VRAM/CLEAR_VRAM2 まで next-state 関数で駆動）
+- `CLEAR_VRAM` / `CLEAR_VRAM2` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
