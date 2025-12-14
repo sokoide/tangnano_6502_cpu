@@ -240,7 +240,7 @@ Signals that can be monitored on the Tang Nano pins:
 
 ### Basic Arithmetic Test
 
-```assembly
+```asm
 LDA #$50    ; A = $50 (80 decimal)
 ADC #$30    ; A = $50 + $30 = $80
             ; N=1 (result is negative), V=1 (overflow)
@@ -252,7 +252,7 @@ ADC #$01    ; A = $FF + $01 = $00
 
 ### Logical Operation Test
 
-```assembly
+```asm
 LDA #$F0    ; A = $F0 (11110000)
 AND #$0F    ; A = $F0 & $0F = $00
             ; Z=1 (result is zero)
@@ -264,7 +264,7 @@ EOR #$55    ; A = $AA ^ $55 = $FF
 
 ### Shift Operation Test
 
-```assembly
+```asm
 LDA #$81    ; A = $81 (10000001)
 ASL A       ; A = $02 (00000010), C=1
             ; Most significant bit goes to carry

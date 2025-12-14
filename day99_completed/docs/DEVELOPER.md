@@ -116,7 +116,7 @@ graph TB
 
     subgraph "External"
         BUTTON[Reset Button]
-        DISPLAY[480×272 LCD<br/>043026-N6(ML)]
+        DISPLAY["480×272 LCD<br/>043026-N6(ML)"]
     end
 
     BUTTON --> CPU

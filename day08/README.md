@@ -359,7 +359,7 @@ endmodule
 
 ## 🛠️ Practice 3: More Complex Test Program
 
-```assembly
+```asm
 ; 6502 Assembly Test Program
 ; Counter program
 

@@ -28,7 +28,7 @@
 
 **基本構文:**
 
-```assembly
+```asm
 ; コメント
 LABEL:              ; ラベル定義
     INSTRUCTION     ; 命令 (インプライド)
@@ -39,7 +39,7 @@ LABEL:              ; ラベル定義
 
 **擬似命令:**
 
-```assembly
+```asm
 .org $0200          ; アドレス設定
 .byte $01, $02      ; バイトデータ
 .word $1234         ; ワードデータ (リトルエンディアン)
@@ -50,7 +50,7 @@ LABEL:              ; ラベル定義
 
 ### Hello World プログラム
 
-```assembly
+```asm
 ; hello_world.s
 ; Tang Nano 6502 Hello World
 
@@ -111,7 +111,7 @@ SEGMENTS {
 
 ## 🛠️ 実習2: カウンタとアニメーション
 
-```assembly
+```asm
 ; counter_display.s
 ; 数値カウンタとアニメーション表示
 
@@ -226,7 +226,7 @@ DELAY_INNER:
 
 ## 🛠️ 実習3: スクロールテキスト
 
-```assembly
+```asm
 ; scroll_text.s
 ; スクロールするテキスト表示
 

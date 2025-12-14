@@ -33,7 +33,7 @@
 
 **Basic Syntax:**
 
-```assembly
+```asm
 ; Comment
 LABEL:              ; Label definition
     INSTRUCTION     ; Instruction (implied)
@@ -44,7 +44,7 @@ LABEL:              ; Label definition
 
 **Pseudo-instructions:**
 
-```assembly
+```asm
 .org $0200          ; Set address
 .byte $01, $02      ; Byte data
 .word $1234         ; Word data (little-endian)
@@ -55,7 +55,7 @@ LABEL:              ; Label definition
 
 ### Hello World Program
 
-```assembly
+```asm
 ; hello_world.s
 ; Tang Nano 6502 Hello World
 
@@ -116,7 +116,7 @@ SEGMENTS {
 
 ## 🛠️ Practice 2: Counter and Animation
 
-```assembly
+```asm
 ; counter_display.s
 ; Numeric counter and animation display
 
@@ -231,7 +231,7 @@ DELAY_INNER:
 
 ## 🛠️ Practice 3: Scrolling Text
 
-```assembly
+```asm
 ; scroll_text.s
 ; Scrolling text display
 

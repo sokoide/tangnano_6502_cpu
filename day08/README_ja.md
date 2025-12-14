@@ -354,7 +354,7 @@ endmodule
 
 ## 🛠️ 実習3: より複雑なテストプログラム
 
-```assembly
+```asm
 ; 6502 Assembly Test Program
 ; カウンタプログラム
 
