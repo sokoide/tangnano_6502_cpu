@@ -13,7 +13,7 @@ A detailed technical reference for the 6502 CPU core implemented in SystemVerilo
 **Intermediate**: Study [CPU Implementation](#cpu-implementation) and [Memory System](#memory-system)
 **Advanced**: Explore [Custom Instructions](#custom-instructions) and [Optimization Techniques](#optimization-techniques)
 
-## 🎯 System Overview
+## 🎯 System Overview {#system-overview}
 
 This project demonstrates a complete computer system implementation on FPGA, serving as an educational platform for:
 
@@ -31,7 +31,7 @@ This project demonstrates a complete computer system implementation on FPGA, ser
 - **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
 - **Hardware/Software Integration**: Assembly programming with FPGA implementation
 
-## 🏗️ Basic Architecture
+## 🏗️ Basic Architecture {#basic-architecture}
 
 ### System Block Diagram
 
@@ -111,7 +111,7 @@ graph LR
     PROG --> FPGA[Tang Nano FPGA]
 ```
 
-## 🧠 Memory System
+## 🧠 Memory System {#memory-system}
 
 ### Address Space Design
 
@@ -154,7 +154,7 @@ include/
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
-## ⚙️ CPU Implementation
+## ⚙️ CPU Implementation {#cpu-implementation}
 
 ### 6502 Core Architecture
 
@@ -338,7 +338,7 @@ The display system uses the [Sweet16Font](https://github.com/kmar/Sweet16Font) (
 - **Storage**: 4KB pROM (16 bytes × 256 character slots)
 - **Access**: LCD controller only (not CPU-addressable)
 
-## 🔧 Custom Instructions
+## 🔧 Custom Instructions {#custom-instructions}
 
 ### Extension Instruction Set
 
@@ -527,7 +527,7 @@ always @(posedge clk) begin
 end
 ```
 
-### Performance Optimization
+### Performance Optimization {#optimization-techniques}
 
 **1. Clock Domain Optimization:**
 

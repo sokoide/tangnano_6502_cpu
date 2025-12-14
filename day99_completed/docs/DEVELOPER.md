@@ -8,7 +8,7 @@ A comprehensive learning guide for FPGA developers working with the Tang Nano 65
 **Intermediate**: Study [Architecture](#architecture) and [Build System](#build-system)
 **Advanced**: Deep dive into [CPU Implementation](#cpu-implementation) and [Custom Extensions](#custom-extensions)
 
-## 📋 System Overview
+## 📋 System Overview {#system-overview}
 
 This project demonstrates a complete computer system implementation on FPGA, combining:
 
@@ -24,7 +24,7 @@ This project demonstrates a complete computer system implementation on FPGA, com
 - **State Machines**: Complex CPU instruction execution pipeline
 - **Hardware/Software Interface**: Assembly programming meets FPGA implementation
 
-## 🚀 Getting Started
+## 🚀 Getting Started {#getting-started}
 
 ### Prerequisites
 
@@ -78,7 +78,7 @@ graph LR
     PROG --> FPGA[Tang Nano FPGA]
 ```
 
-## 🏗️ Architecture
+## 🏗️ Architecture {#architecture}
 
 ### System Block Diagram
 
@@ -164,7 +164,7 @@ include/
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
-## 🔧 Build System
+## 🔧 Build System {#build-system}
 
 ### Makefile Targets
 
@@ -217,7 +217,7 @@ cd ../
 make download  # Build FPGA with new program
 ```
 
-## 🧠 CPU Implementation
+## 🧠 CPU Implementation {#cpu-implementation}
 
 ### 6502 Core Architecture
 
@@ -351,7 +351,7 @@ Vertical Timing:
 Frame Rate: 9MHz ÷ (531 × 292) ≈ 58 FPS
 ```
 
-## 🔍 Custom Extensions
+## 🔍 Custom Extensions {#custom-extensions}
 
 ### Custom Instructions
 

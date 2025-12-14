@@ -4,11 +4,11 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 
 ## 📖 学習の進め方
 
-**初級者**: [システム概要](#システム概要)と[基本構成](#基本構成)から始める
-**中級者**: [CPU 実装詳細](#cpu実装詳細)と[メモリアーキテクチャ](#メモリアーキテクチャ)を学習
-**上級者**: [カスタム命令](#カスタム命令)と[最適化手法](#最適化手法)を深く理解
+**初級者**: [システム概要](#system-overview-ja)と[基本構成](#basic-architecture-ja)から始める
+**中級者**: [CPU 実装詳細](#cpu-implementation-ja)と[メモリアーキテクチャ](#memory-architecture-ja)を学習
+**上級者**: [カスタム命令](#custom-instructions-ja)と[最適化手法](#optimization-techniques-ja)を深く理解
 
-## 🎯 システム概要
+## 🎯 システム概要 {#system-overview-ja}
 
 このプロジェクトは、FPGA 上で完全なコンピュータシステムを実装した教育・学習向けプラットフォームです：
 
@@ -26,7 +26,7 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 - **メモリコントローラ**: SDPB RAM、VRAM、pROM インタフェース
 - **ハードウェア/ソフトウェア連携**: アセンブリプログラムと FPGA 実装の融合
 
-## 🏗️ 基本構成
+## 🏗️ 基本構成 {#basic-architecture-ja}
 
 ### システムブロック図
 
@@ -106,7 +106,7 @@ graph LR
     PROG --> FPGA[Tang Nano FPGA]
 ```
 
-## 🧠 メモリアーキテクチャ
+## 🧠 メモリアーキテクチャ {#memory-architecture-ja}
 
 ### アドレス空間設計
 
@@ -149,7 +149,7 @@ include/
 └── boot_program.sv     # アセンブリから自動生成 (examples/)
 ```
 
-## ⚙️ CPU 実装詳細
+## ⚙️ CPU 実装詳細 {#cpu-implementation-ja}
 
 ### 6502 コアアーキテクチャ
 
@@ -283,7 +283,7 @@ LCD コントローラは 480×272 表示のための精密なタイミングを
 フレームレート: 9MHz ÷ (531 × 292) ≈ 58 FPS
 ```
 
-## 🔧 カスタム命令
+## 🔧 カスタム命令 {#custom-instructions-ja}
 
 ### 拡張命令セット
 
@@ -472,7 +472,7 @@ always @(posedge clk) begin
 end
 ```
 
-### 性能最適化
+### 性能最適化 {#optimization-techniques-ja}
 
 **1. クロックドメイン最適化:**
 
