@@ -2,7 +2,7 @@
 
 ## 背景
 
-現在の `cpu.sv` は状態遷移をすべて `always_ff` ブロック内の `case (state)` に直接書き込み、`state_*` の `.svinc` 断片をタスク化したとはいえ、　1つのプロセス内で状態を更新する「1プロセス型」FSMです。この形では状態遷移の並列性が死んでおり、状態遷移ロジックのテスト・検証性にも限界があります。  
+現在の `cpu.sv` は状態遷移をすべて `always_ff` ブロック内の `case (state)` に直接書き込み、`state_*` の `.svinc` 断片をタスク化したとはいえ、　1つのプロセス内で状態を更新する「1プロセス型」FSMです。この形では状態遷移の並列性が死んでおり、状態遷移ロジックのテスト・検証性にも限界があります。
 次のフェーズでは、**「状態を保持するプロセス」と「次状態を決めるプロセス」を分離した2プロセス型FSM**へ移行し、状態遷移の可視性と安全性を高めます。
 
 ## 目標
@@ -27,7 +27,7 @@
 5. **cpu_ctx_t などの整理**
    - `cpu_ctx` 構造体を定義して `cpu_exec_*_pkg` への引数を整理。状態タスクが `ctx` を更新するようにすれば、次フェーズで `next_state` だけでなく `ra`, `pc` なども一貫性を持って扱える。
 6. **テスト＋ドキュメント**
-   - `state_*` タスクと `cpu.sv` の同期が整ったら `make BOARD=9k clean test` を再実行し、変化がないことを確認。  
+   - `state_*` タスクと `cpu.sv` の同期が整ったら `make BOARD=9k clean test` を再実行し、変化がないことを確認。
    - `docs/FSM.md` に進捗や注意点を記録しつつ、`MODULE_MAP.md` やアーキテクチャドキュメントに簡単な更新を追加。
 
 ## 今後の着手
@@ -52,22 +52,27 @@
 - `cpu_exec_*_pkg.sv` 側の `state <= ...` / `fetch_stage <= ...` は、`ref` で受け取った「次状態参照」を書き換える意図に合わせて `state = ...` / `fetch_stage = ...` へ変更（`<=` のままだと常に「現在状態」を上書きしてしまい、HW で止まる原因になり得る）。
 
 #### 既知の落とし穴（今回潰したもの）
+
 - `next_fetch_stage` を導入した段階で、実行パッケージが `fetch_stage <= ...` のままだと「次フェッチステージ」が更新されず、実機で表示が出なくなるケースがある（シミュレーションでは検出しにくい）。
 - decode から exec パッケージを呼ぶとき、`fetch_stage` を `next_fetch_stage` に差し替えないと同様に止まる。
 
 #### 現状の構造
-- **まだ 2プロセス（always_comb/always_ff）にはしていない。**  
+
+- **まだ 2プロセス（always_comb/always_ff）にはしていない。**
   いまは「状態遷移の行き先」だけを `next_state/next_fetch_stage` に寄せて、既存の逐次（always_ff）実装を壊さずに Step 3 へ進める段階。
 
 ### 次にやること（Step 3〜）
+
 - Step 3（always_comb で次状態計算）に進むには、状態遷移だけでなく **PC/ADB/WE 等の“副作用”も next 値として持つ** 必要があるため、`cpu_ctx_t cur/next` に段階的に寄せていく（`cpu_2proc_skeleton.sv` の方針）。
 
 ### 2025-12-14: Step 3 の着手（次状態ロジックの切り出し開始）
+
 - `src/cpu/cpu_fsm_next_pkg.sv` を追加し、まず Boot/FETCH 周りの「次状態のみ（副作用なし）」ロジックを `function` として切り出し開始。
   - 目的: 今後 `always_comb` に移したときに、状態遷移が副作用に引きずられて壊れないようにする。
   - まだ `cpu.sv` には接続していない（段階移行のため）。
 
 ### 2025-12-14: Step 3 を部分配線（Boot の一部だけ next-state 関数で駆動）
+
 - `cpu_fsm_next_pkg` に `consts_pkg` を取り込み、`COLUMNS/ROWS` 等を package 内で参照できるようにした。
 - `cpu.sv` に `calc_boot_fetch_next()` の呼び出し（`always_comb`）を追加し、まず `INIT/INIT_RAM` だけは `state <= boot_fetch_next.next_state` を使うようにした。
   - 副作用（RAM 書き込みなど）は従来どおり `state_machine_step()` 側で実行し、**状態更新だけを置き換える**最小の差分にしている。
@@ -75,44 +80,90 @@
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（FETCH_REQ / FETCH_WAIT まで next-state 関数で駆動）
+
 - `FETCH_REQ` / `FETCH_WAIT` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（FETCH_RECV まで next-state 関数で駆動）
+
 - `FETCH_RECV` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（WRITE_REQ まで next-state 関数で駆動）
+
 - `WRITE_REQ` も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大（副作用は従来どおりタスク側）。
 - `state_machine.svh` から `FETCH_OPERAND*` の誤った重複 case を削除（`fetch_stage` は `state` ではないため）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（INIT_VRAM まで next-state 関数で駆動）
+
 - `INIT_VRAM` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（CLEAR_VRAM/CLEAR_VRAM2 まで next-state 関数で駆動）
+
 - `CLEAR_VRAM` / `CLEAR_VRAM2` も `calc_boot_fetch_next()` の出力で `state/fetch_stage` を更新するように拡大。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（SHOW_INFO まで next-state 関数で駆動）
+
 - `SHOW_INFO`（入口のみ）も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大。
   - `SHOW_INFO2` は内部に stage/counter/mem_read があり、次状態だけでなく副作用も絡むため現時点では既存タスクに残す。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（HALT まで next-state 関数で駆動）
+
 - `HALT` も `calc_boot_fetch_next()` の出力で `state` を更新するように拡大（挙動は state を保持するのみ）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 の整理（pure next-state 対象の二重管理を削除）
+
 - pure next-state で駆動済みの状態（Boot/FETCH/WRITE_REQ/CLEAR_VRAM/SHOW_INFO/HALT など）について、task 側の `next_state/next_fetch_stage` 代入を削除し、状態遷移の責務を `cpu_fsm_next_pkg` 側へ寄せた。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 を拡大（SHOW_INFO2 の状態遷移を pure next-state へ移行）
+
 - `SHOW_INFO2` の状態遷移（`FETCH_REQ/FETCH_DATA` への一時離脱、終了時の `prev_state` への復帰）を `cpu_fsm_next_pkg` 側で計算するように追加。
 - `state_show_info_tasks.sv` から `SHOW_INFO2` における `next_state/next_fetch_stage` 代入を削除し、二重管理を解消。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
 
 ### 2025-12-14: Step 3 の整理（pure next-state 対象選択を関数化）
+
 - `cpu.sv` 側の「pure next-state で駆動する state 判定」を `cpu_fsm_next_pkg::uses_pure_next(state)` にまとめた（挙動は不変）。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認。
+
+### 2025-12-14: Step 3 の整理（未使用コード削除）
+
+- `state_machine.svh` から削除済みの `FETCH_OPERAND*` に対応する未使用タスクを `state_fetch_tasks.sv` から削除。
+- `make BOARD=9k clean test` の Verilator 警告が出ないことを確認。
+- `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認（継続）。
+
+## 次のフェーズに向けた手順（Step 4+）
+
+1. **コンテキスト構造体 (`cpu_ctx_t`) と input/output を整理**
+   - `cpu_types_pkg.sv` に `cpu_ctx_t` / `cpu_next_t` などの構造体を定義し、PC/ADA/FLAGS/REGS/STATE/STALL などをまとめる。
+   - 現在状態 `cur` は `always_ff`、次状態 `next` は `always_comb` で扱えるようにする。
+2. **状態遷移処理を完全に `always_comb` へ**
+   - `state_machine_step()`（または新たな `cpu_fsm_next()`）が `cur` と `inputs` だけを読み、`next` を返すピュアな関数になるようにリファクタ。
+   - `always_ff` 側では `cur <= next;` のみ書き込み、`next_state`/`fetch_stage` もコンテキストの一部として扱う。
+3. **状態タスクをコンテキスト操作に移行**
+   - 各 `state_*_tasks.sv`／`state_decode_tasks.sv` から `next_state` への直接書き込みを除去し、`cpu_ctx_t` のフィールド（`state`, `fetch_stage`, `pc`, `ada` など）を更新するようにする。
+   - `cpu_exec_*_pkg` も `cpu_ctx_t` を `ref` で受け取り、必要な副作用（PCインクリメント、RAM/VRAM書き込み）を `next` 側で反映する。
+4. **副作用の順序とタイミングを明示**
+   - `fetch_stage` で分岐する副作用（`fetch_resume_state` への戻り先、`fetch_stage` を進めるタイミングなど）は `cpu_ctx_t` 内に `stage_flags` 的なフィールドを追加して管理。
+   - `state_machine_step()` の呼び出し順を `always_comb` で明示的に書き、従来の `state_machine_step(); next_state = ...` 形式を排除。
+5. **段階的な確認**
+   - `make -C day99_completed format` / `make -C day99_completed BOARD=9k clean test` を通し、warningが出ないことを確認。
+   - `make -C day99_completed BOARD=9k download` で LCD 表示を確認。必要なら `WVS` 命令などを使って状態遷移が正しいことを確かめる。
+
+## 2-process FSM 完了チェックリスト
+
+以下がすべて満たされてはじめて2プロセスFSMへの移行が完了したと見なせます:
+
+1. `cpu_types_pkg.sv` に `cpu_ctx_t`（`cur`）と `cpu_next_t`（`next`）が定義され、PC/ADA/DIN/RA/RX/RY/SP/FLAGS/STATE/FETCH_STAGE/`fetch_resume_state`/`show_info_stage` など必要な信号を一元管理する。
+2. `always_comb` 内の `cpu_fsm_next()`（もしくは `state_machine_step()`）が `cur` と入力だけを受け取り、`next` を返す純粋な関数になっている。副作用はすべて `next` のフィールド更新として書かれ、`cpu_exec_*_pkg` も `next` を `ref` で受け取って処理する。
+3. 全 `state_*_tasks.sv` / `state_decode_tasks.sv` が `cpu_ctx_t` のフィールド（state/fetch_stage/pc/adb/ce*/vram* など）を更新し、`next_state`/`next_fetch_stage` への書き込みが完全に排除されている。
+4. `always_ff` では `cur <= next;` のみを実行し、`dout_r`, `vsync_sync`, `show_info_counter` 等の同期ロジックも `cur`/`next` で調整し、後続の combinational ロジックに頼る。
+5. すべての build/test/hardware（`make format`, `make BOARD=9k clean test`, `make BOARD=9k download`）が通り、LCD 表示・VRAM クリアなどの副作用が旧実装と一致することを確認。
+
+このチェックリストにある項目がすべてクリアされない限り、「2プロセス FSM」の完成とは言えません。段階的にこのリストを潰していくことで設計の可視性と安全性を高めていきます。

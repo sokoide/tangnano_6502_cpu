@@ -156,26 +156,3 @@ task automatic state_fetch_recv();
     endcase
   end
 endtask
-
-task automatic state_fetch_operand1();
-  begin
-    operands[7:0] <= dout;
-    next_state = DECODE_EXECUTE;
-  end
-endtask
-
-task automatic state_fetch_operand1of2();
-  begin
-    operands[7:0] <= dout;
-    adb <= pc_plus2 & RAMW;
-    next_fetch_stage = FETCH_OPERAND2;
-    next_state = FETCH_REQ;
-  end
-endtask
-
-task automatic state_fetch_operand2();
-  begin
-    operands[15:8] <= dout;
-    next_state = DECODE_EXECUTE;
-  end
-endtask
