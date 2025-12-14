@@ -2,9 +2,9 @@
 // 8ビット アップカウンタ
 
 module counter_8bit (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic enable,
+    input logic clk,
+    input logic rst_n,
+    input logic enable,
     output logic [7:0] count,
     output logic overflow
 );

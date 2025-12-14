@@ -5,23 +5,23 @@ module simple_rom #(
     parameter ADDR_WIDTH = 14,  // 16KB ROM
     parameter DATA_WIDTH = 8
 ) (
-    input  logic                    clk,
-    input  logic                    rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Memory interface
-    input  logic [ADDR_WIDTH-1:0]  addr,
-    output logic [DATA_WIDTH-1:0]  data_out,
-    input  logic                    oe,      // Output enable
-    input  logic                    cs       // Chip select
+    input  logic [ADDR_WIDTH-1:0] addr,
+    output logic [DATA_WIDTH-1:0] data_out,
+    input  logic                  oe,        // Output enable
+    input  logic                  cs         // Chip select
 );
 
     // ROM array
-    logic [DATA_WIDTH-1:0] rom_array [0:(1<<ADDR_WIDTH)-1];
+    logic [DATA_WIDTH-1:0] rom_array[0:(1<<ADDR_WIDTH)-1];
 
     // Initialize ROM with basic 6502 program
     initial begin
         // Initialize all ROM to NOP (0xEA)
-        for (int i = 0; i < (1<<ADDR_WIDTH); i++) begin
+        for (int i = 0; i < (1 << ADDR_WIDTH); i++) begin
             rom_array[i] = 8'hEA;  // NOP
         end
 

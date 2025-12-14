@@ -5,24 +5,24 @@ module simple_ram #(
     parameter ADDR_WIDTH = 15,  // 32KB RAM
     parameter DATA_WIDTH = 8
 ) (
-    input  logic                    clk,
-    input  logic                    rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Memory interface
-    input  logic [ADDR_WIDTH-1:0]  addr,
-    input  logic [DATA_WIDTH-1:0]  data_in,
-    output logic [DATA_WIDTH-1:0]  data_out,
-    input  logic                    we,      // Write enable
-    input  logic                    oe,      // Output enable
-    input  logic                    cs       // Chip select
+    input  logic [ADDR_WIDTH-1:0] addr,
+    input  logic [DATA_WIDTH-1:0] data_in,
+    output logic [DATA_WIDTH-1:0] data_out,
+    input  logic                  we,        // Write enable
+    input  logic                  oe,        // Output enable
+    input  logic                  cs         // Chip select
 );
 
     // RAM array
-    logic [DATA_WIDTH-1:0] ram_array [0:(1<<ADDR_WIDTH)-1];
+    logic [DATA_WIDTH-1:0] ram_array[0:(1<<ADDR_WIDTH)-1];
 
     // Initialize RAM with some test patterns
     initial begin
-        for (int i = 0; i < (1<<ADDR_WIDTH); i++) begin
+        for (int i = 0; i < (1 << ADDR_WIDTH); i++) begin
             ram_array[i] = 8'h00;
         end
 

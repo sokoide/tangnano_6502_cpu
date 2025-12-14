@@ -8,7 +8,7 @@
 - Avoid magic numbers; factor into parameters/localparams or `consts.svh`.
 - Keep header comments: purpose, ports, timing, reset, CDC, assumptions.
 - Do not edit generated/vendor sources:
-  - `include/boot_program.sv`, `include/cpu_ifo_auto_generated.sv`
+  - `include/boot_program.sv`, `include/cpu_ifo_auto_generated.svh`
   - `src/gowin_*/`, `impl/pnr/*.vo`
 
 Formatting tools (optional):

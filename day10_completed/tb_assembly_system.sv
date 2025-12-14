@@ -43,11 +43,11 @@ module tb_assembly_system;
             receiving_byte <= 1'b0;
         end else begin
             if (!receiving_byte) begin
-                lcd_byte[7:4] <= lcd_data;
+                lcd_byte[7:4]  <= lcd_data;
                 receiving_byte <= 1'b1;
-                nibble_count <= nibble_count + 1;
+                nibble_count   <= nibble_count + 1;
             end else begin
-                lcd_byte[3:0] <= lcd_data;
+                lcd_byte[3:0]  <= lcd_data;
                 receiving_byte <= 1'b0;
 
                 if (lcd_rs) begin
@@ -64,7 +64,7 @@ module tb_assembly_system;
     end
 
     // Program information
-    string program_names [0:7] = '{
+    string program_names[0:7] = '{
         "Basic Arithmetic",
         "Loop with Counter",
         "Data Manipulation",
@@ -116,10 +116,8 @@ module tb_assembly_system;
 
             // Monitor CPU state
             $display("CPU State after execution:");
-            $display("  A=$%02X X=$%02X Y=$%02X",
-                    uut.cpu_sys.debug_reg_a,
-                    uut.cpu_sys.debug_reg_x,
-                    uut.cpu_sys.debug_reg_y);
+            $display("  A=$%02X X=$%02X Y=$%02X", uut.cpu_sys.debug_reg_a, uut.cpu_sys.debug_reg_x,
+                     uut.cpu_sys.debug_reg_y);
             $display("  PC=$%04X", uut.cpu_sys.debug_reg_pc);
             $display("  Status=$%02X", uut.cpu_sys.debug_status_reg);
 
@@ -187,7 +185,8 @@ module tb_assembly_system;
         if (uut.cpu_sys.debug_reg_a == 8'h23) begin  // 10 + 5 + 20 = 35 = 0x23
             $display("✓ Arithmetic test passed: A = $%02X", uut.cpu_sys.debug_reg_a);
         end else begin
-            $display("✗ Arithmetic test failed: A = $%02X (expected $23)", uut.cpu_sys.debug_reg_a);
+            $display("✗ Arithmetic test failed: A = $%02X (expected $23)",
+                     uut.cpu_sys.debug_reg_a);
         end
 
         // Test loop program (Program 1)

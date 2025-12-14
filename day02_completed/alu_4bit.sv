@@ -2,27 +2,27 @@
 // 4-bit Arithmetic Logic Unit
 
 module alu_4bit (
-    input  logic [3:0] a,
-    input  logic [3:0] b,
-    input  logic [1:0] op,
+    input logic [3:0] a,
+    input logic [3:0] b,
+    input logic [1:0] op,
     output logic [3:0] result,
     output logic zero,
     output logic carry
 );
 
-	    logic [4:0] temp_result;  // For carry calculation
-	
-	    always_comb begin
-	        // Defaults (avoid inferred latches)
-	        temp_result = 5'd0;
-	        result = 4'd0;
-	        carry = 1'b0;
+    logic [4:0] temp_result;  // For carry calculation
 
-	        case (op)
-	            2'b00: begin  // Addition
-	                temp_result = {1'b0, a} + {1'b0, b};
-	                result = temp_result[3:0];
-	                carry = temp_result[4];
+    always_comb begin
+        // Defaults (avoid inferred latches)
+        temp_result = 5'd0;
+        result = 4'd0;
+        carry = 1'b0;
+
+        case (op)
+            2'b00: begin  // Addition
+                temp_result = {1'b0, a} + {1'b0, b};
+                result = temp_result[3:0];
+                carry = temp_result[4];
             end
 
             2'b01: begin  // Subtraction
@@ -31,20 +31,20 @@ module alu_4bit (
                 carry = temp_result[4];  // Borrow
             end
 
-	            2'b10: begin  // AND
-	                result = a & b;
-	            end
-	
-	            2'b11: begin  // OR
-	                result = a | b;
-	            end
-	
-	            default: begin
-	                // Keep defaults
-	            end
-	        endcase
-	
-	        zero = (result == 4'b0000);
-	    end
-	
-	endmodule
+            2'b10: begin  // AND
+                result = a & b;
+            end
+
+            2'b11: begin  // OR
+                result = a | b;
+            end
+
+            default: begin
+                // Keep defaults
+            end
+        endcase
+
+        zero = (result == 4'b0000);
+    end
+
+endmodule

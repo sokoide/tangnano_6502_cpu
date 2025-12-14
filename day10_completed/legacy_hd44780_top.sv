@@ -9,10 +9,10 @@
 // Complete 6502 development system with program selection and enhanced display
 
 module top (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [3:0] switches,        // Program selector
-    input  logic program_start_btn,     // Start button
+    input logic       clk,
+    input logic       rst_n,
+    input logic [3:0] switches,          // Program selector
+    input logic       program_start_btn, // Start button
 
     // LCD interface (HD44780 compatible)
     output logic lcd_rs,     // Register select
@@ -30,29 +30,29 @@ module top (
 );
 
     // Internal signals
-    logic [7:0]  cpu_reg_a;
-    logic [7:0]  cpu_reg_x;
-    logic [7:0]  cpu_reg_y;
+    logic [ 7:0] cpu_reg_a;
+    logic [ 7:0] cpu_reg_x;
+    logic [ 7:0] cpu_reg_y;
     logic [15:0] cpu_reg_pc;
-    logic [7:0]  cpu_status_reg;
-    logic [7:0]  cpu_opcode;
-    logic [2:0]  cpu_state;
+    logic [ 7:0] cpu_status_reg;
+    logic [ 7:0] cpu_opcode;
+    logic [ 2:0] cpu_state;
 
     // Program control signals
     logic        cpu_reset_internal;
     logic [15:0] program_start_addr;
-    logic [3:0]  current_program;
+    logic [ 3:0] current_program;
     logic        program_running;
 
     // LCD control signals
-    logic [7:0]  lcd_controller_data;
+    logic [ 7:0] lcd_controller_data;
     logic        lcd_controller_write;
     logic        lcd_controller_cmd_data;
     logic        lcd_controller_busy;
     logic        lcd_display_ready;
 
     // Display mode control (from upper switches)
-    logic [1:0]  display_mode;
+    logic [ 1:0] display_mode;
     assign display_mode = switches[3:2];
 
     // System activity indicators
@@ -60,8 +60,8 @@ module top (
     logic        heartbeat;
 
     // CPU clock generation with adjustable speed
-    logic [4:0] cpu_clk_div;
-    logic cpu_clk;
+    logic [ 4:0] cpu_clk_div;
+    logic        cpu_clk;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -78,10 +78,10 @@ module top (
             cpu_clk = cpu_clk_div[4];  // Very slow for step-by-step observation
         end else begin
             case (switches[1:0])
-                2'b00: cpu_clk = cpu_clk_div[4];  // Slowest (0.84MHz)
-                2'b01: cpu_clk = cpu_clk_div[3];  // Slow (1.69MHz)
-                2'b10: cpu_clk = cpu_clk_div[2];  // Medium (3.375MHz)
-                2'b11: cpu_clk = cpu_clk_div[1];  // Fast (6.75MHz)
+                2'b00:   cpu_clk = cpu_clk_div[4];  // Slowest (0.84MHz)
+                2'b01:   cpu_clk = cpu_clk_div[3];  // Slow (1.69MHz)
+                2'b10:   cpu_clk = cpu_clk_div[2];  // Medium (3.375MHz)
+                2'b11:   cpu_clk = cpu_clk_div[1];  // Fast (6.75MHz)
                 default: cpu_clk = cpu_clk_div[4];
             endcase
         end
@@ -158,47 +158,47 @@ module top (
     end
 
     // Debug LED assignments
-    assign debug_leds[0] = heartbeat;                    // System heartbeat
-    assign debug_leds[1] = program_running;             // Program running indicator
-    assign debug_leds[2] = lcd_display_ready;           // LCD ready status
-    assign debug_leds[3] = program_start_btn;           // Start button status
-    assign debug_leds[7:4] = current_program;           // Current program number
+    assign debug_leds[0]         = heartbeat;  // System heartbeat
+    assign debug_leds[1]         = program_running;  // Program running indicator
+    assign debug_leds[2]         = lcd_display_ready;  // LCD ready status
+    assign debug_leds[3]         = program_start_btn;  // Start button status
+    assign debug_leds[7:4]       = current_program;  // Current program number
 
     // Debug outputs
-    assign debug_cpu_clk = cpu_clk;
+    assign debug_cpu_clk         = cpu_clk;
     assign debug_program_running = program_running;
-    assign debug_lcd_ready = lcd_display_ready;
+    assign debug_lcd_ready       = lcd_display_ready;
 
 endmodule
 
 // Modified CPU system with program loading capability
 module cpu_system_with_programs (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic [15:0] start_address,
+    input logic        clk,
+    input logic        rst_n,
+    input logic [15:0] start_address,
 
     // Debug outputs
-    output logic [7:0]  debug_reg_a,
-    output logic [7:0]  debug_reg_x,
-    output logic [7:0]  debug_reg_y,
+    output logic [ 7:0] debug_reg_a,
+    output logic [ 7:0] debug_reg_x,
+    output logic [ 7:0] debug_reg_y,
     output logic [15:0] debug_reg_pc,
-    output logic [7:0]  debug_status_reg,
-    output logic [7:0]  debug_opcode,
-    output logic [2:0]  debug_cpu_state
+    output logic [ 7:0] debug_status_reg,
+    output logic [ 7:0] debug_opcode,
+    output logic [ 2:0] debug_cpu_state
 );
 
     // Memory interface
     logic [15:0] cpu_mem_addr;
-    logic [7:0]  cpu_mem_data_out;
-    logic [7:0]  cpu_mem_data_in;
+    logic [ 7:0] cpu_mem_data_out;
+    logic [ 7:0] cpu_mem_data_in;
     logic        cpu_mem_read;
     logic        cpu_mem_write;
     logic        cpu_mem_ready;
 
     // External memory interface
     logic [15:0] ext_addr;
-    logic [7:0]  ext_data_out;
-    logic [7:0]  ext_data_in;
+    logic [ 7:0] ext_data_out;
+    logic [ 7:0] ext_data_in;
     logic        ext_oe;
     logic        ext_we;
     logic        ram_cs;
@@ -206,8 +206,8 @@ module cpu_system_with_programs (
     logic        io_cs;
 
     // Memory data
-    logic [7:0]  ram_data_out;
-    logic [7:0]  rom_data_out;
+    logic [ 7:0] ram_data_out;
+    logic [ 7:0] rom_data_out;
 
     // Modified CPU Core with custom start address
     cpu_core_with_start cpu (
@@ -303,52 +303,52 @@ endmodule
 
 // CPU Core with configurable start address
 module cpu_core_with_start (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic [15:0] start_address,
+    input logic        clk,
+    input logic        rst_n,
+    input logic [15:0] start_address,
 
     // Standard CPU core interface
     output logic [15:0] mem_addr,
-    output logic [7:0]  mem_data_out,
-    input  logic [7:0]  mem_data_in,
+    output logic [ 7:0] mem_data_out,
+    input  logic [ 7:0] mem_data_in,
     output logic        mem_read,
     output logic        mem_write,
     input  logic        mem_ready,
 
-    input  logic        irq_n,
-    input  logic        nmi_n,
+    input logic irq_n,
+    input logic nmi_n,
 
-    output logic [7:0]  debug_reg_a,
-    output logic [7:0]  debug_reg_x,
-    output logic [7:0]  debug_reg_y,
-    output logic [7:0]  debug_reg_sp,
+    output logic [ 7:0] debug_reg_a,
+    output logic [ 7:0] debug_reg_x,
+    output logic [ 7:0] debug_reg_y,
+    output logic [ 7:0] debug_reg_sp,
     output logic [15:0] debug_reg_pc,
-    output logic [7:0]  debug_status_reg,
-    output logic [7:0]  debug_opcode,
-    output logic [2:0]  debug_cpu_state,
-    output logic [7:0]  debug_alu_result
+    output logic [ 7:0] debug_status_reg,
+    output logic [ 7:0] debug_opcode,
+    output logic [ 2:0] debug_cpu_state,
+    output logic [ 7:0] debug_alu_result
 );
 
     // Modified CPU registers with custom PC start
     cpu_registers_with_start registers (
-        .clk(clk),
-        .rst_n(rst_n),
+        .clk          (clk),
+        .rst_n        (rst_n),
         .start_address(start_address),
-        .reg_a_write(1'b0),      // Connect to actual control signals
-        .reg_x_write(1'b0),
-        .reg_y_write(1'b0),
-        .reg_sp_write(1'b0),
-        .reg_pc_write(1'b0),
-        .data_in(8'h00),
-        .pc_in(16'h0000),
-        .pc_increment(1'b0),
-        .sp_push(1'b0),
-        .sp_pop(1'b0),
-        .reg_a(debug_reg_a),
-        .reg_x(debug_reg_x),
-        .reg_y(debug_reg_y),
-        .reg_sp(debug_reg_sp),
-        .reg_pc(debug_reg_pc)
+        .reg_a_write  (1'b0),           // Connect to actual control signals
+        .reg_x_write  (1'b0),
+        .reg_y_write  (1'b0),
+        .reg_sp_write (1'b0),
+        .reg_pc_write (1'b0),
+        .data_in      (8'h00),
+        .pc_in        (16'h0000),
+        .pc_increment (1'b0),
+        .sp_push      (1'b0),
+        .sp_pop       (1'b0),
+        .reg_a        (debug_reg_a),
+        .reg_x        (debug_reg_x),
+        .reg_y        (debug_reg_y),
+        .reg_sp       (debug_reg_sp),
+        .reg_pc       (debug_reg_pc)
     );
 
     // For this simplified version, we'll just use the basic CPU core
@@ -379,34 +379,34 @@ endmodule
 
 // CPU registers with configurable start address
 module cpu_registers_with_start (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic [15:0] start_address,
+    input logic        clk,
+    input logic        rst_n,
+    input logic [15:0] start_address,
 
     // Standard register interface
-    input  logic        reg_a_write,
-    input  logic        reg_x_write,
-    input  logic        reg_y_write,
-    input  logic        reg_sp_write,
-    input  logic        reg_pc_write,
-    input  logic [7:0]  data_in,
-    input  logic [15:0] pc_in,
-    input  logic        pc_increment,
-    input  logic        sp_push,
-    input  logic        sp_pop,
+    input logic        reg_a_write,
+    input logic        reg_x_write,
+    input logic        reg_y_write,
+    input logic        reg_sp_write,
+    input logic        reg_pc_write,
+    input logic [ 7:0] data_in,
+    input logic [15:0] pc_in,
+    input logic        pc_increment,
+    input logic        sp_push,
+    input logic        sp_pop,
 
-    output logic [7:0]  reg_a,
-    output logic [7:0]  reg_x,
-    output logic [7:0]  reg_y,
-    output logic [7:0]  reg_sp,
+    output logic [ 7:0] reg_a,
+    output logic [ 7:0] reg_x,
+    output logic [ 7:0] reg_y,
+    output logic [ 7:0] reg_sp,
     output logic [15:0] reg_pc
 );
 
     // Internal registers
-    logic [7:0]  accumulator;
-    logic [7:0]  index_x;
-    logic [7:0]  index_y;
-    logic [7:0]  stack_pointer;
+    logic [ 7:0] accumulator;
+    logic [ 7:0] index_x;
+    logic [ 7:0] index_y;
+    logic [ 7:0] stack_pointer;
     logic [15:0] program_counter;
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -438,9 +438,9 @@ module cpu_registers_with_start (
     end
 
     // Output assignments
-    assign reg_a = accumulator;
-    assign reg_x = index_x;
-    assign reg_y = index_y;
+    assign reg_a  = accumulator;
+    assign reg_x  = index_x;
+    assign reg_y  = index_y;
     assign reg_sp = stack_pointer;
     assign reg_pc = program_counter;
 

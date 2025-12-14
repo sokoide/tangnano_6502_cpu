@@ -2,38 +2,38 @@
 // Complete memory system with RAM, ROM, and stack operations
 
 module top (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [3:0] switches,           // Control switches
+    input logic       clk,
+    input logic       rst_n,
+    input logic [3:0] switches, // Control switches
 
     // Debug outputs for memory system
     output logic [15:0] debug_mem_addr,    // Current memory address
-    output logic [7:0]  debug_mem_data,    // Memory data
-    output logic debug_mem_read,           // Memory read signal
-    output logic debug_mem_write,          // Memory write signal
-    output logic debug_ram_select,         // RAM chip select
-    output logic debug_rom_select,         // ROM chip select
+    output logic [ 7:0] debug_mem_data,    // Memory data
+    output logic        debug_mem_read,    // Memory read signal
+    output logic        debug_mem_write,   // Memory write signal
+    output logic        debug_ram_select,  // RAM chip select
+    output logic        debug_rom_select,  // ROM chip select
 
     // Debug outputs for stack
-    output logic [7:0]  debug_stack_ptr,   // Stack pointer value
+    output logic [ 7:0] debug_stack_ptr,   // Stack pointer value
     output logic [15:0] debug_stack_addr,  // Stack address
-    output logic debug_stack_push,         // Stack push operation
-    output logic debug_stack_pop,          // Stack pop operation
+    output logic        debug_stack_push,  // Stack push operation
+    output logic        debug_stack_pop,   // Stack pop operation
 
     // System status
-    output logic [7:0]  debug_system_state,// System state indicator
-    output logic debug_ready               // System ready
+    output logic [7:0] debug_system_state,  // System state indicator
+    output logic       debug_ready          // System ready
 );
 
     // Test sequence control
     logic [27:0] test_counter;
-    logic [4:0]  test_sequence;
-    logic [2:0]  operation_state;
+    logic [ 4:0] test_sequence;
+    logic [ 2:0] operation_state;
 
     // Memory system signals
     logic [15:0] mem_addr;
-    logic [7:0]  mem_data_out;
-    logic [7:0]  mem_data_in;
+    logic [ 7:0] mem_data_out;
+    logic [ 7:0] mem_data_in;
     logic        mem_read;
     logic        mem_write;
     logic        mem_ready;
@@ -41,14 +41,14 @@ module top (
     // Stack signals
     logic        stack_push;
     logic        stack_pop;
-    logic [7:0]  stack_data_out;
-    logic [7:0]  stack_data_in;
-    logic [7:0]  stack_pointer;
+    logic [ 7:0] stack_data_out;
+    logic [ 7:0] stack_data_in;
+    logic [ 7:0] stack_pointer;
 
     // External memory signals
     logic [15:0] ext_addr;
-    logic [7:0]  ext_data_out;
-    logic [7:0]  ext_data_in;
+    logic [ 7:0] ext_data_out;
+    logic [ 7:0] ext_data_in;
     logic        ext_oe;
     logic        ext_we;
 
@@ -58,13 +58,13 @@ module top (
     logic        io_cs;
 
     // RAM signals
-    logic [7:0]  ram_data_out;
+    logic [ 7:0] ram_data_out;
 
     // ROM signals
-    logic [7:0]  rom_data_out;
+    logic [ 7:0] rom_data_out;
 
     // Test data
-    logic [7:0]  test_values [0:7];
+    logic [ 7:0] test_values     [0:7];
 
     // Initialize test data
     initial begin
@@ -177,7 +177,7 @@ module top (
                 test_counter <= 28'b0;
                 if (operation_state == 3'b111) begin
                     operation_state <= 3'b000;
-                    test_sequence <= test_sequence + 1;
+                    test_sequence   <= test_sequence + 1;
                 end else begin
                     operation_state <= operation_state + 1;
                 end

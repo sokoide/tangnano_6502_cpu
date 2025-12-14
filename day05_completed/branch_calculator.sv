@@ -2,10 +2,10 @@
 // Calculate branch target addresses for relative branching
 
 module branch_calculator (
-    input  logic [7:0]  branch_offset,  // Signed 8-bit offset
-    input  logic [15:0] pc,             // Current PC
-    input  logic [7:0]  status_reg,     // Processor status register
-    input  logic [7:0]  opcode,         // Branch instruction opcode
+    input logic [ 7:0] branch_offset,  // Signed 8-bit offset
+    input logic [15:0] pc,             // Current PC
+    input logic [ 7:0] status_reg,     // Processor status register
+    input logic [ 7:0] opcode,         // Branch instruction opcode
 
     output logic [15:0] branch_target,
     output logic        branch_taken,
@@ -33,15 +33,15 @@ module branch_calculator (
     // Branch condition evaluation
     always_comb begin
         case (opcode)
-            8'h10: branch_condition = ~status_reg[7];  // BPL - Branch if Plus (N=0)
-            8'h30: branch_condition = status_reg[7];   // BMI - Branch if Minus (N=1)
-            8'h50: branch_condition = ~status_reg[6];  // BVC - Branch if Overflow Clear (V=0)
-            8'h70: branch_condition = status_reg[6];   // BVS - Branch if Overflow Set (V=1)
-            8'h90: branch_condition = ~status_reg[0];  // BCC - Branch if Carry Clear (C=0)
-            8'hB0: branch_condition = status_reg[0];   // BCS - Branch if Carry Set (C=1)
-            8'hD0: branch_condition = ~status_reg[1];  // BNE - Branch if Not Equal (Z=0)
-            8'hF0: branch_condition = status_reg[1];   // BEQ - Branch if Equal (Z=1)
-            default: branch_condition = 1'b0;          // Unknown branch instruction
+            8'h10:   branch_condition = ~status_reg[7];  // BPL - Branch if Plus (N=0)
+            8'h30:   branch_condition = status_reg[7];  // BMI - Branch if Minus (N=1)
+            8'h50:   branch_condition = ~status_reg[6];  // BVC - Branch if Overflow Clear (V=0)
+            8'h70:   branch_condition = status_reg[6];  // BVS - Branch if Overflow Set (V=1)
+            8'h90:   branch_condition = ~status_reg[0];  // BCC - Branch if Carry Clear (C=0)
+            8'hB0:   branch_condition = status_reg[0];  // BCS - Branch if Carry Set (C=1)
+            8'hD0:   branch_condition = ~status_reg[1];  // BNE - Branch if Not Equal (Z=0)
+            8'hF0:   branch_condition = status_reg[1];  // BEQ - Branch if Equal (Z=1)
+            default: branch_condition = 1'b0;  // Unknown branch instruction
         endcase
 
         branch_taken = branch_condition;

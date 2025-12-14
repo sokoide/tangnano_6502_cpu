@@ -7,12 +7,12 @@
 // modeled here because the calculator has no memory interface.
 
 module addressing_mode_calculator (
-    input  logic [2:0]  mode,
-    input  logic [7:0]  operand_low,
-    input  logic [7:0]  operand_high,
-    input  logic [7:0]  reg_x,
-    input  logic [7:0]  reg_y,
-    input  logic [15:0] pc,
+    input logic [ 2:0] mode,
+    input logic [ 7:0] operand_low,
+    input logic [ 7:0] operand_high,
+    input logic [ 7:0] reg_x,
+    input logic [ 7:0] reg_y,
+    input logic [15:0] pc,
 
     output logic [15:0] effective_address,
     output logic        page_boundary_crossed

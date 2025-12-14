@@ -2,22 +2,22 @@
 // Allows switching between different example programs
 
 module program_selector (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic [3:0]  program_select,  // Switch selection
-    input  logic        program_start,   // Start button
+    input logic       clk,
+    input logic       rst_n,
+    input logic [3:0] program_select,  // Switch selection
+    input logic       program_start,   // Start button
 
     // CPU control
     output logic        cpu_reset,
     output logic [15:0] start_address,
 
     // Status outputs
-    output logic [3:0]  current_program,
-    output logic        program_running
+    output logic [3:0] current_program,
+    output logic       program_running
 );
 
     // Program start addresses
-    localparam logic [15:0] PROGRAM_ADDRESSES [0:15] = '{
+    localparam logic [15:0] PROGRAM_ADDRESSES[0:15] = '{
         16'hC000,  // Program 0: Basic Arithmetic
         16'hC020,  // Program 1: Loop with Counter
         16'hC040,  // Program 2: Data Manipulation
@@ -33,15 +33,15 @@ module program_selector (
         16'hC000,  // Program 12: Back to start
         16'hC000,  // Program 13: Back to start
         16'hC000,  // Program 14: Back to start
-        16'hC000   // Program 15: Back to start
+        16'hC000  // Program 15: Back to start
     };
 
     // Internal registers
-    logic [3:0]  selected_program;
-    logic        reset_active;
-    logic [3:0]  reset_counter;
-    logic        start_pressed;
-    logic        start_prev;
+    logic [3:0] selected_program;
+    logic       reset_active;
+    logic [3:0] reset_counter;
+    logic       start_pressed;
+    logic       start_prev;
 
     // Edge detection for start button
     always_ff @(posedge clk or negedge rst_n) begin
@@ -65,7 +65,7 @@ module program_selector (
             // Handle reset timing
             if (reset_counter > 0) begin
                 reset_counter <= reset_counter - 1;
-                reset_active <= 1'b1;
+                reset_active  <= 1'b1;
             end else begin
                 reset_active <= 1'b0;
                 program_running <= 1'b1;

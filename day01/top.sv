@@ -2,8 +2,8 @@
 // Tang Nano FPGA LED Blink Sample
 
 module top (
-    input  wire clk,     // 27MHz clock input
-    output wire led      // LED output
+    input  wire clk,  // 27MHz clock input
+    output wire led   // LED output
 );
 
     // TODO: Clock divider implementation

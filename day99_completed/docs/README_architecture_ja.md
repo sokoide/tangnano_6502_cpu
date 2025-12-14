@@ -145,7 +145,7 @@ src/
 include/
 ├── consts.svh          # システム全体の定数とパラメータ
 ├── cpu_pkg.sv          # CPU固有の型と列挙型
-├── cpu_tasks.sv        # 再利用可能なCPUタスクと関数
+├── cpu_tasks.svh        # 再利用可能なCPUタスクと関数
 └── boot_program.sv     # アセンブリから自動生成 (examples/)
 ```
 

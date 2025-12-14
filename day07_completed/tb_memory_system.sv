@@ -10,7 +10,7 @@ module tb_memory_system;
 
     logic stack_push, stack_pop;
     logic [7:0] stack_data_out, stack_data_in;
-    logic [7:0] stack_pointer;
+    logic [ 7:0] stack_pointer;
 
     logic [15:0] ext_addr;
     logic [7:0] ext_data_out, ext_data_in;
@@ -46,7 +46,7 @@ module tb_memory_system;
     );
 
     // Simple RAM model
-    logic [7:0] ram_array [0:32767];  // 32KB
+    logic [7:0] ram_array[0:32767];  // 32KB
     always_ff @(posedge clk) begin
         if (ram_select && ext_we) begin
             ram_array[ext_addr[14:0]] <= ext_data_out;
@@ -55,7 +55,7 @@ module tb_memory_system;
     assign ram_data = ram_select ? ram_array[ext_addr[14:0]] : 8'hZZ;
 
     // Simple ROM model
-    logic [7:0] rom_array [0:16383];  // 16KB
+    logic [7:0] rom_array[0:16383];  // 16KB
     initial begin
         for (int i = 0; i < 16384; i++) begin
             rom_array[i] = 8'hA5 + i[7:0];  // Test pattern
@@ -64,8 +64,7 @@ module tb_memory_system;
     assign rom_data = rom_select ? rom_array[ext_addr[13:0]] : 8'hZZ;
 
     // External data input
-    assign ext_data_in = ram_select ? ram_data :
-                        rom_select ? rom_data : 8'h00;
+    assign ext_data_in = ram_select ? ram_data : rom_select ? rom_data : 8'h00;
 
     // Clock generation
     always #5 clk = ~clk;
@@ -73,8 +72,8 @@ module tb_memory_system;
     // Trace external bus writes
     always_ff @(posedge clk) begin
         if (rst_n && ext_we) begin
-            $display("  [bus] WRITE addr=$%04X data=$%02X (ram=%b rom=%b io=%b)",
-                     ext_addr, ext_data_out, ram_select, rom_select, io_select);
+            $display("  [bus] WRITE addr=$%04X data=$%02X (ram=%b rom=%b io=%b)", ext_addr,
+                     ext_data_out, ram_select, rom_select, io_select);
         end
     end
 
@@ -100,7 +99,7 @@ module tb_memory_system;
         @(posedge cpu_ready);
         cpu_mem_read = 1'b0;
         assert (cpu_data_in == expected)
-            else $error("Read failed @ $%04X: expected $%02X, got $%02X", addr, expected, cpu_data_in);
+        else $error("Read failed @ $%04X: expected $%02X, got $%02X", addr, expected, cpu_data_in);
         #1;
     endtask
 
@@ -123,7 +122,7 @@ module tb_memory_system;
         @(posedge cpu_ready);
         stack_pop = 1'b0;
         assert (stack_data_in == expected)
-            else $error("Stack pop failed: expected $%02X, got $%02X", expected, stack_data_in);
+        else $error("Stack pop failed: expected $%02X, got $%02X", expected, stack_data_in);
         #1;
     endtask
 
@@ -157,17 +156,22 @@ module tb_memory_system;
 
         cpu_addr = 16'h4000;  // RAM
         #10;
-        assert (ram_select == 1'b1) else $error("RAM not selected for address $4000");
-        assert (rom_select == 1'b0) else $error("ROM incorrectly selected for address $4000");
+        assert (ram_select == 1'b1)
+        else $error("RAM not selected for address $4000");
+        assert (rom_select == 1'b0)
+        else $error("ROM incorrectly selected for address $4000");
 
         cpu_addr = 16'hC000;  // ROM
         #10;
-        assert (rom_select == 1'b1) else $error("ROM not selected for address $C000");
-        assert (ram_select == 1'b0) else $error("RAM incorrectly selected for address $C000");
+        assert (rom_select == 1'b1)
+        else $error("ROM not selected for address $C000");
+        assert (ram_select == 1'b0)
+        else $error("RAM incorrectly selected for address $C000");
 
         cpu_addr = 16'h9000;  // I/O
         #10;
-        assert (io_select == 1'b1) else $error("I/O not selected for address $9000");
+        assert (io_select == 1'b1)
+        else $error("I/O not selected for address $9000");
         $display("Test 1 passed: Address decoding working correctly");
 
         // Test 2: RAM write/read
@@ -188,23 +192,27 @@ module tb_memory_system;
 
         stack_push_byte(8'h55);
         $display("  SP after push #1 = $%02X", stack_pointer);
-        assert (stack_pointer == 8'hFE) else $error("Stack pointer not decremented correctly");
+        assert (stack_pointer == 8'hFE)
+        else $error("Stack pointer not decremented correctly");
         #10;
 
         stack_push_byte(8'hAA);
         $display("  SP after push #2 = $%02X", stack_pointer);
-        assert (stack_pointer == 8'hFD) else $error("Stack pointer not decremented correctly");
+        assert (stack_pointer == 8'hFD)
+        else $error("Stack pointer not decremented correctly");
         $display("Test 4 passed: Stack pushes, SP = $%02X", stack_pointer);
 
         // Test 5: Stack pop operations
         $display("\nTest 5: Stack pop operations");
 
         stack_pop_expect(8'hAA);
-        assert (stack_pointer == 8'hFE) else $error("Stack pointer not incremented correctly");
+        assert (stack_pointer == 8'hFE)
+        else $error("Stack pointer not incremented correctly");
         #10;
 
         stack_pop_expect(8'h55);
-        assert (stack_pointer == 8'hFF) else $error("Stack pointer not incremented correctly");
+        assert (stack_pointer == 8'hFF)
+        else $error("Stack pointer not incremented correctly");
         $display("Test 5 passed: Stack pops, SP = $%02X", stack_pointer);
 
         // Test 6: Zero page access

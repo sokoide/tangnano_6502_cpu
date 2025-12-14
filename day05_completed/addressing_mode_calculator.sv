@@ -2,28 +2,28 @@
 // Calculate effective addresses for all 6502 addressing modes
 
 module addressing_mode_calculator (
-    input  logic [7:0]  opcode,
-    input  logic [15:0] pc,           // Program counter
-    input  logic [7:0]  operand1,     // First operand byte
-    input  logic [7:0]  operand2,     // Second operand byte
-    input  logic [7:0]  reg_x,
-    input  logic [7:0]  reg_y,
+    input logic [ 7:0] opcode,
+    input logic [15:0] pc,        // Program counter
+    input logic [ 7:0] operand1,  // First operand byte
+    input logic [ 7:0] operand2,  // Second operand byte
+    input logic [ 7:0] reg_x,
+    input logic [ 7:0] reg_y,
 
     output logic [15:0] effective_addr,
-    output logic [2:0]  addr_mode,
-    output logic [1:0]  instruction_length,
+    output logic [ 2:0] addr_mode,
+    output logic [ 1:0] instruction_length,
     output logic        page_crossed
 );
 
     // Addressing mode definitions
-    localparam IMMEDIATE     = 3'b000;
-    localparam ZERO_PAGE     = 3'b001;
-    localparam ZERO_PAGE_X   = 3'b010;
-    localparam ABSOLUTE      = 3'b011;
-    localparam ABSOLUTE_X    = 3'b100;
-    localparam ABSOLUTE_Y    = 3'b101;
-    localparam INDEXED_IND   = 3'b110;
-    localparam INDIRECT_IND  = 3'b111;
+    localparam IMMEDIATE = 3'b000;
+    localparam ZERO_PAGE = 3'b001;
+    localparam ZERO_PAGE_X = 3'b010;
+    localparam ABSOLUTE = 3'b011;
+    localparam ABSOLUTE_X = 3'b100;
+    localparam ABSOLUTE_Y = 3'b101;
+    localparam INDEXED_IND = 3'b110;
+    localparam INDIRECT_IND = 3'b111;
 
     logic [15:0] base_addr;
     logic [15:0] indexed_addr;

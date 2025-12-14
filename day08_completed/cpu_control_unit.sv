@@ -2,65 +2,65 @@
 // Main controller that orchestrates instruction execution
 
 module cpu_control_unit (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Memory interface
-    input  logic [7:0]  mem_data_in,
+    input  logic [ 7:0] mem_data_in,
     output logic [15:0] mem_addr,
-    output logic [7:0]  mem_data_out,
+    output logic [ 7:0] mem_data_out,
     output logic        mem_read,
     output logic        mem_write,
     input  logic        mem_ready,
 
     // Register interface
-    input  logic [7:0]  reg_a,
-    input  logic [7:0]  reg_x,
-    input  logic [7:0]  reg_y,
-    input  logic [7:0]  reg_sp,
-    input  logic [15:0] reg_pc,
+    input logic [ 7:0] reg_a,
+    input logic [ 7:0] reg_x,
+    input logic [ 7:0] reg_y,
+    input logic [ 7:0] reg_sp,
+    input logic [15:0] reg_pc,
 
     // ALU interface
-    input  logic [7:0]  alu_result,
-    input  logic        alu_carry_out,
-    input  logic        alu_overflow,
-    input  logic        alu_negative,
-    input  logic        alu_zero,
+    input logic [7:0] alu_result,
+    input logic       alu_carry_out,
+    input logic       alu_overflow,
+    input logic       alu_negative,
+    input logic       alu_zero,
 
     // Status register
-    input  logic [7:0]  status_reg,
+    input logic [7:0] status_reg,
 
     // Control outputs to datapath
-    output logic [3:0]  alu_op,
-    output logic        alu_carry_in,
-    output logic [1:0]  alu_a_sel,
-    output logic [1:0]  alu_b_sel,
-    output logic [2:0]  reg_src_sel,
+    output logic [3:0] alu_op,
+    output logic       alu_carry_in,
+    output logic [1:0] alu_a_sel,
+    output logic [1:0] alu_b_sel,
+    output logic [2:0] reg_src_sel,
 
     // Register control
-    output logic        reg_a_write,
-    output logic        reg_x_write,
-    output logic        reg_y_write,
-    output logic        reg_sp_write,
-    output logic        reg_pc_write,
-    output logic        pc_increment,
-    output logic        sp_push,
-    output logic        sp_pop,
+    output logic reg_a_write,
+    output logic reg_x_write,
+    output logic reg_y_write,
+    output logic reg_sp_write,
+    output logic reg_pc_write,
+    output logic pc_increment,
+    output logic sp_push,
+    output logic sp_pop,
 
     // Status register control
-    output logic        update_nz,
-    output logic        update_c,
-    output logic        update_v,
-    output logic        manual_set_c,
-    output logic        manual_clear_c,
+    output logic update_nz,
+    output logic update_c,
+    output logic update_v,
+    output logic manual_set_c,
+    output logic manual_clear_c,
 
     // Program counter control
     output logic [15:0] pc_branch_target,
 
     // Debug outputs
-    output logic [7:0]  current_opcode,
-    output logic [2:0]  cpu_state,
-    output logic [1:0]  instruction_length
+    output logic [7:0] current_opcode,
+    output logic [2:0] cpu_state,
+    output logic [1:0] instruction_length
 );
 
     // CPU states
@@ -75,11 +75,11 @@ module cpu_control_unit (
     cpu_state_t state, next_state;
 
     // Internal registers
-    logic [7:0]  opcode;
-    logic [7:0]  operand_low;
-    logic [7:0]  operand_high;
+    logic [ 7:0] opcode;
+    logic [ 7:0] operand_low;
+    logic [ 7:0] operand_high;
     logic [15:0] effective_addr;
-    logic [7:0]  fetched_data;
+    logic [ 7:0] fetched_data;
 
     // Decoder outputs
     logic        decoder_mem_read;
@@ -88,7 +88,7 @@ module cpu_control_unit (
     logic        decoder_is_jump;
     logic        decoder_stack_push;
     logic        decoder_stack_pop;
-    logic [2:0]  decoder_addr_mode;
+    logic [ 2:0] decoder_addr_mode;
 
     // Addressing mode calculator
     logic [15:0] addr_calc_result;
@@ -283,11 +283,11 @@ module cpu_control_unit (
                         sp_push = 1'b1;
                     end else begin
                         mem_read = 1'b1;
-                        sp_pop = 1'b1;
+                        sp_pop   = 1'b1;
                     end
                 end else begin
-                    mem_addr = effective_addr;
-                    mem_read = decoder_mem_read;
+                    mem_addr  = effective_addr;
+                    mem_read  = decoder_mem_read;
                     mem_write = decoder_mem_write;
                     if (decoder_mem_write) begin
                         mem_data_out = reg_a;  // Simplified - always write A

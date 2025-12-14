@@ -2,38 +2,38 @@
 // Test module for complete 6502 decoder and ALU implementation
 
 module top (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [3:0] switches,           // Control switches
+    input logic       clk,
+    input logic       rst_n,
+    input logic [3:0] switches, // Control switches
 
     // Debug outputs for ALU
-    output logic [7:0] debug_alu_result,   // ALU result
-    output logic debug_alu_carry,          // ALU carry output
-    output logic debug_alu_zero,           // ALU zero flag
-    output logic debug_alu_negative,       // ALU negative flag
-    output logic debug_alu_overflow,       // ALU overflow flag
+    output logic [7:0] debug_alu_result,    // ALU result
+    output logic       debug_alu_carry,     // ALU carry output
+    output logic       debug_alu_zero,      // ALU zero flag
+    output logic       debug_alu_negative,  // ALU negative flag
+    output logic       debug_alu_overflow,  // ALU overflow flag
 
     // Debug outputs for decoder
     output logic [3:0] debug_alu_op,       // ALU operation
-    output logic debug_reg_a_write,        // A register write enable
-    output logic debug_mem_read,           // Memory read enable
-    output logic debug_mem_write,          // Memory write enable
+    output logic       debug_reg_a_write,  // A register write enable
+    output logic       debug_mem_read,     // Memory read enable
+    output logic       debug_mem_write,    // Memory write enable
 
     // Status register output
-    output logic [7:0] debug_status_reg,   // Processor status
+    output logic [7:0] debug_status_reg,  // Processor status
 
     // Instruction info
-    output logic [7:0] debug_opcode,       // Current opcode
-    output logic [1:0] debug_inst_length   // Instruction length
+    output logic [7:0] debug_opcode,      // Current opcode
+    output logic [1:0] debug_inst_length  // Instruction length
 );
 
     // Test sequence control
     logic [26:0] test_counter;
-    logic [4:0] test_instruction_index;
+    logic [ 4:0] test_instruction_index;
 
     // Test data
-    logic [7:0] test_opcode;
-    logic [7:0] test_operand;
+    logic [ 7:0] test_opcode;
+    logic [ 7:0] test_operand;
     logic [7:0] test_reg_a, test_reg_x, test_reg_y;
     logic [7:0] test_status_reg;
 
@@ -57,64 +57,91 @@ module top (
 
     // Test instruction set
     logic [7:0] test_opcodes [0:31];
-    logic [7:0] test_operands [0:31];
+    logic [7:0] test_operands[0:31];
 
     // Initialize test data
     initial begin
         // Load instructions
-        test_opcodes[0]  = 8'hA9; test_operands[0]  = 8'h55; // LDA #$55
-        test_opcodes[1]  = 8'hA2; test_operands[1]  = 8'hAA; // LDX #$AA
-        test_opcodes[2]  = 8'hA0; test_operands[2]  = 8'h33; // LDY #$33
+        test_opcodes[0]   = 8'hA9;
+        test_operands[0]  = 8'h55;  // LDA #$55
+        test_opcodes[1]   = 8'hA2;
+        test_operands[1]  = 8'hAA;  // LDX #$AA
+        test_opcodes[2]   = 8'hA0;
+        test_operands[2]  = 8'h33;  // LDY #$33
 
         // Store instructions
-        test_opcodes[3]  = 8'h85; test_operands[3]  = 8'h80; // STA $80
-        test_opcodes[4]  = 8'h8D; test_operands[4]  = 8'h00; // STA $1200
+        test_opcodes[3]   = 8'h85;
+        test_operands[3]  = 8'h80;  // STA $80
+        test_opcodes[4]   = 8'h8D;
+        test_operands[4]  = 8'h00;  // STA $1200
 
         // Arithmetic instructions
-        test_opcodes[5]  = 8'h69; test_operands[5]  = 8'h10; // ADC #$10
-        test_opcodes[6]  = 8'hE9; test_operands[6]  = 8'h05; // SBC #$05
+        test_opcodes[5]   = 8'h69;
+        test_operands[5]  = 8'h10;  // ADC #$10
+        test_opcodes[6]   = 8'hE9;
+        test_operands[6]  = 8'h05;  // SBC #$05
 
         // Logical instructions
-        test_opcodes[7]  = 8'h29; test_operands[7]  = 8'hF0; // AND #$F0
-        test_opcodes[8]  = 8'h09; test_operands[8]  = 8'h0F; // ORA #$0F
-        test_opcodes[9]  = 8'h49; test_operands[9]  = 8'hFF; // EOR #$FF
+        test_opcodes[7]   = 8'h29;
+        test_operands[7]  = 8'hF0;  // AND #$F0
+        test_opcodes[8]   = 8'h09;
+        test_operands[8]  = 8'h0F;  // ORA #$0F
+        test_opcodes[9]   = 8'h49;
+        test_operands[9]  = 8'hFF;  // EOR #$FF
 
         // Transfer instructions
-        test_opcodes[10] = 8'hAA; test_operands[10] = 8'h00; // TAX
-        test_opcodes[11] = 8'hA8; test_operands[11] = 8'h00; // TAY
-        test_opcodes[12] = 8'h8A; test_operands[12] = 8'h00; // TXA
-        test_opcodes[13] = 8'h98; test_operands[13] = 8'h00; // TYA
+        test_opcodes[10]  = 8'hAA;
+        test_operands[10] = 8'h00;  // TAX
+        test_opcodes[11]  = 8'hA8;
+        test_operands[11] = 8'h00;  // TAY
+        test_opcodes[12]  = 8'h8A;
+        test_operands[12] = 8'h00;  // TXA
+        test_opcodes[13]  = 8'h98;
+        test_operands[13] = 8'h00;  // TYA
 
         // Shift instructions
-        test_opcodes[14] = 8'h0A; test_operands[14] = 8'h00; // ASL A
-        test_opcodes[15] = 8'h4A; test_operands[15] = 8'h00; // LSR A
+        test_opcodes[14]  = 8'h0A;
+        test_operands[14] = 8'h00;  // ASL A
+        test_opcodes[15]  = 8'h4A;
+        test_operands[15] = 8'h00;  // LSR A
 
         // Compare instructions
-        test_opcodes[16] = 8'hC9; test_operands[16] = 8'h55; // CMP #$55
+        test_opcodes[16]  = 8'hC9;
+        test_operands[16] = 8'h55;  // CMP #$55
 
         // Flag instructions
-        test_opcodes[17] = 8'h38; test_operands[17] = 8'h00; // SEC
-        test_opcodes[18] = 8'h18; test_operands[18] = 8'h00; // CLC
+        test_opcodes[17]  = 8'h38;
+        test_operands[17] = 8'h00;  // SEC
+        test_opcodes[18]  = 8'h18;
+        test_operands[18] = 8'h00;  // CLC
 
         // Stack instructions
-        test_opcodes[19] = 8'h48; test_operands[19] = 8'h00; // PHA
-        test_opcodes[20] = 8'h68; test_operands[20] = 8'h00; // PLA
+        test_opcodes[19]  = 8'h48;
+        test_operands[19] = 8'h00;  // PHA
+        test_opcodes[20]  = 8'h68;
+        test_operands[20] = 8'h00;  // PLA
 
         // Branch instructions
-        test_opcodes[21] = 8'h10; test_operands[21] = 8'h05; // BPL +5
-        test_opcodes[22] = 8'hF0; test_operands[22] = 8'hFB; // BEQ -5
+        test_opcodes[21]  = 8'h10;
+        test_operands[21] = 8'h05;  // BPL +5
+        test_opcodes[22]  = 8'hF0;
+        test_operands[22] = 8'hFB;  // BEQ -5
 
         // Jump instructions
-        test_opcodes[23] = 8'h4C; test_operands[23] = 8'h00; // JMP $3000
-        test_opcodes[24] = 8'h20; test_operands[24] = 8'h00; // JSR $4000
-        test_opcodes[25] = 8'h60; test_operands[25] = 8'h00; // RTS
+        test_opcodes[23]  = 8'h4C;
+        test_operands[23] = 8'h00;  // JMP $3000
+        test_opcodes[24]  = 8'h20;
+        test_operands[24] = 8'h00;  // JSR $4000
+        test_opcodes[25]  = 8'h60;
+        test_operands[25] = 8'h00;  // RTS
 
         // NOP and undefined
-        test_opcodes[26] = 8'hEA; test_operands[26] = 8'h00; // NOP
+        test_opcodes[26]  = 8'hEA;
+        test_operands[26] = 8'h00;  // NOP
 
         // Fill remaining with NOP
         for (int i = 27; i < 32; i++) begin
-            test_opcodes[i] = 8'hEA;
+            test_opcodes[i]  = 8'hEA;
             test_operands[i] = 8'h00;
         end
     end
@@ -149,18 +176,18 @@ module top (
     // ALU input multiplexers
     always_comb begin
         case (alu_a_sel)
-            2'b00: alu_operand_a = test_reg_a;
-            2'b01: alu_operand_a = test_reg_x;
-            2'b10: alu_operand_a = test_reg_y;
-            2'b11: alu_operand_a = 8'h00;
+            2'b00:   alu_operand_a = test_reg_a;
+            2'b01:   alu_operand_a = test_reg_x;
+            2'b10:   alu_operand_a = test_reg_y;
+            2'b11:   alu_operand_a = 8'h00;
             default: alu_operand_a = test_reg_a;
         endcase
 
         case (alu_b_sel)
-            2'b00: alu_operand_b = test_operand;  // Memory data
-            2'b01: alu_operand_b = test_reg_a;
-            2'b10: alu_operand_b = test_reg_x;
-            2'b11: alu_operand_b = test_reg_y;
+            2'b00:   alu_operand_b = test_operand;  // Memory data
+            2'b01:   alu_operand_b = test_reg_a;
+            2'b10:   alu_operand_b = test_reg_x;
+            2'b11:   alu_operand_b = test_reg_y;
             default: alu_operand_b = test_operand;
         endcase
     end
@@ -196,7 +223,7 @@ module top (
         .clear_d(1'b0),
         .set_b(1'b0),
         .clear_b(1'b0),
-        .manual_set_c(test_opcode == 8'h38),    // SEC
+        .manual_set_c(test_opcode == 8'h38),  // SEC
         .manual_clear_c(test_opcode == 8'h18),  // CLC
         .status_reg(status_reg)
     );
@@ -239,7 +266,7 @@ module top (
 
     // Assign test data based on current index
     always_comb begin
-        test_opcode = test_opcodes[test_instruction_index];
+        test_opcode  = test_opcodes[test_instruction_index];
         test_operand = test_operands[test_instruction_index];
     end
 

@@ -2,8 +2,8 @@
 // Generates all control signals for CPU operation
 
 module cpu_decoder (
-    input  logic [7:0] opcode,
-    input  logic [7:0] status_reg,
+    input logic [7:0] opcode,
+    input logic [7:0] status_reg,
 
     // ALU control
     output logic [3:0] alu_op,
@@ -26,9 +26,9 @@ module cpu_decoder (
     output logic update_v,
 
     // Data path control
-    output logic [2:0] reg_src_sel,    // Register input source select
-    output logic [1:0] alu_a_sel,     // ALU A input select
-    output logic [1:0] alu_b_sel,     // ALU B input select
+    output logic [2:0] reg_src_sel,  // Register input source select
+    output logic [1:0] alu_a_sel,    // ALU A input select
+    output logic [1:0] alu_b_sel,    // ALU B input select
 
     // Addressing mode
     output logic [2:0] addr_mode,
@@ -45,7 +45,7 @@ module cpu_decoder (
     localparam ALU_ADD = 4'b0000;
     localparam ALU_SUB = 4'b0001;
     localparam ALU_AND = 4'b0010;
-    localparam ALU_OR  = 4'b0011;
+    localparam ALU_OR = 4'b0011;
     localparam ALU_XOR = 4'b0100;
     localparam ALU_ASL = 4'b0101;
     localparam ALU_LSR = 4'b0110;
@@ -65,9 +65,9 @@ module cpu_decoder (
     localparam ALU_A_REG_A = 2'b00;
     localparam ALU_A_REG_X = 2'b01;
     localparam ALU_A_REG_Y = 2'b10;
-    localparam ALU_A_ZERO  = 2'b11;
+    localparam ALU_A_ZERO = 2'b11;
 
-    localparam ALU_B_MEM   = 2'b00;
+    localparam ALU_B_MEM = 2'b00;
     localparam ALU_B_REG_A = 2'b01;
     localparam ALU_B_REG_X = 2'b10;
     localparam ALU_B_REG_Y = 2'b11;
@@ -101,7 +101,7 @@ module cpu_decoder (
                 alu_op = ALU_PASS_B;
                 alu_b_sel = ALU_B_MEM;
                 reg_src_sel = REG_SRC_ALU;
-                addr_mode = 3'b000;    // Immediate
+                addr_mode = 3'b000;  // Immediate
                 instruction_length = 2'd2;
             end
 
@@ -113,7 +113,7 @@ module cpu_decoder (
                 alu_op = ALU_PASS_B;
                 alu_b_sel = ALU_B_MEM;
                 reg_src_sel = REG_SRC_ALU;
-                addr_mode = 3'b001;    // Zero page
+                addr_mode = 3'b001;  // Zero page
                 instruction_length = 2'd2;
             end
 
@@ -125,7 +125,7 @@ module cpu_decoder (
                 alu_op = ALU_PASS_B;
                 alu_b_sel = ALU_B_MEM;
                 reg_src_sel = REG_SRC_ALU;
-                addr_mode = 3'b011;    // Absolute
+                addr_mode = 3'b011;  // Absolute
                 instruction_length = 2'd3;
             end
 

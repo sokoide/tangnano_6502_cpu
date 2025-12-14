@@ -1,37 +1,34 @@
 BOARD ?= 9k
 DAYS := $(sort $(wildcard day*_completed))
+SVFILES = \( -name '*.sv' -o -name '*.svh' \)
 
-.PHONY: all clean help test  lint format build
+.PHONY: all clean help test format build
 
 all: build
 
 build:
 	@echo "Building all projects (BOARD=$(BOARD))"
 	@for day in $(DAYS); do \
-		echo "Building $$day (BOARD=$(BOARD))"; \
+		echo "* Building $$day (BOARD=$(BOARD))"; \
 		$(MAKE) -C $$day BOARD=$(BOARD); \
 	done
 
 test:
 	@echo "Running simulation for all projects (BOARD=$(BOARD))"
 	@for day in $(DAYS); do \
-		echo "Running sim for $$day (BOARD=$(BOARD))"; \
+		echo "* Running sim for $$day (BOARD=$(BOARD))"; \
 		$(MAKE) -C $$day BOARD=$(BOARD) sim; \
 	done
 
-lint:
-	@echo "Linting all projects"
-	npx markdownlint "**/*.md" --fix
-
 format:
 	@echo "Formatting all projects"
-	npx prettier --write "**/*.md"
-
+	npx markdownlint "**/*.md" --fix
+	find . -name '*.sv' -print0 | xargs -0 verible-verilog-format --inplace --indentation_spaces=4 --column_limit=100
 
 clean:
 	@echo "Cleaning all projects"
 	@for day in $(DAYS); do \
-		echo "Cleaning $$day"; \
+		echo "* Cleaning $$day"; \
 		$(MAKE) -C $$day clean; \
 	done
 

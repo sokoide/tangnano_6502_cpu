@@ -2,9 +2,9 @@
 // Test module for register set and basic instruction decoding
 
 module top (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [3:0] switches,           // Input switches for control
+    input logic       clk,
+    input logic       rst_n,
+    input logic [3:0] switches, // Input switches for control
 
     // Debug outputs
     output logic [7:0] debug_reg_a,        // A register
@@ -16,26 +16,26 @@ module top (
     output logic [7:0] debug_flags,        // Status flags
 
     // Instruction classification outputs
-    output logic led_load,                 // Load instruction indicator
-    output logic led_store,                // Store instruction indicator
-    output logic led_arithmetic,           // Arithmetic instruction indicator
-    output logic led_branch                // Branch instruction indicator
+    output logic led_load,        // Load instruction indicator
+    output logic led_store,       // Store instruction indicator
+    output logic led_arithmetic,  // Arithmetic instruction indicator
+    output logic led_branch       // Branch instruction indicator
 );
 
     // Internal signals
-    logic [7:0] test_opcode;
+    logic [ 7:0] test_opcode;
     logic [15:0] reg_pc;
     logic [7:0] reg_a, reg_x, reg_y, reg_sp, reg_p;
 
     // Test sequence counter
     logic [24:0] test_counter;
-    logic [2:0] test_state;
+    logic [ 2:0] test_state;
 
     // Register control signals
     logic a_write, x_write, y_write, sp_write, pc_write, p_write;
 
     // Test data
-    logic [7:0] test_data;
+    logic [ 7:0] test_data;
     logic [15:0] test_addr;
 
     // 6502 Register Set
@@ -60,19 +60,19 @@ module top (
 
     // Simple instruction decoder
     simple_decoder decoder (
-        .opcode(test_opcode),
-        .is_load(led_load),
-        .is_store(led_store),
-        .is_transfer(),              // Not used in this demo
+        .opcode       (test_opcode),
+        .is_load      (led_load),
+        .is_store     (led_store),
+        .is_transfer  (),                // Not used in this demo
         .is_arithmetic(led_arithmetic),
-        .is_logical(),               // Not used in this demo
-        .is_shift(),                 // Not used in this demo
-        .is_branch(led_branch),
-        .is_jump(),                  // Not used in this demo
-        .is_compare(),               // Not used in this demo
-        .is_flag(),                  // Not used in this demo
-        .is_stack(),                 // Not used in this demo
-        .is_nop()                    // Not used in this demo
+        .is_logical   (),                // Not used in this demo
+        .is_shift     (),                // Not used in this demo
+        .is_branch    (led_branch),
+        .is_jump      (),                // Not used in this demo
+        .is_compare   (),                // Not used in this demo
+        .is_flag      (),                // Not used in this demo
+        .is_stack     (),                // Not used in this demo
+        .is_nop       ()                 // Not used in this demo
     );
 
     // Test sequence controller
@@ -88,7 +88,7 @@ module top (
             p_write <= 1'b0;
             test_data <= 8'h00;
             test_addr <= 16'h0000;
-            test_opcode <= 8'hEA;    // NOP
+            test_opcode <= 8'hEA;  // NOP
         end else begin
             test_counter <= test_counter + 1;
 
@@ -98,7 +98,7 @@ module top (
             // State machine for testing registers
             if (test_counter[24]) begin  // Slow state changes
                 test_counter <= 25'b0;
-                test_state <= test_state + 1;
+                test_state   <= test_state + 1;
 
                 case (test_state)
                     3'b000: begin  // Test A register

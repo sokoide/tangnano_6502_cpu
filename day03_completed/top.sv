@@ -2,16 +2,16 @@
 // Integrated test module for sequential circuits
 
 module top (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [3:0] switches,        // Input switches
-    output logic [7:0] count_out,       // Counter output
-    output logic pwm_out,               // PWM output
-    output logic red_led,               // Traffic light red
-    output logic yellow_led,            // Traffic light yellow
-    output logic green_led,             // Traffic light green
-    output logic shift_serial_out,      // Shift register serial output
-    output logic div_clk_out            // Divided clock output
+    input  logic       clk,
+    input  logic       rst_n,
+    input  logic [3:0] switches,          // Input switches
+    output logic [7:0] count_out,         // Counter output
+    output logic       pwm_out,           // PWM output
+    output logic       red_led,           // Traffic light red
+    output logic       yellow_led,        // Traffic light yellow
+    output logic       green_led,         // Traffic light green
+    output logic       shift_serial_out,  // Shift register serial output
+    output logic       div_clk_out        // Divided clock output
 );
 
     // Internal signals
@@ -22,10 +22,10 @@ module top (
 
     // Clock divider (27MHz to ~1Hz for visible operation)
     clock_divider clk_div (
-        .clk_in(clk),
-        .rst_n(rst_n),
-        .div_ratio(4'd10),             // Divide by 10
-        .clk_out(slow_clk)
+        .clk_in   (clk),
+        .rst_n    (rst_n),
+        .div_ratio(4'd10),    // Divide by 10
+        .clk_out  (slow_clk)
     );
 
     // Enable counter every 1000 fast clocks for visible counting
@@ -75,14 +75,14 @@ module top (
 
     // Shift register
     shift_register shifter (
-        .clk(slow_clk),                // Use slow clock for visible shifting
-        .rst_n(rst_n),
-        .shift_enable(1'b1),           // Always shifting
-        .serial_in(switches[0]),       // Input from switch 0
-        .load_enable(switches[1]),     // Load enable from switch 1
-        .parallel_data(count_out),     // Load counter value
-        .shift_data(),                 // Not used in this demo
-        .serial_out(shift_serial_out)
+        .clk          (slow_clk),         // Use slow clock for visible shifting
+        .rst_n        (rst_n),
+        .shift_enable (1'b1),             // Always shifting
+        .serial_in    (switches[0]),      // Input from switch 0
+        .load_enable  (switches[1]),      // Load enable from switch 1
+        .parallel_data(count_out),        // Load counter value
+        .shift_data   (),                 // Not used in this demo
+        .serial_out   (shift_serial_out)
     );
 
     // Clock divider output

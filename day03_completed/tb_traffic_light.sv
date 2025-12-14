@@ -36,7 +36,7 @@ module tb_traffic_light;
         // Check initial state (should be RED)
         #10;
         assert (red == 1'b1 && yellow == 1'b0 && green == 1'b0)
-            else $error("Initial state should be RED");
+        else $error("Initial state should be RED");
         $display("Test 1 passed: Initial state is RED");
 
         // Wait for state transitions (use shorter timing for simulation)
@@ -54,8 +54,7 @@ module tb_traffic_light;
     /* verilator lint_off SYNCASYNCNET */
     always @(posedge clk) begin
         if (rst_n) begin
-            $display("Time %t: RED=%b, YELLOW=%b, GREEN=%b",
-                     $time, red, yellow, green);
+            $display("Time %t: RED=%b, YELLOW=%b, GREEN=%b", $time, red, yellow, green);
         end
     end
     /* verilator lint_on SYNCASYNCNET */

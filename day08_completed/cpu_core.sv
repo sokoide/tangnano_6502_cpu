@@ -2,39 +2,39 @@
 // Integrates all components into a working CPU
 
 module cpu_core (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Memory interface
     output logic [15:0] mem_addr,
-    output logic [7:0]  mem_data_out,
-    input  logic [7:0]  mem_data_in,
+    output logic [ 7:0] mem_data_out,
+    input  logic [ 7:0] mem_data_in,
     output logic        mem_read,
     output logic        mem_write,
     input  logic        mem_ready,
 
     // Interrupt inputs
-    input  logic        irq_n,
-    input  logic        nmi_n,
+    input logic irq_n,
+    input logic nmi_n,
 
     // Debug outputs
-    output logic [7:0]  debug_reg_a,
-    output logic [7:0]  debug_reg_x,
-    output logic [7:0]  debug_reg_y,
-    output logic [7:0]  debug_reg_sp,
+    output logic [ 7:0] debug_reg_a,
+    output logic [ 7:0] debug_reg_x,
+    output logic [ 7:0] debug_reg_y,
+    output logic [ 7:0] debug_reg_sp,
     output logic [15:0] debug_reg_pc,
-    output logic [7:0]  debug_status_reg,
-    output logic [7:0]  debug_opcode,
-    output logic [2:0]  debug_cpu_state,
-    output logic [7:0]  debug_alu_result
+    output logic [ 7:0] debug_status_reg,
+    output logic [ 7:0] debug_opcode,
+    output logic [ 2:0] debug_cpu_state,
+    output logic [ 7:0] debug_alu_result
 );
 
     // Internal signals
-    logic [3:0]  alu_op;
+    logic [ 3:0] alu_op;
     logic        alu_carry_in;
-    logic [1:0]  alu_a_sel;
-    logic [1:0]  alu_b_sel;
-    logic [2:0]  reg_src_sel;
+    logic [ 1:0] alu_a_sel;
+    logic [ 1:0] alu_b_sel;
+    logic [ 2:0] reg_src_sel;
 
     logic        reg_a_write;
     logic        reg_x_write;
@@ -53,20 +53,20 @@ module cpu_core (
 
     logic [15:0] pc_branch_target;
 
-    logic [7:0]  reg_a_out;
-    logic [7:0]  reg_x_out;
-    logic [7:0]  reg_y_out;
-    logic [7:0]  reg_sp_out;
+    logic [ 7:0] reg_a_out;
+    logic [ 7:0] reg_x_out;
+    logic [ 7:0] reg_y_out;
+    logic [ 7:0] reg_sp_out;
     logic [15:0] reg_pc_out;
 
-    logic [7:0]  alu_result;
+    logic [ 7:0] alu_result;
     logic        alu_carry_out;
     logic        alu_overflow;
     logic        alu_negative;
     logic        alu_zero;
 
-    logic [7:0]  status_reg;
-    logic [1:0]  instruction_length;
+    logic [ 7:0] status_reg;
+    logic [ 1:0] instruction_length;
 
     // CPU Datapath
     cpu_datapath datapath (
@@ -101,25 +101,25 @@ module cpu_core (
 
     // Status Register
     status_register status_reg_inst (
-        .clk(clk),
-        .rst_n(rst_n),
-        .update_n(update_nz),
-        .update_z(update_nz),
-        .update_c(update_c),
-        .update_v(update_v),
-        .new_n(alu_negative),
-        .new_z(alu_zero),
-        .new_c(alu_carry_out),
-        .new_v(alu_overflow),
-        .set_i(1'b0),           // Interrupt disable control
-        .clear_i(1'b0),
-        .set_d(1'b0),           // Decimal mode control
-        .clear_d(1'b0),
-        .set_b(1'b0),           // Break flag control
-        .clear_b(1'b0),
-        .manual_set_c(manual_set_c),
+        .clk           (clk),
+        .rst_n         (rst_n),
+        .update_n      (update_nz),
+        .update_z      (update_nz),
+        .update_c      (update_c),
+        .update_v      (update_v),
+        .new_n         (alu_negative),
+        .new_z         (alu_zero),
+        .new_c         (alu_carry_out),
+        .new_v         (alu_overflow),
+        .set_i         (1'b0),            // Interrupt disable control
+        .clear_i       (1'b0),
+        .set_d         (1'b0),            // Decimal mode control
+        .clear_d       (1'b0),
+        .set_b         (1'b0),            // Break flag control
+        .clear_b       (1'b0),
+        .manual_set_c  (manual_set_c),
         .manual_clear_c(manual_clear_c),
-        .status_reg(status_reg)
+        .status_reg    (status_reg)
     );
 
     // Control Unit

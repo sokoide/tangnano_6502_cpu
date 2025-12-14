@@ -59,7 +59,7 @@
 
 ### 軽微な改善機会
 
-1. **生成ファイル**: `cpu_ifo_auto_generated.sv`に生成タイムスタンプコメントの追加
+1. **生成ファイル**: `cpu_ifo_auto_generated.svh`に生成タイムスタンプコメントの追加
 2. **ボード設定**: Tang Nano 9K/20K切り替えのパラメータ化による自動化
 3. **制約ファイル**: ボード固有の`.cst`ファイルのドキュメント改善
 
@@ -108,8 +108,8 @@ src/
 include/
 ├── consts.svh              # システム定数とパラメータ
 ├── cpu_pkg.sv              # CPU状態列挙型
-├── cpu_tasks.sv            # CPUタスク実装
-├── cpu_ifo_auto_generated.sv # 自動生成デバッグ表示
+├── cpu_tasks.svh            # CPUタスク実装
+├── cpu_ifo_auto_generated.svh # 自動生成デバッグ表示
 └── boot_program.sv         # 自動生成ブートプログラム
 ```
 

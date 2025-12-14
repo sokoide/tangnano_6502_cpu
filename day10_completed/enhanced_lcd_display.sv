@@ -2,31 +2,31 @@
 // Shows current program status and CPU state
 
 module enhanced_lcd_display (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // CPU state inputs
-    input  logic [7:0]  cpu_reg_a,
-    input  logic [7:0]  cpu_reg_x,
-    input  logic [7:0]  cpu_reg_y,
-    input  logic [15:0] cpu_reg_pc,
-    input  logic [7:0]  cpu_status_reg,
+    input logic [ 7:0] cpu_reg_a,
+    input logic [ 7:0] cpu_reg_x,
+    input logic [ 7:0] cpu_reg_y,
+    input logic [15:0] cpu_reg_pc,
+    input logic [ 7:0] cpu_status_reg,
 
     // Program selector inputs
-    input  logic [3:0]  current_program,
-    input  logic        program_running,
+    input logic [3:0] current_program,
+    input logic       program_running,
 
     // Display mode control
-    input  logic [1:0]  display_mode,  // 0=CPU regs, 1=Program info, 2=Status, 3=Memory
+    input logic [1:0] display_mode,  // 0=CPU regs, 1=Program info, 2=Status, 3=Memory
 
     // LCD controller interface
-    output logic [7:0]  lcd_data,
-    output logic        lcd_write,
-    output logic        lcd_cmd_data,
-    input  logic        lcd_busy,
+    output logic [7:0] lcd_data,
+    output logic       lcd_write,
+    output logic       lcd_cmd_data,
+    input  logic       lcd_busy,
 
     // Status
-    output logic        ready
+    output logic ready
 );
 
     // Display update states
@@ -47,13 +47,13 @@ module enhanced_lcd_display (
     // Internal registers
     logic [25:0] update_counter;
     logic        update_trigger;
-    logic [4:0]  char_index;
-    logic [7:0]  display_buffer [0:31];  // 16 chars x 2 lines
+    logic [ 4:0] char_index;
+    logic [ 7:0] display_buffer [0:31];  // 16 chars x 2 lines
     logic        buffer_ready;
 
     // Program names
-    localparam string PROGRAM_NAMES [0:7] = '{
-        "ARITHMETIC ",   // 11 chars
+    localparam string PROGRAM_NAMES[0:7] = '{
+        "ARITHMETIC ",  // 11 chars
         "LOOP COUNT ",
         "BIT MANIP  ",
         "SUBROUTINE ",
@@ -64,17 +64,18 @@ module enhanced_lcd_display (
     };
 
     // Status flag names
-    function automatic logic [7:0] get_status_char(input logic [7:0] status_reg, input integer flag_pos);
+    function automatic logic [7:0] get_status_char(input logic [7:0] status_reg,
+                                                   input integer flag_pos);
         case (flag_pos)
-            7: get_status_char = status_reg[7] ? 8'h4E : 8'h2D;  // N or -
-            6: get_status_char = status_reg[6] ? 8'h56 : 8'h2D;  // V or -
-            5: get_status_char = 8'h31;                          // Always 1
-            4: get_status_char = status_reg[4] ? 8'h42 : 8'h2D;  // B or -
-            3: get_status_char = status_reg[3] ? 8'h44 : 8'h2D;  // D or -
-            2: get_status_char = status_reg[2] ? 8'h49 : 8'h2D;  // I or -
-            1: get_status_char = status_reg[1] ? 8'h5A : 8'h2D;  // Z or -
-            0: get_status_char = status_reg[0] ? 8'h43 : 8'h2D;  // C or -
-            default: get_status_char = 8'h2D;                    // -
+            7:       get_status_char = status_reg[7] ? 8'h4E : 8'h2D;  // N or -
+            6:       get_status_char = status_reg[6] ? 8'h56 : 8'h2D;  // V or -
+            5:       get_status_char = 8'h31;  // Always 1
+            4:       get_status_char = status_reg[4] ? 8'h42 : 8'h2D;  // B or -
+            3:       get_status_char = status_reg[3] ? 8'h44 : 8'h2D;  // D or -
+            2:       get_status_char = status_reg[2] ? 8'h49 : 8'h2D;  // I or -
+            1:       get_status_char = status_reg[1] ? 8'h5A : 8'h2D;  // Z or -
+            0:       get_status_char = status_reg[0] ? 8'h43 : 8'h2D;  // C or -
+            default: get_status_char = 8'h2D;  // -
         endcase
     endfunction
 
@@ -165,19 +166,19 @@ module enhanced_lcd_display (
 
                     2'b01: begin  // Program Info mode
                         // Line 1: "PROG X: NAME"
-                        display_buffer[0]  <= 8'h50;  // 'P'
-                        display_buffer[1]  <= 8'h52;  // 'R'
-                        display_buffer[2]  <= 8'h4F;  // 'O'
-                        display_buffer[3]  <= 8'h47;  // 'G'
-                        display_buffer[4]  <= 8'h20;  // ' '
-                        display_buffer[5]  <= hex_to_ascii(current_program);
-                        display_buffer[6]  <= 8'h3A;  // ':'
-                        display_buffer[7]  <= 8'h20;  // ' '
+                        display_buffer[0] <= 8'h50;  // 'P'
+                        display_buffer[1] <= 8'h52;  // 'R'
+                        display_buffer[2] <= 8'h4F;  // 'O'
+                        display_buffer[3] <= 8'h47;  // 'G'
+                        display_buffer[4] <= 8'h20;  // ' '
+                        display_buffer[5] <= hex_to_ascii(current_program);
+                        display_buffer[6] <= 8'h3A;  // ':'
+                        display_buffer[7] <= 8'h20;  // ' '
 
                         // Copy program name (8 chars max)
                         for (int i = 0; i < 8; i++) begin
                             if (current_program < 8) begin
-                                display_buffer[8+i] <= PROGRAM_NAMES[current_program][i*8 +: 8];
+                                display_buffer[8+i] <= PROGRAM_NAMES[current_program][i*8+:8];
                             end else begin
                                 display_buffer[8+i] <= 8'h55;  // 'U' for unknown
                             end
@@ -186,7 +187,7 @@ module enhanced_lcd_display (
                         // Line 2: Status flags "NV-BDIZC"
                         display_buffer[16] <= get_status_char(cpu_status_reg, 7);  // N
                         display_buffer[17] <= get_status_char(cpu_status_reg, 6);  // V
-                        display_buffer[18] <= 8'h2D;                               // -
+                        display_buffer[18] <= 8'h2D;  // -
                         display_buffer[19] <= get_status_char(cpu_status_reg, 4);  // B
                         display_buffer[20] <= get_status_char(cpu_status_reg, 3);  // D
                         display_buffer[21] <= get_status_char(cpu_status_reg, 2);  // I
@@ -199,16 +200,16 @@ module enhanced_lcd_display (
 
                     2'b10: begin  // Status/Debug mode
                         // Line 1: "STATUS: XX"
-                        display_buffer[0]  <= 8'h53;  // 'S'
-                        display_buffer[1]  <= 8'h54;  // 'T'
-                        display_buffer[2]  <= 8'h41;  // 'A'
-                        display_buffer[3]  <= 8'h54;  // 'T'
-                        display_buffer[4]  <= 8'h55;  // 'U'
-                        display_buffer[5]  <= 8'h53;  // 'S'
-                        display_buffer[6]  <= 8'h3A;  // ':'
-                        display_buffer[7]  <= 8'h20;  // ' '
-                        display_buffer[8]  <= hex_to_ascii(cpu_status_reg[7:4]);
-                        display_buffer[9]  <= hex_to_ascii(cpu_status_reg[3:0]);
+                        display_buffer[0] <= 8'h53;  // 'S'
+                        display_buffer[1] <= 8'h54;  // 'T'
+                        display_buffer[2] <= 8'h41;  // 'A'
+                        display_buffer[3] <= 8'h54;  // 'T'
+                        display_buffer[4] <= 8'h55;  // 'U'
+                        display_buffer[5] <= 8'h53;  // 'S'
+                        display_buffer[6] <= 8'h3A;  // ':'
+                        display_buffer[7] <= 8'h20;  // ' '
+                        display_buffer[8] <= hex_to_ascii(cpu_status_reg[7:4]);
+                        display_buffer[9] <= hex_to_ascii(cpu_status_reg[3:0]);
                         for (int i = 10; i < 16; i++) begin
                             display_buffer[i] <= 8'h20;  // Space
                         end
@@ -309,7 +310,7 @@ module enhanced_lcd_display (
                 end
 
                 DISPLAY_DONE: begin
-                    char_index <= 5'b0;
+                    char_index   <= 5'b0;
                     buffer_ready <= 1'b0;
                 end
 

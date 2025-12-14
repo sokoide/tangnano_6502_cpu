@@ -2,41 +2,41 @@
 // Integrates memory interface with stack operations
 
 module memory_controller (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // CPU interface
     input  logic [15:0] cpu_addr,
-    input  logic [7:0]  cpu_data_out,
-    output logic [7:0]  cpu_data_in,
+    input  logic [ 7:0] cpu_data_out,
+    output logic [ 7:0] cpu_data_in,
     input  logic        cpu_mem_read,
     input  logic        cpu_mem_write,
     output logic        cpu_ready,
 
     // Stack interface
-    input  logic        stack_push,
-    input  logic        stack_pop,
-    input  logic [7:0]  stack_data_out,
-    output logic [7:0]  stack_data_in,
-    output logic [7:0]  stack_pointer,
+    input  logic       stack_push,
+    input  logic       stack_pop,
+    input  logic [7:0] stack_data_out,
+    output logic [7:0] stack_data_in,
+    output logic [7:0] stack_pointer,
 
     // External memory interface
     output logic [15:0] ext_addr,
-    output logic [7:0]  ext_data_out,
-    input  logic [7:0]  ext_data_in,
+    output logic [ 7:0] ext_data_out,
+    input  logic [ 7:0] ext_data_in,
     output logic        ext_oe,
     output logic        ext_we,
 
     // Memory map outputs
-    output logic        ram_select,
-    output logic        rom_select,
-    output logic        io_select
+    output logic ram_select,
+    output logic rom_select,
+    output logic io_select
 );
 
     // Internal signals
     logic [15:0] mem_address;
-    logic [7:0]  mem_write_data;
-    logic [7:0]  mem_read_data;
+    logic [ 7:0] mem_write_data;
+    logic [ 7:0] mem_read_data;
     logic        mem_read_req;
     logic        mem_write_req;
     logic        mem_ready;
@@ -47,15 +47,15 @@ module memory_controller (
 
     // Stack pointer instance
     stack_pointer sp_inst (
-        .clk(clk),
-        .rst_n(rst_n),
-        .push(stack_push),
-        .pop(stack_pop),
-        .load_sp(1'b0),          // Not used in this implementation
-        .sp_data(8'h00),
-        .sp(stack_pointer),
-        .stack_addr(stack_address),
-        .stack_overflow(stack_overflow),
+        .clk            (clk),
+        .rst_n          (rst_n),
+        .push           (stack_push),
+        .pop            (stack_pop),
+        .load_sp        (1'b0),            // Not used in this implementation
+        .sp_data        (8'h00),
+        .sp             (stack_pointer),
+        .stack_addr     (stack_address),
+        .stack_overflow (stack_overflow),
         .stack_underflow(stack_underflow)
     );
 

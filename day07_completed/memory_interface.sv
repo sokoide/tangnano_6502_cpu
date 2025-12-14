@@ -2,28 +2,28 @@
 // Handles memory read/write operations with proper timing
 
 module memory_interface (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // CPU interface
     input  logic [15:0] address,
-    input  logic [7:0]  write_data,
+    input  logic [ 7:0] write_data,
     input  logic        mem_read,
     input  logic        mem_write,
-    output logic [7:0]  read_data,
+    output logic [ 7:0] read_data,
     output logic        ready,
 
     // Memory map control
-    output logic        ram_cs,      // RAM chip select
-    output logic        rom_cs,      // ROM chip select
-    output logic        io_cs,       // I/O chip select
+    output logic ram_cs,  // RAM chip select
+    output logic rom_cs,  // ROM chip select
+    output logic io_cs,   // I/O chip select
 
     // External memory interface
     output logic [15:0] mem_addr,
-    output logic [7:0]  mem_data_out,
-    input  logic [7:0]  mem_data_in,
-    output logic        mem_oe,      // Output enable
-    output logic        mem_we       // Write enable
+    output logic [ 7:0] mem_data_out,
+    input  logic [ 7:0] mem_data_in,
+    output logic        mem_oe,        // Output enable
+    output logic        mem_we         // Write enable
 );
 
     // Memory map definitions
@@ -36,16 +36,16 @@ module memory_interface (
     logic [7:0] read_latch;
 
     // State machine states
-    localparam IDLE  = 2'b00;
-    localparam READ  = 2'b01;
+    localparam IDLE = 2'b00;
+    localparam READ = 2'b01;
     localparam WRITE = 2'b10;
-    localparam WAIT  = 2'b11;
+    localparam WAIT = 2'b11;
 
     // Address decoding
     always_comb begin
-        ram_cs = (address[15] == 1'b0);                    // $0000-$7FFF
-        rom_cs = (address[15:14] == 2'b11);                // $C000-$FFFF
-        io_cs  = (address[15:14] == 2'b10);                // $8000-$BFFF
+        ram_cs = (address[15] == 1'b0);  // $0000-$7FFF
+        rom_cs = (address[15:14] == 2'b11);  // $C000-$FFFF
+        io_cs  = (address[15:14] == 2'b10);  // $8000-$BFFF
     end
 
     // State machine
@@ -105,7 +105,7 @@ module memory_interface (
 
             READ: begin
                 mem_addr = address;
-                mem_oe = 1'b1;
+                mem_oe   = 1'b1;
             end
 
             WRITE: begin

@@ -6,18 +6,18 @@ module tb_cpu_core;
     logic clk, rst_n;
     logic [3:0] switches;
 
-    logic [7:0]  debug_reg_a;
-    logic [7:0]  debug_reg_x;
-    logic [7:0]  debug_reg_y;
-    logic [7:0]  debug_reg_sp;
+    logic [7:0] debug_reg_a;
+    logic [7:0] debug_reg_x;
+    logic [7:0] debug_reg_y;
+    logic [7:0] debug_reg_sp;
     logic [15:0] debug_reg_pc;
-    logic [7:0]  debug_status_reg;
+    logic [7:0] debug_status_reg;
     logic [15:0] debug_mem_addr;
-    logic [7:0]  debug_mem_data;
+    logic [7:0] debug_mem_data;
     logic debug_mem_read;
     logic debug_mem_write;
-    logic [7:0]  debug_opcode;
-    logic [2:0]  debug_cpu_state;
+    logic [7:0] debug_opcode;
+    logic [2:0] debug_cpu_state;
     logic debug_system_ready;
     logic [7:0] initial_sp;
     int errors;
@@ -77,20 +77,18 @@ module tb_cpu_core;
 
             // Display key information when CPU state changes
             if (debug_cpu_state == 3'b000) begin  // FETCH state
-                $display("PC=$%04X: Fetching opcode $%02X",
-                        debug_reg_pc, debug_opcode);
+                $display("PC=$%04X: Fetching opcode $%02X", debug_reg_pc, debug_opcode);
             end
 
             if (debug_cpu_state == 3'b100) begin  // WRITEBACK state
-                $display("  A=$%02X X=$%02X Y=$%02X SP=$%02X Status=$%02X",
-                        debug_reg_a, debug_reg_x, debug_reg_y,
-                        debug_reg_sp, debug_status_reg);
+                $display("  A=$%02X X=$%02X Y=$%02X SP=$%02X Status=$%02X", debug_reg_a,
+                         debug_reg_x, debug_reg_y, debug_reg_sp, debug_status_reg);
             end
         end
 
         $display("\nAfter initial execution:");
-        $display("A=$%02X X=$%02X Y=$%02X SP=$%02X",
-                debug_reg_a, debug_reg_x, debug_reg_y, debug_reg_sp);
+        $display("A=$%02X X=$%02X Y=$%02X SP=$%02X", debug_reg_a, debug_reg_x, debug_reg_y,
+                 debug_reg_sp);
         $display("PC=$%04X Status=$%02X", debug_reg_pc, debug_status_reg);
 
         // Test register operations (first few instructions should be LDA, STA)
@@ -106,32 +104,35 @@ module tb_cpu_core;
         end
 
         if (saw_a_42) $display("✓ Observed A=$42");
-        else begin $display("✗ Did not observe A=$42"); errors++; end
+        else begin
+            $display("✗ Did not observe A=$42");
+            errors++;
+        end
 
         if (saw_a_84) $display("✓ Observed A=$84");
-        else begin $display("✗ Did not observe A=$84"); errors++; end
+        else begin
+            $display("✗ Did not observe A=$84");
+            errors++;
+        end
 
         // Continue execution to test arithmetic
         $display("\nTesting arithmetic operations...");
         repeat (200) @(posedge uut.cpu_clk);
 
-        $display("After arithmetic: A=$%02X Status=$%02X",
-                debug_reg_a, debug_status_reg);
+        $display("After arithmetic: A=$%02X Status=$%02X", debug_reg_a, debug_status_reg);
 
         // Test register transfers
         $display("\nTesting register transfers...");
         repeat (100) @(posedge uut.cpu_clk);
 
-        $display("After transfers: A=$%02X X=$%02X Y=$%02X",
-                debug_reg_a, debug_reg_x, debug_reg_y);
+        $display("After transfers: A=$%02X X=$%02X Y=$%02X", debug_reg_a, debug_reg_x, debug_reg_y);
 
         // Test memory operations
         $display("\nMonitoring memory operations...");
         repeat (50) begin
             @(posedge clk);
             if (debug_mem_write) begin
-                $display("Memory write: [$%04X] <= $%02X",
-                        debug_mem_addr, debug_mem_data);
+                $display("Memory write: [$%04X] <= $%02X", debug_mem_addr, debug_mem_data);
             end
             if (debug_mem_read && debug_mem_addr < 16'h8000) begin
                 $display("Memory read: [$%04X]", debug_mem_addr);
@@ -144,8 +145,8 @@ module tb_cpu_core;
         repeat (200) @(posedge uut.cpu_clk);
 
         if (debug_reg_sp != initial_sp) begin
-            $display("✓ Stack operations detected: SP changed from $%02X to $%02X",
-                    initial_sp, debug_reg_sp);
+            $display("✓ Stack operations detected: SP changed from $%02X to $%02X", initial_sp,
+                     debug_reg_sp);
         end else begin
             $display("- No stack operations detected yet");
         end
@@ -156,8 +157,8 @@ module tb_cpu_core;
         repeat (500) @(posedge uut.cpu_clk);
 
         $display("\nFinal CPU state:");
-        $display("A=$%02X X=$%02X Y=$%02X SP=$%02X",
-                debug_reg_a, debug_reg_x, debug_reg_y, debug_reg_sp);
+        $display("A=$%02X X=$%02X Y=$%02X SP=$%02X", debug_reg_a, debug_reg_x, debug_reg_y,
+                 debug_reg_sp);
         $display("PC=$%04X Status=$%02X", debug_reg_pc, debug_status_reg);
         $display("Last opcode: $%02X", debug_opcode);
 

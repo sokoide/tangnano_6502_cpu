@@ -2,32 +2,32 @@
 // Manages processor status flags with proper 6502 behavior
 
 module status_register (
-    input  logic clk,
-    input  logic rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Flag update control
-    input  logic update_n,
-    input  logic update_z,
-    input  logic update_c,
-    input  logic update_v,
+    input logic update_n,
+    input logic update_z,
+    input logic update_c,
+    input logic update_v,
 
     // New flag values
-    input  logic new_n,
-    input  logic new_z,
-    input  logic new_c,
-    input  logic new_v,
+    input logic new_n,
+    input logic new_z,
+    input logic new_c,
+    input logic new_v,
 
     // Special flag control
-    input  logic set_i,     // Set interrupt disable
-    input  logic clear_i,   // Clear interrupt disable
-    input  logic set_d,     // Set decimal mode
-    input  logic clear_d,   // Clear decimal mode
-    input  logic set_b,     // Set break flag
-    input  logic clear_b,   // Clear break flag
+    input logic set_i,    // Set interrupt disable
+    input logic clear_i,  // Clear interrupt disable
+    input logic set_d,    // Set decimal mode
+    input logic clear_d,  // Clear decimal mode
+    input logic set_b,    // Set break flag
+    input logic clear_b,  // Clear break flag
 
     // Manual flag setting (for SEC/CLC instructions)
-    input  logic manual_set_c,
-    input  logic manual_clear_c,
+    input logic manual_set_c,
+    input logic manual_clear_c,
 
     // Status register output
     output logic [7:0] status_reg
@@ -55,16 +55,16 @@ module status_register (
             status_reg[5] <= 1'b1;
 
             // Break flag control
-            if (set_b)    status_reg[4] <= 1'b1;
-            if (clear_b)  status_reg[4] <= 1'b0;
+            if (set_b) status_reg[4] <= 1'b1;
+            if (clear_b) status_reg[4] <= 1'b0;
 
             // Decimal mode control
-            if (set_d)    status_reg[3] <= 1'b1;
-            if (clear_d)  status_reg[3] <= 1'b0;
+            if (set_d) status_reg[3] <= 1'b1;
+            if (clear_d) status_reg[3] <= 1'b0;
 
             // Interrupt disable control
-            if (set_i)    status_reg[2] <= 1'b1;
-            if (clear_i)  status_reg[2] <= 1'b0;
+            if (set_i) status_reg[2] <= 1'b1;
+            if (clear_i) status_reg[2] <= 1'b0;
 
             // Zero flag
             if (update_z) status_reg[1] <= new_z;

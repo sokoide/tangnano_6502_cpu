@@ -41,7 +41,7 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 
 - `include/consts.svh` — shared constants (avoid “magic numbers”)
 - `include/boot_program.sv` — boot ROM contents (generated from `examples/`)
-- `include/cpu_ifo_auto_generated.sv` — auto-generated debug/info helper
+- `include/cpu_ifo_auto_generated.svh` — auto-generated debug/info helper
 - `src/cpu/*.svh` — instruction decode and state machine fragments
 
 ## Exercises (small, high-signal)

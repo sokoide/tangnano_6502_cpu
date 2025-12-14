@@ -4,8 +4,8 @@
 
 /* verilator lint_off DECLFILENAME */
 module top (
-    input  logic ResetButton,
-    input  logic XTAL_IN,
+    input  logic       ResetButton,
+    input  logic       XTAL_IN,
     output logic       LCD_CLK,
     output logic       LCD_DEN,
     output logic [4:0] LCD_R,
@@ -16,13 +16,13 @@ module top (
     assign rst_n = !ResetButton;
 
     top_core u_core (
-        .rst_n(rst_n),
+        .rst_n  (rst_n),
         .XTAL_IN(XTAL_IN),
         .LCD_CLK(LCD_CLK),
         .LCD_DEN(LCD_DEN),
-        .LCD_R(LCD_R),
-        .LCD_G(LCD_G),
-        .LCD_B(LCD_B)
+        .LCD_R  (LCD_R),
+        .LCD_G  (LCD_G),
+        .LCD_B  (LCD_B)
     );
 endmodule
 /* verilator lint_on DECLFILENAME */

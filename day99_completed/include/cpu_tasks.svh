@@ -2,7 +2,7 @@ show_info_cmd_t show_info_cmd;
 
 localparam show_info_cmd_t show_info_rom [1024] =
   '{
-  `include "cpu_ifo_auto_generated.sv"
+  `include "cpu_ifo_auto_generated.svh"
   }
 ;
 

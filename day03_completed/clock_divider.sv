@@ -2,9 +2,9 @@
 // 可変分周器
 
 module clock_divider (
-    input  logic clk_in,
-    input  logic rst_n,
-    input  logic [3:0] div_ratio,  // 分周比 (1-15)
+    input logic clk_in,
+    input logic rst_n,
+    input logic [3:0] div_ratio,  // 分周比 (1-15)
     output logic clk_out
 );
 

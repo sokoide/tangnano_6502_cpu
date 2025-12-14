@@ -2,49 +2,49 @@
 // Complete register set with proper 6502 behavior
 
 module cpu_registers (
-    input  logic        clk,
-    input  logic        rst_n,
+    input logic clk,
+    input logic rst_n,
 
     // Register write enables
-    input  logic        reg_a_write,
-    input  logic        reg_x_write,
-    input  logic        reg_y_write,
-    input  logic        reg_sp_write,
-    input  logic        reg_pc_write,
+    input logic reg_a_write,
+    input logic reg_x_write,
+    input logic reg_y_write,
+    input logic reg_sp_write,
+    input logic reg_pc_write,
 
     // Data input (from ALU or memory)
-    input  logic [7:0]  data_in,
+    input logic [7:0] data_in,
 
     // Program counter control
-    input  logic [15:0] pc_in,           // For jumps/branches
-    input  logic        pc_increment,    // Normal instruction fetch
+    input logic [15:0] pc_in,        // For jumps/branches
+    input logic        pc_increment, // Normal instruction fetch
 
     // Stack pointer control
-    input  logic        sp_push,
-    input  logic        sp_pop,
+    input logic sp_push,
+    input logic sp_pop,
 
     // Register outputs
-    output logic [7:0]  reg_a,
-    output logic [7:0]  reg_x,
-    output logic [7:0]  reg_y,
-    output logic [7:0]  reg_sp,
+    output logic [ 7:0] reg_a,
+    output logic [ 7:0] reg_x,
+    output logic [ 7:0] reg_y,
+    output logic [ 7:0] reg_sp,
     output logic [15:0] reg_pc
 );
 
     // Internal registers
-    logic [7:0]  accumulator;
-    logic [7:0]  index_x;
-    logic [7:0]  index_y;
-    logic [7:0]  stack_pointer;
+    logic [ 7:0] accumulator;
+    logic [ 7:0] index_x;
+    logic [ 7:0] index_y;
+    logic [ 7:0] stack_pointer;
     logic [15:0] program_counter;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            accumulator <= 8'h00;
-            index_x <= 8'h00;
-            index_y <= 8'h00;
-            stack_pointer <= 8'hFF;      // Stack starts at $01FF
-            program_counter <= 16'hC000; // Boot from ROM
+            accumulator     <= 8'h00;
+            index_x         <= 8'h00;
+            index_y         <= 8'h00;
+            stack_pointer   <= 8'hFF;  // Stack starts at $01FF
+            program_counter <= 16'hC000;  // Boot from ROM
         end else begin
             // Register updates
             if (reg_a_write) begin
@@ -80,9 +80,9 @@ module cpu_registers (
     end
 
     // Output assignments
-    assign reg_a = accumulator;
-    assign reg_x = index_x;
-    assign reg_y = index_y;
+    assign reg_a  = accumulator;
+    assign reg_x  = index_x;
+    assign reg_y  = index_y;
     assign reg_sp = stack_pointer;
     assign reg_pc = program_counter;
 

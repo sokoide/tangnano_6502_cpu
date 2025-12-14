@@ -11,30 +11,30 @@ module Gowin_SDPB_vram (
     input  logic [7:0] din,
     input  logic [9:0] adb
 );
-  logic [7:0] mem [0:1023];
+    logic [7:0] mem[0:1023];
 
-  integer i;
-  initial begin
-    for (i = 0; i < 1024; i = i + 1) begin
-      mem[i] = 8'h00;
+    integer i;
+    initial begin
+        for (i = 0; i < 1024; i = i + 1) begin
+            mem[i] = 8'h00;
+        end
+        dout = 8'h00;
     end
-    dout = 8'h00;
-  end
 
-  always_ff @(posedge clka) begin
-    if (reseta) begin
-      // No-op: keep memory contents
-    end else if (cea) begin
-      mem[ada] <= din;
+    always_ff @(posedge clka) begin
+        if (reseta) begin
+            // No-op: keep memory contents
+        end else if (cea) begin
+            mem[ada] <= din;
+        end
     end
-  end
 
-  always_ff @(posedge clkb) begin
-    if (resetb) begin
-      dout <= 8'h00;
-    end else if (ceb && oce) begin
-      dout <= mem[adb];
+    always_ff @(posedge clkb) begin
+        if (resetb) begin
+            dout <= 8'h00;
+        end else if (ceb && oce) begin
+            dout <= mem[adb];
+        end
     end
-  end
 endmodule
 

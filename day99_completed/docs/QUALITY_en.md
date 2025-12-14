@@ -59,7 +59,7 @@ The codebase demonstrates excellent SystemVerilog practices with a well-structur
 
 ### Minor Opportunities
 
-1. **Generated files**: `cpu_ifo_auto_generated.sv` could benefit from generation timestamp comments
+1. **Generated files**: `cpu_ifo_auto_generated.svh` could benefit from generation timestamp comments
 2. **Board configuration**: Tang Nano 9K/20K switching could be automated via parameters
 3. **Constraint files**: Board-specific `.cst` files could be better documented
 
@@ -108,8 +108,8 @@ src/
 include/
 ├── consts.svh              # System constants and parameters
 ├── cpu_pkg.sv              # CPU state enumerations
-├── cpu_tasks.sv            # CPU task implementations
-├── cpu_ifo_auto_generated.sv # Auto-generated debug display
+├── cpu_tasks.svh            # CPU task implementations
+├── cpu_ifo_auto_generated.svh # Auto-generated debug display
 └── boot_program.sv         # Auto-generated boot program
 ```
 

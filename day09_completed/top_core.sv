@@ -7,8 +7,8 @@
 
 module top_core (
     // Reset and Clock
-    input  logic rst_n,
-    input  logic XTAL_IN,     // 27MHz
+    input logic rst_n,
+    input logic XTAL_IN, // 27MHz
 
     // LCD Interface
     output logic       LCD_CLK,  // Pixel clock (~9MHz)
@@ -28,12 +28,12 @@ module top_core (
     // Keep these simple (no `int unsigned`) so Gowin GUI builds work even if the
     // project is not set to SystemVerilog-2017 mode.
     localparam [15:0] H_VALID = 16'd480;
-    localparam [15:0] H_BACK  = 16'd43;
+    localparam [15:0] H_BACK = 16'd43;
     localparam [15:0] H_FRONT = 16'd8;
     localparam [15:0] H_TOTAL = H_BACK + H_VALID + H_FRONT;
 
     localparam [15:0] V_VALID = 16'd272;
-    localparam [15:0] V_BACK  = 16'd12;
+    localparam [15:0] V_BACK = 16'd12;
     localparam [15:0] V_FRONT = 16'd8;
     localparam [15:0] V_TOTAL = V_BACK + V_VALID + V_FRONT;
 

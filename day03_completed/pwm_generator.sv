@@ -2,9 +2,9 @@
 // PWM信号生成器
 
 module pwm_generator (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [7:0] duty_cycle,  // 0-255 (0-100%)
+    input logic clk,
+    input logic rst_n,
+    input logic [7:0] duty_cycle,  // 0-255 (0-100%)
     output logic pwm_out
 );
 

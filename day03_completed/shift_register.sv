@@ -2,12 +2,12 @@
 // 8ビット シフトレジスタ
 
 module shift_register (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic shift_enable,
-    input  logic serial_in,
-    input  logic load_enable,
-    input  logic [7:0] parallel_data,
+    input logic clk,
+    input logic rst_n,
+    input logic shift_enable,
+    input logic serial_in,
+    input logic load_enable,
+    input logic [7:0] parallel_data,
     output logic [7:0] shift_data,
     output logic serial_out
 );

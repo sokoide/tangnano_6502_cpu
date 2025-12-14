@@ -12,7 +12,7 @@ func chkerr(err error) {
 }
 
 func reopen() (*os.File, error) {
-	return os.Create(fmt.Sprintf("../../include/cpu_ifo_auto_generated.sv"))
+	return os.Create(fmt.Sprintf("../../include/cpu_ifo_auto_generated.svh"))
 }
 
 func write_show_info_rom(f *os.File, counter *int, v_ada int, v_din_t int, v_din int, diff int, vram_write int, mem_read int) {

@@ -2,12 +2,12 @@
 // Integrated test module for combinational circuits
 
 module top (
-    input  logic clk,
-    input  logic [3:0] switches,    // Input switches (virtual)
-    output logic [6:0] segments,    // 7-segment output
-    output logic led_zero,          // Zero flag
-    output logic led_carry,         // Carry flag
-    output logic mux_out            // Multiplexer output
+    input  logic       clk,
+    input  logic [3:0] switches,   // Input switches (virtual)
+    output logic [6:0] segments,   // 7-segment output
+    output logic       led_zero,   // Zero flag
+    output logic       led_carry,  // Carry flag
+    output logic       mux_out     // Multiplexer output
 );
 
     // Internal signals
@@ -17,7 +17,7 @@ module top (
     // Fixed values for testing
     logic [3:0] operand_a = 4'h5;  // Fixed value A = 5
     logic [3:0] operand_b = 4'h3;  // Fixed value B = 3
-    logic [1:0] alu_op = 2'b00;    // Addition operation
+    logic [1:0] alu_op = 2'b00;  // Addition operation
 
     // 7-segment decoder
     seven_seg_decoder seg_decoder (
@@ -37,13 +37,13 @@ module top (
 
     // 8-to-1 multiplexer
     mux_8to1 mux (
-        .data_in(8'b10101010),     // Test pattern
-        .select(switches[2:0]),    // Select with switches
+        .data_in (8'b10101010),    // Test pattern
+        .select  (switches[2:0]),  // Select with switches
         .data_out(mux_out)
     );
 
     // LED output
-    assign led_zero = zero_flag;
+    assign led_zero  = zero_flag;
     assign led_carry = carry_flag;
 
 endmodule

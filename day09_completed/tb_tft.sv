@@ -1,14 +1,14 @@
 // Simulation testbench for Day09 TFT bring-up (smoke test)
 
 module tb_tft;
-    logic ResetButton;
-    logic XTAL_IN;
+    logic       ResetButton;
+    logic       XTAL_IN;
 
-    logic        LCD_CLK;
-    logic        LCD_DEN;
-    logic [4:0]  LCD_R;
-    logic [5:0]  LCD_G;
-    logic [4:0]  LCD_B;
+    logic       LCD_CLK;
+    logic       LCD_DEN;
+    logic [4:0] LCD_R;
+    logic [5:0] LCD_G;
+    logic [4:0] LCD_B;
 
     top uut (
         .ResetButton(ResetButton),
@@ -28,8 +28,8 @@ module tb_tft;
         bit saw_den;
         bit saw_color;
 
-        XTAL_IN = 1'b0;
-        saw_den = 1'b0;
+        XTAL_IN   = 1'b0;
+        saw_den   = 1'b0;
         saw_color = 1'b0;
 
 `ifdef BOARD_20K
@@ -53,13 +53,12 @@ module tb_tft;
             @(posedge LCD_CLK);
             if (LCD_DEN) begin
                 saw_den = 1'b1;
-                if ((LCD_R != 5'd0) || (LCD_G != 6'd0) || (LCD_B != 5'd0))
-                    saw_color = 1'b1;
+                if ((LCD_R != 5'd0) || (LCD_G != 6'd0) || (LCD_B != 5'd0)) saw_color = 1'b1;
             end
             if (saw_den && saw_color) break;
         end
 
-        if (!saw_den)  $fatal(1, "LCD_DEN never asserted (timing not running?)");
+        if (!saw_den) $fatal(1, "LCD_DEN never asserted (timing not running?)");
         if (!saw_color) $fatal(1, "Never observed non-black pixel during active region");
 
         $display("PASS: saw LCD_DEN and color output");
