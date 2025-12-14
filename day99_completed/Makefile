@@ -183,7 +183,8 @@ lint:
 	fi
 
 # Format SystemVerilog (in-place) excluding vendor IP
-FORMAT_FILES := $(shell find src include -type f \( -name '*.sv' -o -name '*.svh' \) ! -path 'src/gowin_*/*')
+FORMAT_FILES := $(shell find src include -type f -name '*.sv' ! -path 'src/gowin_*/*')
+FORMAT_FILES += include/consts.svh
 format:
 	@if command -v verible-verilog-format >/dev/null 2>&1; then \
 	  verible-verilog-format --inplace $(FORMAT_FILES); \

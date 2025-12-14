@@ -34,6 +34,8 @@ module addressing_mode_calculator (
         addr_mode = IMMEDIATE;
         instruction_length = 2'd1;
         page_crossed = 1'b0;
+        base_addr = 16'h0000;
+        indexed_addr = 16'h0000;
 
         case (opcode)
             // LDA Immediate - #$nn

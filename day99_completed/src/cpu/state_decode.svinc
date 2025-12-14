@@ -1,0 +1,22 @@
+          DECODE_EXECUTE: begin
+            cea = 0;
+            v_cea = 0;
+            write_to_vram = 0;  // Clear flag unless set by sta_write below
+
+            case (opcode)
+              `include "cpu/decode_control_flow.svinc"
+              `include "cpu/decode_load_store.svinc"
+              `include "cpu/decode_store.svinc"
+              `include "cpu/decode_inc_dec.svinc"
+              `include "cpu/decode_adc_sbc.svinc"
+              `include "cpu/decode_logic.svinc"
+              `include "cpu/decode_shifts.svinc"
+              `include "cpu/decode_compare.svinc"
+              `include "cpu/decode_transfers.svinc"
+              `include "cpu/decode_branches.svinc"
+              `include "cpu/decode_flags_custom.svinc"
+              // support more instructions here
+
+              default: ;  // No operation.
+            endcase
+          end

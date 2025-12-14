@@ -12,6 +12,14 @@ module tb_addressing_modes;
     logic [1:0] instruction_length;
     logic page_crossed;
 
+    // Shared addressing mode constants for assertions
+    localparam logic [2:0] IMMEDIATE = 3'b000;
+    localparam logic [2:0] ZERO_PAGE = 3'b001;
+    localparam logic [2:0] ZERO_PAGE_X = 3'b010;
+    localparam logic [2:0] ABSOLUTE = 3'b011;
+    localparam logic [2:0] ABSOLUTE_X = 3'b100;
+    localparam logic [2:0] ABSOLUTE_Y = 3'b101;
+
     // Test target instantiation
     addressing_mode_calculator uut (
         .opcode(opcode),
@@ -46,6 +54,8 @@ module tb_addressing_modes;
         else $error("Test 1 failed: LDA #$55");
         assert (instruction_length == 2'd2)
         else $error("Test 1 failed: length should be 2");
+        assert (addr_mode == IMMEDIATE)
+        else $error("Test 1 failed: mode should be IMMEDIATE");
         $display("Test 1 passed: LDA #$55 -> EA=0x%04X, len=%d", effective_addr,
                  instruction_length);
 
@@ -58,6 +68,8 @@ module tb_addressing_modes;
         else $error("Test 2 failed: LDA $80");
         assert (instruction_length == 2'd2)
         else $error("Test 2 failed: length should be 2");
+        assert (addr_mode == ZERO_PAGE)
+        else $error("Test 2 failed: mode should be ZERO_PAGE");
         $display("Test 2 passed: LDA $80 -> EA=0x%04X, len=%d", effective_addr, instruction_length);
 
         // Test 3: LDA Zero Page,X $80,X
@@ -69,6 +81,8 @@ module tb_addressing_modes;
         else $error("Test 3 failed: LDA $80,X");
         assert (instruction_length == 2'd2)
         else $error("Test 3 failed: length should be 2");
+        assert (addr_mode == ZERO_PAGE_X)
+        else $error("Test 3 failed: mode should be ZERO_PAGE_X");
         $display("Test 3 passed: LDA $80,X -> EA=0x%04X, len=%d", effective_addr,
                  instruction_length);
 
@@ -81,6 +95,8 @@ module tb_addressing_modes;
         else $error("Test 4 failed: LDA $1234");
         assert (instruction_length == 2'd3)
         else $error("Test 4 failed: length should be 3");
+        assert (addr_mode == ABSOLUTE)
+        else $error("Test 4 failed: mode should be ABSOLUTE");
         $display("Test 4 passed: LDA $1234 -> EA=0x%04X, len=%d", effective_addr,
                  instruction_length);
 
@@ -93,6 +109,8 @@ module tb_addressing_modes;
         else $error("Test 5 failed: LDA $1234,X");
         assert (page_crossed == 1'b0)
         else $error("Test 5 failed: no page crossing expected");
+        assert (addr_mode == ABSOLUTE_X)
+        else $error("Test 5 failed: mode should be ABSOLUTE_X");
         $display("Test 5 passed: LDA $1234,X -> EA=0x%04X, page_crossed=%b", effective_addr,
                  page_crossed);
 
@@ -105,6 +123,8 @@ module tb_addressing_modes;
         else $error("Test 6 failed: LDA $12FF,X");
         assert (page_crossed == 1'b1)
         else $error("Test 6 failed: page crossing expected");
+        assert (addr_mode == ABSOLUTE_X)
+        else $error("Test 6 failed: mode should be ABSOLUTE_X");
         $display("Test 6 passed: LDA $12FF,X -> EA=0x%04X, page_crossed=%b", effective_addr,
                  page_crossed);
 
@@ -115,6 +135,8 @@ module tb_addressing_modes;
         #10;
         assert (effective_addr == 16'h100A)
         else $error("Test 7 failed: LDA $1000,Y");
+        assert (addr_mode == ABSOLUTE_Y)
+        else $error("Test 7 failed: mode should be ABSOLUTE_Y");
         $display("Test 7 passed: LDA $1000,Y -> EA=0x%04X", effective_addr);
 
         // Test 8: Branch BPL +5
@@ -125,6 +147,8 @@ module tb_addressing_modes;
         #10;
         assert (effective_addr == 16'h0307)
         else $error("Test 8 failed: BPL +5");
+        assert (addr_mode == IMMEDIATE)
+        else $error("Test 8 failed: mode should be IMMEDIATE");
         $display("Test 8 passed: BPL +5 -> EA=0x%04X", effective_addr);
 
         // Test 9: Branch BNE -5 (negative offset)
@@ -135,6 +159,8 @@ module tb_addressing_modes;
         #10;
         assert (effective_addr == 16'h030D)
         else $error("Test 9 failed: BNE -5");
+        assert (addr_mode == IMMEDIATE)
+        else $error("Test 9 failed: mode should be IMMEDIATE");
         $display("Test 9 passed: BNE -5 -> EA=0x%04X", effective_addr);
 
         // Test 10: Zero page wraparound $FF,X
@@ -145,6 +171,8 @@ module tb_addressing_modes;
         #10;
         assert (effective_addr == 16'h0004)
         else $error("Test 10 failed: zero page wraparound");
+        assert (addr_mode == ZERO_PAGE_X)
+        else $error("Test 10 failed: mode should be ZERO_PAGE_X");
         $display("Test 10 passed: LDA $FF,X -> EA=0x%04X (wraparound)", effective_addr);
 
         $display("All addressing mode tests completed successfully!");
