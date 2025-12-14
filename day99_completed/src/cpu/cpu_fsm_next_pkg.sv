@@ -37,6 +37,10 @@ package cpu_fsm_next_pkg;
         r.next_state = INIT_RAM;
       end
 
+      HALT: begin
+        r.next_state = HALT;
+      end
+
       INIT_RAM: begin
         if (!boot_write) begin
           if (boot_idx_u16 == boot_program_length) begin

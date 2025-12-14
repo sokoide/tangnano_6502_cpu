@@ -184,7 +184,17 @@ module cpu (
 
         state_machine_step();
         unique case (state)
-          INIT, INIT_VRAM, INIT_RAM, FETCH_REQ, FETCH_WAIT, FETCH_RECV, WRITE_REQ, CLEAR_VRAM, CLEAR_VRAM2, SHOW_INFO: begin
+          INIT,
+          INIT_VRAM,
+          INIT_RAM,
+          HALT,
+          FETCH_REQ,
+          FETCH_WAIT,
+          FETCH_RECV,
+          WRITE_REQ,
+          CLEAR_VRAM,
+          CLEAR_VRAM2,
+          SHOW_INFO: begin
             state <= boot_fetch_next.next_state;
             fetch_stage <= boot_fetch_next.next_fetch_stage;
           end
