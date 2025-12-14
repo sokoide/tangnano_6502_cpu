@@ -29,6 +29,17 @@
 //
 `include "../include/consts.svh"
 `include "../include/cpu_pkg.sv"
+`include "cpu/cpu_exec_transfers_pkg.sv"
+`include "cpu/cpu_exec_flags_custom_pkg.sv"
+`include "cpu/cpu_exec_branches_pkg.sv"
+`include "cpu/cpu_exec_compare_pkg.sv"
+`include "cpu/cpu_exec_logic_pkg.sv"
+`include "cpu/cpu_exec_shifts_pkg.sv"
+`include "cpu/cpu_exec_store_pkg.sv"
+`include "cpu/cpu_exec_inc_dec_pkg.sv"
+`include "cpu/cpu_exec_control_flow_pkg.sv"
+`include "cpu/cpu_exec_load_store_pkg.sv"
+`include "cpu/cpu_exec_adc_sbc_pkg.sv"
 /* verilator lint_off WIDTHEXPAND */
 /* verilator lint_off WIDTHTRUNC */
 module cpu (
@@ -57,6 +68,7 @@ module cpu (
 
     import cpu_pkg::*;
 
+    /* verilator lint_off UNUSEDSIGNAL */
     // 6502 CPU Registers
     // Program Counter and addressing
     logic        [15:0] pc;  // Program Counter (16-bit)
@@ -102,8 +114,16 @@ module cpu (
     cpu_state_e next_state;
     fetch_stage_e fetch_stage;
     show_info_stage_e show_info_stage;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     `include "../include/cpu_tasks.svh"
+    `include "cpu/state_boot_tasks.sv"
+    `include "cpu/state_fetch_tasks.sv"
+    `include "cpu/state_write_req_tasks.sv"
+    `include "cpu/state_show_info_tasks.sv"
+    `include "cpu/state_clear_vram_tasks.sv"
+    `include "cpu/state_decode_tasks.sv"
+    `include "cpu/state_machine.svh"
 
     // din ratch
     always_ff @(posedge clk) dout_r <= dout;
@@ -148,14 +168,7 @@ module cpu (
             begin
                 counter <= (counter + 1) & 32'hFFFFFFFF;
 
-                // --- case(state) ---
-                /* verilator lint_off BLKSEQ */
-                case (state)
-                    `include "cpu/state_machine.svh"
-                    default: begin
-                    end
-                endcase
-                /* verilator lint_on BLKSEQ */
+                state_machine_step();
             end
         end
     end

@@ -1,5 +1,6 @@
 BOARD ?= 9k
 DAYS := $(sort $(wildcard day*_completed))
+# SVFILES = \( -name '*.sv' -o -name '*.svh' \)
 SVFILES = \( -name '*.sv' -o -name '*.svh' \)
 
 .PHONY: all clean help test format build
@@ -23,7 +24,8 @@ test:
 format:
 	@echo "Formatting all projects"
 	npx markdownlint "**/*.md" --fix
-	find . -name '*.sv' -print0 | xargs -0 verible-verilog-format --inplace --indentation_spaces=4 --column_limit=100
+	find . $(SVFILES) -print0 | xargs -0 verible-verilog-format --inplace --indentation_spaces=4 --column_limit=100
+
 
 clean:
 	@echo "Cleaning all projects"

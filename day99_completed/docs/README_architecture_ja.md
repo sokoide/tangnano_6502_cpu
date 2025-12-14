@@ -145,7 +145,7 @@ src/
 include/
 ├── consts.svh          # システム全体の定数とパラメータ
 ├── cpu_pkg.sv          # CPU固有の型と列挙型
-├── cpu_tasks.svh        # 再利用可能なCPUタスクと関数
+├── cpu_tasks.svh       # 再利用可能なCPUタスクと関数
 └── boot_program.sv     # アセンブリから自動生成 (examples/)
 ```
 
@@ -154,6 +154,35 @@ include/
 ### 6502 コアアーキテクチャ
 
 保守性を重視したモジュラー設計の CPU 実装：
+
+### CPU モジュール構造
+
+- `cpu.sv` がエントリポイントで、`cpu_pkg.sv`、各カテゴリの `cpu_exec_*_pkg.sv`、`include/cpu_tasks.svh`、状態用タスク（`src/cpu/state_*_tasks.sv`）を取り込んでいます。
+- `state_fetch_req()`、`state_decode_execute()`、`state_clear_vram_loop()` のような各状態ヘルパーは個別の `.sv` ファイルに分割されており、`state_machine.svh` の `state_machine_step()` が状態に応じて適切なヘルパーを呼び出します。これにより各状態のコードが単体で SystemVerilog として成立し、フォーマッタ/ハイライト可能です。
+- 命令デコードは巨大な `case` 文ではなく、`cpu_exec_transfers_pkg.sv`、`cpu_exec_branches_pkg.sv`、`cpu_exec_load_store_pkg.sv` などのカテゴリ別パッケージを順次呼び出す構成になっています。
+- `fetch_opcode`/`sta_write`/`vram_write` などの共通タスクは `include/cpu_tasks.svh`、定数や列挙型は `include/consts.svh` と `cpu_pkg.sv` に置かれていて、パッケージ間で再利用されています。
+
+### CPU モジュール構造の概観（Mermaid 図）
+
+```mermaid
+graph TD
+    cpu[cpu.sv]
+    cpu -->|インクルード| pkg[cpu_pkg.sv]
+    cpu -->|インクルード| tasks[include/cpu_tasks.svh]
+    cpu -->|インクルード| state_machine["state_machine_step()"]
+    state_machine --> state_fetch[state_fetch_tasks.sv]
+    state_machine --> state_decode[state_decode_tasks.sv]
+    state_machine --> state_boot[state_boot_tasks.sv]
+    state_machine --> state_clear[state_clear_vram_tasks.sv]
+    state_machine --> state_show[state_show_info_tasks.sv]
+    state_machine --> state_write_req[state_write_req_tasks.sv]
+    state_decode --> row1([row1: 基本デコードパッケージ])
+    row1 --> exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
+    state_decode --> row2([row2: メモリ/制御パッケージ])
+    row2 --> exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
+    state_decode --> row3([row3: その他のパッケージ])
+    row3 --> exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+```
 
 ```systemverilog
 // メインCPUモジュール構造

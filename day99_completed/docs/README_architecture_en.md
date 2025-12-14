@@ -150,7 +150,7 @@ src/
 include/
 ├── consts.svh          # System-wide constants and parameters
 ├── cpu_pkg.sv          # CPU-specific types and enumerations
-├── cpu_tasks.svh        # Reusable CPU tasks and functions
+├── cpu_tasks.svh       # Reusable CPU tasks and functions
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
@@ -159,6 +159,35 @@ include/
 ### 6502 Core Architecture
 
 The CPU implementation follows a modular design approach for maintainability:
+
+### Modular Structure of the CPU Core
+
+- `cpu.sv` remains the top-level module, pulling in `cpu_pkg.sv`, the category packages (`cpu_exec_*_pkg.sv`), `cpu_tasks.svh`, and the new state helpers so that the main FSM logic stays readable for tools.
+- Every FSM state lives inside its own helper task under `src/cpu/state_*_tasks.sv` with names like `state_fetch_req()`, `state_decode_execute()`, and `state_clear_vram_loop()`. This keeps the included files valid SystemVerilog units that can be formatted independently, and `state_machine.svh` simply runs `state_machine_step()` to pick the right helper per state.
+- The opcode decode now calls into dedicated packages such as `cpu_exec_transfers_pkg.sv`, `cpu_exec_branches_pkg.sv`, `cpu_exec_load_store_pkg.sv`, etc., instead of relying on giant inlined `case` bodies.
+- Shared helper tasks (e.g., `fetch_opcode`, `sta_write`, `vram_write`) remain in `include/cpu_tasks.svh`, while constants and enums live in `include/consts.svh`/`cpu_pkg.sv` for reuse across the packages.
+
+### CPU module breakdown (Mermaid view)
+
+```mermaid
+graph TD
+    cpu[cpu.sv]
+    cpu -->|includes| pkg[cpu_pkg.sv]
+    cpu -->|includes| tasks[include/cpu_tasks.svh]
+    cpu -->|includes| state_machine["state_machine_step()"]
+    state_machine --> state_fetch[state_fetch_tasks.sv]
+    state_machine --> state_decode[state_decode_tasks.sv]
+    state_machine --> state_boot[state_boot_tasks.sv]
+    state_machine --> state_clear[state_clear_vram_tasks.sv]
+    state_machine --> state_show[state_show_info_tasks.sv]
+    state_machine --> state_write_req[state_write_req_tasks.sv]
+    state_decode --> row1([row1: core decode packages])
+    row1 --> exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
+    state_decode --> row2([row2: memory/control packages])
+    row2 --> exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
+    state_decode --> row3([row3: remaining packages])
+    row3 --> exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+```
 
 ```systemverilog
 // Main CPU module structure

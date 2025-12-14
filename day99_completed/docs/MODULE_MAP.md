@@ -39,10 +39,66 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 
 ## Key supporting files
 
-- `include/consts.svh` — shared constants (avoid “magic numbers”)
+- `include/consts.svh` — shared constants (avoid “magic numbers”) for modules
+- `include/consts_pkg.sv` — shared constants usable from `package` code (Gowin-compatible)
 - `include/boot_program.sv` — boot ROM contents (generated from `examples/`)
 - `include/cpu_ifo_auto_generated.svh` — auto-generated debug/info helper
-- `src/cpu/*.svh` — instruction decode and state machine fragments
+- `include/cpu_tasks.svh` — reusable CPU helper tasks (fetch/write helpers)
+- `src/cpu/state_*_tasks.sv` — formatter-friendly helpers that implement the per-state behavior and are invoked from `state_machine.svh`
+
+## Refactor policy (module splitting)
+
+Goal: make CPU logic easier to read/maintain by splitting into formatter-friendly SystemVerilog files, where each split unit is valid SV on its own (no “case body includes”).
+
+Rules:
+
+1. **No `*.svinc` in the end state**: `*.svinc` is treated as a legacy format. New code must live in `*.sv`/`*.svh` as complete SV compilation units (`package`, `module`, `interface`, `class`).
+2. **Prefer `package + function` for logic splitting**: use packages as “Go-like namespaces” and `function automatic` as the unit of reuse. Avoid `virtual interface` plumbing for core logic because tool support varies.
+3. **2-process FSM for safety**: migrate CPU control to the standard `always_comb(next)` + `always_ff(cur<=next)` structure. This makes intent explicit, reduces accidental latches, and makes refactors safer.
+4. **State bundled as a struct**: represent CPU internal state as a single `typedef struct packed cpu_ctx_t`, so package functions can operate on a single object instead of hundreds of `ref` arguments.
+5. **Stepwise changes gated by sim**: after each milestone, run `make test` in `day99_completed/` (Verilator smoke test). The refactor should preserve behavior at each step.
+
+Current opcode split (implemented):
+
+```bash
+src/cpu/
+├── cpu_exec_transfers_pkg.sv
+├── cpu_exec_flags_custom_pkg.sv
+├── cpu_exec_branches_pkg.sv
+├── cpu_exec_compare_pkg.sv
+├── cpu_exec_logic_pkg.sv
+├── cpu_exec_shifts_pkg.sv
+├── cpu_exec_store_pkg.sv
+├── cpu_exec_inc_dec_pkg.sv
+├── cpu_exec_control_flow_pkg.sv
+├── cpu_exec_load_store_pkg.sv
+└── cpu_exec_adc_sbc_pkg.sv
+```
+
+Target layout (planned):
+
+```bash
+src/cpu/
+├── cpu_types_pkg.sv        # enums + cpu_ctx_t (+ optional inputs/outputs structs)
+├── cpu_helpers_pkg.sv      # pure helpers (flags, address calc, hex conversion)
+├── cpu_fsm_pkg.sv          # step(cur,in) -> next (fetch/state machine)
+├── cpu_exec_pkg.sv         # opcode dispatch (calls category packages)
+├── cpu_exec_load_store_pkg.sv
+├── cpu_exec_alu_pkg.sv
+├── cpu_exec_shift_pkg.sv
+├── cpu_exec_branch_pkg.sv
+└── cpu_exec_control_pkg.sv
+```
+
+Notes:
+
+- The first migration milestone is **category split of the opcode execution** (keep behavior, improve readability, keep files standalone SV). After that, migrate the top-level FSM to 2-process form.
+- Generated `include/cpu_ifo_auto_generated.svh` can later be changed to emit a `package` (e.g. `cpu_show_info_rom_pkg.sv`) so even the generated “ROM” is formatter-friendly.
+
+## State machine task helpers
+
+Each CPU state is now handled by a dedicated task defined under `src/cpu/state_*_tasks.sv`. The `state_machine.svh` file dispatches directly to the appropriate helper (e.g., `state_fetch_req()`, `state_clear_vram_loop()`) so that each helper file is a valid SystemVerilog unit that a formatter/highlighter can parse on its own while preserving the existing synchronous FSM semantics.
+The decode logic formerly split out as `state_decode.svinc` now lives in `src/cpu/state_decode_tasks.sv`, and `state_machine.svh` simply calls `state_decode_execute()` when the FSM reaches `DECODE_EXECUTE`.
 
 ## Exercises (small, high-signal)
 

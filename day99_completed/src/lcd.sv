@@ -82,8 +82,8 @@ module lcd (
 
     always_comb begin
         automatic logic signed [15:0] x_full, y_full;
-        x_full = H_PixelCount - H_BackPorch + CHAR_WIDTH;
-        y_full = V_PixelCount - V_BackPorch;
+        x_full = (H_PixelCount - H_BackPorch + CHAR_WIDTH) & 16'hFFFF;
+        y_full = (V_PixelCount - V_BackPorch) & 16'hFFFF;
         x = x_full[15:0];
         y = y_full[15:0];
         active_area = (-1 <= x && x < H_PixelValid + CHAR_WIDTH - 1 && 0 <= y && y < V_PixelValid);

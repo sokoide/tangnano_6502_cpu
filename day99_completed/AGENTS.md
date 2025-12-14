@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 
 - `src/`: SystemVerilog sources (`top.sv`, `lcd.sv`, `cpu*.sv`, `ram.sv`) and testbenches `tb_*.sv`. Vendor IP lives under `src/gowin_*`.
-- `include/`: Shared headers and generated files (`consts.svh`, `boot_program.sv` [generated], `cpu_ifo_auto_generated.svh` [generated], `cpu_tasks.svh`).
+- `include/`: Shared headers and generated files (`consts.svh`, `boot_program.sv` [generated], `cpu_ifo_auto_generated.svh` [generated], `cpu_tasks.svh`, `cpu_pkg.sv`).
 - `examples/`: 6502 assembly programs and Makefile that generates `include/boot_program.sv`.
 - `utils/`: Helper tools (e.g., `utils/hex_fpga/` Go converter).
 - `impl/pnr/`: Build outputs (e.g., `lcd_cpu_bsram.fs`, `lcd_cpu_bsram.vo`).
