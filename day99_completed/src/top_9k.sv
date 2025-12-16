@@ -15,18 +15,18 @@ module top (
 
     output logic MEMORY_CLK
 );
-  logic rst_n;
-  assign rst_n = ResetButton;
+    logic rst_n;
+    assign rst_n = ResetButton;
 
-  top_core u_core (
-      .rst_n(rst_n),
-      .XTAL_IN(XTAL_IN),
-      .LCD_CLK(LCD_CLK),
-      .LCD_DEN(LCD_DEN),
-      .LCD_R(LCD_R),
-      .LCD_G(LCD_G),
-      .LCD_B(LCD_B),
-      .MEMORY_CLK(MEMORY_CLK)
-  );
+    top_core u_core (
+        .rst_n(rst_n),
+        .XTAL_IN(XTAL_IN),
+        .LCD_CLK(LCD_CLK),
+        .LCD_DEN(LCD_DEN),
+        .LCD_R(LCD_R),
+        .LCD_G(LCD_G),
+        .LCD_B(LCD_B),
+        .MEMORY_CLK(MEMORY_CLK)
+    );
 endmodule
 /* verilator lint_on DECLFILENAME */

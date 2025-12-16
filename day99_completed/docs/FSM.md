@@ -147,7 +147,9 @@
 - `state_machine.svh` から削除済みの `FETCH_OPERAND*` に対応する未使用タスクを `state_fetch_tasks.sv` から削除。
 - `make BOARD=9k clean test` の Verilator 警告が出ないことを確認。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認（継続）。
+
 ### 2025-12-15: Step 4 の準備（コンテキスト構造体カバー開始）
+
 - `cpu.sv` に `cpu_types_pkg` を取り込み、現在のレジスタ/フラグ/バスを `cpu_ctx_t cur` にマッピングして入力 `cpu_in_t` をサンプリングするように変更した。
 - `cpu_fsm_next_pkg` に `calc_cpu_next(cur,in)` を追加し、`calc_boot_fetch_next()` をラップして `next_ctx.state`/`next_ctx.fetch_stage` を更新、差分の combinational な next-state をのちほど拡張できる下地を準備。
 - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`（UNUSEDSIGNAL warning1箇所）、`make -C day99_completed BOARD=9k download` はすべて成功。
@@ -170,26 +172,31 @@
    - `make -C day99_completed format` / `make -C day99_completed BOARD=9k clean test` を通し、warningが出ないことを確認。
    - `make -C day99_completed BOARD=9k download` で LCD 表示を確認。必要なら `WVS` 命令などを使って状態遷移が正しいことを確かめる。
 6. **state_decode_* / cpu_exec_* の次元間移行**
-  - `state_decode_execute()` と関連 `cpu_exec_*` パッケージを次の対象として、計算結果/フラグ更新/メモリアクセスを `cpu_ctx_t` で表現し `calc_cpu_next()` にまとめることで decode 〜 execute を完結させる。
-  - 進捗ごとに `format`/`clean test`/`download` を繰り返し、fetch 〜 decode での整合性を暴いておく。
+
+- `state_decode_execute()` と関連 `cpu_exec_*` パッケージを次の対象として、計算結果/フラグ更新/メモリアクセスを `cpu_ctx_t` で表現し `calc_cpu_next()` にまとめることで decode 〜 execute を完結させる。
+- 進捗ごとに `format`/`clean test`/`download` を繰り返し、fetch 〜 decode での整合性を暴いておく。
 
 ### 2025-12-15: Step4.1 (state_boot ハンドラのコンテキスト化)
- - `cpu.c` に `cpu_ctx_t cur` を追加し、レジスタ/バス/フラグを `cur` にマッピングして `cpu_inputs.boot_byte` をサンプリング。`calc_cpu_next(cur,in)` を呼び出す構造を整えた。
- - `cpu_fsm_next_pkg` に `calc_cpu_next(cur,in)` を追加し、`calc_boot_fetch_next()` の結果から `next_ctx.state`/`next_ctx.fetch_stage` を更新しつつ、`INIT`/`INIT_VRAM`/`INIT_RAM` の副作用（VRAM 初期化／boot ROM 書き込みフラグなど）を `next_ctx` へ反映。
- - この状態で `make format`、`make BOARD=9k clean test`（UNUSEDSIGNAL 警告1箇所）、`make BOARD=9k download` が通ることを確認。次は state_fetch 系を同様にコンテキストで扱う段階へ進む。
+
+- `cpu.c` に `cpu_ctx_t cur` を追加し、レジスタ/バス/フラグを `cur` にマッピングして `cpu_inputs.boot_byte` をサンプリング。`calc_cpu_next(cur,in)` を呼び出す構造を整えた。
+- `cpu_fsm_next_pkg` に `calc_cpu_next(cur,in)` を追加し、`calc_boot_fetch_next()` の結果から `next_ctx.state`/`next_ctx.fetch_stage` を更新しつつ、`INIT`/`INIT_VRAM`/`INIT_RAM` の副作用（VRAM 初期化／boot ROM 書き込みフラグなど）を `next_ctx` へ反映。
+- この状態で `make format`、`make BOARD=9k clean test`（UNUSEDSIGNAL 警告1箇所）、`make BOARD=9k download` が通ることを確認。次は state_fetch 系を同様にコンテキストで扱う段階へ進む。
 
 ### 2025-12-16: Step4.2 (state_fetch ハンドラのコンテキスト化)
+
 - `calc_cpu_next()` が `state_fetch_req()`/`state_fetch_wait()`/`state_fetch_recv()` の副作用を再現するようになり、`pc_plus1/2/3` の前計算・`fetched_data_bytes` や `opcode`/`operand` のラッチを `cpu_ctx_t` で表現できるようになった。
 - `fsm.next_fetch_stage` を使ってオペランドが必要な命令で `adb` を `pc_plus1`/`pc_plus2` に切り替え、`FETCH_OPERAND*` 時に `operands` と `adb` を更新する挙動を next コンテキストで構築した。
 - `make -C day99_completed format` と `make -C day99_completed BOARD=9k clean test`（後者は `cpu_fsm_next_pkg.sv` の幅関連警告と `UNUSEDSIGNAL` の既存警告のみ）の通過を確認。ハードウェア (download) は次のデコード/実行コンテキスト移行で併せて検証予定。
 
 ### 2025-12-16: Step4.3 (state_decode / cpu_exec 集約準備)
+
 - decodeフェーズの `state_decode_execute()` と `cpu_exec_*` パッケージ群を `cpu_ctx_t` 上で再構成する準備を開始。現在は各パッケージが更新する状態/フラグ/メモリアクセスをリストアップし、`calc_cpu_next()` に移行できるフィールドを整理している。
 - 整理が終わり次第 `state_decode_tasks.sv` の副作用を書き換え、`cpu_exec_*_pkg` 側でも `cur/next` を対象にした処理に置き換えていく予定。段階的に `make format`/`make BOARD=9k clean test`/`make BOARD=9k download` を通しながら進める。
 - この段階ではまず転送命令 (TAX/TAY/TXA/…) を `calc_cpu_next()` へ移行し、`cpu_ctx_t` に register/flag/pc 更新を反映するようにした。処理済み命令は `FETCH_REQ` → `FETCH_OPCODE` へ戻すよう次状態を設定し、`fetch_resume_state` を引き継ぐ形で `calc_decode_transfers_next()` を設けて再利用できる状態にした。
 - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` はすべて成功。Verilator は CPU 型の幅警告とこれまでの `UNUSEDSIGNAL` 警告のみ。順調にコンテキスト移行が進んでいる。
 
 ### 2025-12-16: Step4.4 (flags/custom instructionsを cpu_ctx_t へ)
+
 - `cpu_exec_flags_custom_pkg` に対応する `calc_decode_flags_custom_next()` を新たに実装し、CLC/CLV/SEC/CVR/IFO/HLT/WVS の副作用（フラグ更新、show_info カウンタ、vsync ステージ、PC/ADB の次状態、`CLEAR_VRAM`/`HALT` への遷移）を `next` に返すようにした。
 - `state_decode_execute()` は `calc_decode_transfers_next()` → `calc_decode_flags_custom_next()` → `calc_decode_branches_next()` の順で opcode を振り分け、`calc_cpu_next()` 上で decode の代表的分岐がすべて先取りできる構造に拡張した。
 - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` のすべてが成功（Verilatorの警告は width/UNUSEDSIGNAL/IGNOREDRETURN の既知のもの）。次は `state_decode` / `cpu_exec_*` の残りカテゴリを段階的にコンテキスト化し、decode→execute を `calc_cpu_next()` で完結させるフェーズへ進む。
@@ -201,22 +208,31 @@
 - 実機ダウンロードは別セッションで成功し、LCD/VRAM 表示に問題ないことを確認。今後も `state_decode` の残りカテゴリを `calc_cpu_next()` に取り込み、各フェーズで `format`/`BOARD=9k clean test`/`BOARD=9k download` を繰り返して整合性を担保してください。
 
 ### 2025-12-16: Step4.6 (compare/CP* immediate を cpu_ctx_t へ)
+
 - CMP/CPX/CPY の即値型命令を `calc_decode_compare_next()` で処理し、フラグ（C/Z/N）と `pc`/`adb` を更新したうえで `FETCH_REQ`/`FETCH_OPCODE` に戻す挙動を `next` に反映させた。
 - `calc_cpu_next()` の opcode 振り分けは `calc_decode_transfers_next()` → `calc_decode_flags_custom_next()` → `calc_decode_branches_next()` → `calc_decode_compare_next()` の順序となり、decode 中の主要カテゴリをコンテキスト内で先取りできる構造が整備された。
 - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`（既知警告継続）、`make -C day99_completed BOARD=9k download`（macOS GUI 制約で Segfault の場合あり）が通っており、次のターゲットは logic/shifts/store/… などの残余 opcode グループです。
 
 ### 2025-12-16: Step4.7 (logic/shifts/store など残余カテゴリの移行)
+
 - 残る `cpu_exec_logic_pkg`/`cpu_exec_shifts_pkg`/`cpu_exec_store_pkg` などの段階的移行計画を立て、フラグ更新や RAM/VRAM 出力を `next` に持たせながら `calc_cpu_next()` へ組み込む。必要に応じて helper 関数を増やして共通副作用をまとめる。
 - 各カテゴリ移行後は `calc_cpu_next()` に割り当てる順を明文化するとともに `format`/`make BOARD=9k clean test`/`make BOARD=9k download` のループを回し、動作整合性を保ちながら `docs/FSM.md` に記録してください。
 - `calc_cpu_next()` の logic/shifts/store 周辺への拡張も並行して進めており、現時点では `calc_decode_transfers/flags_custom/branches/compare` までが完成。次フェーズでは `cpu_exec_logic_pkg` などを順次追加して decode→execute を `next` だけで完結させるフェーズに移行します。
 - 実機 `make BOARD=9k download` も別セッションで成功し、LCD/VRAM 表示が正常であることを確認。今後も各ステップのあと `format`/`clean test`/`download` を実行して整合性を検証してください。
 
 ### 2025-12-16: Step4.8 (logic immediate を cpu_ctx_t へ移行)
+
 - `calc_decode_logic_next()` を追加し、AND/EOR/ORA の即値型パターンを `next` に閉じる形で実装。レジスタ更新とフラグ(C/Z/N)、`pc`/`adb` の更新を `cpu_ctx_t` へ反映し、`FETCH_REQ`/`FETCH_OPCODE` 復帰を返すことで logic 即値命令がコンテキスト上で完結するようになった。
 - `calc_cpu_next()` の opcode フローは `transfers → flags/custom → branches → compare → logic` という段階的フォールバックになり、decode の代表的カテゴリを順に `calc_cpu_next()` が処理できる構造を確立。
 - 今後は logic の残り（ゼロページやメモリ読み出し付き、ZP,X/ABS, X/Yなど）は helper を拡張し、各カテゴリ移行ごとに `format`/`make BOARD=9k clean test`/`make BOARD=9k download` を回して safe であることを確認しながら進める。
 - `calc_cpu_next()` の logic/shifts/store 周りへの拡張も並行して進めており、現時点では `calc_decode_transfers/flags_custom/branches/compare` までが完成。次フェーズでは `cpu_exec_logic_pkg` などを順次追加して decode→execute を `next` だけで完結させるフェーズに移行します。
 - 実機 `make BOARD=9k download` も成功し、LCD/VRAM 表示が正常であることを確認。今後も各ステップのあと `format`/`clean test`/`download` を実行して整合性を検証してください。
+
+### 2025-12-16: Step4.9 (store 命令を cpu_ctx_t で完結)
+
+- `calc_decode_store_next()` を追加し、STA/STX/STY のゼロページ/絶対/間接(X,Y) などのメモリ書き込みパターンを `cpu_ctx_t` に閉じ込めた。`request_data_fetch`/`return_to_opcode_fetch`/`store_and_fetch` という helper を導入して `next` 上の副作用を順に設定し、RCU から fetch へ戻る流れを純粋な関数にした。
+- `calc_cpu_next()` の opcode 分岐は `... → logic` のあとの fallback で store helper に流れるようになり、`state_decode_execute()` 側の `cpu_exec_store_pkg` への依存が一部解消された。
+- `make -C day99_completed format` 実行済み。`make -C day99_completed BOARD=9k clean test` は既存の `WIDTHEXPAND`/`WIDTHTRUNC` 警告（Verilator が `& RAMW` などでビット幅を拡張/切り詰めるため）以外にエラーなし。`make -C day99_completed BOARD=9k download` は macOS の `gw_sh` が PasteBoard/Connection Invalid エラーでセグフォルトするため今回も失敗した（1回再実行したが再現）。
 
 ## 2-process FSM 完了チェックリスト
 

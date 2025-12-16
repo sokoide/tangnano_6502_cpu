@@ -33,35 +33,35 @@ module cpu_2proc_skeleton (
     input logic [7:0] boot_program[7680],
     input logic [15:0] boot_program_length
 );
-  import cpu_types_pkg::*;
+    import cpu_types_pkg::*;
 
-  cpu_ctx_t cur, next;
-  cpu_in_t in;
+    cpu_ctx_t cur, next;
+    cpu_in_t in;
 
-  always_comb begin
-    in = '0;
-    in.dout = dout;
-    in.vsync = vsync;
-    in.boot_program_length = boot_program_length;
+    always_comb begin
+        in = '0;
+        in.dout = dout;
+        in.vsync = vsync;
+        in.boot_program_length = boot_program_length;
 
-    next = cur;
+        next = cur;
 
-    din = cur.din;
-    ada = cur.ada;
-    adb = cur.adb;
-    cea = cur.cea;
-    ceb = cur.ceb;
-    v_ada = cur.v_ada;
-    v_cea = cur.v_cea;
-    v_din = cur.v_din;
-  end
-
-  always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      cur <= '0;
-    end else begin
-      cur <= next;
+        din = cur.din;
+        ada = cur.ada;
+        adb = cur.adb;
+        cea = cur.cea;
+        ceb = cur.ceb;
+        v_ada = cur.v_ada;
+        v_cea = cur.v_cea;
+        v_din = cur.v_din;
     end
-  end
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            cur <= '0;
+        end else begin
+            cur <= next;
+        end
+    end
 endmodule
 

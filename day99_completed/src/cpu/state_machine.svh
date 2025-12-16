@@ -10,7 +10,7 @@ task automatic state_machine_step();
             INIT_RAM: state_boot_init_ram();
             HALT: state_boot_halt();
 
-            FETCH_REQ: state_fetch_req();
+            FETCH_REQ:  state_fetch_req();
             FETCH_WAIT: state_fetch_wait();
             FETCH_RECV: state_fetch_recv();
 

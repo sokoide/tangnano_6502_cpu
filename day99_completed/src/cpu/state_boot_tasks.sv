@@ -1,45 +1,45 @@
 task automatic state_boot_init();
-  begin
-    v_cea <= 0;  // VRAM write disable
-    boot_write <= 1;
-  end
+    begin
+        v_cea <= 0;  // VRAM write disable
+        boot_write <= 1;
+    end
 endtask
 
 task automatic state_boot_init_vram();
-  begin
-    v_cea <= 1;  // VRAM write enable
-    v_din <= char_code;
-    char_code <= (char_code < 8'h7F) ? (char_code + 1) & 8'hFF : 8'h20;
+    begin
+        v_cea <= 1;  // VRAM write enable
+        v_din <= char_code;
+        char_code <= (char_code < 8'h7F) ? (char_code + 1) & 8'hFF : 8'h20;
 
-    if (v_ada <= COLUMNS * ROWS) begin
-      v_ada <= (v_ada + 1) & VRAMW;
-    end else begin
-      v_cea <= 0;  // VRAM write disable
+        if (v_ada <= COLUMNS * ROWS) begin
+            v_ada <= (v_ada + 1) & VRAMW;
+        end else begin
+            v_cea <= 0;  // VRAM write disable
+        end
     end
-  end
 endtask
 
 task automatic state_boot_init_ram();
-  begin
-    if (boot_write) begin
-      boot_write <= 0;
-      cea <= 1;  // RAM write enable
-      ada <= (PROGRAM_START + boot_idx) & RAMW;
-      din <= boot_program[boot_idx];
-    end else begin
-      cea <= 0;
-      if (boot_idx == boot_program_length) begin
-        v_cea <= 1;  // VRAM write enable
-      end else begin
-        boot_idx   <= (boot_idx + 1) & RAMW;
-        boot_write <= 1;
-      end
+    begin
+        if (boot_write) begin
+            boot_write <= 0;
+            cea <= 1;  // RAM write enable
+            ada <= (PROGRAM_START + boot_idx) & RAMW;
+            din <= boot_program[boot_idx];
+        end else begin
+            cea <= 0;
+            if (boot_idx == boot_program_length) begin
+                v_cea <= 1;  // VRAM write enable
+            end else begin
+                boot_idx   <= (boot_idx + 1) & RAMW;
+                boot_write <= 1;
+            end
+        end
     end
-  end
 endtask
 
 task automatic state_boot_halt();
-  begin
-    // HALT keeps the CPU idle with state HALT.
-  end
+    begin
+        // HALT keeps the CPU idle with state HALT.
+    end
 endtask
