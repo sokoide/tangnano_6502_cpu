@@ -186,6 +186,8 @@
 ### 2025-12-16: Step4.3 (state_decode / cpu_exec 集約準備)
 - decodeフェーズの `state_decode_execute()` と `cpu_exec_*` パッケージ群を `cpu_ctx_t` 上で再構成する準備を開始。現在は各パッケージが更新する状態/フラグ/メモリアクセスをリストアップし、`calc_cpu_next()` に移行できるフィールドを整理している。
 - 整理が終わり次第 `state_decode_tasks.sv` の副作用を書き換え、`cpu_exec_*_pkg` 側でも `cur/next` を対象にした処理に置き換えていく予定。段階的に `make format`/`make BOARD=9k clean test`/`make BOARD=9k download` を通しながら進める。
+- この段階ではまず転送命令 (TAX/TAY/TXA/…) を `calc_cpu_next()` へ移行し、`cpu_ctx_t` に register/flag/pc 更新を反映するようにした。処理済み命令は `FETCH_REQ` → `FETCH_OPCODE` へ戻すよう次状態を設定し、`fetch_resume_state` を引き継ぐ形で `calc_decode_transfers_next()` を設けて再利用できる状態にした。
+- `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` はすべて成功。Verilator は CPU 型の幅警告とこれまでの `UNUSEDSIGNAL` 警告のみ。順調にコンテキスト移行が進んでいる。
 
 ## 2-process FSM 完了チェックリスト
 

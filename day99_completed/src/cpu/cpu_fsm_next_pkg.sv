@@ -270,6 +270,63 @@ package cpu_fsm_next_pkg;
     return r;
   endfunction
 
+  function automatic logic calc_decode_transfers_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+    logic handled;
+    logic [7:0] tmp_val;
+    handled = 1'b1;
+
+    unique case (cur.opcode)
+      8'hAA: begin  // TAX
+        tmp_val = cur.ra;
+        next.rx = tmp_val;
+        next.flg_z = (tmp_val == 8'h00);
+        next.flg_n = tmp_val[7];
+      end
+      8'hA8: begin  // TAY
+        tmp_val = cur.ra;
+        next.ry = tmp_val;
+        next.flg_z = (tmp_val == 8'h00);
+        next.flg_n = tmp_val[7];
+      end
+      8'h8A: begin  // TXA
+        tmp_val = cur.rx;
+        next.ra = tmp_val;
+        next.flg_z = (tmp_val == 8'h00);
+        next.flg_n = tmp_val[7];
+      end
+      8'h98: begin  // TYA
+        tmp_val = cur.ry;
+        next.ra = tmp_val;
+        next.flg_z = (tmp_val == 8'h00);
+        next.flg_n = tmp_val[7];
+      end
+      8'hBA: begin  // TSX
+        tmp_val = cur.sp;
+        next.rx = tmp_val;
+        next.flg_z = (tmp_val == 8'h00);
+        next.flg_n = tmp_val[7];
+      end
+      8'h9A: begin  // TXS
+        tmp_val = cur.rx;
+        next.sp = tmp_val;
+      end
+      default: begin
+        handled = 1'b0;
+      end
+    endcase
+
+    if (handled) begin
+      next.cea = 0;
+      next.v_cea = 0;
+      next.pc = cur.pc_plus1;
+      next.adb = cur.pc_plus1[14:0] & RAMW;
+      next.state = FETCH_REQ;
+      next.fetch_stage = FETCH_OPCODE;
+    end
+
+    return handled;
+  endfunction
+
   function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
     cpu_ctx_t  next = cur;
     fsm_next_t fsm;
@@ -359,6 +416,9 @@ package cpu_fsm_next_pkg;
             // Keep defaults.
           end
         endcase
+      end
+      DECODE_EXECUTE: begin
+        calc_decode_transfers_next(cur, next);
       end
       default: begin
         // Keep defaults.
