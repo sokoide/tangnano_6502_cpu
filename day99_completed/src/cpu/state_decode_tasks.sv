@@ -1,126 +1,48 @@
 task automatic state_decode_execute();
-    begin
-        cea = 0;
-        v_cea = 0;
-        write_to_vram = 0;  // Clear flag unless set by sta_write below
+  begin
+    // DECODE_EXECUTE is now driven by the combinational next-context.
+    // `next_ctx` is computed in `cpu.sv` (always_comb) via `calc_cpu_next(cur,in)`.
+    ra                 <= next_ctx.ra;
+    rx                 <= next_ctx.rx;
+    ry                 <= next_ctx.ry;
+    sp                 <= next_ctx.sp;
+    flg_c              <= next_ctx.flg_c;
+    flg_z              <= next_ctx.flg_z;
+    flg_i              <= next_ctx.flg_i;
+    flg_d              <= next_ctx.flg_d;
+    flg_b              <= next_ctx.flg_b;
+    flg_v              <= next_ctx.flg_v;
+    flg_n              <= next_ctx.flg_n;
+    pc                 <= next_ctx.pc;
+    pc_plus1           <= next_ctx.pc_plus1;
+    pc_plus2           <= next_ctx.pc_plus2;
+    pc_plus3           <= next_ctx.pc_plus3;
+    adb                <= next_ctx.adb;
+    ada                <= next_ctx.ada;
+    din                <= next_ctx.din;
+    cea                <= next_ctx.cea;
+    ceb                <= next_ctx.ceb;
+    v_ada              <= next_ctx.v_ada;
+    v_din              <= next_ctx.v_din;
+    v_cea              <= next_ctx.v_cea;
+    write_to_vram      <= next_ctx.write_to_vram;
+    opcode             <= next_ctx.opcode;
+    operands           <= next_ctx.operands;
+    fetched_data       <= next_ctx.fetched_data;
+    fetched_data_bytes <= next_ctx.fetched_data_bytes;
+    written_data_bytes <= next_ctx.written_data_bytes;
+    char_code          <= next_ctx.char_code;
+    counter            <= next_ctx.counter;
+    boot_idx           <= next_ctx.boot_idx;
+    boot_write         <= next_ctx.boot_write;
+    fetch_resume_state <= next_ctx.fetch_resume_state;
+    prev_state         <= next_ctx.prev_state;
+    show_info_counter  <= next_ctx.show_info_counter;
+    show_info_cmd      <= next_ctx.show_info_cmd;
+    show_info_stage    <= next_ctx.show_info_stage;
+    vsync_stage        <= next_ctx.vsync_stage;
 
-        /* verilator lint_off BLKSEQ */
-        /* verilator lint_off UNUSEDSIGNAL */
-        begin
-            logic transfers_handled;
-            logic flags_custom_handled;
-            logic branches_handled;
-            logic compare_handled;
-            logic logic_handled;
-            logic shifts_handled;
-            logic store_handled;
-            logic inc_dec_handled;
-            logic control_flow_handled;
-            logic load_store_handled;
-            logic adc_sbc_handled;
-            transfers_handled = 1'b0;
-            flags_custom_handled = 1'b0;
-            branches_handled = 1'b0;
-            compare_handled = 1'b0;
-            logic_handled = 1'b0;
-            shifts_handled = 1'b0;
-            store_handled = 1'b0;
-            inc_dec_handled = 1'b0;
-            control_flow_handled = 1'b0;
-            load_store_handled = 1'b0;
-            adc_sbc_handled = 1'b0;
-            cpu_exec_transfers_pkg::exec_transfers(opcode, ra, rx, ry, sp, flg_z, flg_n, pc,
-                                                   pc_plus1, adb, next_state, next_fetch_stage,
-                                                   transfers_handled);
-
-            if (!transfers_handled) begin
-                cpu_exec_flags_custom_pkg::exec_flags_custom(
-                    opcode, flg_c, flg_v, operands, show_info_counter, prev_state, next_state,
-                    show_info_stage, vsync_stage, vsync_sync, pc, pc_plus1, pc_plus2, pc_plus3, adb,
-                    next_fetch_stage, flags_custom_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled) begin
-                cpu_exec_branches_pkg::exec_branches(
-                    opcode, flg_c, flg_z, flg_v, flg_n, operands, s_imm8, s_offset, addr, pc,
-                    pc_plus2, adb, next_state, next_fetch_stage, branches_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled) begin
-                cpu_exec_compare_pkg::exec_compare(
-                    opcode, ra, rx, ry, flg_c, flg_z, flg_v, flg_n, operands, fetched_data_bytes,
-                    fetched_data, dout_r, pc, pc_plus2, pc_plus3, adb, next_state, next_fetch_stage,
-                    fetch_resume_state, compare_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled) begin
-                cpu_exec_logic_pkg::exec_logic(opcode, ra, rx, ry, flg_z, flg_n, operands,
-                                               fetched_data_bytes, fetched_data, dout_r, pc,
-                                               pc_plus2, pc_plus3, adb, next_state,
-                                               next_fetch_stage, fetch_resume_state, logic_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled && !logic_handled) begin
-                cpu_exec_shifts_pkg::exec_shifts(
-                    opcode, ra, rx, flg_c, flg_z, flg_n, operands, fetched_data_bytes, dout_r, pc,
-                    pc_plus1, pc_plus2, pc_plus3, ada, din, adb, cea, v_cea, next_state,
-                    next_fetch_stage, fetch_resume_state, shifts_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled && !logic_handled && !shifts_handled) begin
-                cpu_exec_store_pkg::exec_store(
-                    opcode, ra, rx, ry, operands, fetched_data_bytes, fetched_data, dout_r, v_ada,
-                    v_din, v_cea, ada, din, cea, write_to_vram, pc, pc_plus1, pc_plus2, pc_plus3,
-                    adb, next_state, next_fetch_stage, fetch_resume_state, store_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled && !logic_handled && !shifts_handled && !store_handled) begin
-                cpu_exec_inc_dec_pkg::exec_inc_dec(
-                    opcode, rx, ry, flg_z, flg_n, operands, fetched_data_bytes, dout_r, adb, ada,
-                    din, cea, v_cea, pc, pc_plus1, pc_plus2, pc_plus3, next_state, next_fetch_stage,
-                    fetch_resume_state, inc_dec_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled
-            && !logic_handled && !shifts_handled && !store_handled && !inc_dec_handled) begin
-                cpu_exec_control_flow_pkg::exec_control_flow(
-                    opcode, pc, pc_plus1, pc_plus2, pc_plus3, adb, next_state, next_fetch_stage,
-                    fetch_resume_state, operands, fetched_data_bytes, fetched_data, dout_r,
-                    written_data_bytes, sp, ada, din, cea, v_cea, ra, flg_c, flg_z, flg_i, flg_d,
-                    flg_b, flg_v, flg_n, control_flow_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled
-            && !logic_handled && !shifts_handled && !store_handled && !inc_dec_handled
-            && !control_flow_handled) begin
-                cpu_exec_load_store_pkg::exec_load_store(
-                    opcode, ra, rx, ry, flg_z, flg_n, operands, fetched_data_bytes, fetched_data,
-                    dout_r, pc, pc_plus1, pc_plus2, pc_plus3, adb, next_state, next_fetch_stage,
-                    fetch_resume_state, load_store_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled
-            && !logic_handled && !shifts_handled && !store_handled && !inc_dec_handled
-            && !control_flow_handled && !load_store_handled) begin
-                cpu_exec_adc_sbc_pkg::exec_adc_sbc(
-                    opcode, ra, rx, ry, flg_c, flg_v, flg_z, flg_n, operands, fetched_data_bytes,
-                    fetched_data, dout_r, pc, pc_plus1, pc_plus2, pc_plus3, adb, next_state,
-                    next_fetch_stage, fetch_resume_state, adc_sbc_handled);
-            end
-
-            if (!transfers_handled && !flags_custom_handled && !branches_handled && !compare_handled
-            && !logic_handled && !shifts_handled && !store_handled && !inc_dec_handled
-            && !control_flow_handled && !load_store_handled && !adc_sbc_handled) begin
-                case (opcode)
-                    /* verilator lint_off VARHIDDEN */
-                    /* verilator lint_on VARHIDDEN */
-                    // support more instructions here
-
-                    default: ;  // No operation.
-                endcase
-            end
-        end
-        /* verilator lint_on UNUSEDSIGNAL */
-        /* verilator lint_on BLKSEQ */
-    end
+    next_state = next_ctx.state;
+    next_fetch_stage = next_ctx.fetch_stage;
+  end
 endtask

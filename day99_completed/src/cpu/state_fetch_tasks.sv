@@ -1,33 +1,33 @@
 task automatic state_fetch_req();
-    begin
-        // timing improvement to avoid redundant pc calculations elsewhere.
-        pc_plus1 <= (pc + 16'd1) & RAMW;
-        pc_plus2 <= (pc + 16'd2) & RAMW;
-        pc_plus3 <= (pc + 16'd3) & RAMW;
-    end
+  begin
+    // timing improvement to avoid redundant pc calculations elsewhere.
+    pc_plus1 <= (pc + 16'd1) & RAMW;
+    pc_plus2 <= (pc + 16'd2) & RAMW;
+    pc_plus3 <= (pc + 16'd3) & RAMW;
+  end
 endtask
 
 task automatic state_fetch_wait();
-    begin
-        if (fetch_stage == FETCH_DATA) begin
-            fetched_data_bytes <= fetched_data_bytes + 1'd1;
-        end
+  begin
+    if (fetch_stage == FETCH_DATA) begin
+      fetched_data_bytes <= fetched_data_bytes + 1'd1;
     end
+  end
 endtask
 
 task automatic state_fetch_recv();
-    begin
-        unique case (fetch_stage)
-            FETCH_OPCODE: begin
-                opcode <= dout;
-                fetched_data_bytes <= 0;
-                written_data_bytes <= 0;
-                cea <= 0;
-                v_cea <= 0;
+  begin
+    unique case (fetch_stage)
+      FETCH_OPCODE: begin
+        opcode <= dout;
+        fetched_data_bytes <= 0;
+        written_data_bytes <= 0;
+        cea <= 0;
+        v_cea <= 0;
 
-                case (dout)
-                    // No operand instructions
-                    8'hEA,
+        case (dout)
+          // No operand instructions
+          8'hEA,
                 8'h60,
                 8'h48,
                 8'h68,
@@ -52,10 +52,10 @@ task automatic state_fetch_recv();
                 8'h38,
                     8'hCF,
                     8'hEF: begin
-                    end
+          end
 
-                    // Instructions with 1-byte operand
-                    8'hA9,
+          // Instructions with 1-byte operand
+          8'hA9,
                 8'hA5,
                 8'hB5,
                 8'hA2,
@@ -128,31 +128,31 @@ task automatic state_fetch_recv();
                 8'h90,
                 8'hB0,
                 8'hFF: begin
-                        adb <= pc_plus1 & RAMW;
-                    end
+            adb <= pc_plus1 & RAMW;
+          end
 
-                    default: begin
-                        adb <= pc_plus1 & RAMW;
-                    end
-                endcase
-            end
-
-            FETCH_OPERAND1: begin
-                operands[7:0] <= dout;
-            end
-
-            FETCH_OPERAND1OF2: begin
-                operands[7:0] <= dout;
-                adb <= pc_plus2 & RAMW;
-            end
-
-            FETCH_OPERAND2: begin
-                operands[15:8] <= dout;
-            end
-
-            default: begin
-                // Should not reach here.
-            end
+          default: begin
+            adb <= pc_plus1 & RAMW;
+          end
         endcase
-    end
+      end
+
+      FETCH_OPERAND1: begin
+        operands[7:0] <= dout;
+      end
+
+      FETCH_OPERAND1OF2: begin
+        operands[7:0] <= dout;
+        adb <= pc_plus2 & RAMW;
+      end
+
+      FETCH_OPERAND2: begin
+        operands[15:8] <= dout;
+      end
+
+      default: begin
+        // Should not reach here.
+      end
+    endcase
+  end
 endtask
