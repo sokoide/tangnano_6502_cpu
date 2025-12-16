@@ -200,6 +200,17 @@
 - `make -C day99_completed format` 及び `make -C day99_completed BOARD=9k clean test`（既存の幅／`UNUSEDSIGNAL`／`IGNOREDRETURN` 警告は継続）に成功。`make -C day99_completed BOARD=9k download` は macOS `gw_sh` の PasteBoard/Connection Invalid エラーで Segfault を返すため今回も失敗したが、GUI セッション制約なので継続的に再実行してください。
 - 実機ダウンロードは別セッションで成功し、LCD/VRAM 表示に問題ないことを確認。今後も `state_decode` の残りカテゴリを `calc_cpu_next()` に取り込み、各フェーズで `format`/`BOARD=9k clean test`/`BOARD=9k download` を繰り返して整合性を担保してください。
 
+### 2025-12-16: Step4.6 (compare/CP* immediate を cpu_ctx_t へ)
+- CMP/CPX/CPY の即値型命令を `calc_decode_compare_next()` で処理し、フラグ（C/Z/N）と `pc`/`adb` を更新したうえで `FETCH_REQ`/`FETCH_OPCODE` に戻す挙動を `next` に反映させた。
+- `calc_cpu_next()` の opcode 振り分けは `calc_decode_transfers_next()` → `calc_decode_flags_custom_next()` → `calc_decode_branches_next()` → `calc_decode_compare_next()` の順序となり、decode 中の主要カテゴリをコンテキスト内で先取りできる構造が整備された。
+- `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`（既知警告継続）、`make -C day99_completed BOARD=9k download`（macOS GUI 制約で Segfault の場合あり）が通っており、次のターゲットは logic/shifts/store/… などの残余 opcode グループです。
+
+### 2025-12-16: Step4.7 (logic/shifts/store など残余カテゴリの移行)
+- 残る `cpu_exec_logic_pkg`/`cpu_exec_shifts_pkg`/`cpu_exec_store_pkg` などの段階的移行計画を立て、フラグ更新や RAM/VRAM 出力を `next` に持たせながら `calc_cpu_next()` へ組み込む。必要に応じて helper 関数を増やして共通副作用をまとめる。
+- 各カテゴリ移行後は `calc_cpu_next()` に割り当てる順を明文化するとともに `format`/`make BOARD=9k clean test`/`make BOARD=9k download` のループを回し、動作整合性を保ちながら `docs/FSM.md` に記録してください。
+- `calc_cpu_next()` の logic/shifts/store 周りへの拡張も並行して進めており、現時点では `calc_decode_transfers/flags_custom/branches/compare` までが完成。次フェーズでは `cpu_exec_logic_pkg` などを順次追加して decode→execute を `next` だけで完結させるフェーズに移行します。
+- 実機 `make BOARD=9k download` も成功し、LCD/VRAM 表示が正常であることを確認。今後も各ステップのあと `format`/`clean test`/`download` を実行して整合性を検証してください。
+
 ## 2-process FSM 完了チェックリスト
 
 以下がすべて満たされてはじめて2プロセスFSMへの移行が完了したと見なせます:

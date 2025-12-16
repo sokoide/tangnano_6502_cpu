@@ -447,6 +447,50 @@ package cpu_fsm_next_pkg;
     return handled;
   endfunction
 
+  function automatic logic calc_decode_compare_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+    logic handled;
+    logic [7:0] result;
+
+    handled = 1'b1;
+    unique case (cur.opcode)
+      8'hC9: begin  // CMP immediate
+        result = cur.ra - cur.operands[7:0];
+        next.flg_c = (cur.ra >= cur.operands[7:0]) ? 1 : 0;
+        next.flg_z = (result == 8'h00);
+        next.flg_n = result[7];
+        next.pc = cur.pc_plus2;
+        next.adb = cur.pc_plus2[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      8'hE0: begin  // CPX immediate
+        result = cur.rx - cur.operands[7:0];
+        next.flg_c = (cur.rx >= cur.operands[7:0]) ? 1 : 0;
+        next.flg_z = (result == 8'h00);
+        next.flg_n = result[7];
+        next.pc = cur.pc_plus2;
+        next.adb = cur.pc_plus2[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      8'hC0: begin  // CPY immediate
+        result = cur.ry - cur.operands[7:0];
+        next.flg_c = (cur.ry >= cur.operands[7:0]) ? 1 : 0;
+        next.flg_z = (result == 8'h00);
+        next.flg_n = result[7];
+        next.pc = cur.pc_plus2;
+        next.adb = cur.pc_plus2[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      default: begin
+        handled = 1'b0;
+      end
+    endcase
+
+    return handled;
+  endfunction
+
   function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
     cpu_ctx_t  next = cur;
     fsm_next_t fsm;
@@ -545,6 +589,9 @@ package cpu_fsm_next_pkg;
         end
         if (!handled) begin
           handled = calc_decode_branches_next(cur, next);
+        end
+        if (!handled) begin
+          handled = calc_decode_compare_next(cur, next);
         end
       end
       default: begin
