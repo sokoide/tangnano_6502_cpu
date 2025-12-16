@@ -52,7 +52,7 @@
 
 ## 現在取り組んでいるステップ
 
-- Step4 の残りとして、`DECODE_EXECUTE` 以外の状態（`FETCH_*`/`WRITE_REQ`/show_info/clear_vram など）も `next_ctx` の反映へ寄せ、legacy の state タスクを段階的に縮退させる。
+- Step4 の残りとして、`DECODE_EXECUTE` 以外の状態（`WRITE_REQ`/`CLEAR_VRAM*`/`SHOW_INFO*` など）も `next_ctx` の反映へ寄せ、legacy の state タスクを段階的に縮退させる（`SHOW_INFO*` はまだlegacyのまま）。
 - そのうえで `always_ff` を `cur <= next;` のみに絞り、2 process FSM を完成させる。
 
 ## 残りのステップ

@@ -1834,6 +1834,11 @@ package cpu_fsm_next_pkg;
           end
         endcase
       end
+      WRITE_REQ: begin
+        next.written_data_bytes = cur.written_data_bytes + 1;
+        next.cea = 0;
+        next.v_cea = 0;
+      end
       DECODE_EXECUTE: begin
         logic handled;
         handled = calc_decode_transfers_next(cur, next);
@@ -1869,6 +1874,29 @@ package cpu_fsm_next_pkg;
         end
         if (!handled) begin
           handled = calc_decode_inc_dec_next(cur, next);
+        end
+      end
+      CLEAR_VRAM: begin
+        next.v_ada = 0;
+        next.v_din = 8'h20;
+        next.v_cea = 1;
+        next.ada   = (16'(SHADOW_VRAM_START)) & RAMW;
+        next.din   = 8'h20;
+        next.cea   = 1;
+      end
+      CLEAR_VRAM2: begin
+        if (cur.v_ada <= (COLUMNS * ROWS)) begin
+          next.v_ada = (cur.v_ada + 1) & VRAMW;
+          next.v_din = 8'h20;
+          next.v_cea = 1;
+          next.ada   = ({6'd0, cur.v_ada} + 16'(SHADOW_VRAM_START)) & RAMW;
+          next.din   = 8'h20;
+          next.cea   = 1;
+        end else begin
+          next.pc = cur.pc_plus1;
+          next.adb = cur.pc_plus1[14:0] & RAMW;
+          next.v_cea = 0;
+          next.cea = 0;
         end
       end
       default: begin

@@ -1,23 +1,25 @@
 task automatic state_clear_vram_init();
   begin
-    vram_write(0, 8'h20);
+    // CLEAR_VRAM side effects are now driven by `next_ctx` (computed by `calc_cpu_next`).
+    v_ada <= next_ctx.v_ada;
+    v_din <= next_ctx.v_din;
+    v_cea <= next_ctx.v_cea;
+    ada   <= next_ctx.ada;
+    din   <= next_ctx.din;
+    cea   <= next_ctx.cea;
   end
 endtask
 
 task automatic state_clear_vram_loop();
   begin
-    if (v_ada <= COLUMNS * ROWS) begin
-      v_ada <= (v_ada + 1) & VRAMW;
-      v_din <= 8'h20;
-      v_cea <= 1;
-      ada   <= (v_ada + SHADOW_VRAM_START) & RAMW;
-      din   <= 8'h20;
-      cea   <= 1;
-    end else begin
-      pc <= pc_plus1;
-      adb <= pc_plus1 & RAMW;
-      v_cea <= 0;
-      cea <= 0;
-    end
+    // CLEAR_VRAM2 side effects are now driven by `next_ctx` (computed by `calc_cpu_next`).
+    v_ada <= next_ctx.v_ada;
+    v_din <= next_ctx.v_din;
+    v_cea <= next_ctx.v_cea;
+    ada   <= next_ctx.ada;
+    din   <= next_ctx.din;
+    cea   <= next_ctx.cea;
+    pc    <= next_ctx.pc;
+    adb   <= next_ctx.adb;
   end
 endtask
