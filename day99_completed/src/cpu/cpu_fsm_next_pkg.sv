@@ -14,6 +14,9 @@ package cpu_fsm_next_pkg;
   import cpu_types_pkg::*;
   import consts_pkg::*;
 
+  // IFO (show-info) command ROM table (generated).
+  `include "cpu_ifo_auto_generated.svh"
+
   typedef struct packed {
     cpu_state_e   next_state;
     fetch_stage_e next_fetch_stage;
@@ -1874,6 +1877,148 @@ package cpu_fsm_next_pkg;
         end
         if (!handled) begin
           handled = calc_decode_inc_dec_next(cur, next);
+        end
+      end
+      SHOW_INFO: begin
+        next.show_info_counter = 0;
+        next.show_info_stage = SHOW_INFO_FETCH;
+        next.cea = 0;
+        next.v_cea = 0;
+      end
+      SHOW_INFO2: begin
+        if (cur.show_info_stage == SHOW_INFO_FETCH) begin
+          next.show_info_cmd = show_info_rom[cur.show_info_counter[9:0]];
+          next.show_info_stage = SHOW_INFO_EXECUTE;
+          next.v_cea = 0;
+          next.cea = 0;
+        end else begin
+          automatic show_info_cmd_t cmd;
+          automatic logic [15:0] tmp_addr;
+
+          cmd = cur.show_info_cmd;
+
+          if (cmd.vram_write) begin
+            next.v_ada = cmd.v_ada;
+            next.v_cea = 1;
+            next.ada   = ({6'd0, cmd.v_ada} + 16'(SHADOW_VRAM_START)) & RAMW;
+            next.cea   = 1;
+
+            unique case (cmd.v_din_t)
+              0: begin
+                next.v_din = cmd.v_din;
+                next.din   = cmd.v_din;
+              end
+              1: begin
+                unique case (cmd.v_din)
+                  0: begin
+                    next.v_din = to_hexchar(cur.dout_r[7:4]);
+                    next.din   = to_hexchar(cur.dout_r[7:4]);
+                  end
+                  1: begin
+                    next.v_din = to_hexchar(cur.dout_r[3:0]);
+                    next.din   = to_hexchar(cur.dout_r[3:0]);
+                  end
+                  2, 3: begin
+                    // No action.
+                  end
+                  default: begin
+                    next.v_din = cur.dout_r[11-cmd.v_din] ? 8'h40 : 8'h20;
+                    next.din   = cur.dout_r[11-cmd.v_din] ? 8'h40 : 8'h20;
+                  end
+                endcase
+              end
+              2: begin
+                next.v_din = cmd.v_din ? to_hexchar(cur.ra[3:0]) : to_hexchar(cur.ra[7:4]);
+                next.din   = cmd.v_din ? to_hexchar(cur.ra[3:0]) : to_hexchar(cur.ra[7:4]);
+              end
+              3: begin
+                next.v_din = cmd.v_din ? to_hexchar(cur.rx[3:0]) : to_hexchar(cur.rx[7:4]);
+                next.din   = cmd.v_din ? to_hexchar(cur.rx[3:0]) : to_hexchar(cur.rx[7:4]);
+              end
+              4: begin
+                next.v_din = cmd.v_din ? to_hexchar(cur.ry[3:0]) : to_hexchar(cur.ry[7:4]);
+                next.din   = cmd.v_din ? to_hexchar(cur.ry[3:0]) : to_hexchar(cur.ry[7:4]);
+              end
+              5: begin
+                next.v_din = cmd.v_din ? to_hexchar(cur.sp[3:0]) : to_hexchar(cur.sp[7:4]);
+                next.din   = cmd.v_din ? to_hexchar(cur.sp[3:0]) : to_hexchar(cur.sp[7:4]);
+              end
+              6: begin
+                unique case (cmd.v_din)
+                  0: begin
+                    next.v_din = to_hexchar(cur.pc[15:12]);
+                    next.din   = to_hexchar(cur.pc[15:12]);
+                  end
+                  1: begin
+                    next.v_din = to_hexchar(cur.pc[11:8]);
+                    next.din   = to_hexchar(cur.pc[11:8]);
+                  end
+                  2: begin
+                    next.v_din = to_hexchar(cur.pc[7:4]);
+                    next.din   = to_hexchar(cur.pc[7:4]);
+                  end
+                  3: begin
+                    next.v_din = to_hexchar(cur.pc[3:0]);
+                    next.din   = to_hexchar(cur.pc[3:0]);
+                  end
+                  default: begin
+                    // No action.
+                  end
+                endcase
+              end
+              7: begin
+                tmp_addr = cur.operands + cmd.diff;
+                unique case (cmd.v_din)
+                  0: begin
+                    next.v_din = to_hexchar(tmp_addr[15:12]);
+                    next.din   = to_hexchar(tmp_addr[15:12]);
+                  end
+                  1: begin
+                    next.v_din = to_hexchar(tmp_addr[11:8]);
+                    next.din   = to_hexchar(tmp_addr[11:8]);
+                  end
+                  2: begin
+                    next.v_din = to_hexchar(tmp_addr[7:4]);
+                    next.din   = to_hexchar(tmp_addr[7:4]);
+                  end
+                  3: begin
+                    next.v_din = to_hexchar(tmp_addr[3:0]);
+                    next.din   = to_hexchar(tmp_addr[3:0]);
+                  end
+                  default: begin
+                    // No action.
+                  end
+                endcase
+              end
+              default: begin
+                // No action.
+              end
+            endcase
+          end else begin
+            next.v_cea = 0;
+            next.cea   = 0;
+          end
+
+          if (cmd.mem_read) begin
+            if (cmd.v_din_t == 4'd8) begin
+              next.adb = {5'd0, cmd.v_ada};
+            end else begin
+              next.adb = (cur.operands + cmd.diff) & RAMW;
+            end
+            next.fetch_resume_state = SHOW_INFO2;
+          end
+
+          next.show_info_counter = cur.show_info_counter + 1;
+
+          if (cur.show_info_counter == 32'd1020) begin
+            next.show_info_counter = 0;
+            next.operands[15:0] = 16'hFFFF;
+            next.v_cea = 0;
+            next.cea = 0;
+            next.show_info_stage = SHOW_INFO_FETCH;
+          end else begin
+            next.show_info_stage = SHOW_INFO_FETCH;
+          end
         end
       end
       CLEAR_VRAM: begin
