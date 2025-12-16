@@ -46,11 +46,12 @@
 - Step1〜3：`next_state`/`next_fetch_stage` の追加、Boot〜Fetch 系の next-state を `cpu_fsm_next_pkg` に切り出し。
 - Step4（実装側の進捗）：`cpu_ctx_t` と `calc_cpu_next()` を追加し、`calc_cpu_next()` 内で `transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store`〜`control_flow`〜`adc/sbc`〜`inc/dec` の命令カテゴリを「pure な次状態計算」として実装済み。
 - `DECODE_EXECUTE` は `calc_cpu_next()` の結果（`next_ctx`）を `state_decode_tasks.sv` でレジスタ/出力へ反映するように配線済み（legacy の `cpu_exec_*_pkg` 呼び出しは縮退済み）。
+- `state_boot_*`（`INIT/INIT_VRAM/INIT_RAM`）は `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済みで、`make -C day99_completed BOARD=9k download` で実機動作も確認済み。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
 ## 現在取り組んでいるステップ
 
-- Step4 の残りとして、`DECODE_EXECUTE` 以外の状態（`WRITE_REQ`/`FETCH_*`/boot/show_info/clear_vram など）も `next_ctx` の反映へ寄せ、legacy の state タスクを段階的に縮退させる。
+- Step4 の残りとして、`DECODE_EXECUTE` 以外の状態（`FETCH_*`/`WRITE_REQ`/show_info/clear_vram など）も `next_ctx` の反映へ寄せ、legacy の state タスクを段階的に縮退させる。
 - そのうえで `always_ff` を `cur <= next;` のみに絞り、2 process FSM を完成させる。
 
 ## 残りのステップ

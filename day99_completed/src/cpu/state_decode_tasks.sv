@@ -32,7 +32,6 @@ task automatic state_decode_execute();
     fetched_data_bytes <= next_ctx.fetched_data_bytes;
     written_data_bytes <= next_ctx.written_data_bytes;
     char_code          <= next_ctx.char_code;
-    counter            <= next_ctx.counter;
     boot_idx           <= next_ctx.boot_idx;
     boot_write         <= next_ctx.boot_write;
     fetch_resume_state <= next_ctx.fetch_resume_state;

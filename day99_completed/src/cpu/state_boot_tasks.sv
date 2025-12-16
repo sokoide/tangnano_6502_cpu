@@ -1,40 +1,30 @@
 task automatic state_boot_init();
   begin
-    v_cea <= 0;  // VRAM write disable
-    boot_write <= 1;
+    // INIT state side effects are now driven by `next_ctx` (computed by `calc_cpu_next`).
+    v_cea      <= next_ctx.v_cea;
+    boot_write <= next_ctx.boot_write;
   end
 endtask
 
 task automatic state_boot_init_vram();
   begin
-    v_cea <= 1;  // VRAM write enable
-    v_din <= char_code;
-    char_code <= (char_code < 8'h7F) ? (char_code + 1) & 8'hFF : 8'h20;
-
-    if (v_ada <= COLUMNS * ROWS) begin
-      v_ada <= (v_ada + 1) & VRAMW;
-    end else begin
-      v_cea <= 0;  // VRAM write disable
-    end
+    // INIT_VRAM state side effects are now driven by `next_ctx` (computed by `calc_cpu_next`).
+    v_cea     <= next_ctx.v_cea;
+    v_din     <= next_ctx.v_din;
+    v_ada     <= next_ctx.v_ada;
+    char_code <= next_ctx.char_code;
   end
 endtask
 
 task automatic state_boot_init_ram();
   begin
-    if (boot_write) begin
-      boot_write <= 0;
-      cea <= 1;  // RAM write enable
-      ada <= (PROGRAM_START + boot_idx) & RAMW;
-      din <= boot_program[boot_idx];
-    end else begin
-      cea <= 0;
-      if (boot_idx == boot_program_length) begin
-        v_cea <= 1;  // VRAM write enable
-      end else begin
-        boot_idx   <= (boot_idx + 1) & RAMW;
-        boot_write <= 1;
-      end
-    end
+    // INIT_RAM state side effects are now driven by `next_ctx` (computed by `calc_cpu_next`).
+    boot_write <= next_ctx.boot_write;
+    cea        <= next_ctx.cea;
+    ada        <= next_ctx.ada;
+    din        <= next_ctx.din;
+    boot_idx   <= next_ctx.boot_idx;
+    v_cea      <= next_ctx.v_cea;
   end
 endtask
 
