@@ -669,6 +669,210 @@ package cpu_fsm_next_pkg;
         return handled;
     endfunction
 
+    function automatic logic calc_decode_load_store_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+        logic handled;
+        logic [15:0] target_addr;
+        logic [7:0] zp_addr;
+
+        handled = 1'b1;
+        unique case (cur.opcode)
+            8'hA9: begin  // LDA immediate
+                next.ra = cur.operands[7:0];
+                next = update_logic_flags(next, next.ra);
+                next = return_to_opcode_fetch(next, cur.pc_plus2);
+            end
+            8'hA5: begin  // LDA zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ra = cur.dout_r;
+                    next = update_logic_flags(next, next.ra);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hB5: begin  // LDA zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ra = cur.dout_r;
+                    next = update_logic_flags(next, next.ra);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hAD: begin  // LDA absolute
+                target_addr = cur.operands;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ra = cur.dout_r;
+                    next = update_logic_flags(next, next.ra);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hBD: begin  // LDA absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ra = cur.dout_r;
+                    next = update_logic_flags(next, next.ra);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hB9: begin  // LDA absolute, Y
+                target_addr = (cur.operands + {8'h00, cur.ry}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ra = cur.dout_r;
+                    next = update_logic_flags(next, next.ra);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hA1: begin  // LDA (indirect, X)
+                case (cur.fetched_data_bytes)
+                    0: begin
+                        zp_addr = cur.operands[7:0] + cur.rx;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        zp_addr = cur.operands[7:0] + cur.rx + 8'h01;
+                        next.fetched_data[7:0] = cur.dout_r;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next.ra = cur.dout_r;
+                        next = update_logic_flags(next, next.ra);
+                        next = return_to_opcode_fetch(next, cur.pc_plus2);
+                    end
+                    default: begin
+                    end
+                endcase
+            end
+            8'hB1: begin  // LDA (indirect), Y
+                case (cur.fetched_data_bytes)
+                    0: begin
+                        target_addr = {8'h00, cur.operands[7:0]};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        zp_addr = cur.operands[7:0] + 8'h01;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]} + {8'h00, cur.ry}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next.ra = cur.dout_r;
+                        next = update_logic_flags(next, next.ra);
+                        next = return_to_opcode_fetch(next, cur.pc_plus2);
+                    end
+                    default: begin
+                    end
+                endcase
+            end
+            8'hA2: begin  // LDX immediate
+                next.rx = cur.operands[7:0];
+                next = update_logic_flags(next, next.rx);
+                next = return_to_opcode_fetch(next, cur.pc_plus2);
+            end
+            8'hA6: begin  // LDX zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.rx = cur.dout_r;
+                    next = update_logic_flags(next, next.rx);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hB6: begin  // LDX zero page, Y
+                zp_addr = cur.operands[7:0] + cur.ry;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.rx = cur.dout_r;
+                    next = update_logic_flags(next, next.rx);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hAE: begin  // LDX absolute
+                target_addr = cur.operands;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.rx = cur.dout_r;
+                    next = update_logic_flags(next, next.rx);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hBE: begin  // LDX absolute, Y
+                target_addr = (cur.operands + {8'h00, cur.ry}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.rx = cur.dout_r;
+                    next = update_logic_flags(next, next.rx);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hA0: begin  // LDY immediate
+                next.ry = cur.operands[7:0];
+                next = update_logic_flags(next, next.ry);
+                next = return_to_opcode_fetch(next, cur.pc_plus2);
+            end
+            8'hA4: begin  // LDY zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ry = cur.dout_r;
+                    next = update_logic_flags(next, next.ry);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hB4: begin  // LDY zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ry = cur.dout_r;
+                    next = update_logic_flags(next, next.ry);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hAC: begin  // LDY absolute
+                target_addr = cur.operands;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.ry = cur.dout_r;
+                    next = update_logic_flags(next, next.ry);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            default: begin
+                handled = 1'b0;
+            end
+        endcase
+
+        return handled;
+    endfunction
+
 
     localparam logic [1:0] LOGIC_AND = 2'd0;
     localparam logic [1:0] LOGIC_EOR = 2'd1;
@@ -1167,6 +1371,9 @@ package cpu_fsm_next_pkg;
                 end
                 if (!handled) begin
                     handled = calc_decode_shifts_next(cur, next);
+                end
+                if (!handled) begin
+                    handled = calc_decode_load_store_next(cur, next);
                 end
                 if (!handled) begin
                     handled = calc_decode_store_next(cur, next);
