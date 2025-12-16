@@ -11,11 +11,17 @@
 package consts_pkg;
   // RAM
   localparam int RAMW = 32'h00007FFF;
+  // Convenience masks with explicit widths to avoid tool/lint width truncation warnings.
+  localparam logic [15:0] RAMW16 = 16'h7FFF;
+  localparam logic [14:0] RAMW15 = 15'h7FFF;
   localparam int VRAMW = 32'h000003FF;
+  localparam logic [9:0] VRAMW10 = 10'h3FF;
   localparam int VRAM_START = 32'h0000E000;
   localparam int SHADOW_VRAM_START = 32'h00007C00;
+  localparam logic [15:0] SHADOW_VRAM_START16 = 16'h7C00;
   localparam logic [15:0] STACK = 16'h0100;  // stack: 0x100-0x1FF, referenced by STACK+sp
   localparam int PROGRAM_START = 32'h00000200;
+  localparam logic [14:0] PROGRAM_START15 = 15'h0200;
 
   // LCD Display Parameters
   localparam logic [15:0] CHAR_WIDTH = 16'd8;  // pixels per character

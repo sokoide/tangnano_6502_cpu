@@ -49,19 +49,44 @@
 - `state_boot_*`（`INIT/INIT_VRAM/INIT_RAM`）は `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済みで、`make -C day99_completed BOARD=9k download` で実機動作も確認済み。
 - `state_fetch_*`（`FETCH_REQ/FETCH_WAIT/FETCH_RECV`）も `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済みで、`make -C day99_completed BOARD=9k download` で実機動作も確認済み。
 - `WRITE_REQ` / `CLEAR_VRAM*` / `SHOW_INFO*` も `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済み（`SHOW_INFO` では `show_info_rom` をパッケージ側に持ち、次状態計算内で参照）。
+- `cpu.sv` は `always_comb` で `next = calc_cpu_next(cur,in)` を計算し、`always_ff` では `cur <= next;` のみを行う形へ移行済み（2-process FSM の基本形が成立）。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
 ## 現在取り組んでいるステップ
 
-- Step4 の残りとして、legacy の state タスク内に残る直接更新（`<=`）を段階的に削減し、`always_ff` を `cur <= next;` に収束させる。
-- そのうえで `always_ff` を `cur <= next;` のみに絞り、2 process FSM を完成させる。
+- 2-process FSM が成立したので、次は「警告/型幅の整理」と「残っているlegacyコードの整理」を進める。
 
 ## 残りのステップ
 
-1. `cpu.sv` に `next_ctx` の反映パスを段階的に導入（最初は `DECODE_EXECUTE` のみ、次に `WRITE_REQ`/`FETCH_*`/その他状態へ拡大）し、二重に副作用が出ないよう legacy 経路を縮退させる。
-2. `state_*_tasks.sv` を `cpu_ctx_t` ベースの実装へ寄せ、最終的に `state_machine_step()` は `calc_cpu_next()` 呼び出し＋結果適用の薄いラッパ（または廃止）にする。
-3. `always_ff` は `cur <= next;`（と入力同期）だけに絞り、2-process FSM を完成させる。
-4. BRK/IRQ など未実装命令がある場合は `calc_cpu_next()` に統合し、`make format` / `make -C day99_completed BOARD=9k clean test` / `make -C day99_completed BOARD=9k download` を繰り返して整合性を確認する。
+1. **型幅/警告の整理**：Verilator の `WIDTHEXPAND/WIDTHTRUNC` 等を、明示的な幅のマスク/キャストで減らす（実機動作を崩さない範囲で段階的に）。
+2. **legacyコードの扱いを明確化**：`state_*_tasks.sv` / `state_machine.svh` / `cpu_tasks.svh` など、現状ビルドに入っていない旧経路を「参考実装」として残すか、別ディレクトリへ移す/削除するかを決める。
+3. **`cpu_ctx_t` の整理（任意）**：`next_state`/`next_fetch_stage` など、2-process化後に不要になったフィールドを削除して見通しを良くする（影響範囲が大きいので最後に実施）。
+4. **未実装命令/割り込み方針**：BRK/IRQ/NMI など未対応領域がある場合、仕様（未実装のまま/実装する/例外扱い）を `calc_cpu_next()` と docs に明記する。
+
+## 明日（再開ポイント）
+
+今日の時点で `make -C day99_completed BOARD=9k download` は実機で稼働確認済み（LCD更新OK / `CVR` OK / `IFO` OK）。
+
+明日は以下から再開する：
+
+1. **残っている警告の確認と整理**
+   - コマンド: `make -C day99_completed test`
+   - 目標: `WIDTHEXPAND/WIDTHTRUNC` の追加削減、必要なら最小の型幅修正を継続。
+   - 現状: `UNUSEDSIGNAL` 系の警告が多く残っている（致命ではないが、最終的に減らす）。
+   - 主な対象: `day99_completed/src/cpu/cpu_fsm_next_pkg.sv`
+
+2. **legacyコードの整理方針決め**
+   - 方針候補:
+     - A) 旧 `state_*_tasks.sv` / `state_machine.svh` / `cpu_tasks.svh` を「参考実装」として残し、`docs/` に“現状は未使用”と明記する
+     - B) `src/cpu/legacy/` 等へ移動して、ビルド経路と混ざらないようにする
+     - C) もう不要なら削除（リスクがあるので最後）
+   - 対象ファイル例:
+     - `day99_completed/src/cpu/state_*_tasks.sv`
+     - `day99_completed/src/cpu/state_machine.svh`
+     - `day99_completed/include/cpu_tasks.svh`
+
+3. **（任意）`cpu_ctx_t` のスリム化**
+   - 2-process化後に不要なフィールド（例: `next_state`/`next_fetch_stage`）を削除して可読性を上げる。
 
 ## Step4 ロールアウト順
 
@@ -79,6 +104,6 @@
 
 1. `cpu_types_pkg.sv` に `cpu_ctx_t`（`cur`）と `cpu_next_t`（`next`）を定義し、PC/ADA/DIN/RA/RX/RY/SP/FLAGS/STATE/FETCH_STAGE/`fetch_resume_state`/`show_info_stage` などを一元管理する。
 2. `always_comb` 内の `cpu_fsm_next()`（または `state_machine_step()`）が `cur` と入力のみを参照し、`next` を返す純粋関数になっている。副作用はすべて `next` のフィールド更新として扱い、`cpu_exec_*_pkg` も `next` を `ref` で受け取って処理する。
-3. 全 `state_*_tasks.sv` / `state_decode_tasks.sv` が `cpu_ctx_t` のフィールド（`state`, `fetch_stage`, `pc`, `adb`, `ce*`, `vram*` など）を更新し、`next_state`/`next_fetch_stage` への直接書き込みを排除している。
-4. `always_ff` は `cur <= next;` のみを実行し、`dout_r`, `vsync_sync`, `show_info_counter` などの同期ロジックは `cur`/`next` の差分で処理する。
+3. `always_ff` は `cur <= next;` のみを実行し、`dout_r`, `vsync_sync`, `counter` などの同期ロジックも `next` 側で計算している。
+4. 旧 `state_*_tasks.sv` はビルド経路から外れており（または削除済み）、動作に影響しない状態になっている。
 5. `make format`, `make -C day99_completed BOARD=9k clean test`, `make -C day99_completed BOARD=9k download` が通り、LCD表示・VRAMクリアなどの副作用が旧実装と一致していることを確認する。
