@@ -327,6 +327,46 @@ package cpu_fsm_next_pkg;
     return handled;
   endfunction
 
+  function automatic logic calc_decode_branches_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+    logic handled;
+    logic branch_taken;
+    logic signed [15:0] offset;
+    logic [15:0] target;
+    logic [7:0] imm;
+
+    handled = 1'b1;
+    unique case (cur.opcode)
+      8'hF0: branch_taken = cur.flg_z;  // BEQ
+      8'h30: branch_taken = cur.flg_n;  // BMI
+      8'hD0: branch_taken = ~cur.flg_z;  // BNE
+      8'h10: branch_taken = ~cur.flg_n;  // BPL
+      8'h50: branch_taken = ~cur.flg_v;  // BVC
+      8'h70: branch_taken = cur.flg_v;  // BVS
+      8'h90: branch_taken = ~cur.flg_c;  // BCC
+      default: begin
+        handled = 1'b0;
+        branch_taken = 1'b0;
+      end
+    endcase
+
+    if (handled) begin
+      imm = cur.operands[7:0];
+      offset = {{8{imm[7]}}, imm};
+      target = (cur.pc_plus2 + offset) & RAMW;
+      if (branch_taken) begin
+        next.pc  = target;
+        next.adb = target[14:0];
+      end else begin
+        next.pc  = cur.pc_plus2;
+        next.adb = cur.pc_plus2[14:0] & RAMW;
+      end
+      next.state = FETCH_REQ;
+      next.fetch_stage = FETCH_OPCODE;
+    end
+
+    return handled;
+  endfunction
+
   function automatic logic calc_decode_flags_custom_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
     logic handled;
     handled = 1'b1;
@@ -502,6 +542,9 @@ package cpu_fsm_next_pkg;
         handled = calc_decode_transfers_next(cur, next);
         if (!handled) begin
           handled = calc_decode_flags_custom_next(cur, next);
+        end
+        if (!handled) begin
+          handled = calc_decode_branches_next(cur, next);
         end
       end
       default: begin

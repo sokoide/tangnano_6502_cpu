@@ -187,13 +187,18 @@
 - decodeフェーズの `state_decode_execute()` と `cpu_exec_*` パッケージ群を `cpu_ctx_t` 上で再構成する準備を開始。現在は各パッケージが更新する状態/フラグ/メモリアクセスをリストアップし、`calc_cpu_next()` に移行できるフィールドを整理している。
 - 整理が終わり次第 `state_decode_tasks.sv` の副作用を書き換え、`cpu_exec_*_pkg` 側でも `cur/next` を対象にした処理に置き換えていく予定。段階的に `make format`/`make BOARD=9k clean test`/`make BOARD=9k download` を通しながら進める。
 - この段階ではまず転送命令 (TAX/TAY/TXA/…) を `calc_cpu_next()` へ移行し、`cpu_ctx_t` に register/flag/pc 更新を反映するようにした。処理済み命令は `FETCH_REQ` → `FETCH_OPCODE` へ戻すよう次状態を設定し、`fetch_resume_state` を引き継ぐ形で `calc_decode_transfers_next()` を設けて再利用できる状態にした。
- - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` はすべて成功。Verilator は CPU 型の幅警告とこれまでの `UNUSEDSIGNAL` 警告のみ。順調にコンテキスト移行が進んでいる。
+- `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` はすべて成功。Verilator は CPU 型の幅警告とこれまでの `UNUSEDSIGNAL` 警告のみ。順調にコンテキスト移行が進んでいる。
 
 ### 2025-12-16: Step4.4 (flags/custom instructionsを cpu_ctx_t へ)
 - `cpu_exec_flags_custom_pkg` に対応する `calc_decode_flags_custom_next()` を新たに実装し、CLC/CLV/SEC/CVR/IFO/HLT/WVS の副作用（フラグ更新、show_info カウンタ、vsync ステージ、PC/ADB の次状態、`CLEAR_VRAM`/`HALT` への遷移）を `next` に返すようにした。
-- `DECODE_EXECUTE` では `calc_decode_transfers_next()` の結果を確認し、未処理 opcode を `calc_decode_flags_custom_next()` へ渡して順番どおりに処理できるようにしたことで `calc_cpu_next()` 上で `state_decode_execute()` の主な分岐が先取りできる構造が整っている。
+- `state_decode_execute()` は `calc_decode_transfers_next()` → `calc_decode_flags_custom_next()` → `calc_decode_branches_next()` の順で opcode を振り分け、`calc_cpu_next()` 上で decode の代表的分岐がすべて先取りできる構造に拡張した。
 - `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`、`make -C day99_completed BOARD=9k download` のすべてが成功（Verilatorの警告は width/UNUSEDSIGNAL/IGNOREDRETURN の既知のもの）。次は `state_decode` / `cpu_exec_*` の残りカテゴリを段階的にコンテキスト化し、decode→execute を `calc_cpu_next()` で完結させるフェーズへ進む。
- - 実機ダウンロードも無事成功し、LCD 表示/VRAM 書き込み含め現場の挙動に問題ないことを確認。次のステップでの `calc_cpu_next()` 拡張でも、現行 Sequential FSM と一致するよう `format`/`BOARD=9k clean test`/`BOARD=9k download` を繰り返して進めてください。
+- 実機ダウンロードも無事成功し、LCD 表示/VRAM 書き込み含め現場の挙動に問題ないことを確認。次のステップでの `calc_cpu_next()` 拡張でも、現行 Sequential FSM と一致するよう `format`/`BOARD=9k clean test`/`BOARD=9k download` を繰り返して進めてください。
+
+- `cpu_exec_branches_pkg` 相当の `calc_decode_branches_next()` を追加し、BEQ/BMI/BNE/BPL/BVC/BVS/BCC の条件判断とオフセット計算結果を `next` に閉じるようにした。分岐成功時は branch target、そうでない場合は `pc_plus2` に切り替えつつ常に `FETCH_REQ`/`FETCH_OPCODE` へ戻る挙動を再現している。
+- `calc_cpu_next()` は `calc_decode_transfers_next()` → `calc_decode_flags_custom_next()` → `calc_decode_branches_next()` の順で opcode を処理し、`state_decode_execute()` の主要カテゴリすべてをカバーするようになった。
+- `make -C day99_completed format` 及び `make -C day99_completed BOARD=9k clean test`（既存の幅／`UNUSEDSIGNAL`／`IGNOREDRETURN` 警告は継続）に成功。`make -C day99_completed BOARD=9k download` は macOS `gw_sh` の PasteBoard/Connection Invalid エラーで Segfault を返すため今回も失敗したが、GUI セッション制約なので継続的に再実行してください。
+- 実機ダウンロードは別セッションで成功し、LCD/VRAM 表示に問題ないことを確認。今後も `state_decode` の残りカテゴリを `calc_cpu_next()` に取り込み、各フェーズで `format`/`BOARD=9k clean test`/`BOARD=9k download` を繰り返して整合性を担保してください。
 
 ## 2-process FSM 完了チェックリスト
 
