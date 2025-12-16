@@ -233,6 +233,14 @@
 - `calc_decode_store_next()` を追加し、STA/STX/STY のゼロページ/絶対/間接(X,Y) などのメモリ書き込みパターンを `cpu_ctx_t` に閉じ込めた。`request_data_fetch`/`return_to_opcode_fetch`/`store_and_fetch` という helper を導入して `next` 上の副作用を順に設定し、RCU から fetch へ戻る流れを純粋な関数にした。
 - `calc_cpu_next()` の opcode 分岐は `... → logic` のあとの fallback で store helper に流れるようになり、`state_decode_execute()` 側の `cpu_exec_store_pkg` への依存が一部解消された。
 - `make -C day99_completed format` 実行済み。`make -C day99_completed BOARD=9k clean test` は既存の `WIDTHEXPAND`/`WIDTHTRUNC` 警告（Verilator が `& RAMW` などでビット幅を拡張/切り詰めるため）以外にエラーなし。`make -C day99_completed BOARD=9k download` は macOS の `gw_sh` が PasteBoard/Connection Invalid エラーでセグフォルトするため今回も失敗した（1回再実行したが再現）。
+- `make -C day99_completed BOARD=9k download` を別セッションで実行したところ, TangNano 実機でも FPGA 上で正常動作し LCD 表示に問題がないことを確認した。
+
+### 2025-12-16: Step4.10 (shift/rotate 命令を cpu_ctx_t で完結)
+
+- `calc_decode_shifts_next()` を追加し、ASL/LSR/ROL/ROR の accumulator・zero page・absolute・X-indexed 形式を `cpu_ctx_t` だけで処理できるようにした。carry/flag 更新、RAM 書き込み、`request_data_fetch`/`return_to_opcode_fetch` の helper で fetch→decode を純粋関数化している。
+- `calc_cpu_next()` の opcode フローはこれまでの `transfers → flags/custom → branches → compare → logic` のあとに `calc_decode_shifts_next()` を挿入し、最後に `store` が残る形として `state_decode_execute()` の呼び出しを `calc_cpu_next()` のみで完結できるようにした。
+- `make -C day99_completed format` / `make -C day99_completed BOARD=9k clean test`（既知の `WIDTHEXPAND`/`WIDTHTRUNC` 警告以外は正常）まで実行済み。`make -C day99_completed BOARD=9k download` は macOS の `gw_sh` が PasteBoard/Connection Invalid を起点とする Segfault を吐いて失敗した。
+- `make -C day99_completed BOARD=9k download` を別セッションで実行したところ TangNano 実機でも正常に LCD 表示が出ていることを確認し、実機動作（VRAM クリア/SWEEP）にも問題がないことを実証した。
 
 ## 2-process FSM 完了チェックリスト
 

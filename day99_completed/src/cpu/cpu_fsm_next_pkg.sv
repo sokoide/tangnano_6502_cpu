@@ -390,7 +390,7 @@ package cpu_fsm_next_pkg;
     endfunction
 
     function automatic cpu_ctx_t apply_store_write(cpu_ctx_t next, logic [15:0] target_addr,
-                                                  logic [7:0] data);
+                                                   logic [7:0] data);
         logic [31:0] target32;
         target32 = {16'd0, target_addr};
         if (target32 >= VRAM_START && target32 < (VRAM_START + (COLUMNS * ROWS))) begin
@@ -412,13 +412,263 @@ package cpu_fsm_next_pkg;
     endfunction
 
     function automatic cpu_ctx_t store_and_fetch(cpu_ctx_t next, logic [15:0] target_addr,
-                                                logic [7:0] data, logic [15:0] next_pc);
+                                                 logic [7:0] data, logic [15:0] next_pc);
         next = apply_store_write(next, target_addr, data);
-        next.cea   = 1;
+        next.cea = 1;
         next.v_cea = next.write_to_vram;
         next = return_to_opcode_fetch(next, next_pc);
         return next;
     endfunction
+
+    function automatic cpu_ctx_t apply_ram_write(cpu_ctx_t next, logic [15:0] target_addr,
+                                                 logic [7:0] data);
+        next.ada = target_addr[14:0] & RAMW;
+        next.din = data;
+        next.cea = 1;
+        next.v_cea = 0;
+        next.write_to_vram = 1'b0;
+        return next;
+    endfunction
+
+    function automatic logic calc_decode_shifts_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+        logic handled;
+        logic [7:0] result;
+        logic [15:0] target_addr;
+        logic [7:0] zp_addr;
+        logic [7:0] carry_in;
+
+        handled = 1'b1;
+
+        unique case (cur.opcode)
+            8'h0A: begin  // ASL accumulator
+                next.flg_c = cur.ra[7];
+                result = cur.ra << 1;
+                next.ra = result;
+                next = update_logic_flags(next, result);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h06: begin  // ASL zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r << 1;
+                    next.flg_c = cur.dout_r[7];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h16: begin  // ASL zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r << 1;
+                    next.flg_c = cur.dout_r[7];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h0E: begin  // ASL absolute
+                target_addr = cur.operands;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r << 1;
+                    next.flg_c = cur.dout_r[7];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h1E: begin  // ASL absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r << 1;
+                    next.flg_c = cur.dout_r[7];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h4A: begin  // LSR accumulator
+                next.flg_c = cur.ra[0];
+                result = cur.ra >> 1;
+                next.ra = result;
+                next = update_logic_flags(next, result);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h46: begin  // LSR zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r >> 1;
+                    next.flg_c = cur.dout_r[0];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h56: begin  // LSR zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r >> 1;
+                    next.flg_c = cur.dout_r[0];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h4E: begin  // LSR absolute
+                target_addr = cur.operands;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r >> 1;
+                    next.flg_c = cur.dout_r[0];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h5E: begin  // LSR absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r >> 1;
+                    next.flg_c = cur.dout_r[0];
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h2A: begin  // ROL accumulator
+                carry_in = cur.flg_c ? 8'h01 : 8'h00;
+                next.flg_c = cur.ra[7];
+                result = (cur.ra << 1) | carry_in;
+                next.ra = result;
+                next = update_logic_flags(next, result);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h26: begin  // ROL zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                carry_in = cur.flg_c ? 8'h01 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[7];
+                    result = (cur.dout_r << 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h36: begin  // ROL zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                carry_in = cur.flg_c ? 8'h01 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[7];
+                    result = (cur.dout_r << 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h2E: begin  // ROL absolute
+                target_addr = cur.operands;
+                carry_in = cur.flg_c ? 8'h01 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[7];
+                    result = (cur.dout_r << 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h3E: begin  // ROL absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                carry_in = cur.flg_c ? 8'h01 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[7];
+                    result = (cur.dout_r << 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'h6A: begin  // ROR accumulator
+                carry_in = cur.flg_c ? 8'h80 : 8'h00;
+                next.flg_c = cur.ra[0];
+                result = (cur.ra >> 1) | carry_in;
+                next.ra = result;
+                next = update_logic_flags(next, result);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h66: begin  // ROR zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                carry_in = cur.flg_c ? 8'h80 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[0];
+                    result = (cur.dout_r >> 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h76: begin  // ROR zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                carry_in = cur.flg_c ? 8'h80 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[0];
+                    result = (cur.dout_r >> 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'h6E: begin  // ROR absolute
+                target_addr = cur.operands;
+                carry_in = cur.flg_c ? 8'h80 : 8'h00;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next.flg_c = cur.dout_r[0];
+                    result = (cur.dout_r >> 1) | carry_in;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            default: begin
+                handled = 1'b0;
+            end
+        endcase
+
+        return handled;
+    endfunction
+
 
     localparam logic [1:0] LOGIC_AND = 2'd0;
     localparam logic [1:0] LOGIC_EOR = 2'd1;
@@ -732,7 +982,8 @@ package cpu_fsm_next_pkg;
                 next = store_and_fetch(next, {8'h00, cur.operands[7:0]}, cur.ra, cur.pc_plus2);
             end
             8'h95: begin  // STA zero page, X
-                next = store_and_fetch(next, {8'h00, cur.operands[7:0] + cur.rx}, cur.ra, cur.pc_plus2);
+                next = store_and_fetch(next, {8'h00, cur.operands[7:0] + cur.rx}, cur.ra,
+                                       cur.pc_plus2);
             end
             8'h8D: begin  // STA absolute
                 next = store_and_fetch(next, cur.operands[15:0], cur.ra, cur.pc_plus3);
@@ -913,6 +1164,9 @@ package cpu_fsm_next_pkg;
                 end
                 if (!handled) begin
                     handled = calc_decode_logic_next(cur, next);
+                end
+                if (!handled) begin
+                    handled = calc_decode_shifts_next(cur, next);
                 end
                 if (!handled) begin
                     handled = calc_decode_store_next(cur, next);
