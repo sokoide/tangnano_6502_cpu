@@ -87,5 +87,6 @@ package cpu_types_pkg;
     logic [7:0] dout;
     logic vsync;
     logic [15:0] boot_program_length;
+    logic [7:0] boot_byte;
   } cpu_in_t;
 endpackage

@@ -200,7 +200,12 @@ module cpu (
         show_info_stage: show_info_stage
     };
 
-    cpu_inputs = '{dout: dout, vsync: vsync, boot_program_length: boot_program_length};
+    cpu_inputs = '{
+        dout: dout,
+        vsync: vsync,
+        boot_program_length: boot_program_length,
+        boot_byte: boot_program[cur.boot_idx]
+    };
     next_ctx = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
 
     boot_fetch_next = cpu_fsm_next_pkg::calc_boot_fetch_next(

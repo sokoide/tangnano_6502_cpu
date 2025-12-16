@@ -38,6 +38,16 @@
 
 この方針に沿って、まず `state_machine_step()` を `next_state` を扱える形に書き換えることから着手します。
 
+## Step4 ロールアウト順
+
+1. `state_boot_*` 系：周辺 VRAM/RAM の初期化と boot ROM 書き込みをコンテキスト化する。
+2. `state_fetch_*` 系：フェッチステージの副作用（PC+/ADB 更新、オペランド読み出し）を `cpu_ctx_t` に移す。
+3. `state_decode_*`／`cpu_exec_*`：デコード〜実行の副作用を `calc_cpu_next()` へ集約し、純粋な次状態関数へと昇格。
+4. `state_write_req_*`／`state_show_info_*`：書き込み/デバッグ/VRAM クリア操作を `next` に集約。
+5. `state_clear_vram_*`／`HALT` などの残存状態を `next` に移し、`always_comb`/`always_ff` を完全に分離。
+
+各ステップでは sequential ロジックを壊さないよう既存タスクを維持しつつ、`next` コンテキストを育てて `make format`/`make BOARD=9k clean test`/`make BOARD=9k download` で安全性を確認します。
+
 ---
 
 ## 進捗ログ
@@ -159,6 +169,23 @@
 5. **段階的な確認**
    - `make -C day99_completed format` / `make -C day99_completed BOARD=9k clean test` を通し、warningが出ないことを確認。
    - `make -C day99_completed BOARD=9k download` で LCD 表示を確認。必要なら `WVS` 命令などを使って状態遷移が正しいことを確かめる。
+6. **state_decode_* / cpu_exec_* の次元間移行**
+  - `state_decode_execute()` と関連 `cpu_exec_*` パッケージを次の対象として、計算結果/フラグ更新/メモリアクセスを `cpu_ctx_t` で表現し `calc_cpu_next()` にまとめることで decode 〜 execute を完結させる。
+  - 進捗ごとに `format`/`clean test`/`download` を繰り返し、fetch 〜 decode での整合性を暴いておく。
+
+### 2025-12-15: Step4.1 (state_boot ハンドラのコンテキスト化)
+ - `cpu.c` に `cpu_ctx_t cur` を追加し、レジスタ/バス/フラグを `cur` にマッピングして `cpu_inputs.boot_byte` をサンプリング。`calc_cpu_next(cur,in)` を呼び出す構造を整えた。
+ - `cpu_fsm_next_pkg` に `calc_cpu_next(cur,in)` を追加し、`calc_boot_fetch_next()` の結果から `next_ctx.state`/`next_ctx.fetch_stage` を更新しつつ、`INIT`/`INIT_VRAM`/`INIT_RAM` の副作用（VRAM 初期化／boot ROM 書き込みフラグなど）を `next_ctx` へ反映。
+ - この状態で `make format`、`make BOARD=9k clean test`（UNUSEDSIGNAL 警告1箇所）、`make BOARD=9k download` が通ることを確認。次は state_fetch 系を同様にコンテキストで扱う段階へ進む。
+
+### 2025-12-16: Step4.2 (state_fetch ハンドラのコンテキスト化)
+- `calc_cpu_next()` が `state_fetch_req()`/`state_fetch_wait()`/`state_fetch_recv()` の副作用を再現するようになり、`pc_plus1/2/3` の前計算・`fetched_data_bytes` や `opcode`/`operand` のラッチを `cpu_ctx_t` で表現できるようになった。
+- `fsm.next_fetch_stage` を使ってオペランドが必要な命令で `adb` を `pc_plus1`/`pc_plus2` に切り替え、`FETCH_OPERAND*` 時に `operands` と `adb` を更新する挙動を next コンテキストで構築した。
+- `make -C day99_completed format` と `make -C day99_completed BOARD=9k clean test`（後者は `cpu_fsm_next_pkg.sv` の幅関連警告と `UNUSEDSIGNAL` の既存警告のみ）の通過を確認。ハードウェア (download) は次のデコード/実行コンテキスト移行で併せて検証予定。
+
+### 2025-12-16: Step4.3 (state_decode / cpu_exec 集約準備)
+- decodeフェーズの `state_decode_execute()` と `cpu_exec_*` パッケージ群を `cpu_ctx_t` 上で再構成する準備を開始。現在は各パッケージが更新する状態/フラグ/メモリアクセスをリストアップし、`calc_cpu_next()` に移行できるフィールドを整理している。
+- 整理が終わり次第 `state_decode_tasks.sv` の副作用を書き換え、`cpu_exec_*_pkg` 側でも `cur/next` を対象にした処理に置き換えていく予定。段階的に `make format`/`make BOARD=9k clean test`/`make BOARD=9k download` を通しながら進める。
 
 ## 2-process FSM 完了チェックリスト
 

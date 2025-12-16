@@ -291,6 +291,80 @@ package cpu_fsm_next_pkg;
 
     next.state = fsm.next_state;
     next.fetch_stage = fsm.next_fetch_stage;
+
+    unique case (cur.state)
+      INIT: begin
+        next.v_cea = 0;
+        next.boot_write = 1;
+      end
+      INIT_VRAM: begin
+        next.v_cea = 1;
+        next.v_din = cur.char_code;
+        next.char_code = (cur.char_code < 8'h7F) ? (cur.char_code + 1) & 8'hFF : 8'h20;
+        if (cur.v_ada <= (COLUMNS * ROWS)) begin
+          next.v_ada = (cur.v_ada + 1) & VRAMW;
+        end else begin
+          next.v_cea = 0;
+        end
+      end
+      INIT_RAM: begin
+        if (cur.boot_write) begin
+          next.boot_write = 0;
+          next.cea = 1;
+          next.ada = (PROGRAM_START + cur.boot_idx) & RAMW;
+          next.din = in.boot_byte;
+        end else begin
+          next.cea = 0;
+          if (cur.boot_idx == in.boot_program_length) begin
+            next.v_cea = 1;
+          end else begin
+            next.boot_idx   = (cur.boot_idx + 1) & RAMW;
+            next.boot_write = 1;
+          end
+        end
+      end
+      FETCH_REQ: begin
+        next.pc_plus1 = (cur.pc + 16'd1) & RAMW;
+        next.pc_plus2 = (cur.pc + 16'd2) & RAMW;
+        next.pc_plus3 = (cur.pc + 16'd3) & RAMW;
+      end
+      FETCH_WAIT: begin
+        if (cur.fetch_stage == FETCH_DATA) begin
+          next.fetched_data_bytes = cur.fetched_data_bytes + 1;
+        end
+      end
+      FETCH_RECV: begin
+        unique case (cur.fetch_stage)
+          FETCH_OPCODE: begin
+            next.opcode = in.dout;
+            next.fetched_data_bytes = 0;
+            next.written_data_bytes = 0;
+            next.cea = 0;
+            next.v_cea = 0;
+            if (fsm.next_fetch_stage == FETCH_OPERAND1 || fsm.next_fetch_stage == FETCH_OPERAND1OF2) begin
+              next.adb = cur.pc_plus1 & RAMW;
+            end
+          end
+          FETCH_OPERAND1: begin
+            next.operands[7:0] = in.dout;
+          end
+          FETCH_OPERAND1OF2: begin
+            next.operands[7:0] = in.dout;
+            next.adb = cur.pc_plus2 & RAMW;
+          end
+          FETCH_OPERAND2: begin
+            next.operands[15:8] = in.dout;
+          end
+          default: begin
+            // Keep defaults.
+          end
+        endcase
+      end
+      default: begin
+        // Keep defaults.
+      end
+    endcase
+
     return next;
   endfunction
 endpackage

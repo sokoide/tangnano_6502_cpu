@@ -164,8 +164,10 @@ include/
 
 ### CPU モジュール構造の概観（Mermaid 図）
 
+- `state_decode` からの分岐は 3 列に整理され、各パッケージカテゴリの連続性を保ったまま横方向の広がりを抑えています。
+
 ```mermaid
-graph TD
+graph TB
     cpu[cpu.sv]
     cpu -->|インクルード| pkg[cpu_pkg.sv]
     cpu -->|インクルード| tasks[include/cpu_tasks.svh]
@@ -176,12 +178,24 @@ graph TD
     state_machine --> state_clear[state_clear_vram_tasks.sv]
     state_machine --> state_show[state_show_info_tasks.sv]
     state_machine --> state_write_req[state_write_req_tasks.sv]
-    state_decode --> row1([row1: 基本デコードパッケージ])
-    row1 --> exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
-    state_decode --> row2([row2: メモリ/制御パッケージ])
-    row2 --> exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
-    state_decode --> row3([row3: その他のパッケージ])
-    row3 --> exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+    state_decode --> exec_transfers
+    state_decode --> exec_logic
+    state_decode --> exec_control_flow
+
+    subgraph decode_col1["基本デコードパッケージ"]
+      direction TB
+      exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
+    end
+
+    subgraph decode_col2["メモリ/制御パッケージ"]
+      direction TB
+      exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
+    end
+
+    subgraph decode_col3["制御/ロードストアパッケージ"]
+      direction TB
+      exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+    end
 ```
 
 ```systemverilog
