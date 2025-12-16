@@ -1264,6 +1264,132 @@ package cpu_fsm_next_pkg;
         return handled;
     endfunction
 
+    function automatic logic calc_decode_inc_dec_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+        logic handled;
+        logic [15:0] target_addr;
+        logic [7:0] result;
+        logic [7:0] zp_addr;
+
+        handled = 1'b1;
+        unique case (cur.opcode)
+            8'hE6: begin  // INC zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r + 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hF6: begin  // INC zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r + 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hEE: begin  // INC absolute
+                target_addr = cur.operands & RAMW;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r + 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hFE: begin  // INC absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r + 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hC6: begin  // DEC zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r - 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hD6: begin  // DEC zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r - 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus2);
+                end
+            end
+            8'hCE: begin  // DEC absolute
+                target_addr = cur.operands & RAMW;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r - 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hDE: begin  // DEC absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    result = cur.dout_r - 8'd1;
+                    next = update_logic_flags(next, result);
+                    next = apply_ram_write(next, target_addr, result);
+                    next = return_to_opcode_fetch(next, cur.pc_plus3);
+                end
+            end
+            8'hE8: begin  // INX
+                next.rx = (cur.rx + 8'd1) & 8'hFF;
+                next = update_logic_flags(next, next.rx);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'hC8: begin  // INY
+                next.ry = (cur.ry + 8'd1) & 8'hFF;
+                next = update_logic_flags(next, next.ry);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'hCA: begin  // DEX
+                next.rx = (cur.rx - 8'd1) & 8'hFF;
+                next = update_logic_flags(next, next.rx);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h88: begin  // DEY
+                next.ry = (cur.ry - 8'd1) & 8'hFF;
+                next = update_logic_flags(next, next.ry);
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            default: begin
+                handled = 1'b0;
+            end
+        endcase
+
+        return handled;
+    endfunction
+
     function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
         cpu_ctx_t  next = cur;
         fsm_next_t fsm;
@@ -1380,6 +1506,9 @@ package cpu_fsm_next_pkg;
                     if (handled) begin
                         next.fetched_data_bytes = 0;
                     end
+                end
+                if (!handled) begin
+                    handled = calc_decode_inc_dec_next(cur, next);
                 end
             end
             default: begin
