@@ -29,6 +29,7 @@
 //
 `include "../include/consts.svh"
 `include "../include/cpu_pkg.sv"
+`include "cpu/cpu_types_pkg.sv"
 `include "cpu/cpu_fsm_next_pkg.sv"
 `include "cpu/cpu_exec_transfers_pkg.sv"
 `include "cpu/cpu_exec_flags_custom_pkg.sv"
@@ -68,6 +69,7 @@ module cpu (
 );
 
   import cpu_pkg::*;
+  import cpu_types_pkg::*;
   import cpu_fsm_next_pkg::*;
 
   /* verilator lint_off UNUSEDSIGNAL */
@@ -118,6 +120,9 @@ module cpu (
   fetch_stage_e fetch_stage;
   fetch_stage_e next_fetch_stage;
   show_info_stage_e show_info_stage;
+  cpu_ctx_t cur;
+  cpu_ctx_t next_ctx;
+  cpu_in_t cpu_inputs;
   fsm_next_t boot_fetch_next;
   /* verilator lint_on UNUSEDSIGNAL */
 
@@ -134,6 +139,70 @@ module cpu (
   always_ff @(posedge clk) dout_r <= dout;
 
   always_comb begin
+    cur = '{
+        pc: pc,
+        pc_plus1: pc_plus1,
+        pc_plus2: pc_plus2,
+        pc_plus3: pc_plus3,
+
+        ra: ra,
+        rx: rx,
+        ry: ry,
+        sp: sp,
+
+        flg_c: flg_c,
+        flg_z: flg_z,
+        flg_i: flg_i,
+        flg_d: flg_d,
+        flg_b: flg_b,
+        flg_v: flg_v,
+        flg_n: flg_n,
+
+        din: din,
+        ada: ada,
+        adb: adb,
+        cea: cea,
+        ceb: ceb,
+
+        v_ada: v_ada,
+        v_cea: v_cea,
+        v_din: v_din,
+
+        opcode: opcode,
+        operands: operands,
+
+        fetched_data_bytes: fetched_data_bytes,
+        fetched_data: fetched_data,
+        written_data_bytes: written_data_bytes,
+
+        write_to_vram: write_to_vram,
+
+        dout_r: dout_r,
+
+        char_code: char_code,
+        counter: counter,
+        boot_idx: boot_idx,
+        boot_write: boot_write,
+
+        vsync_meta: vsync_meta,
+        vsync_sync: vsync_sync,
+        vsync_stage: vsync_stage,
+
+        show_info_counter: show_info_counter,
+        show_info_cmd: show_info_cmd,
+
+        state: state,
+        prev_state: prev_state,
+        fetch_resume_state: fetch_resume_state,
+        next_state: next_state,
+        fetch_stage: fetch_stage,
+        next_fetch_stage: next_fetch_stage,
+        show_info_stage: show_info_stage
+    };
+
+    cpu_inputs = '{dout: dout, vsync: vsync, boot_program_length: boot_program_length};
+    next_ctx = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
+
     boot_fetch_next = cpu_fsm_next_pkg::calc_boot_fetch_next(
       state,
       fetch_stage,

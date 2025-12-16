@@ -11,6 +11,7 @@
 
 package cpu_fsm_next_pkg;
   import cpu_pkg::*;
+  import cpu_types_pkg::*;
   import consts_pkg::*;
 
   typedef struct packed {
@@ -267,5 +268,29 @@ package cpu_fsm_next_pkg;
     endcase
 
     return r;
+  endfunction
+
+  function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
+    cpu_ctx_t  next = cur;
+    fsm_next_t fsm;
+
+    fsm = calc_boot_fetch_next(
+        cur.state,
+        cur.fetch_stage,
+        cur.fetch_resume_state,
+        cur.prev_state,
+        in.dout,
+        cur.boot_idx,
+        in.boot_program_length,
+        cur.boot_write,
+        cur.v_ada,
+        cur.show_info_counter,
+        cur.show_info_stage,
+        cur.show_info_cmd.mem_read
+    );
+
+    next.state = fsm.next_state;
+    next.fetch_stage = fsm.next_fetch_stage;
+    return next;
   endfunction
 endpackage

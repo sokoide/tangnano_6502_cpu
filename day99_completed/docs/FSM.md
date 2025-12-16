@@ -137,6 +137,10 @@
 - `state_machine.svh` から削除済みの `FETCH_OPERAND*` に対応する未使用タスクを `state_fetch_tasks.sv` から削除。
 - `make BOARD=9k clean test` の Verilator 警告が出ないことを確認。
 - `BOARD=9k` の `make download` で **実機動作（LCD表示）OK** を確認（継続）。
+### 2025-12-15: Step 4 の準備（コンテキスト構造体カバー開始）
+- `cpu.sv` に `cpu_types_pkg` を取り込み、現在のレジスタ/フラグ/バスを `cpu_ctx_t cur` にマッピングして入力 `cpu_in_t` をサンプリングするように変更した。
+- `cpu_fsm_next_pkg` に `calc_cpu_next(cur,in)` を追加し、`calc_boot_fetch_next()` をラップして `next_ctx.state`/`next_ctx.fetch_stage` を更新、差分の combinational な next-state をのちほど拡張できる下地を準備。
+- `make -C day99_completed format`、`make -C day99_completed BOARD=9k clean test`（UNUSEDSIGNAL warning1箇所）、`make -C day99_completed BOARD=9k download` はすべて成功。
 
 ## 次のフェーズに向けた手順（Step 4+）
 

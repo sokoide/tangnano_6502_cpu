@@ -130,6 +130,7 @@ tools-check:
 VERILATOR ?= verilator
 SIM_TOP ?= tb_vram_smoke
 
+
 tools-check-sim:
 	@if command -v "$(VERILATOR)" >/dev/null 2>&1; then : ; \
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
