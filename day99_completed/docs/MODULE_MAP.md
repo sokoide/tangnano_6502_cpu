@@ -43,7 +43,7 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 - `include/consts_pkg.sv` — shared constants usable from `package` code (Gowin-compatible)
 - `include/boot_program.sv` — boot ROM contents (generated from `examples/`)
 - `include/cpu_ifo_auto_generated.svh` — auto-generated debug/info helper
-- `include/cpu_tasks.svh` — legacy reusable CPU helper tasks (not used by the current 2-process CPU)
+- `src/cpu/legacy/cpu_tasks.svh` — legacy reusable CPU helper tasks (not used by the current 2-process CPU)
 - `src/cpu/legacy/state_*_tasks.sv` — legacy per-state helpers kept for reference (not used by the current 2-process CPU)
 
 ## Refactor policy (module splitting)
@@ -61,7 +61,7 @@ Rules:
 Current opcode split (implemented):
 
 ```bash
-src/cpu/
+src/cpu/legacy/
 ├── cpu_exec_transfers_pkg.sv
 ├── cpu_exec_flags_custom_pkg.sv
 ├── cpu_exec_branches_pkg.sv

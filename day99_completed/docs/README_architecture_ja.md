@@ -145,8 +145,12 @@ src/
 include/
 ├── consts.svh          # システム全体の定数とパラメータ
 ├── cpu_pkg.sv          # CPU固有の型と列挙型
-├── cpu_tasks.svh       # 旧: 再利用可能なCPUタスクと関数（現在は未使用/参考）
 └── boot_program.sv     # アセンブリから自動生成 (examples/)
+```
+
+```bash
+src/cpu/legacy/
+└── cpu_tasks.svh       # 旧: 再利用可能なCPUタスクと関数（現在は未使用/参考）
 ```
 
 ## CPU 実装詳細
@@ -159,7 +163,7 @@ include/
 
 - `cpu.sv` がエントリポイントで、`cpu_pkg.sv` / `cpu_types_pkg.sv` / `cpu_fsm_next_pkg.sv` を取り込み、`always_comb` で `next = calc_cpu_next(cur,in)`、`always_ff` で `cur <= next` の 2-process FSM として動作します。
 - 命令デコード/実行は `cpu_fsm_next_pkg.sv` 内の `calc_decode_*_next()` 群（カテゴリ別の関数）に集約され、巨大な `case` の断片インクルードを避けています。
-- 旧実装の状態タスク（`state_*_tasks.sv`）/ `state_machine.svh` / `include/cpu_tasks.svh` は `src/cpu/legacy/` 等に残してありますが、現在のビルド経路では参照しません（参考用）。
+- 旧実装の状態タスク（`state_*_tasks.sv`）/ `state_machine.svh` / `cpu_tasks.svh` は `src/cpu/legacy/` に隔離してありますが、現在のビルド経路では参照しません（参考用）。
 
 ### CPU モジュール構造の概観（Mermaid 図）
 

@@ -2,7 +2,6 @@ SRCS= \
 	include/consts.svh \
 	include/boot_program.sv \
 	include/cpu_ifo_auto_generated.svh \
-	include/cpu_tasks.svh \
 	src/top_core.sv \
 	src/lcd.sv \
 	src/ram.sv \

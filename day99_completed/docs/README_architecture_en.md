@@ -150,8 +150,12 @@ src/
 include/
 ├── consts.svh          # System-wide constants and parameters
 ├── cpu_pkg.sv          # CPU-specific types and enumerations
-├── cpu_tasks.svh       # Legacy reusable CPU tasks (unused today)
 └── boot_program.sv     # Auto-generated from assembly (examples/)
+```
+
+```bash
+src/cpu/legacy/
+└── cpu_tasks.svh       # Legacy reusable CPU tasks (unused today)
 ```
 
 ## CPU Implementation
@@ -164,7 +168,7 @@ The CPU implementation follows a modular design approach for maintainability:
 
 - `cpu.sv` is the entry point and runs as a 2-process FSM: `always_comb` computes `next = calc_cpu_next(cur,in)` and `always_ff` updates `cur <= next`.
 - Instruction decode/execute lives in `cpu_fsm_next_pkg.sv` as a set of category functions (`calc_decode_*_next()`), avoiding “include-only case bodies”.
-- The older state helper tasks (`state_*_tasks.sv`), `state_machine.svh`, and `include/cpu_tasks.svh` are kept for reference (moved under `src/cpu/legacy/` where applicable) and are not on the current build path.
+- The older state helper tasks (`state_*_tasks.sv`), `state_machine.svh`, and `cpu_tasks.svh` are kept for reference under `src/cpu/legacy/` and are not on the current build path.
 
 ### CPU module breakdown (Mermaid view)
 

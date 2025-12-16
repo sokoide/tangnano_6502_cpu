@@ -160,7 +160,6 @@ src/
 include/
 ├── consts.svh          # System-wide constants and parameters
 ├── cpu_pkg.sv          # CPU-specific types and enums
-├── cpu_tasks.svh       # Legacy reusable CPU tasks (unused today)
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
