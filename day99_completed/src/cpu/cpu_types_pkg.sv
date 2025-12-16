@@ -77,9 +77,7 @@ package cpu_types_pkg;
     cpu_state_e state;
     cpu_state_e prev_state;
     cpu_state_e fetch_resume_state;
-    cpu_state_e next_state;
     fetch_stage_e fetch_stage;
-    fetch_stage_e next_fetch_stage;
     show_info_stage_e show_info_stage;
   } cpu_ctx_t;
 

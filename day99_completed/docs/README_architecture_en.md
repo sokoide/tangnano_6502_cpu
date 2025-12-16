@@ -150,7 +150,7 @@ src/
 include/
 ├── consts.svh          # System-wide constants and parameters
 ├── cpu_pkg.sv          # CPU-specific types and enumerations
-├── cpu_tasks.svh       # Reusable CPU tasks and functions
+├── cpu_tasks.svh       # Legacy reusable CPU tasks (unused today)
 └── boot_program.sv     # Auto-generated from assembly (examples/)
 ```
 
@@ -162,10 +162,9 @@ The CPU implementation follows a modular design approach for maintainability:
 
 ### Modular Structure of the CPU Core
 
-- `cpu.sv` remains the top-level module, pulling in `cpu_pkg.sv`, the category packages (`cpu_exec_*_pkg.sv`), `cpu_tasks.svh`, and the new state helpers so that the main FSM logic stays readable for tools.
-- Every FSM state lives inside its own helper task under `src/cpu/state_*_tasks.sv` with names like `state_fetch_req()`, `state_decode_execute()`, and `state_clear_vram_loop()`. This keeps the included files valid SystemVerilog units that can be formatted independently, and `state_machine.svh` simply runs `state_machine_step()` to pick the right helper per state.
-- The opcode decode now calls into dedicated packages such as `cpu_exec_transfers_pkg.sv`, `cpu_exec_branches_pkg.sv`, `cpu_exec_load_store_pkg.sv`, etc., instead of relying on giant inlined `case` bodies.
-- Shared helper tasks (e.g., `fetch_opcode`, `sta_write`, `vram_write`) remain in `include/cpu_tasks.svh`, while constants and enums live in `include/consts.svh`/`cpu_pkg.sv` for reuse across the packages.
+- `cpu.sv` is the entry point and runs as a 2-process FSM: `always_comb` computes `next = calc_cpu_next(cur,in)` and `always_ff` updates `cur <= next`.
+- Instruction decode/execute lives in `cpu_fsm_next_pkg.sv` as a set of category functions (`calc_decode_*_next()`), avoiding “include-only case bodies”.
+- The older state helper tasks (`state_*_tasks.sv`), `state_machine.svh`, and `include/cpu_tasks.svh` are kept for reference (moved under `src/cpu/legacy/` where applicable) and are not on the current build path.
 
 ### CPU module breakdown (Mermaid view)
 
@@ -175,32 +174,25 @@ The CPU implementation follows a modular design approach for maintainability:
 graph TB
     cpu[cpu.sv]
     cpu -->|includes| pkg[cpu_pkg.sv]
-    cpu -->|includes| tasks[include/cpu_tasks.svh]
-    cpu -->|includes| state_machine["state_machine_step()"]
-    state_machine --> state_fetch[state_fetch_tasks.sv]
-    state_machine --> state_decode[state_decode_tasks.sv]
-    state_machine --> state_boot[state_boot_tasks.sv]
-    state_machine --> state_clear[state_clear_vram_tasks.sv]
-    state_machine --> state_show[state_show_info_tasks.sv]
-    state_machine --> state_write_req[state_write_req_tasks.sv]
-
-    state_decode --> exec_transfers
-    state_decode --> exec_logic
-    state_decode --> exec_control_flow
+    cpu -->|includes| types[cpu_types_pkg.sv]
+    cpu -->|includes| fsm[cpu_fsm_next_pkg.sv]
+    fsm --> decode_col1
+    fsm --> decode_col2
+    fsm --> decode_col3
 
     subgraph decode_col1["Core decode packages"]
       direction TB
-      exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
+      transfers["calc_decode_transfers_next"] --> flags["calc_decode_flags_custom_next"] --> branches["calc_decode_branches_next"] --> compare["calc_decode_compare_next"]
     end
 
     subgraph decode_col2["Memory/control packages"]
       direction TB
-      exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
+      logic["calc_decode_logic_next"] --> shifts["calc_decode_shifts_next"] --> store["calc_decode_store_next"] --> inc_dec["calc_decode_inc_dec_next"]
     end
 
     subgraph decode_col3["Control and load/store packages"]
       direction TB
-      exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+      control_flow["calc_decode_control_flow_next"] --> load_store["calc_decode_load_store_next"] --> adc_sbc["calc_decode_adc_sbc_next"]
     end
 ```
 

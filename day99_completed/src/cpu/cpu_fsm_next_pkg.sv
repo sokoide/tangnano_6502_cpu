@@ -9,6 +9,7 @@
 
 `include "consts_pkg.sv"
 
+/* verilator lint_off UNUSEDSIGNAL */
 package cpu_fsm_next_pkg;
   import cpu_pkg::*;
   import cpu_types_pkg::*;
@@ -21,14 +22,6 @@ package cpu_fsm_next_pkg;
     cpu_state_e   next_state;
     fetch_stage_e next_fetch_stage;
   } fsm_next_t;
-
-  function automatic logic uses_pure_next(input cpu_state_e state);
-    unique case (state)
-      // DECODE_EXECUTE still relies on legacy "next_state" writes from exec tasks.
-      DECODE_EXECUTE: return 1'b0;
-      default: return 1'b1;
-    endcase
-  endfunction
 
   function automatic fsm_next_t calc_boot_fetch_next(
       input cpu_state_e state, input fetch_stage_e fetch_stage,
@@ -2058,3 +2051,4 @@ package cpu_fsm_next_pkg;
     return next;
   endfunction
 endpackage
+/* verilator lint_on UNUSEDSIGNAL */

@@ -43,8 +43,8 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 - `include/consts_pkg.sv` — shared constants usable from `package` code (Gowin-compatible)
 - `include/boot_program.sv` — boot ROM contents (generated from `examples/`)
 - `include/cpu_ifo_auto_generated.svh` — auto-generated debug/info helper
-- `include/cpu_tasks.svh` — reusable CPU helper tasks (fetch/write helpers)
-- `src/cpu/state_*_tasks.sv` — formatter-friendly helpers that implement the per-state behavior and are invoked from `state_machine.svh`
+- `include/cpu_tasks.svh` — legacy reusable CPU helper tasks (not used by the current 2-process CPU)
+- `src/cpu/legacy/state_*_tasks.sv` — legacy per-state helpers kept for reference (not used by the current 2-process CPU)
 
 ## Refactor policy (module splitting)
 
@@ -97,8 +97,7 @@ Notes:
 
 ## State machine task helpers
 
-Each CPU state is now handled by a dedicated task defined under `src/cpu/state_*_tasks.sv`. The `state_machine.svh` file dispatches directly to the appropriate helper (e.g., `state_fetch_req()`, `state_clear_vram_loop()`) so that each helper file is a valid SystemVerilog unit that a formatter/highlighter can parse on its own while preserving the existing synchronous FSM semantics.
-The decode logic formerly split out as `state_decode.svinc` now lives in `src/cpu/state_decode_tasks.sv`, and `state_machine.svh` simply calls `state_decode_execute()` when the FSM reaches `DECODE_EXECUTE`.
+The project previously used per-state task helpers (`src/cpu/state_*_tasks.sv`) dispatched by `state_machine.svh`. After the 2-process FSM migration, the active CPU implementation is driven by `cpu_fsm_next_pkg.sv` (`calc_cpu_next(cur,in) -> next`), and those per-state helpers have been moved under `src/cpu/legacy/` as a reference path.
 
 ## Exercises (small, high-signal)
 

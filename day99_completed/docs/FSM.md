@@ -51,6 +51,8 @@
 - `WRITE_REQ` / `CLEAR_VRAM*` / `SHOW_INFO*` も `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済み（`SHOW_INFO` では `show_info_rom` をパッケージ側に持ち、次状態計算内で参照）。
 - `cpu.sv` は `always_comb` で `next = calc_cpu_next(cur,in)` を計算し、`always_ff` では `cur <= next;` のみを行う形へ移行済み（2-process FSM の基本形が成立）。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
+- `src/cpu/state_*_tasks.sv` と `src/cpu/state_machine.svh` は `src/cpu/legacy/` に移動し、現行CPUのビルド経路と混ざらないように整理済み。
+- `cpu_ctx_t` のスリム化を一部実施（未使用だった `next_state`/`next_fetch_stage` フィールドを削除）。
 
 ## 現在取り組んでいるステップ
 
@@ -84,6 +86,8 @@
      - `day99_completed/src/cpu/state_*_tasks.sv`
      - `day99_completed/src/cpu/state_machine.svh`
      - `day99_completed/include/cpu_tasks.svh`
+
+※現状: `day99_completed/src/cpu/state_*_tasks.sv` と `day99_completed/src/cpu/state_machine.svh` は `day99_completed/src/cpu/legacy/` へ移動済み（ビルド未使用）。`day99_completed/include/cpu_tasks.svh` は互換/参考のため残置していますが、現行CPUは参照しません。
 
 3. **（任意）`cpu_ctx_t` のスリム化**
    - 2-process化後に不要なフィールド（例: `next_state`/`next_fetch_stage`）を削除して可読性を上げる。

@@ -145,7 +145,7 @@ src/
 include/
 ├── consts.svh          # システム全体の定数とパラメータ
 ├── cpu_pkg.sv          # CPU固有の型と列挙型
-├── cpu_tasks.svh       # 再利用可能なCPUタスクと関数
+├── cpu_tasks.svh       # 旧: 再利用可能なCPUタスクと関数（現在は未使用/参考）
 └── boot_program.sv     # アセンブリから自動生成 (examples/)
 ```
 
@@ -157,10 +157,9 @@ include/
 
 ### CPU モジュール構造
 
-- `cpu.sv` がエントリポイントで、`cpu_pkg.sv`、各カテゴリの `cpu_exec_*_pkg.sv`、`include/cpu_tasks.svh`、状態用タスク（`src/cpu/state_*_tasks.sv`）を取り込んでいます。
-- `state_fetch_req()`、`state_decode_execute()`、`state_clear_vram_loop()` のような各状態ヘルパーは個別の `.sv` ファイルに分割されており、`state_machine.svh` の `state_machine_step()` が状態に応じて適切なヘルパーを呼び出します。これにより各状態のコードが単体で SystemVerilog として成立し、フォーマッタ/ハイライト可能です。
-- 命令デコードは巨大な `case` 文ではなく、`cpu_exec_transfers_pkg.sv`、`cpu_exec_branches_pkg.sv`、`cpu_exec_load_store_pkg.sv` などのカテゴリ別パッケージを順次呼び出す構成になっています。
-- `fetch_opcode`/`sta_write`/`vram_write` などの共通タスクは `include/cpu_tasks.svh`、定数や列挙型は `include/consts.svh` と `cpu_pkg.sv` に置かれていて、パッケージ間で再利用されています。
+- `cpu.sv` がエントリポイントで、`cpu_pkg.sv` / `cpu_types_pkg.sv` / `cpu_fsm_next_pkg.sv` を取り込み、`always_comb` で `next = calc_cpu_next(cur,in)`、`always_ff` で `cur <= next` の 2-process FSM として動作します。
+- 命令デコード/実行は `cpu_fsm_next_pkg.sv` 内の `calc_decode_*_next()` 群（カテゴリ別の関数）に集約され、巨大な `case` の断片インクルードを避けています。
+- 旧実装の状態タスク（`state_*_tasks.sv`）/ `state_machine.svh` / `include/cpu_tasks.svh` は `src/cpu/legacy/` 等に残してありますが、現在のビルド経路では参照しません（参考用）。
 
 ### CPU モジュール構造の概観（Mermaid 図）
 
@@ -169,32 +168,26 @@ include/
 ```mermaid
 graph TB
     cpu[cpu.sv]
-    cpu -->|インクルード| pkg[cpu_pkg.sv]
-    cpu -->|インクルード| tasks[include/cpu_tasks.svh]
-    cpu -->|インクルード| state_machine["state_machine_step()"]
-    state_machine --> state_fetch[state_fetch_tasks.sv]
-    state_machine --> state_decode[state_decode_tasks.sv]
-    state_machine --> state_boot[state_boot_tasks.sv]
-    state_machine --> state_clear[state_clear_vram_tasks.sv]
-    state_machine --> state_show[state_show_info_tasks.sv]
-    state_machine --> state_write_req[state_write_req_tasks.sv]
-    state_decode --> exec_transfers
-    state_decode --> exec_logic
-    state_decode --> exec_control_flow
+    cpu -->|includes| pkg[cpu_pkg.sv]
+    cpu -->|includes| types[cpu_types_pkg.sv]
+    cpu -->|includes| fsm[cpu_fsm_next_pkg.sv]
+    fsm --> decode_col1
+    fsm --> decode_col2
+    fsm --> decode_col3
 
     subgraph decode_col1["基本デコードパッケージ"]
       direction TB
-      exec_transfers[cpu_exec_transfers_pkg.sv] --> exec_flags[cpu_exec_flags_custom_pkg.sv] --> exec_branches[cpu_exec_branches_pkg.sv] --> exec_compare[cpu_exec_compare_pkg.sv]
+      transfers["calc_decode_transfers_next"] --> flags["calc_decode_flags_custom_next"] --> branches["calc_decode_branches_next"] --> compare["calc_decode_compare_next"]
     end
 
     subgraph decode_col2["メモリ/制御パッケージ"]
       direction TB
-      exec_logic[cpu_exec_logic_pkg.sv] --> exec_shifts[cpu_exec_shifts_pkg.sv] --> exec_store[cpu_exec_store_pkg.sv] --> exec_inc_dec[cpu_exec_inc_dec_pkg.sv]
+      logic["calc_decode_logic_next"] --> shifts["calc_decode_shifts_next"] --> store["calc_decode_store_next"] --> inc_dec["calc_decode_inc_dec_next"]
     end
 
     subgraph decode_col3["制御/ロードストアパッケージ"]
       direction TB
-      exec_control_flow[cpu_exec_control_flow_pkg.sv] --> exec_load_store[cpu_exec_load_store_pkg.sv] --> exec_adc_sbc[cpu_exec_adc_sbc_pkg.sv]
+      control_flow["calc_decode_control_flow_next"] --> load_store["calc_decode_load_store_next"] --> adc_sbc["calc_decode_adc_sbc_next"]
     end
 ```
 

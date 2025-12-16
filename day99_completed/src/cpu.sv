@@ -148,9 +148,7 @@ module cpu (
           state: INIT,
           prev_state: INIT,
           fetch_resume_state: INIT,
-          next_state: INIT,
           fetch_stage: FETCH_OPCODE,
-          next_fetch_stage: FETCH_OPCODE,
           show_info_stage: SHOW_INFO_FETCH
       };
     end else begin
