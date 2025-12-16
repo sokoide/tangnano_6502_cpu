@@ -1264,6 +1264,357 @@ package cpu_fsm_next_pkg;
         return handled;
     endfunction
 
+    function automatic logic calc_decode_control_flow_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+        logic handled;
+        logic [15:0] stack_addr;
+        logic [15:0] ret_addr;
+        logic [15:0] target_addr;
+        logic [15:0] pc1;
+        logic [7:0] status;
+        logic [7:0] new_sp;
+
+        handled = 1'b1;
+        unique case (cur.opcode)
+            8'hEA: begin  // NOP
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h4C: begin  // JMP absolute
+                next = return_to_opcode_fetch(next, cur.operands);
+            end
+            8'h6C: begin  // JMP indirect
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        next = request_data_fetch(next, cur.operands[14:0] & RAMW);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        next = request_data_fetch(next, (cur.operands[14:0] + 15'd1) & RAMW);
+                    end
+                    2: begin
+                        logic [15:0] ind_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
+                        next.fetched_data[15:8] = cur.dout_r;
+                        next = return_to_opcode_fetch(next, ind_addr);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'h20: begin  // JSR
+                unique case (cur.written_data_bytes)
+                    0: begin
+                        stack_addr = (STACK + {8'h00, cur.sp}) & RAMW;
+                        next.sp = (cur.sp - 8'd1) & 8'hFF;
+                        next.ada = stack_addr[14:0];
+                        next.din = cur.pc_plus2[15:8];
+                        next.cea = 1;
+                        next.v_cea = 0;
+                        next.state = WRITE_REQ;
+                    end
+                    1: begin
+                        stack_addr = (STACK + {8'h00, cur.sp}) & RAMW;
+                        ret_addr = cur.pc + 16'd2;
+                        next.sp = (cur.sp - 8'd1) & 8'hFF;
+                        next.ada = stack_addr[14:0];
+                        next.din = ret_addr[7:0];
+                        next.cea = 1;
+                        next.v_cea = 0;
+                        next.state = WRITE_REQ;
+                    end
+                    2: begin
+                        target_addr = cur.operands;
+                        next = return_to_opcode_fetch(next, target_addr);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'h60: begin  // RTS
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        stack_addr = (STACK + {8'h00, new_sp}) & RAMW;
+                        next.sp = new_sp;
+                        next = request_data_fetch(next, stack_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        stack_addr = (STACK + {8'h00, new_sp}) & RAMW;
+                        next.sp = new_sp;
+                        next = request_data_fetch(next, stack_addr);
+                    end
+                    2: begin
+                        next.fetched_data[15:8] = cur.dout_r;
+                        pc1 = cur.fetched_data + 16'd1;
+                        next = return_to_opcode_fetch(next, pc1 & RAMW);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'h48: begin  // PHA
+                stack_addr = (STACK + {8'h00, cur.sp}) & RAMW;
+                next.sp = (cur.sp - 8'd1) & 8'hFF;
+                next.ada = stack_addr[14:0];
+                next.din = cur.ra;
+                next.cea = 1;
+                next.v_cea = 0;
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            8'h68: begin  // PLA
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        stack_addr = (STACK + {8'h00, new_sp}) & RAMW;
+                        next.sp = new_sp;
+                        next = request_data_fetch(next, stack_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        stack_addr = (STACK + {8'h00, new_sp}) & RAMW;
+                        next.sp = new_sp;
+                        next = request_data_fetch(next, stack_addr);
+                    end
+                    2: begin
+                        next.fetched_data[15:8] = cur.dout_r;
+                        next.ra = cur.dout_r;
+                        next = update_logic_flags(next, next.ra);
+                        next = return_to_opcode_fetch(next, cur.pc_plus1);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'h08: begin  // PHP
+                status = {cur.flg_n, cur.flg_v, 1'b1, cur.flg_b, cur.flg_d, cur.flg_i, cur.flg_z, cur.flg_c};
+                stack_addr = (STACK + {8'h00, cur.sp}) & RAMW;
+                next.sp = (cur.sp - 8'd1) & 8'hFF;
+                next.ada = stack_addr[14:0];
+                next.din = status;
+                next.cea = 1;
+                next.v_cea = 0;
+                next = return_to_opcode_fetch(next, cur.pc_plus1);
+            end
+            default: begin
+                handled = 1'b0;
+            end
+        endcase
+        return handled;
+    endfunction
+
+    function automatic logic calc_decode_adc_sbc_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+        logic handled;
+        logic [15:0] target_addr;
+        logic [7:0] zp_addr;
+
+        handled = 1'b1;
+        unique case (cur.opcode)
+            8'h69: begin  // ADC immediate
+                next = complete_adc(cur, next, cur.operands[7:0], cur.pc_plus2);
+            end
+            8'h65: begin  // ADC zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_adc(cur, next, cur.dout_r, cur.pc_plus2);
+                end
+            end
+            8'h75: begin  // ADC zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_adc(cur, next, cur.dout_r, cur.pc_plus2);
+                end
+            end
+            8'h6D: begin  // ADC absolute
+                target_addr = cur.operands & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_adc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'h7D: begin  // ADC absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_adc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'h79: begin  // ADC absolute, Y
+                target_addr = (cur.operands + {8'h00, cur.ry}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_adc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'h61: begin  // ADC (indirect, X)
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        zp_addr = cur.operands[7:0] + cur.rx;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        zp_addr = cur.operands[7:0] + cur.rx + 8'h01;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next.fetched_data[15:8] = cur.dout_r;
+                        next = complete_adc(cur, next, cur.dout_r, cur.pc_plus2);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'h71: begin  // ADC (indirect), Y
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        target_addr = {8'h00, cur.operands[7:0]};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        target_addr = {8'h00, (cur.operands[7:0] + 8'h01) & 8'hFF};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]} + {8'h00, cur.ry}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next = complete_adc(cur, next, cur.dout_r, cur.pc_plus2);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'hE9: begin  // SBC immediate
+                next = complete_sbc(cur, next, cur.operands[7:0], cur.pc_plus2);
+            end
+            8'hE5: begin  // SBC zero page
+                target_addr = {8'h00, cur.operands[7:0]};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus2);
+                end
+            end
+            8'hF5: begin  // SBC zero page, X
+                zp_addr = cur.operands[7:0] + cur.rx;
+                target_addr = {8'h00, zp_addr};
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus2);
+                end
+            end
+            8'hED: begin  // SBC absolute
+                target_addr = cur.operands & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'hFD: begin  // SBC absolute, X
+                target_addr = (cur.operands + {8'h00, cur.rx}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'hF9: begin  // SBC absolute, Y
+                target_addr = (cur.operands + {8'h00, cur.ry}) & 16'hFFFF;
+                if (cur.fetched_data_bytes == 0) begin
+                    next = request_data_fetch(next, target_addr);
+                end else begin
+                    next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus3);
+                end
+            end
+            8'hE1: begin  // SBC (indirect, X)
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        zp_addr = cur.operands[7:0] + cur.rx;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        zp_addr = cur.operands[7:0] + cur.rx + 8'h01;
+                        target_addr = {8'h00, zp_addr};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus2);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            8'hF1: begin  // SBC (indirect), Y
+                unique case (cur.fetched_data_bytes)
+                    0: begin
+                        target_addr = {8'h00, cur.operands[7:0]};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    1: begin
+                        next.fetched_data[7:0] = cur.dout_r;
+                        target_addr = {8'h00, (cur.operands[7:0] + 8'h01) & 8'hFF};
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    2: begin
+                        target_addr = ({cur.dout_r, cur.fetched_data[7:0]} + {8'h00, cur.ry}) & 16'hFFFF;
+                        next = request_data_fetch(next, target_addr);
+                    end
+                    3: begin
+                        next = complete_sbc(cur, next, cur.dout_r, cur.pc_plus2);
+                    end
+                    default: begin handled = 1'b0; end
+                endcase
+            end
+            default: begin
+                handled = 1'b0;
+            end
+        endcase
+
+        return handled;
+    endfunction
+
+    function automatic cpu_ctx_t complete_adc(input cpu_ctx_t cur, cpu_ctx_t next,
+                                              logic [7:0] operand, logic [15:0] next_pc);
+        logic [8:0] temp;
+        temp = (cur.ra + operand + (cur.flg_c ? 1 : 0)) & 9'h1FF;
+        next.flg_c = temp[8];
+        next.flg_v = (~(cur.ra[7] ^ operand[7]) & (cur.ra[7] ^ temp[7])) ? 1 : 0;
+        next.ra = temp[7:0];
+        next = update_logic_flags(next, next.ra);
+        next = return_to_opcode_fetch(next, next_pc);
+        return next;
+    endfunction
+
+    function automatic cpu_ctx_t complete_sbc(input cpu_ctx_t cur, cpu_ctx_t next,
+                                              logic [7:0] operand, logic [15:0] next_pc);
+        logic [8:0] temp;
+        temp = (cur.ra - operand - (cur.flg_c ? 0 : 1)) & 9'h1FF;
+        next.flg_c = ~temp[8];
+        next.flg_v = ((cur.ra[7] ^ operand[7]) & (cur.ra[7] ^ temp[7])) ? 1 : 0;
+        next.ra = temp[7:0];
+        next = update_logic_flags(next, next.ra);
+        next = return_to_opcode_fetch(next, next_pc);
+        return next;
+    endfunction
+
     function automatic logic calc_decode_inc_dec_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
         logic handled;
         logic [15:0] target_addr;
@@ -1506,6 +1857,12 @@ package cpu_fsm_next_pkg;
                     if (handled) begin
                         next.fetched_data_bytes = 0;
                     end
+                end
+                if (!handled) begin
+                    handled = calc_decode_control_flow_next(cur, next);
+                end
+                if (!handled) begin
+                    handled = calc_decode_adc_sbc_next(cur, next);
                 end
                 if (!handled) begin
                     handled = calc_decode_inc_dec_next(cur, next);

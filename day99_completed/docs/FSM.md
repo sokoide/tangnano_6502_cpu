@@ -43,14 +43,14 @@
 ## 現在完了している部分
 
 - Step1〜3：`next_state`/`next_fetch_stage` の追加、Boot〜Fetch 系の next-state を `cpu_fsm_next_pkg` に切り出し。
-- Step4（Step4.1〜4.11）：`cpu_ctx_t` と `calc_cpu_next()` の導入により `transfers`〜`store` の opcode カテゴリを `cpu_ctx_t` の副作用で処理する構造が完成。また `calc_decode_inc_dec_next()` を追加して INC/DEC や INX/INY/DEX/DEY を組み込んだ。
+- Step4（Step4.1〜4.11）：`cpu_ctx_t` と `calc_cpu_next()` の導入により `transfers`〜`store` の opcode カテゴリを `cpu_ctx_t` の副作用で処理する構造が完成。さらに `calc_decode_control_flow_next()` で JMP/JSR/RTS/PHA/PLA/PHP、`calc_decode_adc_sbc_next()` で ADC/SBC を完全に `cpu_ctx_t` の純粋関数に移行し、`calc_decode_inc_dec_next()` で INC/DEC ファミリを追加した。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
 ## 現在取り組んでいるステップ
 
-- Step4 の残りとして、制御フロー系（JMP/JSR/RTS/PHA/PLA/PHP）と ADC/SBC 等の decode/execute ロジックを `calc_cpu_next()` に追加し、`state_decode_execute()` を純粋な `calc_cpu_next()` 呼び出しへ移行する。
-- `cpu_ctx_t` を操作する形へ `state_*_tasks.sv` / `cpu_exec_*_pkg` を順次更新し、`next_state`/`next_fetch_stage` への直接書き込みを排除。
+- Step4 の残りとして、`state_*_tasks.sv` / `cpu_exec_*_pkg` を `cpu_ctx_t` の field 操作に移行し、`next_state`/`next_fetch_stage` への直接書き込みを排除しながら 2 process FSM を完成させる。
 - 実機向け `make -C day99_completed BOARD=9k download` は PasteBoard/Connection Invalid の警告があるものの TangNano実機で LCD 表示含め正常動作を確認済み。
+- `make -C day99_completed BOARD=9k download` の最新実行でも実機表示/VRAM操作が問題なく、現在の refactor が実機互換性を維持していることを確認済み。
 
 ## 残りのステップ
 
