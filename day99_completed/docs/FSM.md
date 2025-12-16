@@ -47,6 +47,7 @@
 - Step4（実装側の進捗）：`cpu_ctx_t` と `calc_cpu_next()` を追加し、`calc_cpu_next()` 内で `transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store`〜`control_flow`〜`adc/sbc`〜`inc/dec` の命令カテゴリを「pure な次状態計算」として実装済み。
 - `DECODE_EXECUTE` は `calc_cpu_next()` の結果（`next_ctx`）を `state_decode_tasks.sv` でレジスタ/出力へ反映するように配線済み（legacy の `cpu_exec_*_pkg` 呼び出しは縮退済み）。
 - `state_boot_*`（`INIT/INIT_VRAM/INIT_RAM`）は `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済みで、`make -C day99_completed BOARD=9k download` で実機動作も確認済み。
+- `state_fetch_*`（`FETCH_REQ/FETCH_WAIT/FETCH_RECV`）も `calc_cpu_next()` の結果（`next_ctx`）を反映する形へ移行済みで、`make -C day99_completed BOARD=9k download` で実機動作も確認済み。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
 ## 現在取り組んでいるステップ
