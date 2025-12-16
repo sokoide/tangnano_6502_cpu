@@ -327,6 +327,86 @@ package cpu_fsm_next_pkg;
     return handled;
   endfunction
 
+  function automatic logic calc_decode_flags_custom_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+    logic handled;
+    handled = 1'b1;
+
+    unique case (cur.opcode)
+      8'h18: begin  // CLC
+        next.flg_c = 1'b0;
+        next.pc = cur.pc_plus1;
+        next.adb = cur.pc_plus1[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      8'hB8: begin  // CLV
+        next.flg_v = 1'b0;
+        next.pc = cur.pc_plus1;
+        next.adb = cur.pc_plus1[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      8'h38: begin  // SEC
+        next.flg_c = 1'b1;
+        next.pc = cur.pc_plus1;
+        next.adb = cur.pc_plus1[14:0] & RAMW;
+        next.state = FETCH_REQ;
+        next.fetch_stage = FETCH_OPCODE;
+      end
+      8'hCF: begin  // CVR
+        next.state = CLEAR_VRAM;
+      end
+      8'hDF: begin  // IFO
+        if (cur.operands != 16'hFFFF) begin
+          next.show_info_counter = 32'h0;
+          next.prev_state = DECODE_EXECUTE;
+          next.state = SHOW_INFO;
+          next.show_info_stage = SHOW_INFO_FETCH;
+        end else begin
+          next.show_info_counter = 32'h0;
+          next.pc = cur.pc_plus3;
+          next.adb = cur.pc_plus3[14:0] & RAMW;
+          next.state = FETCH_REQ;
+          next.fetch_stage = FETCH_OPCODE;
+        end
+      end
+      8'hEF: begin  // HLT
+        next.state = HALT;
+      end
+      8'hFF: begin  // WVS
+        unique case (cur.vsync_stage)
+          0: begin
+            next.vsync_stage = (cur.vsync_sync == 1'b1) ? 1 : 2;
+          end
+          1: begin
+            if (cur.vsync_sync == 1'b0) begin
+              next.vsync_stage = 2;
+            end
+          end
+          2: begin
+            if (cur.vsync_sync == 1'b1) begin
+              if (cur.operands[7:0] == 8'h00) begin
+                next.vsync_stage = 0;
+                next.pc = cur.pc_plus2;
+                next.adb = cur.pc_plus2[14:0] & RAMW;
+                next.state = FETCH_REQ;
+                next.fetch_stage = FETCH_OPCODE;
+              end else begin
+                next.operands[7:0] = cur.operands[7:0] - 1'b1;
+                next.vsync_stage   = 1;
+              end
+            end
+          end
+        endcase
+      end
+      default: begin
+        handled = 1'b0;
+      end
+    endcase
+
+    return handled;
+  endfunction
+
   function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
     cpu_ctx_t  next = cur;
     fsm_next_t fsm;
@@ -418,7 +498,11 @@ package cpu_fsm_next_pkg;
         endcase
       end
       DECODE_EXECUTE: begin
-        calc_decode_transfers_next(cur, next);
+        logic handled;
+        handled = calc_decode_transfers_next(cur, next);
+        if (!handled) begin
+          handled = calc_decode_flags_custom_next(cur, next);
+        end
       end
       default: begin
         // Keep defaults.
