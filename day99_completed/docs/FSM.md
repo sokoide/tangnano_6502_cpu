@@ -32,9 +32,10 @@
 1. **Step1〜3（next_state 導入と Boot/Fetch の切り出し）**
    - `cpu.sv` に `next_state`/`next_fetch_stage` を追加し、Boot〜Fetch 系状態の next-state ロジックを `cpu_fsm_next_pkg` へ移して `always_comb`/`always_ff` の分離準備を完了。
 2. **Step4（cpu_ctx_t と calc_cpu_next）**
-   - `cpu_ctx_t` と `calc_cpu_next(cur,in)` を導入し、`transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store` までの opcode カテゴリを `cpu_ctx_t` の副作用計算へ順に移す。
+   - `cpu_ctx_t` と `calc_cpu_next(cur,in)` を導入し、命令カテゴリを `cpu_ctx_t` 上の次状態計算（副作用含む）として実装する。
+   - 注意: 現時点の `cpu.sv` は `next_ctx = calc_cpu_next(...)` を計算しているが、レジスタ/出力へはまだ反映していない（配線は未完了）。
 3. **未完了カテゴリの統合**
-   - 残る ADC/SBC 系―BRK/IRQ などの decode/execute ロジックを `calc_cpu_next()` に取り込み、`state_decode_execute()` を `calc_cpu_next()` 呼び出しに限定。
+   - 残る BRK/IRQ などの decode/execute ロジックを `calc_cpu_next()` に取り込み、最終的に `state_decode_execute()` を `calc_cpu_next()` の結果を反映する薄いラッパにする。
 4. **`cpu_ctx_t` ベースへのタスク移行**
    - `state_*_tasks.sv` や `cpu_exec_*_pkg` を `cpu_ctx_t` の field 操作へリファクタし、`next_state`/`next_fetch_stage` への直接書き込みを排除。
 5. **2-process FSM 完成**
@@ -43,20 +44,21 @@
 ## 現在完了している部分
 
 - Step1〜3：`next_state`/`next_fetch_stage` の追加、Boot〜Fetch 系の next-state を `cpu_fsm_next_pkg` に切り出し。
-- Step4（Step4.1〜4.11）：`cpu_ctx_t` と `calc_cpu_next()` の導入により `transfers`〜`store` の opcode カテゴリを `cpu_ctx_t` の副作用で処理する構造が完成。さらに `calc_decode_control_flow_next()` で JMP/JSR/RTS/PHA/PLA/PHP、`calc_decode_adc_sbc_next()` で ADC/SBC を完全に `cpu_ctx_t` の純粋関数に移行し、`calc_decode_inc_dec_next()` で INC/DEC ファミリを追加した。
+- Step4（実装側の進捗）：`cpu_ctx_t` と `calc_cpu_next()` を追加し、`calc_cpu_next()` 内で `transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store`〜`control_flow`〜`adc/sbc`〜`inc/dec` の命令カテゴリを「pure な次状態計算」として実装済み。
+- ただし現時点では `calc_cpu_next()` の結果（`next_ctx`）を `cpu.sv` のレジスタ/出力へはまだ反映しておらず、`DECODE_EXECUTE` は `state_decode_tasks.sv` から legacy の `cpu_exec_*_pkg` を呼ぶ経路が残っている（配線・置換は未完了）。
 - `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
 ## 現在取り組んでいるステップ
 
-- Step4 の残りとして、`state_*_tasks.sv` / `cpu_exec_*_pkg` を `cpu_ctx_t` の field 操作に移行し、`next_state`/`next_fetch_stage` への直接書き込みを排除しながら 2 process FSM を完成させる。
-- 実機向け `make -C day99_completed BOARD=9k download` は PasteBoard/Connection Invalid の警告があるものの TangNano実機で LCD 表示含め正常動作を確認済み。
-- `make -C day99_completed BOARD=9k download` の最新実行でも実機表示/VRAM操作が問題なく、現在の refactor が実機互換性を維持していることを確認済み。
+- Step4 の残りとして、まず `DECODE_EXECUTE` だけでも `calc_cpu_next(cur,in)` の結果（`next_ctx`）をレジスタ/出力へ反映する“配線”を追加し、legacy の `cpu_exec_*_pkg` を段階的に無効化していく。
+- そのうえで `state_*_tasks.sv` / `cpu_exec_*_pkg` を `cpu_ctx_t` の field 操作（`cur/next`）に移行し、`next_state`/`next_fetch_stage` への直接書き込みを排除しながら 2 process FSM を完成させる。
 
 ## 残りのステップ
 
-1. `cpu_ctx_t` で保存すべき副作用すべてを `calc_cpu_next()` に集約、BRK/IRQ や割込み前後の処理も同様にピュア関数化。
-2. `state_*_tasks.sv` や `cpu_exec_*_pkg` のリファクタ完了後、`always_ff` を `cur <= next;` だけに絞った 2-process FSM を完全化。
-3. フォーマット、Verilator テスト、実機ダウンロード（PasteBoard エラー対策含む）を繰り返して整合性を確認しながら完了の基準を満たす。
+1. `cpu.sv` に `next_ctx` の反映パスを段階的に導入（最初は `DECODE_EXECUTE` のみ、次に `WRITE_REQ`/`FETCH_*`/その他状態へ拡大）し、二重に副作用が出ないよう legacy 経路を縮退させる。
+2. `state_*_tasks.sv` を `cpu_ctx_t` ベースの実装へ寄せ、最終的に `state_machine_step()` は `calc_cpu_next()` 呼び出し＋結果適用の薄いラッパ（または廃止）にする。
+3. `always_ff` は `cur <= next;`（と入力同期）だけに絞り、2-process FSM を完成させる。
+4. BRK/IRQ など未実装命令がある場合は `calc_cpu_next()` に統合し、`make format` / `make -C day99_completed BOARD=9k clean test` / `make -C day99_completed BOARD=9k download` を繰り返して整合性を確認する。
 
 ## Step4 ロールアウト順
 
