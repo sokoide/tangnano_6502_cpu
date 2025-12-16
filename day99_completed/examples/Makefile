@@ -6,8 +6,8 @@
 # SRCS = simple2.s
 # SRCS = simple3.s
 # SRCS = simple4.s
-# SRCS = simple5.s
-SRCS = hello_world.s
+SRCS = simple5.s
+# SRCS = hello_world.s
 # SRCS = hello_world_scroll.s
 
 # target System Verilogy file path which is included by src/top.sv
@@ -28,7 +28,7 @@ DA = da65
 OD = od65
 CFG = baremetal.cfg
 
-.PHONY: all disass od clean
+.PHONY: all disass od clean 
 
 all: sv
 	cat $(LST)

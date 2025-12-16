@@ -74,6 +74,17 @@ For more details, refer to the documentation:
 
 ## 🧠 6502 CPU Implementation
 
+## 🧭 How this differs from day06-10 (educational CPU)
+
+The day06-10 folders are an educational, step-by-step 6502 build-up (components → integration). For teaching, their module boundaries and control style intentionally prioritize clarity and incremental learning, so they do not necessarily match day99.
+
+- **day06-10**: split into learning-friendly blocks (registers/ALU/decoder/memory interface/control unit) and evolve gradually.
+- **day99**: an integrated, “real system” target (LCD + VRAM + custom opcodes). The CPU core is refactored around `cpu_ctx_t` and converged to a **2-process FSM** (compute `next` in `always_comb`, update `cur <= next` in `always_ff`) to make maintenance/refactors safer.
+
+For education, keeping day06-10 as-is is usually better. If you want a more production-oriented reference for safe refactors and extensibility, day99’s 2-process FSM structure is the intended example.
+
+See `day99_completed/docs/FSM.md` and `day99_completed/docs/README_architecture_en.md` for details.
+
 ### Custom Instructions
 
 In addition to the standard 6502 instruction set, this CPU includes custom opcodes for efficient hardware interaction:
