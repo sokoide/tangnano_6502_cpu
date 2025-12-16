@@ -491,6 +491,42 @@ package cpu_fsm_next_pkg;
     return handled;
   endfunction
 
+  function automatic logic calc_decode_logic_next(input cpu_ctx_t cur, ref cpu_ctx_t next);
+    logic handled;
+    logic [7:0] result;
+
+    handled = 1'b1;
+    unique case (cur.opcode)
+      8'h29: begin  // AND immediate
+        next.ra = cur.ra & cur.operands[7:0];
+        result  = next.ra;
+      end
+      8'h49: begin  // EOR immediate
+        next.ra = cur.ra ^ cur.operands[7:0];
+        result  = next.ra;
+      end
+      8'h09: begin  // ORA immediate
+        next.ra = cur.ra | cur.operands[7:0];
+        result  = next.ra;
+      end
+      default: begin
+        handled = 1'b0;
+        result  = 8'h00;
+      end
+    endcase
+
+    if (handled) begin
+      next.flg_z = (result == 8'h00);
+      next.flg_n = result[7];
+      next.pc = cur.pc_plus2;
+      next.adb = cur.pc_plus2[14:0] & RAMW;
+      next.state = FETCH_REQ;
+      next.fetch_stage = FETCH_OPCODE;
+    end
+
+    return handled;
+  endfunction
+
   function automatic cpu_ctx_t calc_cpu_next(input cpu_ctx_t cur, input cpu_in_t in);
     cpu_ctx_t  next = cur;
     fsm_next_t fsm;
@@ -592,6 +628,9 @@ package cpu_fsm_next_pkg;
         end
         if (!handled) begin
           handled = calc_decode_compare_next(cur, next);
+        end
+        if (!handled) begin
+          handled = calc_decode_logic_next(cur, next);
         end
       end
       default: begin

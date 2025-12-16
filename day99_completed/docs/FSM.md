@@ -208,6 +208,13 @@
 ### 2025-12-16: Step4.7 (logic/shifts/store など残余カテゴリの移行)
 - 残る `cpu_exec_logic_pkg`/`cpu_exec_shifts_pkg`/`cpu_exec_store_pkg` などの段階的移行計画を立て、フラグ更新や RAM/VRAM 出力を `next` に持たせながら `calc_cpu_next()` へ組み込む。必要に応じて helper 関数を増やして共通副作用をまとめる。
 - 各カテゴリ移行後は `calc_cpu_next()` に割り当てる順を明文化するとともに `format`/`make BOARD=9k clean test`/`make BOARD=9k download` のループを回し、動作整合性を保ちながら `docs/FSM.md` に記録してください。
+- `calc_cpu_next()` の logic/shifts/store 周辺への拡張も並行して進めており、現時点では `calc_decode_transfers/flags_custom/branches/compare` までが完成。次フェーズでは `cpu_exec_logic_pkg` などを順次追加して decode→execute を `next` だけで完結させるフェーズに移行します。
+- 実機 `make BOARD=9k download` も別セッションで成功し、LCD/VRAM 表示が正常であることを確認。今後も各ステップのあと `format`/`clean test`/`download` を実行して整合性を検証してください。
+
+### 2025-12-16: Step4.8 (logic immediate を cpu_ctx_t へ移行)
+- `calc_decode_logic_next()` を追加し、AND/EOR/ORA の即値型パターンを `next` に閉じる形で実装。レジスタ更新とフラグ(C/Z/N)、`pc`/`adb` の更新を `cpu_ctx_t` へ反映し、`FETCH_REQ`/`FETCH_OPCODE` 復帰を返すことで logic 即値命令がコンテキスト上で完結するようになった。
+- `calc_cpu_next()` の opcode フローは `transfers → flags/custom → branches → compare → logic` という段階的フォールバックになり、decode の代表的カテゴリを順に `calc_cpu_next()` が処理できる構造を確立。
+- 今後は logic の残り（ゼロページやメモリ読み出し付き、ZP,X/ABS, X/Yなど）は helper を拡張し、各カテゴリ移行ごとに `format`/`make BOARD=9k clean test`/`make BOARD=9k download` を回して safe であることを確認しながら進める。
 - `calc_cpu_next()` の logic/shifts/store 周りへの拡張も並行して進めており、現時点では `calc_decode_transfers/flags_custom/branches/compare` までが完成。次フェーズでは `cpu_exec_logic_pkg` などを順次追加して decode→execute を `next` だけで完結させるフェーズに移行します。
 - 実機 `make BOARD=9k download` も成功し、LCD/VRAM 表示が正常であることを確認。今後も各ステップのあと `format`/`clean test`/`download` を実行して整合性を検証してください。
 
