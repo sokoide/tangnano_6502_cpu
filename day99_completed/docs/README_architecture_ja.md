@@ -198,6 +198,26 @@ graph TB
     end
 ```
 
+### 2プロセス FSM リファクタ
+
+`cpu_fsm_next_pkg.sv` は boot/fetch 系を `calc_boot_fetch_next()`、デコード〜実行を `calc_cpu_next(cur,in)` で計算する 2プロセス FSM の核です。`calc_cpu_next` は `calc_decode_transfers_next`、`calc_decode_flags_custom_next`、`calc_decode_branches_next`、`calc_decode_compare_next`、`calc_decode_logic_next`、`calc_decode_shifts_next`、`calc_decode_load_store_next`、`calc_decode_store_next` などのカテゴリ別ヘルパーを順次呼び出し、命令ごとの副作用を `cpu_ctx_t` に記録します。INC/DEC、制御フロー、ADC/SBC などの残りカテゴリは [`FSM.md`](./FSM.md) に記録された手順で順次追加中です。
+
+```mermaid
+graph LR
+    calc_cpu_next["calc_cpu_next(cur,in)"]
+    calc_cpu_next --> transfers["calc_decode_transfers_next"]
+    calc_cpu_next --> flags["calc_decode_flags_custom_next"]
+    calc_cpu_next --> branches["calc_decode_branches_next"]
+    calc_cpu_next --> compare["calc_decode_compare_next"]
+    calc_cpu_next --> logic["calc_decode_logic_next"]
+    calc_cpu_next --> shifts["calc_decode_shifts_next"]
+    calc_cpu_next --> load_store["calc_decode_load_store_next"]
+    calc_cpu_next --> store["calc_decode_store_next"]
+    calc_cpu_next --> incdec["calc_decode_inc_dec_next"]
+    calc_cpu_next --> control_flow["calc_decode_control_flow_next"]
+    calc_cpu_next --> adc_sbc["calc_decode_adc_sbc_next"]
+```
+
 ```systemverilog
 // メインCPUモジュール構造
 module cpu (

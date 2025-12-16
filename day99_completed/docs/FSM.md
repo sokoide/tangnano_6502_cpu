@@ -27,23 +27,36 @@
 6. **テスト＋ドキュメント**
    - `make BOARD=9k clean test` を繰り返し、挙動が変わらないことを確認しつつ `docs/FSM.md` に進捗を記録。
 
-## 現在の状況（要約）
+## 作業ステップ構成
 
-- Step1〜3 は完了しており、`cpu.sv` で `next_state`/`next_fetch_stage` を導入し、Boot〜Fetch 系の next-state ロジックを `cpu_fsm_next_pkg` に切り出して `always_comb`/`always_ff` の分離準備を整えてある。
-- Step4（コンテキスト化）の中心になっている `cpu_ctx_t`/`cpu_fsm_next_pkg::calc_cpu_next()` は `transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store` の opcode カテゴリを順番に担当し、各 helper は `cpu_ctx_t` 上で副作用を返しつつ `state_decode_execute()` は `calc_cpu_next()` の呼び出しだけで完結するようになっている。
-- `calc_cpu_next()` の処理対象は `transfers`〜`store` までを網羅しており、残る命令は ADC/SBC 系や制御系（BRK/IRQ など）が中心。
-- `make format` / `make -C day99_completed BOARD=9k clean test` は既存の `WIDTHEXPAND`/`WIDTHTRUNC`/`UNUSEDSIGNAL` 警告のみに留まり、`make -C day99_completed BOARD=9k download` は PasteBoard/Connection Invalid に起因する `gw_sh` セグフォルトで不安定（別セッションでは TangNano 実機動作確認済み）。
+1. **Step1〜3（next_state 導入と Boot/Fetch の切り出し）**
+   - `cpu.sv` に `next_state`/`next_fetch_stage` を追加し、Boot〜Fetch 系状態の next-state ロジックを `cpu_fsm_next_pkg` へ移して `always_comb`/`always_ff` の分離準備を完了。
+2. **Step4（cpu_ctx_t と calc_cpu_next）**
+   - `cpu_ctx_t` と `calc_cpu_next(cur,in)` を導入し、`transfers`〜`flags/custom`〜`branches`〜`compare`〜`logic`〜`shifts`〜`load`〜`store` までの opcode カテゴリを `cpu_ctx_t` の副作用計算へ順に移す。
+3. **未完了カテゴリの統合**
+   - 残る ADC/SBC 系―BRK/IRQ などの decode/execute ロジックを `calc_cpu_next()` に取り込み、`state_decode_execute()` を `calc_cpu_next()` 呼び出しに限定。
+4. **`cpu_ctx_t` ベースへのタスク移行**
+   - `state_*_tasks.sv` や `cpu_exec_*_pkg` を `cpu_ctx_t` の field 操作へリファクタし、`next_state`/`next_fetch_stage` への直接書き込みを排除。
+5. **2-process FSM 完成**
+   - `always_ff` では `cur <= next;` のみを実行し、`make format`/`make -C day99_completed BOARD=9k clean test`/`make -C day99_completed BOARD=9k download` を通じて旧実装との一致と実機動作（PasteBoard問題含む）を確認。
 
-## 完了済みステップ
+## 現在完了している部分
 
-1. `cpu.sv` に `next_state`/`next_fetch_stage` を追加し、boot〜fetch 状態の next-state 計算を `cpu_fsm_next_pkg` に切り出した（Step1〜3 相当）。
-2. `cpu_ctx_t` および `calc_cpu_next(cur,in)` を導入し、`store` までの opcode カテゴリを `cpu_ctx_t` の次状態計算で順次処理する構造を確立した（Step4.1〜4.11）。
+- Step1〜3：`next_state`/`next_fetch_stage` の追加、Boot〜Fetch 系の next-state を `cpu_fsm_next_pkg` に切り出し。
+- Step4（Step4.1〜4.11）：`cpu_ctx_t` と `calc_cpu_next()` の導入により `transfers`〜`store` の opcode カテゴリを `cpu_ctx_t` の副作用で処理する構造が完成。
+- `make format` / `make -C day99_completed BOARD=9k clean test` は既存警告のみ、`make -C day99_completed BOARD=9k download` も別セッションで実機対応確認済み（`gw_sh` PasteBoard/Connection Invalid によるセグフォルトは継続）。
 
-## 今後必要なステップ
+## 現在取り組んでいるステップ
 
-1. `calc_cpu_next()` に残った ADC/SBC 系・BRK/IRQ などの decode/execute ロジックを逐次取り込み、`cpu_ctx_t` の next 値に副作用を閉じる。
-2. `state_*_tasks.sv` や `cpu_exec_*_pkg` を `cpu_ctx_t` のフィールド操作へリファクタし、`next_state`/`next_fetch_stage` の直接書き込みを完全に排除。
-3. `always_ff` では `cur <= next;` のみ実行する形を堅持し、`make format`/`make -C day99_completed BOARD=9k clean test`/`make -C day99_completed BOARD=9k download` で安定性を確認。GUI側 PasteBoard 問題は継続的に再試行して実機確認の再現性を保つ。
+- Step4 の残りとして、ADC/SBC 系・BRK/IRQ などの未移行 opcode を `calc_cpu_next()` に追加して `state_decode_execute()` を `calc_cpu_next()` の呼び出しだけにする。
+- `cpu_ctx_t` を操作する形へ `state_*_tasks.sv` / `cpu_exec_*_pkg` を順次更新し、`next_state`/`next_fetch_stage` への直接書き込みを排除。
+- 実機向け `make -C day99_completed BOARD=9k download` は PasteBoard/Connection Invalid の警告があるものの TangNano実機で LCD 表示含め正常動作を確認済み。
+
+## 残りのステップ
+
+1. `cpu_ctx_t` で保存すべき副作用すべてを `calc_cpu_next()` に集約、BRK/IRQ や割込み前後の処理も同様にピュア関数化。
+2. `state_*_tasks.sv` や `cpu_exec_*_pkg` のリファクタ完了後、`always_ff` を `cur <= next;` だけに絞った 2-process FSM を完全化。
+3. フォーマット、Verilator テスト、実機ダウンロード（PasteBoard エラー対策含む）を繰り返して整合性を確認しながら完了の基準を満たす。
 
 ## Step4 ロールアウト順
 

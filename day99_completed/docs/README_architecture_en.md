@@ -204,6 +204,26 @@ graph TB
     end
 ```
 
+### State Machine Refactor (2-process FSM)
+
+`cpu_fsm_next_pkg.sv` centralizes the combinational portion of the CPU's FSM: `calc_boot_fetch_next()` handles the boot/fetch states, while `calc_cpu_next(cur,in)` evaluates the next state, fetch stage, registers, and bus side-effects for an instruction. `calc_cpu_next` dispatches to per-category helpers such as `calc_decode_transfers_next`, `calc_decode_flags_custom_next`, `calc_decode_branches_next`, `calc_decode_compare_next`, `calc_decode_logic_next`, `calc_decode_shifts_next`, `calc_decode_load_store_next`, and `calc_decode_store_next`. The remaining categories (INC/DEC, control flow, ADC/SBC) are being pulled into this combinational pipeline as described in [`FSM.md`](./FSM.md).
+
+```mermaid
+graph LR
+    calc_cpu_next["calc_cpu_next(cur,in)"]
+    calc_cpu_next --> transfers["calc_decode_transfers_next"]
+    calc_cpu_next --> flags["calc_decode_flags_custom_next"]
+    calc_cpu_next --> branches["calc_decode_branches_next"]
+    calc_cpu_next --> compare["calc_decode_compare_next"]
+    calc_cpu_next --> logic["calc_decode_logic_next"]
+    calc_cpu_next --> shifts["calc_decode_shifts_next"]
+    calc_cpu_next --> load_store["calc_decode_load_store_next"]
+    calc_cpu_next --> store["calc_decode_store_next"]
+    calc_cpu_next --> incdec["calc_decode_inc_dec_next"]
+    calc_cpu_next --> control_flow["calc_decode_control_flow_next"]
+    calc_cpu_next --> adc_sbc["calc_decode_adc_sbc_next"]
+```
+
 ```systemverilog
 // Main CPU module structure
 module cpu (
