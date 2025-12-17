@@ -8,8 +8,10 @@ module font_rom (
     logic [7:0] data_reg;
     assign data = data_reg;
 
+    logic [3:0] row;
+
     always_comb begin
-        logic [3:0] row = addr[3:0];
+        row = addr[3:0];
         unique case (addr[11:4])
             8'h41: begin
                 unique case (row)

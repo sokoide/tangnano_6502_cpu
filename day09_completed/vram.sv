@@ -1,3 +1,5 @@
+`include "include/consts.svh"
+
 module vram (
     input  logic       clk,
     input  logic       rst_n,
@@ -5,8 +7,6 @@ module vram (
     output logic [7:0] data
 );
 
-    localparam int COLUMNS = 60;
-    localparam int ROWS = 17;
     localparam int DEPTH = COLUMNS * ROWS;
 
     localparam int ROW0_LEN = 9;

@@ -19,8 +19,9 @@ module top_core (
     logic [7:0] vram_data;
     logic [11:0] font_addr;
     logic [7:0] font_data;
+    /* verilator lint_off UNUSEDSIGNAL */
     logic vsync;
-
+    /* verilator lint_on UNUSEDSIGNAL */
     lcd lcd_inst (
         .PixelClk(LCD_CLK),
         .nRST(rst_n),
