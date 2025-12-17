@@ -9,6 +9,8 @@ This is a 10-day step-by-step guide to learning about the 6502 CPU and LCD contr
 
 ## 📚 Learning Overview
 
+Day 04 now focuses solely on the LCD display pipeline (see `day04/README.md` and `day04_completed/README.md`), while Days 05–10 build the 6502 CPU in front of that same display chain. The new `docs/day05-10_curriculum.md` plus the worksheets in `day05/`–`day10/` and their completed counterparts (`day05_completed/`–`day10_completed/`) describe how each lesson layers registers, decoder/ALU, memory, CPU, VRAM, and assembly tooling so the LCD always reflects your progress.
+
 In this course, you will learn step-by-step from the basics of FPGAs and SystemVerilog to a complete 6502 CPU implementation. Each day balances theory and practice, allowing you to create projects that actually run on the Tang Nano.
 
 ## 🎯 Learning Objectives
@@ -171,6 +173,10 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 - 7-segment decoder
 - 4-bit ALU (addition, logical operations)
 
+_This lesson feeds into the Day 05–Day 10 curriculum (`docs/day05-10_curriculum.md`). Keep the LCD pipeline alive so you can observe the addressing/decoder state on-screen._
+
+_Day 10 ties the assembly toolchain into the record: use `docs/day05-10_curriculum.md` and `day05`–`day10` worksheets before running the `day10_completed/` demos that drive the LCD._
+
 **Practice Time:** Approx. 2 hours
 
 - Simulation waveform display
@@ -198,140 +204,24 @@ make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh 
 
 ---
 
-### Day 04: 6502 CPU Architecture Overview
+### Day 04: LCD
 
-**Topics:**
-
-- History and features of the 6502 CPU
-- Register set (A, X, Y, SP, PC, P)
-- Memory map and addressing
-- Instruction fetch, decode, and execute cycle
-- Flag register and its operation
-
-**Deliverables:**
-
-- SystemVerilog model of the 6502 register set
-- Simple instruction decoder (for a subset of instructions)
-
-**Practice Time:** Approx. 1 hour
+Day 04 is purely about bringing the Day 09 LCD pipeline forward: the PLL, VRAM/font ROM, and `lcd.sv` character renderer are already wired so the 480×272 panel displays text before the CPU exists. Follow `day04/README.md` and `day04_completed/README.md` for the hardware and simulation walkthroughs, and use `day04_completed/top_9k.sv` / `top_20k.sv` plus the shared `lcd/` RTL to drive the TFT connector directly.
 
 ---
 
-### Day 05: 6502 Instruction Set and Addressing Modes
+## 🧩 Day 05–Day 10 Curriculum Flow
 
-**Topics:**
+The second half of the course is a cohesive micro-curriculum that walks through the full CPU stack:
 
-- Detailed explanation of the 13 addressing modes of the 6502
-- Classification and operation of major instruction groups
-- Load/store instructions (LDA, STA, etc.)
-- Arithmetic instructions (ADC, SBC, AND, etc.)
-- Branch and jump instructions (BEQ, JMP, JSR, etc.)
+1. **Day 05 (Instruction Set & Addressing)** – Build the addressing mode calculator and classify every major instruction group so that opcodes can be mapped to hardware behaviors.
+2. **Day 06 (Decoder + Control Unit)** – Translate the classification into concrete control signals, state transitions, and flag updates.
+3. **Day 07 (Memory Interface + Stack)** – Design the bus interface, stack pointer control, and memory demultiplexing that the decoder drives.
+4. **Day 08 (Integration & Testing)** – Hook registers, datapath, and ALU together, then validate the instruction set with simulation and on-board tests.
+5. **Day 09 (LCD + VRAM Pipeline)** – Introduce the character display hardware and font ROM so the CPU can drive a 480×272 TFT.
+6. **Day 10 (Assembly Applications)** – Use cc65 and the custom CVR/IFO/HLT/WVS instructions to put text on the LCD, scroll banners, and showcase animation.
 
-**Deliverables:**
-
-- Addressing mode calculator
-- Decode table for major instructions
-
-**Practice Time:** Approx. 2 hours
-
----
-
-### Day 06: CPU Implementation Part 1 - Decoder and ALU
-
-**Topics:**
-
-- Detailed design of the instruction decoder
-- Implementation of the Arithmetic Logic Unit (ALU)
-- Flag calculation logic (N, Z, C, V)
-- Concept of micro-instruction control
-
-**Deliverables:**
-
-- Complete instruction decoder module
-- 6502-compatible ALU module
-- Flag generation logic
-
-**Practice Time:** Approx. 3 hours
-
----
-
-### Day 07: CPU Implementation Part 2 - Memory Interface
-
-**Topics:**
-
-- Memory bus interface design
-- Implementation of stack operations
-- Optimization of zero-page access
-- Basics of memory-mapped I/O
-
-**Deliverables:**
-
-- Memory controller module
-- Stack pointer control logic
-- Address generation unit
-
-**Practice Time:** Approx. 3 hours
-
----
-
-### Day 08: CPU Implementation Part 3 - Integration and Testing
-
-**Topics:**
-
-- Integration of the CPU core
-- Instruction cycle control
-- Testing with basic 6502 programs
-- Debugging techniques and simulation
-
-**Deliverables:**
-
-- A functional 6502 CPU core
-- Verification of the basic instruction set
-- A set of test programs
-
-**Practice Time:** Approx. 4 hours
-
----
-
-### Day 09: LCD Control and System Integration
-
-**Topics:**
-
-- Principles of LCD timing control
-- RGB signal generation and VGA/LCD output
-- Design of a character display system
-- Implementation of VRAM (Video RAM)
-- How to use a font ROM
-
-**Deliverables:**
-
-- LCD controller module
-- System with character display functionality
-- Character output at 480×272 resolution
-
-**Practice Time:** Approx. 3 hours
-
----
-
-### Day 10: Assembly Programming and Applications
-
-**Topics:**
-
-- How to use the cc65 assembler
-- Practical 6502 assembly programming
-- Utilizing custom instructions (CVR, IFO, HLT, WVS)
-- Full system testing and debugging
-- Creating application programs
-
-**Deliverables:**
-
-- "Hello World" display program
-- Scrolling text display
-- Interactive demo program
-
-**Practice Time:** Approx. 2 hours
-
----
+Each day builds on the previous one, so by Day 10 you have a full 6502 CPU, VRAM pipeline, and assembly toolchain that can draw directly to the LCD. Consult `docs/day05-10_curriculum.md` and the new daily guides (`day05/README.md` through `day10/README.md`) for the recommended flow plus the corresponding completed versions (`day05_completed/`–`day10_completed/`).
 
 ## 📁 Directory Structure
 

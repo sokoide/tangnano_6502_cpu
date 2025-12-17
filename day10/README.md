@@ -227,7 +227,11 @@ DELAY_INNER:
     DEX
     BNE DELAY_OUTER
     RTS
-```
+ ```
+
+## Curriculum path
+
+Day 10 is the final stage of the Day 05–Day 10 curriculum: start with the registers/VRAM lesson in `day05/`, then walk through the decoder, memory interface, CPU core, and VRAM/LCD pipelines described in `day06`–`day09`. `docs/day05-10_curriculum.md` summarizes the flow and points back to these lessons plus the completed implementations in `day05_completed/`–`day10_completed/`.
 
 ## 🛠️ Practice 3: Scrolling Text
 
