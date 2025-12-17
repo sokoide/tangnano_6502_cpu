@@ -1,6 +1,8 @@
 // 6502 CPU Register File
 // Complete register set with proper 6502 behavior
 
+`include "../day10_completed/include/consts.svh"
+
 module cpu_registers (
     input logic clk,
     input logic rst_n,
@@ -44,7 +46,7 @@ module cpu_registers (
             index_x         <= 8'h00;
             index_y         <= 8'h00;
             stack_pointer   <= 8'hFF;  // Stack starts at $01FF
-            program_counter <= 16'hC000;  // Boot from ROM
+            program_counter <= PROGRAM_START;
         end else begin
             // Register updates
             if (reg_a_write) begin

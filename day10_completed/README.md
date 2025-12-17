@@ -50,11 +50,21 @@ Include the generated file and feed `boot_memory` into your 6502 core so it can 
 - Run `make clean` to remove generated binaries, hex files, and the `include/boot_program.sv` file (you can regenerate it later with `make include`).
 
 ## FPGA build/download
-`day10_completed` delegates the actual FPGA bitstream build to `day99_completed`. After running `make PROGRAM=<demo> include`, use the board-aware helper targets to compile or flash the Tang Nano with the freshly generated ROM:
+The Day 10 hardware example is now self-contained: it instantiates the Day 04–08 6502 CPU stack, plugs in a Day 07-style memory controller that intercepts `$E000–$E3FF` writes for the Day 09 VRAM/LCD pipeline, and feeds the generated assembly binary into the `boot_rom` module shown in `include/boot_program.sv`.
+
+After running `make include` (or building one of the `.hex` targets), run one of the Gowin helpers to synthesize or flash the Tang Nano:
 
 ```bash
 make build BOARD=9k
 make download BOARD=20k
 ```
 
-Both targets temporarily replace `day99_completed/include/boot_program.sv` with the one generated here, invoke `make -C ../day99_completed BOARD=<board>` to build/program the bitstream, and restore the original include file afterwards. You still need the Gowin tools (`gw_sh`, `programmer_cli`) on your `PATH` as described in `day99_completed/Makefile`.
+The `build`/`download` targets open `hw_9k.gprj`/`hw_20k.gprj`, compile `top_9k.sv`/`top_20k.sv`, and bundle the generated `boot_rom` along with the LCD pipeline so your program appears on the TFT.
+
+Simulation is covered by the `test` target, which runs Verilator against `tb_tft.sv` and the entire RTL stack:
+
+```bash
+make test BOARD=9k
+```
+
+You still need `gw_sh`, `programmer_cli`, and `verilator` on your `PATH` when invoking `make build/download/test`, and the `include/boot_program.sv` file must exist before synthesizing or simulating the design.

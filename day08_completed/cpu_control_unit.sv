@@ -1,6 +1,8 @@
 // 6502 CPU Control Unit
 // Main controller that orchestrates instruction execution
 
+`include "../day10_completed/include/consts.svh"
+
 /* verilator lint_off UNUSEDSIGNAL */
 /* verilator lint_off CASEINCOMPLETE */
 module cpu_control_unit (
@@ -71,10 +73,14 @@ module cpu_control_unit (
         DECODE,
         EXECUTE,
         MEMORY,
-        WRITEBACK
+        WRITEBACK,
+        CLEAR_VRAM,
+        HALT
     } cpu_state_t;
 
     cpu_state_t state, next_state;
+
+    localparam logic [7:0] VRAM_CLEAR_CHAR = 8'h20;
 
     // Internal registers
     logic [ 7:0] opcode;
@@ -82,6 +88,7 @@ module cpu_control_unit (
     logic [ 7:0] operand_high;
     logic [15:0] effective_addr;
     logic [ 7:0] fetched_data;
+    logic [ 9:0] vram_clear_counter;
 
     // Decoder outputs
     logic        decoder_mem_read;
@@ -180,6 +187,20 @@ module cpu_control_unit (
         end
     end
 
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            vram_clear_counter <= 10'd0;
+        end else if (state == CLEAR_VRAM && mem_ready) begin
+            if (vram_clear_counter == VRAM_DEPTH - 1) begin
+                vram_clear_counter <= 10'd0;
+            end else begin
+                vram_clear_counter <= vram_clear_counter + 1;
+            end
+        end else if (state != CLEAR_VRAM) begin
+            vram_clear_counter <= 10'd0;
+        end
+    end
+
     // Next state logic
     always_comb begin
         case (state)
@@ -202,7 +223,11 @@ module cpu_control_unit (
             end
 
             EXECUTE: begin
-                if (instruction_length == 2'd3 && !mem_ready) begin
+                if (opcode == 8'hCF) begin
+                    next_state = CLEAR_VRAM;
+                end else if (opcode == 8'hEF) begin
+                    next_state = HALT;
+                end else if (instruction_length == 2'd3 && !mem_ready) begin
                     next_state = EXECUTE;
                 end else if (decoder_mem_read || decoder_mem_write) begin
                     next_state = MEMORY;
@@ -221,6 +246,18 @@ module cpu_control_unit (
 
             WRITEBACK: begin
                 next_state = FETCH;
+            end
+
+            CLEAR_VRAM: begin
+                if (mem_ready && vram_clear_counter == VRAM_DEPTH - 1) begin
+                    next_state = WRITEBACK;
+                end else begin
+                    next_state = CLEAR_VRAM;
+                end
+            end
+
+            HALT: begin
+                next_state = HALT;
             end
 
             default: next_state = FETCH;
@@ -305,6 +342,16 @@ module cpu_control_unit (
                     // Simplified branch logic - always taken for demo
                     pc_branch_target = reg_pc + {{8{operand_low[7]}}, operand_low};
                 end
+            end
+
+            CLEAR_VRAM: begin
+                mem_addr = VRAM_START + vram_clear_counter;
+                mem_write = 1'b1;
+                mem_data_out = VRAM_CLEAR_CHAR;
+            end
+
+            HALT: begin
+                // Keep bus inactive while halted
             end
         endcase
     end

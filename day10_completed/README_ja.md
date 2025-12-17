@@ -49,11 +49,21 @@ make include BOOT_PROGRAM=counter_display
 - `make clean` で `.o`/`.bin`/`.hex` と `include/boot_program.sv` をすべて削除できます（再生成には `make include` を再実行）。
 
 ## FPGAビルド＆書き込み
-`day10_completed` は実際のFPGAビルドを `day99_completed` に委譲します。`make PROGRAM=<demo> include` で ROM を生成したあと、ボード指定付きの helper を使ってビルド／書き込みしてください。
+Day10 のハードウェア例はC6: Day04～Day08 の 6502 CPU スタック＋Day07 風メモリコントローラ（ `$E000～$E3FF` の VRAM 書き込みを Day09 の VRAM/LCD パイプラインに渡す）＋生成済み `include/boot_program.sv` を読み込む `boot_rom` を内包し、これだけで TFT にアセンブリデモを描画できます。
+
+ビットストリームの生成と書き込みは以下のコマンドで行います。
 
 ```bash
 make build BOARD=9k
 make download BOARD=20k
 ```
 
-これらのターゲットは一時的に `day99_completed/include/boot_program.sv` をここで生成した `include/boot_program.sv` で置き換え、`make -C ../day99_completed BOARD=<board>` を実行してビットストリームを作成（あるいは SRAM に書き込み）し、終了時に元の include ファイルを復元します。`day99_completed/Makefile` と同様に、`gw_sh`・`programmer_cli` など Gowin ツールが `PATH` にある必要があります。
+`build`/`download` は `hw_9k.gprj`/`hw_20k.gprj` を開き、`top_9k.sv`/`top_20k.sv` から LCD + CPU + `boot_rom` を合成します。`boot_rom` は `include/boot_program.sv` のデータを ROM に展開するので、発行した `.hex` と `hex_to_sv.py` で生成した ROM がそのまま CPU にロードされます。また、VRAM データは CPU 側と LCD 側で `vram.sv` によって共有され、LCD に直接表示されます。
+
+ソフトウェアをビルドしたあと、`include/boot_program.sv` を必ず生成してからこれらのターゲットを実行してください。`make test` は Verilator の `tb_tft.sv` シミュレーションで `test` コマンドを立ち上げて色の付いたピクセルが出ることを確かめるものです。
+
+```bash
+make test BOARD=9k
+```
+
+`make build/download/test` を実行するためには `gw_sh`、`programmer_cli`、`verilator` が `PATH` にある必要があります。
