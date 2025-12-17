@@ -1,0 +1,54 @@
+module vram (
+    input  logic       clk,
+    input  logic       rst_n,
+    input  logic [9:0] addr,
+    output logic [7:0] data
+);
+
+    localparam int COLUMNS = 60;
+    localparam int ROWS = 17;
+    localparam int DEPTH = COLUMNS * ROWS;
+
+    localparam int ROW0_LEN = 9;
+    localparam logic [7:0] ROW0_TEXT [0:ROW0_LEN-1] = '{ "V", "R", "A", "M", " ", "T", "E", "X", "T" };
+    localparam int ROW1_LEN = 8;
+    localparam logic [7:0] ROW1_TEXT [0:ROW1_LEN-1] = '{ "C", "H", "A", "R", " ", "L", "C", "D" };
+    localparam int ROW2_LEN = 9;
+    localparam logic [7:0] ROW2_TEXT [0:ROW2_LEN-1] = '{ "F", "P", "G", "A", " ", "S", "H", "O", "W" };
+
+    logic [7:0] ram [0:DEPTH-1];
+    logic [9:0] addr_reg;
+    logic [7:0] data_reg;
+    integer idx;
+
+    assign data = data_reg;
+
+    initial begin
+        for (idx = 0; idx < DEPTH; idx = idx + 1) begin
+            ram[idx] = 8'h20;
+        end
+
+        for (idx = 0; idx < ROW0_LEN; idx = idx + 1) begin
+            ram[1 * COLUMNS + 4 + idx] = ROW0_TEXT[idx];
+        end
+
+        for (idx = 0; idx < ROW1_LEN; idx = idx + 1) begin
+            ram[5 * COLUMNS + 8 + idx] = ROW1_TEXT[idx];
+        end
+
+        for (idx = 0; idx < ROW2_LEN; idx = idx + 1) begin
+            ram[9 * COLUMNS + 10 + idx] = ROW2_TEXT[idx];
+        end
+    end
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            addr_reg <= 10'd0;
+            data_reg <= 8'h20;
+        end else begin
+            addr_reg <= addr;
+            data_reg <= ram[addr_reg];
+        end
+    end
+
+endmodule

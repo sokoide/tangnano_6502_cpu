@@ -1,6 +1,7 @@
 // Day 09: Tang Nano 20K top-level wrapper
 //
 // 20K board: reset button is active-low (rst_n is inverted ResetButton).
+// This wrapper exposes the VRAM character display pipeline defined in top_core.sv.
 
 /* verilator lint_off DECLFILENAME */
 module top (

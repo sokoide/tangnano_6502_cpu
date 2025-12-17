@@ -1,53 +1,37 @@
-# Day 09: 480×272 RGB TFT 立ち上げ
+# Day 09: VRAM文字表示システム
 
----
+この完成版プロジェクトでは、`day09/README_ja.md` で説明されている文字表示＋VRAMアーキテクチャを実装しています。LCDのテキストバッファに事前に文字コードを書き込み、フォントROMを参照しながら 480×272 RGB TFT に文字列を出力します。
 
-🌐 Available languages:
-[English](./README.md) | [日本語](./README_ja.md)
+## 構成
+- `hw_9k.*`, `hw_20k.*`: Tang Nano 9K/20K 向けの Gowin プロジェクトファイル（`top` モジュールをトップに設定）。
+- `top_9k.sv`, `top_20k.sv`: ボード固有のリセット極性と表示出力を握るラッパーモジュール。
+- `top_core.sv`: 9MHz の PLL、`lcd` テキスト描画、フォントROM、VRAMバッファをまとめたモジュール。
+- `lcd.sv`: Day 99 から持ってきた文字表示コントローラ。VRAM からコードを取り出し、フォントROM でピクセルを生成する。
+- `vram.sv`: 「VRAM TEXT / CHAR LCD / FPGA SHOW」というメッセージで初期化された 1KB VRAM。`lcd` のリードアドレスに同期して値を返す。
+- `font_rom.sv`: デモで使うアルファベットだけを定義したフォントROM。
+- `sim/tb_tft.sv`: LCD_DEN が立ち、黒以外のピクセルが出力されることをチェックするシミュレーションベンチ。
 
-## このDayでやること
-
-このDayは **480×272 RGB TFTパネル**（RGB565 + `LCD_DEN` + `LCD_CLK`）向けです。  
-まずは実機で表示経路が生きていることを確認するため、**RGBカラーバー**を表示します。
-
-## 480×272 LCD の基本仕様
-
-- 解像度: 480×272
-- インターフェース: RGB565（R=5bit, G=6bit, B=5bit）
-- 制御: `LCD_DEN` + `LCD_CLK`（この例ではHS/VSは未使用）
-- ピクセルクロック: 約9MHz（27MHzからPLLで生成）
-
-## ビルド＆書き込み
-
-このプロジェクトでは、以下のコマンドでボードごとにTFTデモをビルド＆書き込みします。
-
+## FPGAビルド
 ```bash
-make BOARD=9k download
-make BOARD=20k download
+cd day09_completed
+make BOARD=9k
+make BOARD=20k
 ```
+`Makefile` は `day08_completed/Makefile` と同じ構成で、`gw_sh`/`programmer_cli` を探し、`hw_*.gprj` を開いて `.fs` ファイルを生成します。Gowin GUI からプロジェクトを開くときも `top` モジュールがトップとして選ばれている必要があります。
 
-## シミュレーション（Verilator）
-
+## 書き込み
 ```bash
-make test
+make download BOARD=9k
 ```
+`programmer_cli` を使って SRAM にビットストリームを書き込みます。Gowin ツールチェーンが `PATH` に入っていることを確認してください。
 
-`LCD_DEN` がアサートされ、RGB出力が一度でも非ゼロになることを確認するスモークテストです。シミュレーションではPLLはスタブ化されるため、`LCD_CLK` は実質 `XTAL_IN` と同じになります。
+## シミュレーション
+```bash
+make sim BOARD=9k
+```
+Verilator による `tb_tft.sv` シミュレーションを実行します。文字列が描画されると `LCD_DEN` が立ち、RGB 出力が黒ではなくなるはずです。
 
-## 配線
-
-`day99_completed` と同じ配線を使ってください：
-
-- `LCD_CLK`, `LCD_DEN`
-- `LCD_R[4:0]`, `LCD_G[5:0]`, `LCD_B[4:0]`
-
-ピン割り当ては以下：
-
-- `day09_completed/tft_9k.cst`
-- `day09_completed/tft_20k.cst`
-
-## ファイル構成
-
-- `day09_completed/top.sv`（タイミング生成 + カラーバー）
-- `day09_completed/tft_9k.gprj`, `day09_completed/tft_20k.gprj`
-- `day09_completed/gowin_rpll_9k/gowin_rpll9.v`, `day09_completed/gowin_rpll_20k/gowin_rpll9.v`
+## 備考
+- `lcd.sv` は VRAM（$E000）上の文字コードを取り出し、フォントROM で文字のピクセルを生成する構造になっています。
+- `vram.sv` は文字列を先読みしており、CPU が無くても画面にテキストが表示されます。
+- `font_rom.sv` にはデモで使う文字しか入っておらず、その他のコードは空白として描画されます。

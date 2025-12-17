@@ -7,7 +7,10 @@
     <FileList>
         <File path="top_9k.sv" type="file.verilog" enable="1"/>
         <File path="top_core.sv" type="file.verilog" enable="1"/>
-        <File path="tft_9k.cst" type="file.cst" enable="1"/>
+        <File path="lcd.sv" type="file.verilog" enable="1"/>
+        <File path="vram.sv" type="file.verilog" enable="1"/>
+        <File path="font_rom.sv" type="file.verilog" enable="1"/>
+        <File path="hw_9k.cst" type="file.cst" enable="1"/>
         <File path="gowin_rpll_9k/gowin_rpll9.v" type="file.verilog" enable="1"/>
     </FileList>
 </Project>
