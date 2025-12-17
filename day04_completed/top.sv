@@ -1,5 +1,5 @@
-// Day 04 Completed: 6502 CPU Architecture Overview
-// Test module for register set and basic instruction decoding
+// Day 04 Completed: 6502 Register Set & Instruction Decoding
+// This module provides a test harness for the CPU's internal registers.
 
 module top (
     input logic       clk,
@@ -95,8 +95,8 @@ module top (
             // Reset all write signals
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
 
-            // State machine for testing registers
-            if (test_counter[24]) begin  // Slow state changes
+            // Simple FSM to test each register and flag condition
+            if (test_counter[24]) begin  // Slow down state transitions for visibility
                 test_counter <= 25'b0;
                 test_state   <= test_state + 1;
 

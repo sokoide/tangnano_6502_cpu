@@ -2,22 +2,18 @@
 // Tang Nano FPGA LED Blink Sample
 
 module top (
-    input  wire clk,  // 27MHz clock input
-    output wire led   // LED output
+    input  logic clk,  // 27MHz clock input
+    output logic led   // LED output
 );
 
-    // TODO: Clock divider implementation
-    // Hint: How to divide 27MHz to approximately 1Hz?
-
+    // 25-bit counter to divide 27MHz clock
     logic [24:0] counter;
 
     always_ff @(posedge clk) begin
-        // TODO: Write counter increment logic here
         counter <= counter + 1;
     end
 
-    // TODO: LED blink control
-    // Hint: Use appropriate bit of counter
+    // Use the most significant bit to toggle the LED
     assign led = counter[24];
 
 endmodule

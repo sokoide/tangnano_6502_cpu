@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
-- Understand the concept of clock-synchronous circuits
-- Learn the difference between flip-flops and latches
-- Master register design using `always_ff`
-- Understand the basics of Finite State Machines (FSM)
+-   Understand the concept of clock-synchronous circuits
+-   Learn the difference between flip-flops and latches
+-   Master register design using `always_ff`
+-   Understand the basics of Finite State Machines (FSM)
 
 ## 📚 Theory
 
@@ -20,8 +20,8 @@ In Day 02, you learned that combinational logic is like a pure function. Today, 
 
 Think of a sequential circuit as an object with private member variables (the registers). The `always_ff @(posedge clk)` block is like a special method that gets called automatically on every clock "tick". This is the **only place where the state should change**.
 
-- **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
-- **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
+-   **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
+-   **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
 
 This clock-driven, synchronous nature is what makes hardware design predictable and manageable.
 
@@ -38,85 +38,41 @@ flowchart LR
 
 #### Flip-flop vs latch (why we prefer flip-flops)
 
-- **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
-- **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
+-   **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
+-   **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
 
-In FPGA designs, you typically aim for edge-triggered FFs using `always_ff`.
+-   **`always_ff`**: Understand how to describe registers and flip-flops.
+-   **Clock & Reset**: Learn the importance of the `posedge clk` and `negedge rst_n` pattern.
+-   **Finite State Machines (FSM)**: Design a multi-state logic system with transitions.
+-   **Non-blocking Assignment (`<=`)**: Master the fundamental syntax of synchronous digital design.
 
-### Basics of Clock-Synchronous Circuits
+## 🏗️ Architecture
 
-**Clock Edges:**
-
-```systemverilog
-always_ff @(posedge clk) begin
-    // Execute on the rising edge
-end
-
-always_ff @(negedge clk) begin
-    // Execute on the falling edge
-end
-```
-
-**Register with Reset:**
-
-```systemverilog
-always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n)
-        counter <= 8'b0;
-    else
-        counter <= counter + 1;
-end
-```
-
-#### Why `<=` (non-blocking assignment)?
-
-Inside `always_ff`, use non-blocking assignment `<=` so all registers update “at the same time” on the clock edge. This matches how real flip-flops work and avoids common simulation bugs.
-
-#### Visualizing `<=` vs `=`
-
-- **`=` (Blocking)**: Works like software variables. `a = 1; b = a;` results in both being 1.
-- **`<=` (Non-Blocking)**: Works like a "commit" at the end of the step.
-
-  ```systemverilog
-  // Swapping with <=
-  a <= b;
-  b <= a;
-  ```
-
-  This successfully swaps `a` and `b` in one clock cycle, without needing a temp variable. It's like calculating the right-hand side for _all_ statements first, and _then_ updating the left-hand side values simultaneously.
-
-#### Reset naming: `rst_n`
-
-`rst_n` commonly means “reset, active-low”:
-
-- `rst_n = 0` → reset asserted
-- `rst_n = 1` → running
-
-### Basics of Finite State Machines (FSM)
-
-**State Definition:**
-
-```systemverilog
-typedef enum logic [1:0] {
-    IDLE  = 2'b00,
-    START = 2'b01,
-    WORK  = 2'b10,
-    DONE  = 2'b11
-} state_t;
-
-state_t current_state, next_state;
-```
-
-#### Classic FSM structure (2-process style)
-
-- `always_ff`: holds the _current_ state (register).
-- `always_comb`: computes the _next_ state (pure logic).
+A state machine cycles through defined states (Red, Green, Yellow) based on a timer.
 
 ```mermaid
-flowchart LR
-  CS[current_state] -->|combinational| NS[next_state]
-  NS -->|registered on clk| CS
+stateDiagram-v2
+    [*] --> RED
+    RED --> GREEN: Timer Expired
+    GREEN --> YELLOW: Timer Expired
+    YELLOW --> RED: Timer Expired
 ```
+
+## 🛠️ Implementation Steps
+
+1.  **Clock Divider / Timer**:
+    -   Create a counter that counts up to a certain value to create delays (e.g., 2 seconds).
+2.  **State Definition**:
+    -   Use a `typedef enum` to define the states of the traffic light.
+3.  **State Transition Logic**:
+    -   Implement the `always_ff` block to update the `current_state`.
+    -   Implement the `always_comb` block to calculate the `next_state`.
+4.  **Peripheral Integration**:
+    -   Connect the state outputs to the physical LEDs on your Tang Nano board.
+
+## 💡 The Tick of the Clock
+
+In hardware, the clock is your **heartbeat**. Every `posedge clk`, all registers in your CPU update simultaneously. This synchronicity is what allows complex systems like 6502 to function reliably without chaotic race conditions.
 
 ## 🛠️ Practice 1: Counter Circuit
 
@@ -157,8 +113,8 @@ endmodule
 
 ### Specifications
 
-- 8-bit duty cycle control
-- Supports variable frequency
+-   8-bit duty cycle control
+-   Supports variable frequency
 
 PWM = Pulse Width Modulation. It toggles an output fast and changes the **ON ratio** (duty cycle).
 
@@ -293,15 +249,15 @@ flowchart LR
 
 ## 📚 What I Learned Today
 
-- [ ] Basics of clock-synchronous circuits
-- [ ] How to use `always_ff`
-- [ ] State machine design methods
-- [ ] Implementation of timers and counters
+-   [ ] Basics of clock-synchronous circuits
+-   [ ] How to use `always_ff`
+-   [ ] State machine design methods
+-   [ ] Implementation of timers and counters
 
 ## 🎯 Preview for Tomorrow
 
 In Day 04, we will learn about the 6502 CPU architecture:
 
-- Basic components of a CPU
-- Relationship between registers and memory
-- Instruction execution cycle
+-   Basic components of a CPU
+-   Relationship between registers and memory
+-   Instruction execution cycle

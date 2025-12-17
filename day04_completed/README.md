@@ -1,155 +1,164 @@
-# Day 04 Completed: 6502 CPU Architecture Overview
-
-This is the completed implementation of the basic architecture and register set of the 6502 CPU.
+# Day 04: The Foundation (LCD & Registers)
 
 ---
 
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
-## File Structure
+## 📜 Overview
 
-- `cpu_registers.sv` - 6502 register set
-- `simple_decoder.sv` - Basic instruction decoder
-- `flag_calculator.sv` - Flag calculation unit
-- `top.sv` - Integrated test module
-- `tb_cpu_registers.sv` - Register testbench
-- `Makefile` - Build and test automation
+Before we build the CPU's brain (the Control Unit), we need to establish two critical foundations:
 
-## Implemented Modules
+1.  **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
+2.  **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
 
-### 1. CPU Register Set
+Today's work is a transition from simple per-day logic to a permanent architectural foundation.
 
-**8-bit Registers:**
+## 🎯 Learning Objectives
 
-- A (Accumulator): The main player in arithmetic
-- X, Y (Index): For indexing
-- SP (Stack Pointer): Manages the stack position
-- P (Processor Status): Flag register
+-   **LCD Pipeline**: Understand how pixels flow from VRAM (**BSRAM/SDPB**), through Font ROM (**pROM**), to the Panel.
+-   **Hardware Memory**: Basics of high-speed memory access using FPGA internal resources (BSRAM).
+-   **Clock Management**: Use Phase Locked Loops (PLL) to generate precise frequencies (9MHz for LCD).
+-   **6502 Register Set**: Implement A, X, Y, SP, PC, and the Status Register (P).
+-   **Instruction Decoding**: Basic categorization of opcodes (Load, Store, Branch, etc.).
 
-**16-bit Register:**
+## 🏗️ Architecture
 
-- PC (Program Counter): Address of the next instruction
+Day 04 combines a fast rendering pipeline with the CPU's register set.
 
-**Initialization Values:**
-
-- A, X, Y: 0x00
-- SP: 0xFF (top of the stack)
-- PC: 0x0200 (program start)
-- P: 0x20 (interrupts disabled)
-
-### 2. Instruction Decoder
-
-Major instruction classifications:
-
-- Load/Store instructions (LDA, STA, etc.)
-- Transfer instructions (TAX, TAY, etc.)
-- Arithmetic instructions (ADC, SBC)
-- Logical operations (AND, ORA, EOR)
-- Shift instructions (ASL, LSR, ROL, ROR)
-- Branch instructions (BEQ, BNE, etc.)
-- Jump/Subroutine (JMP, JSR, RTS)
-
-### 3. Flag Calculation Unit
-
-- N (Negative): Result is negative
-- Z (Zero): Result is zero
-- C (Carry): Carry/borrow
-- V (Overflow): Signed overflow
-
-## How to Build and Test
-
-### Simulation Test
-
-```bash
-make test
+```mermaid
+graph TD
+    subgraph "Display Path"
+        LCD[LCD Controller] --> VRAM
+        VRAM --> FR[Font ROM]
+        FR --> LCD
+    end
+    subgraph "CPU State"
+        REG[Register Set] --> FLAGS[Flag Logic]
+        DEC[Simple Decoder] -- Test signals --> REG
+    end
+    LCD -- Debug visualization --> REG
 ```
 
-### FPGA Build
+## 🛠️ Implementation Steps
 
-```bash
-# Tang Nano 9K
-make BOARD=9k download
+### Part 1: Driving the LCD
 
-# Tang Nano 20K
-make BOARD=20k download
+1.  **PLL Setup**: Generate a 9MHz clock from the 27MHz base.
+2.  **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv`.
+3.  **Rendering**: Wire `vram.sv` and `font_rom.sv` in `lcd_demo.sv`.
+
+### Part 2: The Register Set
+
+1.  **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`.
+2.  **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators.
+3.  **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly.
+
+## 💡 Technical Insight: Using BSRAM (SDPB) & pROM
+
+Building memory using only FPGA logic (LUTs) quickly consumes resources. Instead, we use the dedicated **BSRAM (Block Static RAM)** blocks available on the Tang Nano 9K.
+
+Using Gowin EDA's **IP Core Generator**, we create and instantiate two types of memory:
+
+### 1. SDPB (Semi-Dual Port Block RAM)
+
+Used for the **VRAM**. One port is dedicated to the LCD controller for reading pixels, while the other is used by the CPU for writing character data. This "dual-port" access allows smooth updates without interfering with display timing.
+
+**Example Instantiation:**
+
+```systemverilog
+// Gowin_SDPB_vram: 1024x8-bit memory
+Gowin_SDPB_vram vram_inst (
+    .dout(vram_data),    // Data out (to LCD)
+    .clka(CPU_CLK),      // Write clock
+    .cea(vram_we),       // Write enable
+    .ada(write_addr),    // Write address
+    .din(write_data),    // Write data (ASCII)
+    .clkb(LCD_CLK),      // Read clock
+    .ceb(1'b1),
+    .adb(read_addr)      // Read address (from LCD)
+);
 ```
 
-## Test Contents
+### 2. pROM (Programmable ROM)
 
-The register testbench tests the following:
+Used for the **Font ROM**. By providing a `.mi` (Memory Initialization) file during the IP configuration in Gowin EDA, the memory comes pre-loaded with font patterns upon power-up.
 
-1. Initial values at reset
-2. Individual writes to each register
-3. Simultaneous write operations
-4. Data retention function
+**Example Instantiation:**
 
-## Hardware Verification
+```systemverilog
+Gowin_pROM_font font_rom_inst (
+    .dout(font_data),
+    .clk(LCD_CLK),
+    .ce(1'b1),
+    .ad(font_addr)
+);
+```
 
-### Inputs
+> [!TIP] > **SDPB** stands for Semi-Dual Port. It is optimized for scenarios where one process (the display) is constantly reading while another (the CPU) is occasionally writing.
 
-- `rst_n`: Reset button
-- `switches[3:0]`: Instruction selection and test control
+## 🏗️ Memory Data Flow & Layout
 
-### Outputs
+Understanding the flow of data from memory to the screen is key to building the display pipeline.
 
-- `debug_reg_a[7:0]`: Value of the A register
-- `led_load`: Load instruction LED
-- `led_store`: Store instruction LED
-- `led_arithmetic`: Arithmetic instruction LED
-- `led_branch`: Branch instruction LED
+### 1. Font ROM Addressing
 
-### Operation Modes
+The Font ROM takes two inputs: **"Which character (ASCII)"** and **"Which row of that character"**. It outputs an 8-bit bitmap representing one row of pixels.
 
-1. **Automatic Test Mode**: switch[3]=0
-   - Sequentially writes values to the registers
-   - Demonstration of instruction decoding
+**Example: Character 'A' (ASCII 0x41)**
+The letter 'A' is defined across 16 bytes in memory. Below is a mapping of the hex values, binary representation, and the visual pattern using `*`.
 
-2. **Manual Test Mode**: switch[3]=1
-   - Select an instruction with switches[2:0]
-   - The corresponding LED lights up
+```text
+Address                Hex    Binary      Visual
+0x41 * 16 + 0  (Row 0) 0x00   (00000000)
+0x41 * 16 + 1  (Row 1) 0x00   (00000000)
+0x41 * 16 + 2  (Row 2) 0x18   (00011000)     **
+0x41 * 16 + 3  (Row 3) 0x3C   (00111100)    ****
+0x41 * 16 + 4  (Row 4) 0x66   (01100110)   **  **
+0x41 * 16 + 5  (Row 5) 0x66   (01100110)   **  **
+0x41 * 16 + 6  (Row 6) 0x7E   (01111110)   ******
+0x41 * 16 + 7  (Row 7) 0x66   (01100110)   **  **
+0x41 * 16 + 8  (Row 8) 0x66   (01100110)   **  **
+0x41 * 16 + 9  (Row 9) 0x66   (01100110)   **  **
+0x41 * 16 + 10 (Row 10) 0x66   (01100110)   **  **
+0x41 * 16 + 11 (Row 11) 0x00   (00000000)
+0x41 * 16 + 12 (Row 12) 0x00   (00000000)
+... (and so on) ...
+```
 
-## Learning Points
+```mermaid
+graph LR
+    subgraph "Input Address (12-bit)"
+        A["ASCII Code (8-bit) <br/> 0x41 ('A')"] --> ADDR["ROM Address <br/> 0x410 - 0x41F"]
+        R["Row Index (4-bit) <br/> 0 - 15"] --> ADDR
+    end
+    ADDR --> ROM["Font pROM <br/> (4KB)"]
+    ROM --> DATA["Pixel Data (8-bit) <br/> e.g., 0x18, 0x3C..."]
 
-### 6502 Architecture
+    style ADDR fill:#f9f,stroke:#333,stroke-width:2px
+```
 
-- Simple register set
-- Memory-mapped I/O
-- Fixed stack area
-- Flag-driven conditional branching
+### 2. VRAM Screen Layout
 
-### Implementation Techniques
+The VRAM is logically organized as a 60 columns × 17 rows grid (1020 bytes total). For example, if we map the VRAM starting at address `$E000`:
 
-- Multi-port register design
-- Instruction classification and decoding
-- Flag generation logic
-- Testbench design
+-   `$E000`: Top-left character (Column 0, Row 0)
+-   `$E000 + 59`: Top-right character of the first row (Column 59, Row 0)
+-   `$E000 + 60`: Leftmost character of the second row (Column 0, Row 1)
+-   `$E000 + 1019`: Bottom-right character of the screen (Column 59, Row 16)
 
-### Debugging Methods
+```mermaid
+graph TD
+    subgraph "Screen Coordinates"
+        C["Column <br/> 0 - 59"]
+        R["Row <br/> 0 - 16"]
+    end
+    C --> CALC["Address Calculation <br/> $E000 + (Row * 60) + Column"]
+    R --> CALC
+    CALC --> VRAM["VRAM (SDPB) <br/> 1020 bytes"]
+    VRAM --> OUT["ASCII Code <br/> at Position"]
+```
 
-- Visualization of register states
-- Verification of instruction classification
-- Verification by simulation
+## 💡 The "Architecture of Visibility"
 
-## Advanced Assignments
-
-1. **Addressing Mode Detection**: Identify the addressing mode of an instruction
-2. **Instruction Length Calculation**: Calculate the number of bytes for each instruction
-3. **Illegal Instruction Handling**: Handling of undefined opcodes
-
-Using this foundation, we will learn more detailed instruction decoding and addressing in the next Day.
-
----
-
-### 4. LCD Demonstration (Day 09 Preview)
-
-Day 04 now exposes the Day 09 LCD pipeline so you can see the character display hardware much earlier in the course:
-
-- `lcd_demo.sv` instantiates the LCD controller plus VRAM/font ROM from the Day 09 FPGA project.
-- The supporting RTL lives under `lcd/`:
-  - `lcd/lcd.sv`, `lcd/font_rom.sv`, `lcd/vram.sv`: character display pipeline.
-  - `lcd/tb_tft.sv`: simple testbench for the LCD domain.
-- `include/consts.svh`: timing constants reused by the LCD modules.
-- `sim/Gowin_rPLL9_stub.sv` mirrors the PLL stub used in the other days so you can simulate the demo locally.
-
-To experiment with the LCD, open `lcd_demo.sv` from a new GoWin project or invoke Verilator directly with the `lcd/` sources. This early preview should make the later Day 09 system feel familiar by the time you arrive there.
+In hardware development, you cannot "print" to a console. By building the LCD controller early, you create a hardware-native debugger. Throughout the rest of this course, you will see your registers and PC values updating in real-time on your desk!

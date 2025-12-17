@@ -12,6 +12,8 @@
         <File path="lcd/font_rom.sv" type="file.verilog" enable="1"/>
         <File path="gowin_rpll_9k/gowin_rpll9.v" type="file.verilog" enable="1"/>
         <File path="gowin_rpll40_9k/gowin_rpll40.v" type="file.verilog" enable="1"/>
+        <File path="gowin_prom/gowin_prom_font.v" type="file.verilog" enable="1"/>
+        <File path="gowin_sdpb/gowin_sdpb_vram.v" type="file.verilog" enable="1"/>
         <File path="include/consts.svh" type="file.verilog" enable="1"/>
         <File path="tang_nano_9k.cst" type="file.cst" enable="1"/>
     </FileList>

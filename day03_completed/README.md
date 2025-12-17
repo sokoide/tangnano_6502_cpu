@@ -64,7 +64,7 @@ make test
 - Output: runs `tb_traffic_light.sv` and generates `tb_traffic_light.vcd` (open with `gtkwave tb_traffic_light.vcd`).
 - Requirement: `verilator` must be in `PATH` (macOS example: `brew install verilator`).
 
-### FPGA Build
+### FPGA Build & Download
 
 ```bash
 # Tang Nano 9K

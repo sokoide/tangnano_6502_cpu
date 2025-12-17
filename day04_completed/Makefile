@@ -64,7 +64,8 @@ sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
 		-o V$(SIM_TOP) \
-		sim/Gowin_rPLL9_stub.sv sim/gowin_rpll40_stub.sv \
+		sim/Gowin_rPLL9_stub.sv \
+		sim/gowin_rpll40_stub.sv \
 		lcd/tb_tft.sv top_9k.sv lcd_demo.sv \
 		lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh
 

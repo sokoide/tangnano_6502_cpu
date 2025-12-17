@@ -1,282 +1,91 @@
-# Tang Nano 6502 CPU 学習教材
+# FPGA で学ぶ 6502 CPU 自作入門
 
-Tang Nano FPGA を使用して6502 CPUとLCDコントローラを学ぶための10日間のステップバイステップ教材です。
+---
 
-## 📚 学習の概要
+🌐 Available languages:
+[English](./README.md) | [日本語](./README_ja.md)
 
-この教材では、FPGAの基礎からSystemVerilog、そして完全な6502 CPU実装まで段階的に学習します。各日は理論と実践のバランスを取り、実際にTang Nano上で動作するプロジェクトを作成していきます。
+## 📖 プロジェクト概要
+
+このプロジェクトは、FPGA (Tang Nano 9K) を使って、伝説的な 8 ビット CPU「MOS 6502」を SystemVerilog でゼロから実装することを目指す、ステップ・バイ・ステップ形式の学習カリキュラムです。
+
+最終的には、Apple I などで使われた Woz Monitor のような古典的なソフトウェアが動作する、完全なコンピュータシステムを FPGA 上に構築します。
 
 ## 🎯 学習目標
 
-- **FPGA開発**: GoWin EDAツールとTang Nanoの基本操作をマスター
-- **SystemVerilog**: ハードウェア記述言語の基本から応用まで習得
-- **6502アーキテクチャ**: 古典的なCPUアーキテクチャの理解
-- **システム設計**: CPU、メモリ、I/Oの統合設計スキル
-- **実践的開発**: 実機での動作確認とデバッグ能力
+-   **デジタル回路設計の基礎**: 組み合わせ回路や順序回路の基本を理解する。
+-   **ハードウェア記述言語**: SystemVerilog を使った論理回路の記述方法を習得する。
+-   **CPU アーキテクチャ**: プログラムカウンタ、レジスタ、ALU、命令デコーダなど、CPU の構成要素を一つずつ実装し、その仕組みを深く理解する。
+-   **アドレッシングモードの極意**: 6502 の強力なアドレッシングモード（インデックス、間接など）をハードウェアでどう実現するかを学ぶ。
+-   **ハードウェアデバッグ**: シミュレーションと実機（LCD 表示）の両方を使ったデバッグ手法を学ぶ。
 
-## 🛠️ 必要なハードウェア
+## 📅 カリキュラム
 
-- **Tang Nano 9K** または **Tang Nano 20K** FPGA開発ボード
-- **043026-N6(ML) 4.3" 480×272 LCD モジュール** (Day 09以降で使用)
-- USB-Cケーブル (プログラミング用)
+ロードマップは以下の 4 つのフェーズで構成されています。
 
-**Tang Nano 9K:**
+### Phase 1: 準備編 (Day 01-04)
 
-- FPGA: Gowin GW1NR-9C
-- 論理エレメント: 8,640 LUT4
-- メモリ: 468Kbit BSRAM
-- PLL: 2個
-- I/Oピン数: 63
+まずは FPGA 開発の基本と、後の CPU 開発でデバッグに使う周辺回路を準備します。
 
-**Tang Nano 20K:**
+|    Day     | テーマ           | 学習内容                                                  |
+| :--------: | :--------------- | :-------------------------------------------------------- |
+| **Day 01** | **L チカ**       | 開発環境の構築と FPGA への書き込み                        |
+| **Day 02** | **4-bit ALU**    | 組み合わせ回路の基本と論理演算                            |
+| **Day 03** | **信号機 FSM**   | 順序回路と状態遷移 (Finite State Machine)                 |
+| **Day 04** | **デバッグ基盤** | **LCD 表示回路（BSRAM/pROM 使用）とレジスタセットの基礎** |
 
-- FPGA: Gowin GW2AR-18C
-- 論理エレメント: 20,736 LUT4
-- メモリ: 828Kbit BSRAM
-- PLL: 4個
-- I/Oピン数: 107
+### Phase 2: CPU の実装開始 (Day 05-10)
 
-### ボードの選択
+CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しながらデバッグします。
 
-本プロジェクトは両方のボードに対応しています。Makefileを使用する際、ボードを指定できます：
+|    Day     | テーマ             | 実装する命令（例）                |
+| :--------: | :----------------- | :-------------------------------- |
+| **Day 05** | **CPU の骨格**     | `NOP` (Program Counter のみ)      |
+| **Day 06** | **メモリアクセス** | `LDA #imm` (即値ロード)           |
+| **Day 07** | **レジスタ転送**   | `TAX`, `TAY`, `INX`, `INY`        |
+| **Day 08** | **算術演算 (ALU)** | `ADC`, `SBC` (フラグ NVZC の計算) |
+| **Day 09** | **分岐命令**       | `BNE`, `BEQ`, `BPL`, `BMI`        |
+| **Day 10** | **スタック操作**   | `JSR`, `RTS`, `PHA`, `PLA`        |
 
-```bash
-make BOARD=9k   # デフォルト
-make BOARD=20k
-```
+### Phase 3: アドレッシングモードとデータ処理 (Day 11-15)
 
-## 💻 必要なソフトウェア
+メモリ操作を強化し、より複雑なデータ処理を可能にします。
 
-- **GoWin EDA** (FPGA合成・配置配線ツール)
-- **Verilator** (SystemVerilogシミュレータ)
-- **GTKWave** (波形表示ツール)
-- **cc65** (6502アセンブラ、Day 10で使用)
-- **srecord** (バイナリ変換ツール)
-- **Make** (ビルドシステム)
+|    Day     | テーマ           | 学習内容                                         |
+| :--------: | :--------------- | :----------------------------------------------- |
+| **Day 11** | **Zero Page**    | ゼロページアドレッシング (`LDA $00`) と RAM 実装 |
+| **Day 12** | **Absolute**     | アブソリュートアドレッシング (`LDA $1234`)       |
+| **Day 13** | **論理演算**     | `AND`, `ORA`, `EOR`, `BIT` (ビット操作)          |
+| **Day 14** | **シフト・回転** | `ASL`, `LSR`, `ROL`, `ROR`                       |
+| **Day 15** | **比較・増減**   | `CMP`, `CPX`, `CPY`, `INC`, `DEC`                |
 
-### インストール手順
+### Phase 4: 高度なアドレッシングと独自命令 (Day 16-20)
 
-**macOS:**
+6502 の真骨頂である複雑なアドレッシングと、FPGA ならではの独自拡張を実装します。
 
-```bash
-brew update
-brew install -y srecord cc65 golang gtkwave verilator
-```
-
-**Linux (Ubuntu/Debian):**
-
-```bash
-sudo apt update
-sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
-sudo apt install -y --reinstall \
-  libfreetype6 \
-  libfontconfig1
-```
-
-**GoWin EDA:**
-
-- Download _Gowin V1.9.11.03 Education_ for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
-  - Mac users only need macOS version of IDE which includes both compiler & programmer
-  - Install macOS IDE into /Applications/GowinIDE.app
-  - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSLS. WSL cannot use the programmer -> needs Windows version of it
-  - Install Linux IDE into $(HOME)/Gowin/IDE
-  - Install Windows IDE into c:\Gowin
-- macOS only
-  - First time -> fails to open
-  - macOS settings -> privacy -> scroll to the bottom -> allow anytime
-  - Patch command line tool
-
-```bash
-GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
-
-for f in "$GW/bin/"*; do
-  if file "$f" | grep -q executable; then
-    install_name_tool \
-      -add_rpath @executable_path/../lib \
-      -add_rpath @executable_path/../Frameworks \
-      "$f" 2>/dev/null
-  fi
-done
-
-for f in "$GW/bin/"*; do
-  if file "$f" | grep -q executable; then
-    if otool -L "$f" | grep -q '/Library/Frameworks/Tcl.framework'; then
-      install_name_tool \
-        -change \
-        /Library/Frameworks/Tcl.framework/Versions/8.6/Tcl \
-        @rpath/Tcl.framework/Versions/8.6/Tcl \
-        "$f"
-    fi
-  fi
-done
-```
-
-- WSL only
-
-```bash
-# install IDE and programmer in $HOME/Gowin
-cd $HOME/Gowin/IDE/lib
-mv libfreetype.so.6 libfreetype.so.6.gowin.bak
-
-# set env var
-export QT_QPA_PLATFORM=minimal
-export QT_OPENGL=software
-export QT_XCB_GL_INTEGRATION=none
-```
-
-### macOS のツールパスに関する注意
-
-Gowin EDA をアプリとしてインストールしており、`gw_sh` や `programmer_cli` が `PATH` に通っていない場合、make実行時にパスを指定可能です：
-
-```bash
-make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
-     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
-     download
-```
-
-## 📅 10日間の学習計画
-
-### Day 01: Tang Nano + GoWin EDA 基礎
-
-**学習内容:**
-
-- Tang Nano 9K/20K の基本仕様理解
-- GoWin EDA の基本操作とプロジェクト作成
-- 最初のHDLプロジェクト: LEDチカチカ (Hello World)
-- 制約ファイル (.cst) の基本
-
-**成果物:**
-
-- LEDが点滅するシンプルなプロジェクト
-- GoWin EDAでの合成・配置配線・書き込みの基本手順習得
-
-**実習時間:** 約1時間
+|    Day     | テーマ           | 学習内容                                                                     |
+| :--------: | :--------------- | :--------------------------------------------------------------------------- |
+| **Day 16** | **Indexed**      | インデックス付きアドレッシング (`LDA $1234,X` / `,Y`)                        |
+| **Day 17** | **Indirect**     | 間接アドレッシング (`JMP ($1234)`, `($00,X)`, `($00),Y`)                     |
+| **Day 18** | **独自命令**     | **`HLT` (停止), `WVS` (V-Sync 待ち), `CVR` (VRAM クリア), `IFO` (情報表示)** |
+| **Day 19** | **周辺回路統合** | UART (シリアル通信) やタイマーの統合                                         |
+| **Day 20** | **最適化と完成** | 命令サイクルの最適化と全体の統合テスト                                       |
 
 ---
 
-### Day 02: SystemVerilog 基礎 (組み合わせ回路)
+### 🏁 最終目標 (Day 99)
 
-**学習内容:**
+-   **完全な 6502 互換 CPU**（割り込みを除く）の完成
+-   **Woz Monitor** や **Apple I Basic** の動作
+-   自作の周辺回路を制御する独自 OS/プログラムの作成
 
-- SystemVerilogの基本構文とモジュール構造
-- 組み合わせ回路の設計 (論理ゲート、デコーダ、マルチプレクサ)
-- assign文とalways_comb文の使い分け
-- テストベンチの基本、Verilatorによるシミュレーション
+## 🛠️ 必要なもの
 
-**成果物:**
+-   **ハードウェア**: Sipeed Tang Nano 9K / 20K および 480x272 LCD パネル
+-   **ソフトウェア**: GOWIN EDA, verilator, GTKwave
 
-- 7セグメントデコーダ
-- 4bit ALU (加算、論理演算)
-
-※Day05〜Day10のカリキュラム(`docs/day05-10_curriculum.md`)に沿って進め、LCDパイプラインを維持したまま命令分類の状態を表示させましょう。
-
-※Day10はCC65ツールチェーンとアセンブリ例をLCDと連携させるフィナーレです。`docs/day05-10_curriculum.md`や`day05`〜`day10`のワークシートを参照し、`day10_completed/`のデモを動かしてLCD出力を確認してください。
-
-**実習時間:** 約2時間
-
-- シミュレーション波形の表示
-  ![Wave](./docs/day02_wave.png)
+詳細は [Day 01](./day01/README_ja.md) から始めてください！
 
 ---
 
-### Day 03: SystemVerilog 基礎 (順序回路)
-
-**学習内容:**
-
-- クロックとリセットの概念
-- フリップフロップとラッチ
-- always_ff文によるレジスタ設計
-- 状態機械 (FSM) の基本
-- カウンタとタイマー回路
-
-**成果物:**
-
-- 8bit カウンタ
-- LED PWM調光コントローラ
-- シンプルな状態機械
-
-**実習時間:** 約2時間
-
----
-
-### Day 04: LCD
-
-Day 04 は LCD パイプライン先行体験の日です。PLL・VRAM・フォントROM・`lcd.sv` を繋ぎ、`day04_completed/top_9k.sv` / `top_20k.sv` で TFT を直接ドライブして文字を表示します。CPU は使わず、`day04/README_ja.md` や `day04_completed/README_ja.md` に従ってハードウェア/シミュレーションを進めてください。
-
----
-
-## 🧩 Day05〜Day10 カリキュラムの流れ
-
-カリキュラムの後半は 6502 CPU を段階的に組み立てるミクロカリキュラムです:
-
-1. **Day05 (命令セットとアドレッシング)** – モード計算器と命令分類でオペコードをハードウェアへマッピングします。
-2. **Day06 (デコーダ+制御ユニット)** – 分類器の出力を制御信号、状態遷移、フラグ更新に落とし込みます。
-3. **Day07 (メモリインターフェースとスタック)** – バス回路、スタックポインタ、およびメモリ選択を設計します。
-4. **Day08 (統合とテスト)** – レジスタ/データパス/ALUを結び付け、命令セットを検証します。
-5. **Day09 (LCDとVRAMパイプライン)** – 文字表示パイプラインとフォントROMを導入し、TFTに文字を描けるようにします。
-6. **Day10 (アセンブリ応用)** – cc65とカスタム命令(CVR/IFO/HLT/WVS)でテキスト描画とアニメーションを実現します。
-
-各日が次の日の基盤を支えているので、Day10 に到達する頃には CPU・VRAM・LCD・ソフトウェアの全スタックが統合されます。`docs/day05-10_curriculum.md` や `day05/`〜`day10/` のワークシートを参考に、完成版 (`day05_completed/`〜`day10_completed/`) と組み合わせて学習するとスムーズです。
-
-## 📁 ディレクトリ構成
-
-```bash
-├── README_ja.md                    # このファイル (メイン教材)
-├── day99_completed/                # 最終完成品 (参考用)
-│
-├── day01/                          # 学習用ディレクトリ
-│   ├── README_ja.md               # その日の詳細説明
-│   └── (基本テンプレート)
-├── day01_completed/               # 完成版一式
-│   └── (その日の完全なプロジェクト)
-│
-├── day02/
-├── day02_completed/
-│
-... (day03 〜 day10 同様)
-```
-
-## 🚀 学習の進め方
-
-1. **各日の学習**:
-   - `dayXX/README_ja.md` で理論を学習
-   - `dayXX/` 内のテンプレートで実践
-   - 困った時は `dayXX_completed/` を参考
-
-2. **実機確認**:
-   - 各日の成果物は実際にTang Nanoで動作確認
-   - シミュレーションと実機での差異を体験
-
-3. **段階的理解**:
-   - 前日までの内容を必ず理解してから次へ進む
-   - わからない部分は遠慮なく完成版を参照
-
-## 🎓 学習後の到達レベル
-
-この教材を完了すると以下のスキルが身につきます:
-
-- **FPGA開発**: 基本的なFPGAプロジェクトの作成・デバッグができる
-- **SystemVerilog**: 中級レベルのHDL設計ができる
-- **CPU設計**: シンプルなCPUアーキテクチャを理解し、設計できる
-- **システム統合**: CPU、メモリ、I/Oを組み合わせたシステム設計ができる
-- **実践的スキル**: 理論だけでなく、実機での動作確認とデバッグができる
-
-## 📖 参考資料
-
-- [6502.org](http://www.6502.org/) - 6502 CPU 公式資料
-- [GoWin EDA ドキュメント](https://www.gowinsemi.com/) - FPGA開発ツール
-- [SystemVerilog LRM](https://ieeexplore.ieee.org/document/8299595) - 言語仕様書
-- `day99_completed/docs/` - 詳細な技術資料
-- `day99_completed/docs/MODULE_MAP.md` - コードリーディング用モジュールマップ
-
-## 🤝 学習サポート
-
-各日のディレクトリには詳細な解説と実習ガイドが含まれています。躓いた場合は:
-
-1. その日の `README_ja.md` を再確認
-2. `dayXX_completed/` の完成版を参照
-3. `day99_completed/docs/` の技術資料を確認
-
----
-
-**学習開始準備ができたら `day01/README_ja.md` から始めましょう！**
+[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
