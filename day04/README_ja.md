@@ -1,248 +1,50 @@
-# Day 04: 6502 CPU アーキテクチャ概論
+# Day 04: LCDパイプラインプレビュー
 
-## 🎯 学習目標
+---
 
-- 6502 CPUの歴史と特徴を理解する
-- レジスタ構成とその役割を学ぶ
-- メモリマップとアドレッシングの基本を理解する
-- 命令実行サイクルの流れを把握する
+🌐 対応言語:
+[English](./README.md) | [日本語](./README_ja.md)
 
-## 📚 理論学習
+## 🎯 本日のフォーカス
 
-### ソフトウェアエンジニアのためのヒント: ハードウェアとソフトウェアの架け橋
+Day 04 では LCD 表示パイプラインを体験します。
 
-Day 03では回路を作りましたが、今度は*コンピュータ*を作ります。高水準言語の知識をどう変換すればよいか解説します。
+- 9 MHz のピクセルクロックを作る PLL（`Gowin_rPLL9`）の仕組みを見る
+- VRAM → フォント ROM → LCD のレンダリングの流れを追う
+- `top_9k.sv` / `top_20k.sv` を使って TFT パネルを直接ドライブする方法を確認する
 
-1. **レジスタは変数ではない:**
-   - CやPythonで `int x = 10;` と書くと、RAM（スタックやヒープ）にメモリが確保されます。
-   - CPUにおける `A`, `X`, `Y` はシリコン*内部*にある物理的な保管場所です。CPUの命令が直接操作できる、超高速な「グローバル変数」のようなものです。
-   - 数は非常に少なく（汎用8bitレジスタは3つだけ！）、RAMとレジスタの間で頻繁にデータを出し入れする必要があります。
+## 🌲 day04_completed/ 以下の主要ファイル
 
-2. **メモリマップ = アドレス空間:**
-   - CPUは 65,536バイトの単一の配列（`0x0000` 〜 `0xFFFF`）しか見えていません。
-   - 「メモリマップドI/O」: この配列の特定のインデックス（例: `0xE000`）に書き込むと、値を保存する代わりに、ピクセルが点灯したり通信パケットが送信されたりします。
-   - `0x0000-0x00FF`（ゼロページ）は、「L1キャッシュ」や「高速変数」領域のようなものです。
+- `top_9k.sv` / `top_20k.sv`：ボード専用ラッパー。リセット/クロックと TFT 信号を繋ぐ
+- `lcd_demo.sv`：`Gowin_rPLL9` → `lcd.v` → `font_rom.v` → `vram.v` を連結した軽量トップ
+- `lcd/`：LCD表示 RTL（`lcd.sv`、`vram.sv`、`font_rom.sv`、`tb_tft.sv`）
+- `include/consts.svh`：480×272 テキスト表示のタイミング定数
+- `gowin_rpll_9k/` / `gowin_rpll_20k/`：9MHz クロック用の PLL モジュール
+- `tang_nano_9k.cst` / `tang_nano_20k.cst`：RGB、DEN、CLK、XTAL、ResetButton を割り当てた制約
 
-3. **究極の "While(True)" ループ:**
-   - ハードウェアは巨大な無限ループです：
-     1. **Fetch:** `PC`（プログラムカウンタ）の場所にあるバイトを読む。
-     2. **Decode:** そのバイトの意味を調べる（例: `0xA9` は "Load A"）。
-     3. **Execute:** 実行する（例: 値をAレジスタにコピー）。
-     4. **Repeat.**
-   - Day 06〜08でのあなたの仕事は、このループをハードウェアで実装することです。
+## 🛠️ ビルド/書き込み手順
 
-### 6502 CPUの歴史
+1. GoWin で対象ボード用プロジェクト（`day04_completed/hw_9k.gprj` など）を開く。
+2. `top_9k.sv` / `top_20k.sv` をトップモジュールに設定し、上記 RTL を読み込む。
+3. LCD ピン割り当て済み制約を使う（`clk` や `led` は不要）。
+4. 通常どおり Synthesis → Place & Route → Generate .fs。
+5. `programmer_cli` で `*.fs` をダウンロードすれば TFT にテキストが表示される。
 
-**開発背景:**
+## 🧪 シミュレーション
 
-- 1975年にMOS Technology社が開発
-- 当時としては革新的な低価格 ($25)
-- Apple II, Commodore 64, NES等で使用
-- シンプルな設計で教育用途にも最適
-
-### レジスタ構成
-
-**8bit レジスタ:**
-
-- **A (Accumulator)**: 演算の主役、多くの命令で使用
-- **X, Y (Index)**: アドレッシングでのインデックス用
-- **SP (Stack Pointer)**: スタック位置を指示 (0x0100-0x01FF)
-
-**16bit レジスタ:**
-
-- **PC (Program Counter)**: 次に実行する命令のアドレス
-
-**1bit フラグ (Pレジスタ):**
-
-- **N (Negative)**: 結果が負数の時セット
-- **V (Overflow)**: 符号ありオーバーフローでセット
-- **B (Break)**: BRK命令実行時にセット
-- **D (Decimal)**: BCD演算モード (通常は未使用)
-- **I (Interrupt)**: 割り込み禁止フラグ
-- **Z (Zero)**: 結果がゼロの時セット
-- **C (Carry)**: キャリー/ボローでセット
-
-### メモリマップの基本
+以下のコマンド例で Verilator シミュレーションが可能です（`day04_completed/sim/tb_tft.sv` などを使います）。
 
 ```bash
-0x0000-0x00FF : Zero Page (高速アクセス領域)
-0x0100-0x01FF : Stack (スタック領域)
-0x0200-0x7FFF : General RAM
-0x8000-0xFFFF : Program ROM (通常)
+cd day04_completed
+verilator -Wall --sv --trace -cc lcd/tb_tft.sv lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv sim/Gowin_rPLL9_stub.sv --exe -o Vtb_tft
 ```
 
-## 🛠️ 実習1: 6502レジスタセット
+テストベンチは `LCD_DEN` が立ち、非黒ピクセルが出ることを確認します。
 
-### SystemVerilogでの実装
+## 💡 学びのメモ
 
-```systemverilog
-module cpu_registers (
-    input  logic clk,
-    input  logic rst_n,
+- `vram.sv` が VRAM 上の文字コードを提供し、`font_rom.sv` がビットマップへ変換。
+- `lcd.sv` がキャラクタタイミングを正確に制御して TFT へピクセルを送出。
+- 先に表示パイプラインを実際の LCD で確認することで、後続の CPU/メモリ統合がイメージしやすくなります。
 
-    // レジスタ制御
-    input  logic a_write,
-    input  logic x_write,
-    input  logic y_write,
-    input  logic sp_write,
-    input  logic pc_write,
-    input  logic p_write,
-
-    // データバス
-    input  logic [7:0]  data_in,
-    input  logic [15:0] addr_in,
-
-    // レジスタ出力
-    output logic [7:0]  reg_a,
-    output logic [7:0]  reg_x,
-    output logic [7:0]  reg_y,
-    output logic [7:0]  reg_sp,
-    output logic [15:0] reg_pc,
-    output logic [7:0]  reg_p
-);
-
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            reg_a  <= 8'h00;
-            reg_x  <= 8'h00;
-            reg_y  <= 8'h00;
-            reg_sp <= 8'hFF;  // スタックは上位から
-            reg_pc <= 16'h0200;  // プログラム開始アドレス
-            reg_p  <= 8'h20;     // 割り込み禁止状態で開始
-        end else begin
-            if (a_write)  reg_a  <= data_in;
-            if (x_write)  reg_x  <= data_in;
-            if (y_write)  reg_y  <= data_in;
-            if (sp_write) reg_sp <= data_in;
-            if (pc_write) reg_pc <= addr_in;
-            if (p_write)  reg_p  <= data_in;
-        end
-    end
-
-endmodule
-```
-
-## 🛠️ 実習2: 簡単な命令デコーダ
-
-### 基本的な命令の分類
-
-```systemverilog
-module simple_decoder (
-    input  logic [7:0] opcode,
-    output logic is_load,      // LDA, LDX, LDY
-    output logic is_store,     // STA, STX, STY
-    output logic is_transfer,  // TAX, TAY, TXA, etc.
-    output logic is_arithmetic // ADC, SBC
-);
-
-    always_comb begin
-        // デフォルト値
-        is_load = 1'b0;
-        is_store = 1'b0;
-        is_transfer = 1'b0;
-        is_arithmetic = 1'b0;
-
-        case (opcode)
-            // LDA命令群
-            8'hA9, 8'hA5, 8'hB5, 8'hAD, 8'hBD, 8'hB9, 8'hA1, 8'hB1:
-                is_load = 1'b1;
-
-            // STA命令群
-            8'h85, 8'h95, 8'h8D, 8'h9D, 8'h99, 8'h81, 8'h91:
-                is_store = 1'b1;
-
-            // TODO: 他の命令グループを実装
-
-            default: begin
-                // 未知の命令
-            end
-        endcase
-    end
-
-endmodule
-```
-
-## 🛠️ 実習3: フラグ計算ロジック
-
-### N, Z フラグの実装
-
-```systemverilog
-module flag_calculator (
-    input  logic [7:0] result,
-    input  logic [7:0] operand_a,
-    input  logic [7:0] operand_b,
-    input  logic       operation,  // 0:ADD, 1:SUB
-
-    output logic flag_n,  // Negative
-    output logic flag_z,  // Zero
-    output logic flag_c,  // Carry
-    output logic flag_v   // Overflow
-);
-
-    logic [8:0] temp_result;
-
-    always_comb begin
-        // 9bitで計算してキャリーを検出
-        if (operation) begin
-            temp_result = {1'b0, operand_a} - {1'b0, operand_b};
-        end else begin
-            temp_result = {1'b0, operand_a} + {1'b0, operand_b};
-        end
-
-        // フラグ計算
-        flag_n = result[7];              // 最上位ビット
-        flag_z = (result == 8'h00);      // ゼロ判定
-        flag_c = temp_result[8];         // キャリー
-
-        // オーバーフロー判定 (符号付き演算)
-        flag_v = (operand_a[7] == operand_b[7]) &&
-                 (operand_a[7] != result[7]);
-    end
-
-endmodule
-```
-
-## 📝 課題
-
-### 基礎課題
-
-1. 全レジスタの動作確認テストベンチ
-2. 主要命令の分類機能拡張
-3. 全フラグの計算ロジック実装
-
-### 発展課題
-
-1. アドレッシングモード判定器
-2. 命令長計算器
-3. スタック操作シミュレータ
-
-## 📚 重要なポイント
-
-### 6502の特徴
-
-- **シンプルな設計**: 複雑な命令はなし
-- **メモリマップドI/O**: 特別なI/O命令は不要
-- **ゼロページ**: 高速アクセス可能な最初の256バイト
-- **スタック固定**: 0x0100-0x01FFに固定
-
-### アーキテクチャの利点
-
-- **教育的価値**: 理解しやすい構造
-- **実装コスト**: 少ないトランジスタ数
-- **プログラマビリティ**: 直感的な命令セット
-
-## 📚 今日学んだこと
-
-- [ ] 6502 CPUの歴史と特徴
-- [ ] レジスタ構成と役割
-- [ ] メモリマップの基本
-- [ ] 命令分類の方法
-- [ ] フラグ計算の仕組み
-
-## 🎯 明日の予習
-
-Day 05では6502の命令セットとアドレッシングモードを詳しく学習します:
-
-- 13種類のアドレッシングモード
-- 主要命令の動作
-- 有効アドレス計算
+次回（Day 05～）は CPU アーキテクチャに移りますが、今日だけは LCD をじっくり観察する日です。

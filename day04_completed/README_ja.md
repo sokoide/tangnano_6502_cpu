@@ -133,3 +133,18 @@ make BOARD=20k download
 3. **不正命令処理**: 未定義オペコードの扱い
 
 この基盤を使って、次のDayでより詳細な命令デコードとアドレッシングを学習します。
+
+---
+
+### 4. LCDデモ (Day 09 のプレビュー)
+
+Day 04 でも Day 09 の LCD パイプラインを体験できるようになりました:
+
+- `lcd_demo.sv` は Day 09 の LCD 制御部と VRAM/font ROM を再利用したモジュールです。
+- `lcd/` 配下にデモ用の RTL をまとめています:
+  - `lcd.sv`, `font_rom.sv`, `vram.sv`: 文字表示パイプライン
+  - `tb_tft.sv`: LCD ドメインの簡易テストベンチ
+  - `include/consts.svh`: LCDタイミングと表示領域の定数
+- `sim/Gowin_rPLL9_stub.sv` も Day 09 と同じ PLL スタブを用意しているため、シミュレーションで動作確認できます。
+
+このデモは `lcd_demo.sv` を GoWin プロジェクトに追加するか、Verilator で `lcd/` ソースを読み込んで実行すれば試せます。Day 09 で紹介するハードウェアの構成が、すでに Day 04 で見慣れたものになるはずです。

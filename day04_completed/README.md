@@ -138,3 +138,18 @@ The register testbench tests the following:
 3. **Illegal Instruction Handling**: Handling of undefined opcodes
 
 Using this foundation, we will learn more detailed instruction decoding and addressing in the next Day.
+
+---
+
+### 4. LCD Demonstration (Day 09 Preview)
+
+Day 04 now exposes the Day 09 LCD pipeline so you can see the character display hardware much earlier in the course:
+
+- `lcd_demo.sv` instantiates the LCD controller plus VRAM/font ROM from the Day 09 FPGA project.
+- The supporting RTL lives under `lcd/`:
+  - `lcd/lcd.sv`, `lcd/font_rom.sv`, `lcd/vram.sv`: character display pipeline.
+  - `lcd/tb_tft.sv`: simple testbench for the LCD domain.
+- `include/consts.svh`: timing constants reused by the LCD modules.
+- `sim/Gowin_rPLL9_stub.sv` mirrors the PLL stub used in the other days so you can simulate the demo locally.
+
+To experiment with the LCD, open `lcd_demo.sv` from a new GoWin project or invoke Verilator directly with the `lcd/` sources. This early preview should make the later Day 09 system feel familiar by the time you arrive there.

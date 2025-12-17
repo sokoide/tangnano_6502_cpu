@@ -29,6 +29,7 @@ $(PROJECT).fs: $(GPRJ) tools-check
 		"open_project $(GPRJ)" \
 		"set_option -verilog_std sysv2017" \
 		"set_option -top_module top" \
+		"set_option -use_sspi_as_gpio 1" \
 		"run all" \
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)

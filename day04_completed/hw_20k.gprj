@@ -5,11 +5,14 @@
     <Version>5</Version>
     <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
     <FileList>
-        <File path="hw_top_20k.sv" type="file.verilog" enable="1"/>
+        <File path="top_20k.sv" type="file.verilog" enable="1"/>
+        <File path="lcd_demo.sv" type="file.verilog" enable="1"/>
+        <File path="lcd/lcd.sv" type="file.verilog" enable="1"/>
+        <File path="lcd/vram.sv" type="file.verilog" enable="1"/>
+        <File path="lcd/font_rom.sv" type="file.verilog" enable="1"/>
+        <File path="gowin_rpll_20k/gowin_rpll9.v" type="file.verilog" enable="1"/>
+        <File path="include/consts.svh" type="file.verilog" enable="1"/>
         <File path="tang_nano_20k.cst" type="file.cst" enable="1"/>
-        <File path="cpu_registers.sv" type="file.verilog" enable="1"/>
-        <File path="flag_calculator.sv" type="file.verilog" enable="1"/>
-        <File path="simple_decoder.sv" type="file.verilog" enable="1"/>
     </FileList>
 
 
