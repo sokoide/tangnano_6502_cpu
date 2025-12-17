@@ -15,6 +15,13 @@ module lcd_demo (
         .clkin (XTAL_IN)
     );
 
+    // Memory clock: 27MHz -> 40.5MHz (matches day99 memory/ROM timing)
+    logic MEMORY_CLK;
+    Gowin_rPLL40 pll_mem_inst (
+        .clkout(MEMORY_CLK),
+        .clkin (XTAL_IN)
+    );
+
     logic [9:0] vram_addr;
     logic [7:0] vram_data;
     logic [11:0] font_addr;
@@ -37,16 +44,34 @@ module lcd_demo (
         .vsync(vsync)
     );
 
+    // Synchronize LCD-domain addresses into the memory clock domain.
+    logic [9:0] vram_addr_sync1, vram_addr_sync2;
+    logic [11:0] font_addr_sync1, font_addr_sync2;
+
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            vram_addr_sync1 <= 10'd0;
+            vram_addr_sync2 <= 10'd0;
+            font_addr_sync1 <= 12'd0;
+            font_addr_sync2 <= 12'd0;
+        end else begin
+            vram_addr_sync1 <= vram_addr;
+            vram_addr_sync2 <= vram_addr_sync1;
+            font_addr_sync1 <= font_addr;
+            font_addr_sync2 <= font_addr_sync1;
+        end
+    end
+
     font_rom font_inst (
-        .clk(LCD_CLK),
-        .addr(font_addr),
+        .clk(MEMORY_CLK),
+        .addr(font_addr_sync2),
         .data(font_data)
     );
 
     vram vram_inst (
-        .clk(LCD_CLK),
+        .clk(MEMORY_CLK),
         .rst_n(rst_n),
-        .addr(vram_addr),
+        .addr(vram_addr_sync2),
         .data(vram_data)
     );
 

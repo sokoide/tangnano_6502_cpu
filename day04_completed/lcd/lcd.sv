@@ -13,7 +13,7 @@
 // 3. Fetching character codes from VRAM with proper timing offsets
 // 4. Looking up font bitmaps and rendering pixels
 //
-`include "include/consts.svh"
+`include "../include/consts.svh"
 /* verilator lint_off WIDTHEXPAND */
 /* verilator lint_off WIDTHTRUNC */
 module lcd (

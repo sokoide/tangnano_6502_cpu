@@ -1,8 +1,5 @@
-// Simulation stub for Gowin PLL wrapper used on Tang Nano boards.
-// Hardware builds should use the vendor-provided netlist under gowin_rpll_*.
-
 /* verilator lint_off DECLFILENAME */
-module Gowin_rPLL9 (
+module Gowin_rPLL40 (
     output logic clkout,
     input  logic clkin
 );

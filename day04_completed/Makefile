@@ -2,7 +2,7 @@
 PROJECT = day04
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
-SIM_TOP ?= tb_cpu_registers
+SIM_TOP ?= tb_tft
 VERILATOR ?= verilator
 
 BASE := $(if \
@@ -64,7 +64,9 @@ sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
 		-o V$(SIM_TOP) \
-		tb_cpu_registers.sv cpu_registers.sv
+		sim/Gowin_rPLL9_stub.sv sim/gowin_rpll40_stub.sv \
+		lcd/tb_tft.sv top_9k.sv lcd_demo.sv \
+		lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh
 
 sim: sim-build
 	@echo "[sim] Running..."

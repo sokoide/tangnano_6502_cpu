@@ -17,7 +17,6 @@ module vram (
     localparam logic [7:0] ROW2_TEXT [0:ROW2_LEN-1] = '{ "F", "P", "G", "A", " ", "S", "H", "O", "W" };
 
     logic [7:0] ram [0:DEPTH-1];
-    logic [9:0] addr_reg;
     logic [7:0] data_reg;
     integer idx;
 
@@ -43,11 +42,9 @@ module vram (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            addr_reg <= 10'd0;
             data_reg <= 8'h20;
         end else begin
-            addr_reg <= addr;
-            data_reg <= ram[addr_reg];
+            data_reg <= ram[addr];
         end
     end
 
