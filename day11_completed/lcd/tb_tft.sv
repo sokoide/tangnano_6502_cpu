@@ -44,12 +44,12 @@ module tb_tft;
         ResetButton = 1'b1;
 `endif
 
-        $display("Starting Day10 TFT sim...");
+        $display("Starting Day11 TFT sim...");
         $dumpfile("tb_tft.vcd");
         $dumpvars(0, tb_tft);
 
         // Run until we see active video (DEN) and a non-black pixel.
-        for (cycles = 0; cycles < 20000; cycles++) begin
+        for (cycles = 0; cycles < 50000; cycles++) begin
             @(posedge LCD_CLK);
             if (LCD_DEN) begin
                 saw_den = 1'b1;
