@@ -303,22 +303,22 @@ module lcd_demo (
                     else col = 37 + (debug_addr[1:0] * 2);
 
                     case (sub_state)
-                        0: begin
+                        0: begin // Row label "0xXX:"
                             vram_cea <= 1'b1;
                             vram_ada <= row * COLUMNS + 0; vram_din <= "0";
                             sub_state <= 1;
                         end
-                        1: begin vram_ada <= row * COLUMNS + 1; vram_din <= "x"; sub_state <= 2; end
-                        2: begin vram_ada <= row * COLUMNS + 2; vram_din <= to_hex(debug_addr[7:4]); sub_state <= 3; end
-                        3: begin vram_ada <= row * COLUMNS + 3; vram_din <= to_hex(debug_addr[3:0]); sub_state <= 4; end
-                        4: begin vram_ada <= row * COLUMNS + 4; vram_din <= ":"; sub_state <= 5; end
-                        5: begin
+                        1: begin vram_cea <= 1'b1; vram_ada <= row * COLUMNS + 1; vram_din <= "x"; sub_state <= 2; end
+                        2: begin vram_cea <= 1'b1; vram_ada <= row * COLUMNS + 2; vram_din <= to_hex(debug_addr[7:4]); sub_state <= 3; end
+                        3: begin vram_cea <= 1'b1; vram_ada <= row * COLUMNS + 3; vram_din <= to_hex(debug_addr[3:0]); sub_state <= 4; end
+                        4: begin vram_cea <= 1'b1; vram_ada <= row * COLUMNS + 4; vram_din <= ":"; sub_state <= 5; end
+                        5: begin // Data High Nibble
                             vram_cea <= 1'b1;
                             vram_ada <= row * COLUMNS + col;
                             vram_din <= to_hex(ram_data_out[7:4]);
                             sub_state <= 6;
                         end
-                        6: begin
+                        6: begin // Data Low Nibble
                             vram_cea <= 1'b1;
                             vram_ada <= row * COLUMNS + col + 1;
                             vram_din <= to_hex(ram_data_out[3:0]);
@@ -334,7 +334,7 @@ module lcd_demo (
                                 sub_state <= 5; 
                             end
                         end
-                        8: begin
+                        8: begin // Bit pattern (LED)
                             vram_cea <= 1'b1;
                             vram_ada <= row * COLUMNS + 52 + debug_counter[2:0];
                             vram_din <= ram_data_out[7 - debug_counter[2:0]] ? "1" : "0";

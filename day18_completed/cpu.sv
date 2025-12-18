@@ -47,6 +47,8 @@ module cpu (
     state_t state;
     logic [7:0] current_opcode;
     logic [15:0] temp_addr;
+    logic [7:0] vsync_wait_count;
+    logic       vsync_prev;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -66,7 +68,10 @@ module cpu (
             show_info <= 1'b0;
             data_out <= 8'h00;
             address_bus <= 16'h8000;
+            vsync_wait_count <= 8'h00;
+            vsync_prev <= 1'b0;
         end else if (pc_enable) begin
+            vsync_prev <= vsync;
             write_en <= 1'b0;
             case (state)
                 STATE_FETCH_OPCODE: begin
@@ -77,7 +82,9 @@ module cpu (
                         address_bus <= pc;
                         state <= STATE_EXECUTE;
                     end else if (data_in == OP_WVS) begin
-                        state <= STATE_WAIT_VSYNC;
+                        pc <= pc + 1;
+                        address_bus <= pc + 1;
+                        state <= STATE_FETCH_OPERAND;
                     end else if (data_in == OP_CVR) begin
                         vram_clear <= 1'b1;
                         pc <= pc + 1;
@@ -99,15 +106,15 @@ module cpu (
                             OP_LDA_IZX, OP_LDA_IZY,
                             OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP,
                             OP_INC_ZP, OP_DEC_ZP: begin
-                                                            pc    <= pc + 1;
-                                                            address_bus <= pc + 1;
-                                                            state <= STATE_FETCH_OPERAND;
-                                                        end
-                                                                                    OP_JSR, OP_JMP_ABS, OP_JMP_IND, OP_LDA_ABS, OP_STA_ABS,
-                                                                                    OP_LDA_ABX, OP_LDA_ABY, OP_STA_ABX: begin                                                            pc    <= pc + 1;
-                                                            address_bus <= pc + 1;
-                                                            state <= STATE_FETCH_LOW;
-                                                        end                            OP_RTS: begin
+                                pc    <= pc + 1;
+                                state <= STATE_FETCH_OPERAND;
+                            end
+                            OP_JSR, OP_JMP_ABS, OP_JMP_IND, OP_LDA_ABS, OP_STA_ABS,
+                            OP_LDA_ABX, OP_LDA_ABY, OP_STA_ABX: begin
+                                pc    <= pc + 1;
+                                state <= STATE_FETCH_LOW;
+                            end
+                            OP_RTS: begin
                                 state <= STATE_PULL_LOW;
                                 address_bus <= 16'h0100 + (s + 8'd1);
                             end
@@ -121,7 +128,6 @@ module cpu (
                                 state <= STATE_PULL_LOW;
                                 address_bus <= 16'h0100 + (s + 8'd1);
                             end
-                            // Day 07 instructions (1-byte instructions)
                             OP_TAX: begin x <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
                             OP_TAY: begin y <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
                             OP_TXA: begin a <= x; z <= (x == 8'h00); n <= x[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
@@ -143,6 +149,7 @@ module cpu (
 
                 STATE_FETCH_OPERAND: begin
                     case (current_opcode)
+                        OP_WVS: begin vsync_wait_count <= data_in; state <= STATE_WAIT_VSYNC; end
                         OP_LDA_IMM: begin a <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
                         OP_LDX_IMM: begin x <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
                         OP_LDY_IMM: begin y <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
@@ -191,6 +198,7 @@ module cpu (
                     endcase
 
                     case (current_opcode)
+                        OP_WVS: ; // Handled in STATE_WAIT_VSYNC
                         OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM,
                         OP_ADC_IMM, OP_SBC_IMM, OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
                         OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM, OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
@@ -237,17 +245,6 @@ module cpu (
                     end else if (current_opcode == OP_JMP_IND) begin
                         address_bus <= {data_in, temp_addr[7:0]};
                         state <= STATE_FETCH_IND_LOW;
-                    end else if (current_opcode == OP_LDA_ABS || current_opcode == OP_LDA_ABX || current_opcode == OP_LDA_ABY) begin
-                        address_bus <= {data_in, temp_addr[7:0]} + 
-                                       ((current_opcode == OP_LDA_ABX) ? {8'h00, x} :
-                                        (current_opcode == OP_LDA_ABY) ? {8'h00, y} : 16'h0000);
-                        state <= STATE_EXECUTE;
-                    end else if (current_opcode == OP_STA_ABS || current_opcode == OP_STA_ABX) begin
-                        address_bus <= {data_in, temp_addr[7:0]} + 
-                                       ((current_opcode == OP_STA_ABX) ? {8'h00, x} : 16'h0000);
-                        write_en <= 1'b1;
-                        data_out <= a;
-                        state <= STATE_EXECUTE;
                     end else if (current_opcode == OP_LDA_ABS || current_opcode == OP_LDA_ABX || current_opcode == OP_LDA_ABY) begin
                         address_bus <= {data_in, temp_addr[7:0]} + 
                                        ((current_opcode == OP_LDA_ABX) ? {8'h00, x} :
@@ -381,11 +378,7 @@ module cpu (
 
                 STATE_FETCH_IND_HIGH: begin
                     temp_addr[15:8] <= data_in;
-                    if (current_opcode == OP_JMP_IND) begin
-                        state <= STATE_IND_ACCESS;
-                    end else begin
-                        state <= STATE_IND_ACCESS;
-                    end
+                    state <= STATE_IND_ACCESS;
                 end
 
                 STATE_IND_ACCESS: begin
@@ -404,12 +397,14 @@ module cpu (
                 end
 
                 STATE_WAIT_VSYNC: begin
-                    if (vsync) begin
-                        pc <= pc + 1;
-                        address_bus <= pc + 1;
-                        state <= STATE_FETCH_OPCODE;
-                    end else begin
-                        state <= STATE_WAIT_VSYNC;
+                    if (vsync && !vsync_prev) begin // Rising edge
+                        if (vsync_wait_count <= 8'h01) begin
+                            pc <= pc + 1;
+                            address_bus <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end else begin
+                            vsync_wait_count <= vsync_wait_count - 1;
+                        end
                     end
                 end
 
