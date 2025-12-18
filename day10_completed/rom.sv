@@ -15,7 +15,7 @@ module rom (
             16'h8006: data = 8'h20; // JSR 800A
             16'h8007: data = 8'h0A;
             16'h8008: data = 8'h80;
-            16'h8009: data = 8'hFF; // HLT (End of program)
+            16'h8009: data = 8'hEF; // HLT (End of program)
             16'h800A: data = 8'hE8; // INX
             16'h800B: data = 8'h60; // RTS
             default:  data = 8'hEA; // NOP

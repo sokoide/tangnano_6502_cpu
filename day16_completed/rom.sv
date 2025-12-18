@@ -16,7 +16,7 @@ module rom (
             16'h8007: data = 8'h03;
             16'h8008: data = 8'hD0; // BNE LOOP (-8 -> 8002)
             16'h8009: data = 8'hF8;
-            16'h800A: data = 8'hFF; // HLT
+            16'h800A: data = 8'hEF; // HLT
             16'h800B: data = 8'h11; // DATA[0]
             16'h800C: data = 8'h22; // DATA[1]
             16'h800D: data = 8'h33; // DATA[2]

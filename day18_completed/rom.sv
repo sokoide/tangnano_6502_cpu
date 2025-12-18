@@ -25,8 +25,8 @@ module rom (
             16'h800E: data = 8'h01;
             16'h800F: data = 8'hE8; // INX
             16'h8010: data = 8'hC8; // INY
-            16'h8011: data = 8'h32; // IFO (Info)
-            16'h8012: data = 8'h12; // WVS #58
+            16'h8011: data = 8'hDF; // IFO (Info)
+            16'h8012: data = 8'hFF; // WVS #58
             16'h8013: data = 8'h3A; // 58 in hex (~1 sec)
             16'h8014: data = 8'h4C; // JMP $800C
             16'h8015: data = 8'h0C;

@@ -40,7 +40,7 @@ localparam logic [7:0] OP_LSR_A   = 8'h4A;
 localparam logic [7:0] OP_ROL_A   = 8'h2A;
 localparam logic [7:0] OP_ROR_A   = 8'h6A;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

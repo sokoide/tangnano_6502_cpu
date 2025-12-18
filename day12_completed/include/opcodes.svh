@@ -32,7 +32,7 @@ localparam logic [7:0] OP_STY_ZP  = 8'h84;
 localparam logic [7:0] OP_LDA_ABS = 8'hAD;
 localparam logic [7:0] OP_STA_ABS = 8'h8D;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

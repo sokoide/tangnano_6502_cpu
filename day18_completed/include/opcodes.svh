@@ -47,9 +47,9 @@ localparam logic [7:0] OP_ASL_A   = 8'h0A;
 localparam logic [7:0] OP_LSR_A   = 8'h4A;
 localparam logic [7:0] OP_ROL_A   = 8'h2A;
 localparam logic [7:0] OP_ROR_A   = 8'h6A;
-localparam logic [7:0] OP_WVS     = 8'h12;
-localparam logic [7:0] OP_CVR     = 8'h22;
-localparam logic [7:0] OP_IFO     = 8'h32;
+localparam logic [7:0] OP_WVS     = 8'hFF;
+localparam logic [7:0] OP_CVR     = 8'hCF;
+localparam logic [7:0] OP_IFO     = 8'hDF;
 localparam logic [7:0] OP_DEX     = 8'hCA;
 localparam logic [7:0] OP_DEY     = 8'h88;
 localparam logic [7:0] OP_CMP_IMM = 8'hC9;
@@ -58,7 +58,7 @@ localparam logic [7:0] OP_CPY_IMM = 8'hC0;
 localparam logic [7:0] OP_INC_ZP  = 8'hE6;
 localparam logic [7:0] OP_DEC_ZP  = 8'hC6;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

@@ -14,8 +14,8 @@ module rom (
             16'h8005: data = 8'h00;
             16'h8006: data = 8'hA5; // LDA $10
             16'h8007: data = 8'h10;
-            16'h8008: data = 8'hFF; // HLT (End of program)
-            16'h8009: data = 8'hFF; // Padding (HLT)
+            16'h8008: data = 8'hEF; // HLT (End of program)
+            16'h8009: data = 8'hEF; // Padding (HLT)
             default:  data = 8'hEA; // NOP
         endcase
     end

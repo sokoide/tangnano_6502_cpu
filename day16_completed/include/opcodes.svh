@@ -50,7 +50,7 @@ localparam logic [7:0] OP_CPY_IMM = 8'hC0;
 localparam logic [7:0] OP_INC_ZP  = 8'hE6;
 localparam logic [7:0] OP_DEC_ZP  = 8'hC6;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

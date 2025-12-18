@@ -24,7 +24,7 @@ localparam logic [7:0] OP_PLA     = 8'h68;
 localparam logic [7:0] OP_PHP     = 8'h08;
 localparam logic [7:0] OP_PLP     = 8'h28;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

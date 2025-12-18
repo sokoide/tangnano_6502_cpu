@@ -36,7 +36,7 @@ localparam logic [7:0] OP_ORA_IMM = 8'h09;
 localparam logic [7:0] OP_EOR_IMM = 8'h49;
 localparam logic [7:0] OP_BIT_ZP  = 8'h24;
 localparam logic [7:0] OP_JMP_ABS = 8'h4C;
-localparam logic [7:0] OP_HLT     = 8'hFF;
+localparam logic [7:0] OP_HLT     = 8'hEF;
 localparam logic [7:0] OP_NOP     = 8'hEA;
 
 `endif

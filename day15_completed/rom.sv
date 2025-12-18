@@ -18,8 +18,8 @@ module rom (
             16'h8009: data = 8'h10;
             16'h800A: data = 8'hE6; // INC $10 -> [$10]=1
             16'h800B: data = 8'h10;
-            16'h800C: data = 8'hFF; // HLT (Success)
-            16'h800D: data = 8'hFF; // HLT (Fail target)
+            16'h800C: data = 8'hEF; // HLT (Success)
+            16'h800D: data = 8'hEF; // HLT (Fail target)
             default:  data = 8'hEA; // NOP
         endcase
     end

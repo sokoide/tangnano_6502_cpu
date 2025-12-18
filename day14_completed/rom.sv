@@ -18,7 +18,7 @@ module rom (
             16'h8009: data = 8'h2A; // ROL A -> A=$03, C=0
             16'h800A: data = 8'h4A; // LSR A -> A=$01, C=1
             16'h800B: data = 8'h6A; // ROR A -> A=$80, C=1 (Carry was 1)
-            16'h800C: data = 8'hFF; // HLT
+            16'h800C: data = 8'hEF; // HLT
             default:  data = 8'hEA; // NOP
         endcase
     end

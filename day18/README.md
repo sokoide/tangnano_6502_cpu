@@ -19,11 +19,11 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🏗️ Custom Instructions to Implement
 
-| Opcode | Mnemonic     | Description                                                     |
-| :----: | ------------ | --------------------------------------------------------------- |
-| `0x12` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.    |
-| `0x22` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.       |
-| `0x32` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen.   |
+| Opcode | Mnemonic     | Description                                                   |
+| :----: | ------------ | ------------------------------------------------------------- |
+| `0x12` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
+| `0x22` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
+| `0x32` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
 
 > [!NOTE]
 > Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (approx. 40MHz).
@@ -46,7 +46,7 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
     LOOP:
     INC $00
     IFO        ; Debug display
-    WVS #$32   ; Wait for 50 V-Syncs (approx. 1 second)
+    WVS #$3A   ; Wait for 58 V-Syncs (approx. 1 second)
     JMP LOOP
     ```
 -   **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.

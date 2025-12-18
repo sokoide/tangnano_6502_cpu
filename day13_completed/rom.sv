@@ -7,7 +7,7 @@ module rom (
     always_comb begin
         case (addr)
             16'h8000: data = 8'hA9; // LDA #$FF
-            16'h8001: data = 8'hFF;
+            16'h8001: data = 8'hEF;
             16'h8002: data = 8'h29; // AND #$0F -> A=$0F
             16'h8003: data = 8'h0F;
             16'h8004: data = 8'h09; // ORA #$80 -> A=$8F
@@ -24,7 +24,7 @@ module rom (
             16'h800F: data = 8'h0F;
             16'h8010: data = 8'h24; // BIT $11
             16'h8011: data = 8'h11;
-            16'h8012: data = 8'hFF; // HLT
+            16'h8012: data = 8'hEF; // HLT
             default:  data = 8'hEA; // NOP
         endcase
     end
