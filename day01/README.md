@@ -7,22 +7,22 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the basic specifications of Tang Nano 9K/20K
--   Master the basic operations of GoWin EDA
--   Create a blinking LED project as the first HDL project
--   Learn the basic workflow of FPGA development
+- Understand the basic specifications of Tang Nano 9K/20K
+- Master the basic operations of GoWin EDA
+- Create a blinking LED project as the first HDL project
+- Learn the basic workflow of FPGA development
 
 ## 📚 Preparation
 
 ### Hardware
 
--   Tang Nano 9K or Tang Nano 20K
--   USB-C Cable
--   PC (Windows/Linux/macOS)
+- Tang Nano 9K or Tang Nano 20K
+- USB-C Cable
+- PC (Windows/Linux/macOS)
 
 ### Software
 
--   GoWin EDA (Download and install from the official website)
+- GoWin EDA (Download and install from the official website)
 
 ## 📖 Theory
 
@@ -30,34 +30,34 @@
 
 If you're coming from a software background, the biggest mental shift is this: **you are not writing a program.** You are **describing a hardware circuit.**
 
--   **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
--   **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
--   **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
+- **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
+- **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
+- **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
 
 Keep this in mind as you learn. You are a circuit designer, not just a programmer!
 
 #### Analogy: The Build Process
 
--   **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
--   **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly _where_ on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
+- **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
+- **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly _where_ on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
 
 ### Tang Nano Basic Specifications
 
 **Tang Nano 9K:**
 
--   FPGA: Gowin GW1NR-9C
--   Logic Elements: 8,640 LUT4
--   Memory: 468Kbit BSRAM
--   PLLs: 2
--   I/O Pins: 63
+- FPGA: Gowin GW1NR-9C
+- Logic Elements: 8,640 LUT4
+- Memory: 468Kbit BSRAM
+- PLLs: 2
+- I/O Pins: 63
 
 **Tang Nano 20K:**
 
--   FPGA: Gowin GW2AR-18C
--   Logic Elements: 20,736 LUT4
--   Memory: 828Kbit BSRAM
--   PLLs: 4
--   I/O Pins: 107
+- FPGA: Gowin GW2AR-18C
+- Logic Elements: 20,736 LUT4
+- Memory: 828Kbit BSRAM
+- PLLs: 4
+- I/O Pins: 107
 
 ### Glossary (first-time FPGA terms)
 
@@ -67,8 +67,8 @@ This Day introduces a few terms you’ll keep seeing later. Here’s what they m
 
 **RTL** is the style of HDL code where you describe:
 
--   **Registers** (state updated on a clock edge), and
--   **Combinational logic** (pure “wires/logic” between registers).
+- **Registers** (state updated on a clock edge), and
+- **Combinational logic** (pure “wires/logic” between registers).
 
 In practice, your `.sv` files (like `top.sv`) are RTL.
 
@@ -76,10 +76,10 @@ In practice, your `.sv` files (like `top.sv`) are RTL.
 
 FPGA chips are built from configurable building blocks:
 
--   **LUT (Look-Up Table)**: implements small boolean logic (like AND/OR/XOR and small truth tables).
+- **LUT (Look-Up Table)**: implements small boolean logic (like AND/OR/XOR and small truth tables).
     Many designs are “mapped” into LUTs.
--   **FF (Flip-Flop)**: a 1-bit register that stores state and updates on a clock edge (`posedge`/`negedge`).
--   **RAM / BSRAM (Block SRAM)**: on-chip memory blocks (used for ROM/RAM/FIFOs, etc.).
+- **FF (Flip-Flop)**: a 1-bit register that stores state and updates on a clock edge (`posedge`/`negedge`).
+- **RAM / BSRAM (Block SRAM)**: on-chip memory blocks (used for ROM/RAM/FIFOs, etc.).
 
 Later, when we say “Synthesis maps RTL into LUT/FF/RAM”, this is what we mean.
 
@@ -159,20 +159,20 @@ flowchart LR
   COMB --> LED(("led<br/>(output logic)"))
 ```
 
--   `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` for almost everything**.
-    -   If you drive it with `assign`, it acts like a wire.
-    -   If you drive it inside `always_ff`, it acts like a register.
--   `wire`: The older Verilog type for connecting components. You only strictly need it for signals with multiple drivers (like bidirectional buses), which we don't use here.
--   `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. `logic` is generally recommended for new SystemVerilog code.
+- `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` for almost everything**.
+  - If you drive it with `assign`, it acts like a wire.
+  - If you drive it inside `always_ff`, it acts like a register.
+- `wire`: The older Verilog type for connecting components. You only strictly need it for signals with multiple drivers (like bidirectional buses), which we don't use here.
+- `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. `logic` is generally recommended for new SystemVerilog code.
 
--   `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
--   `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
+- `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
+- `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
 
 **Important Rule for Software Engineers:**
 
--   Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
--   Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
--   Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
+- Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
+- Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
+- Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
 
 ### Step 3: Create Constraint File
 
@@ -200,16 +200,16 @@ IO_PORT "led" IO_TYPE=LVCMOS33;
 
 A `.cst` file tells the FPGA tools how your top-level ports connect to real pins and what electrical settings to use.
 
--   `IO_LOC "name" <pin>;` maps a port name to a physical pin number.
--   `IO_PORT "name" ...;` sets electrical properties.
+- `IO_LOC "name" <pin>;` maps a port name to a physical pin number.
+- `IO_PORT "name" ...;` sets electrical properties.
 
 Common options:
 
--   `IO_TYPE=LVCMOS33` / `LVCMOS18`: the I/O voltage standard (3.3V / 1.8V).
--   `PULL_MODE=UP|DOWN|NONE`:
-    -   `UP`: weak pull-up (helps prevent floating inputs).
-    -   `DOWN`: weak pull-down.
-    -   `NONE`: no pull resistor.
+- `IO_TYPE=LVCMOS33` / `LVCMOS18`: the I/O voltage standard (3.3V / 1.8V).
+- `PULL_MODE=UP|DOWN|NONE`:
+  - `UP`: weak pull-up (helps prevent floating inputs).
+  - `DOWN`: weak pull-down.
+  - `NONE`: no pull resistor.
 
 Clock input pins are normally driven strongly by the board oscillator, so `PULL_MODE=NONE` is typical.
 
@@ -260,20 +260,20 @@ Clock input pins are normally driven strongly by the board oscillator, so `PULL_
 
 ## 📚 What I Learned Today
 
--   [ ] Basic specifications of Tang Nano
--   [ ] Basic operations of GoWin EDA
--   [ ] Basic syntax of SystemVerilog
--   [ ] Understanding of the FPGA development flow
--   [ ] Role of the constraint file
--   [ ] On-device testing
+- [ ] Basic specifications of Tang Nano
+- [ ] Basic operations of GoWin EDA
+- [ ] Basic syntax of SystemVerilog
+- [ ] Understanding of the FPGA development flow
+- [ ] Role of the constraint file
+- [ ] On-device testing
 
 ## 🎯 Preview for Tomorrow
 
 In Day 02, we will learn in detail about combinational circuits in SystemVerilog:
 
--   How to use `always_comb`
--   Conditional branching (if-else, case)
--   Logical operations and bit manipulation
--   Connections between modules
+- How to use `always_comb`
+- Conditional branching (if-else, case)
+- Logical operations and bit manipulation
+- Connections between modules
 
 **Preparation task**: Review the basics of binary, hexadecimal, and logical operations.

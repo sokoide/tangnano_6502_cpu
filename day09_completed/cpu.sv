@@ -2,21 +2,21 @@
 
 module cpu (
     input  logic        clk,
-    input  logic        rst_n,      // Active-low reset
-    input  logic        pc_enable,  // Enable signal for PC update (used for manual stepping)
+    input  logic        rst_n,        // Active-low reset
+    input  logic        pc_enable,    // Enable signal for PC update (used for manual stepping)
     output logic [15:0] address_bus,
-    input  logic [7:0]  data_in,
+    input  logic [ 7:0] data_in,
     output logic [15:0] debug_pc,
-    output logic [7:0]  debug_a,
-    output logic [7:0]  debug_x,
-    output logic [7:0]  debug_y,
-    output logic [7:0]  debug_p
+    output logic [ 7:0] debug_a,
+    output logic [ 7:0] debug_x,
+    output logic [ 7:0] debug_y,
+    output logic [ 7:0] debug_p
 );
 
     logic [15:0] pc;
-    logic [7:0]  a;  // Accumulator
-    logic [7:0]  x, y; // Index registers
-    logic        n, v, z, c; // Status flags
+    logic [ 7:0] a;  // Accumulator
+    logic [7:0] x, y;  // Index registers
+    logic n, v, z, c;  // Status flags
 
     // State Machine for Instruction Timing
     typedef enum logic [1:0] {
@@ -29,15 +29,15 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc    <= 16'h8000;
-            a     <= 8'h00;
-            x     <= 8'h00;
-            y     <= 8'h00;
-            n     <= 1'b0;
-            v     <= 1'b0;
-            z     <= 1'b0;
-            c     <= 1'b0;
-            state <= STATE_FETCH_OPCODE;
+            pc             <= 16'h8000;
+            a              <= 8'h00;
+            x              <= 8'h00;
+            y              <= 8'h00;
+            n              <= 1'b0;
+            v              <= 1'b0;
+            z              <= 1'b0;
+            c              <= 1'b0;
+            state          <= STATE_FETCH_OPCODE;
             current_opcode <= 8'h00;
         end else if (pc_enable) begin
             case (state)
@@ -50,25 +50,72 @@ module cpu (
                             state <= STATE_FETCH_OPERAND;
                         end
                         // Day 07 instructions (1-byte instructions)
-                        OP_TAX: begin x <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_TAY: begin y <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_TXA: begin a <= x; z <= (x == 8'h00); n <= x[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_TYA: begin a <= y; z <= (y == 8'h00); n <= y[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_INX: begin x <= x + 1; z <= ((x + 8'h01) == 8'h00); n <= (x + 8'h01) >> 7; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_INY: begin y <= y + 1; z <= ((y + 8'h01) == 8'h00); n <= (y + 8'h01) >> 7; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_TAX: begin
+                            x <= a;
+                            z <= (a == 8'h00);
+                            n <= a[7];
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_TAY: begin
+                            y <= a;
+                            z <= (a == 8'h00);
+                            n <= a[7];
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_TXA: begin
+                            a <= x;
+                            z <= (x == 8'h00);
+                            n <= x[7];
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_TYA: begin
+                            a <= y;
+                            z <= (y == 8'h00);
+                            n <= y[7];
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_INX: begin
+                            x <= x + 1;
+                            z <= ((x + 8'h01) == 8'h00);
+                            n <= (x + 8'h01) >> 7;
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_INY: begin
+                            y <= y + 1;
+                            z <= ((y + 8'h01) == 8'h00);
+                            n <= (y + 8'h01) >> 7;
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
                         // Day 08 instructions (1-byte instructions)
-                        OP_CLC: begin c <= 1'b0; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        OP_SEC: begin c <= 1'b1; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
-                        default: begin pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_CLC: begin
+                            c <= 1'b0;
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        OP_SEC: begin
+                            c <= 1'b1;
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                        default: begin
+                            pc <= pc + 1;
+                            state <= STATE_FETCH_OPCODE;
+                        end
                     endcase
                 end
 
                 STATE_FETCH_OPERAND: begin
                     case (current_opcode)
                         OP_LDA_IMM: begin
-                            a <= data_in;
-                            z <= (data_in == 8'h00);
-                            n <= data_in[7];
+                            a  <= data_in;
+                            z  <= (data_in == 8'h00);
+                            n  <= data_in[7];
                             pc <= pc + 1;
                         end
                         OP_ADC_IMM: begin
@@ -104,10 +151,10 @@ module cpu (
                         OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
                             automatic logic take_branch;
                             case (current_opcode)
-                                OP_BNE: take_branch = !z;
-                                OP_BEQ: take_branch = z;
-                                OP_BPL: take_branch = !n;
-                                OP_BMI: take_branch = n;
+                                OP_BNE:  take_branch = !z;
+                                OP_BEQ:  take_branch = z;
+                                OP_BPL:  take_branch = !n;
+                                OP_BMI:  take_branch = n;
                                 default: take_branch = 1'b0;
                             endcase
 
@@ -116,7 +163,7 @@ module cpu (
                                 // PC + 1 will point to the address after the instruction
                                 pc <= (pc + 16'd1) + 16'($signed(data_in));
                             end else begin
-                                pc    <= pc + 1;
+                                pc <= pc + 1;
                             end
                         end
                         default: pc <= pc + 1;

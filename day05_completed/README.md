@@ -36,15 +36,15 @@ graph LR
 
 ## 🛠️ Implementation Steps
 
-1.  **Create `cpu.sv`**:
-    -   Inputs: `clk`, `reset`
-    -   Outputs: `address_bus` (16bit), `data_in` (8bit, input), `debug_pc` (16bit, for LCD)
-2.  **Implement PC**:
-    -   Initialize to `0x8000` (or your preferred entry point) on reset.
-    -   Logic: `PC <= PC + 1` on every clock cycle.
-3.  **Integrate into Top Module**:
-    -   Modify `lcd_demo.sv` to instantiate your `cpu`.
-    -   Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
+1. **Create `cpu.sv`**:
+    - Inputs: `clk`, `reset`
+    - Outputs: `address_bus` (16bit), `data_in` (8bit, input), `debug_pc` (16bit, for LCD)
+2. **Implement PC**:
+    - Initialize to `0x8000` (or your preferred entry point) on reset.
+    - Logic: `PC <= PC + 1` on every clock cycle.
+3. **Integrate into Top Module**:
+    - Modify `lcd_demo.sv` to instantiate your `cpu`.
+    - Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
 
 ## 💡 Why NOP?
 
@@ -52,8 +52,8 @@ graph LR
 
 ## 🧪 Verification
 
--   **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
--   **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
+- **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
+- **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
 
 ## 🎯 Preview for Tomorrow
 

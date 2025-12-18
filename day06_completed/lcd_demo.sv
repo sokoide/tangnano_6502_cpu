@@ -93,7 +93,7 @@ module lcd_demo (
 
     // CPU and ROM
     logic [15:0] cpu_address_bus;
-    logic [7:0]  cpu_data_in;
+    logic [ 7:0] cpu_data_in;
     logic [15:0] cpu_debug_pc;
 
     // Slow down PC increment for visual debugging
@@ -110,7 +110,7 @@ module lcd_demo (
 
     assign pc_enable = (counter == 24'd0);
 
-    logic [7:0]  cpu_debug_a;
+    logic [7:0] cpu_debug_a;
 
     cpu u_cpu (
         .clk(MEMORY_CLK),
@@ -152,9 +152,19 @@ module lcd_demo (
     endfunction
 
     typedef enum logic [3:0] {
-        S_IDLE, S_WRITE_P, S_WRITE_C, S_WRITE_COLON,
-        S_WRITE_D3, S_WRITE_D2, S_WRITE_D1, S_WRITE_D0,
-        S_WRITE_SPACE, S_WRITE_A, S_WRITE_A_COLON, S_WRITE_A1, S_WRITE_A0
+        S_IDLE,
+        S_WRITE_P,
+        S_WRITE_C,
+        S_WRITE_COLON,
+        S_WRITE_D3,
+        S_WRITE_D2,
+        S_WRITE_D1,
+        S_WRITE_D0,
+        S_WRITE_SPACE,
+        S_WRITE_A,
+        S_WRITE_A_COLON,
+        S_WRITE_A1,
+        S_WRITE_A0
     } vram_write_state_t;
     vram_write_state_t vram_write_state;
 
@@ -165,9 +175,9 @@ module lcd_demo (
             vram_din <= 8'h20;
             vram_write_state <= S_IDLE;
         end else begin
-            vram_cea <= 1'b0; // Default to no write
+            vram_cea <= 1'b0;  // Default to no write
             case (vram_write_state)
-                S_IDLE: if (vsync) vram_write_state <= S_WRITE_P; // Start writing on vsync
+                S_IDLE:  if (vsync) vram_write_state <= S_WRITE_P;  // Start writing on vsync
                 S_WRITE_P: begin
                     vram_cea <= 1'b1;
                     vram_ada <= 0;
@@ -238,7 +248,7 @@ module lcd_demo (
                     vram_cea <= 1'b1;
                     vram_ada <= 12;
                     vram_din <= to_hex(cpu_debug_a[3:0]);
-                    vram_write_state <= S_IDLE; // Done
+                    vram_write_state <= S_IDLE;  // Done
                 end
                 default: vram_write_state <= S_IDLE;
             endcase

@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the concept of clock-synchronous circuits
--   Learn the difference between flip-flops and latches
--   Master register design using `always_ff`
--   Understand the basics of Finite State Machines (FSM)
+- Understand the concept of clock-synchronous circuits
+- Learn the difference between flip-flops and latches
+- Master register design using `always_ff`
+- Understand the basics of Finite State Machines (FSM)
 
 ## 📚 Theory
 
@@ -20,8 +20,8 @@ In Day 02, you learned that combinational logic is like a pure function. Today, 
 
 Think of a sequential circuit as an object with private member variables (the registers). The `always_ff @(posedge clk)` block is like a special method that gets called automatically on every clock "tick". This is the **only place where the state should change**.
 
--   **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
--   **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
+- **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
+- **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
 
 This clock-driven, synchronous nature is what makes hardware design predictable and manageable.
 
@@ -38,13 +38,13 @@ flowchart LR
 
 #### Flip-flop vs latch (why we prefer flip-flops)
 
--   **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
--   **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
+- **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
+- **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
 
--   **`always_ff`**: Understand how to describe registers and flip-flops.
--   **Clock & Reset**: Learn the importance of the `posedge clk` and `negedge rst_n` pattern.
--   **Finite State Machines (FSM)**: Design a multi-state logic system with transitions.
--   **Non-blocking Assignment (`<=`)**: Master the fundamental syntax of synchronous digital design.
+- **`always_ff`**: Understand how to describe registers and flip-flops.
+- **Clock & Reset**: Learn the importance of the `posedge clk` and `negedge rst_n` pattern.
+- **Finite State Machines (FSM)**: Design a multi-state logic system with transitions.
+- **Non-blocking Assignment (`<=`)**: Master the fundamental syntax of synchronous digital design.
 
 ## 🏗️ Architecture
 
@@ -60,15 +60,15 @@ stateDiagram-v2
 
 ## 🛠️ Implementation Steps
 
-1.  **Clock Divider / Timer**:
-    -   Create a counter that counts up to a certain value to create delays (e.g., 2 seconds).
-2.  **State Definition**:
-    -   Use a `typedef enum` to define the states of the traffic light.
-3.  **State Transition Logic**:
-    -   Implement the `always_ff` block to update the `current_state`.
-    -   Implement the `always_comb` block to calculate the `next_state`.
-4.  **Peripheral Integration**:
-    -   Connect the state outputs to the physical LEDs on your Tang Nano board.
+1. **Clock Divider / Timer**:
+    - Create a counter that counts up to a certain value to create delays (e.g., 2 seconds).
+2. **State Definition**:
+    - Use a `typedef enum` to define the states of the traffic light.
+3. **State Transition Logic**:
+    - Implement the `always_ff` block to update the `current_state`.
+    - Implement the `always_comb` block to calculate the `next_state`.
+4. **Peripheral Integration**:
+    - Connect the state outputs to the physical LEDs on your Tang Nano board.
 
 ## 💡 The Tick of the Clock
 
@@ -113,8 +113,8 @@ endmodule
 
 ### Specifications
 
--   8-bit duty cycle control
--   Supports variable frequency
+- 8-bit duty cycle control
+- Supports variable frequency
 
 PWM = Pulse Width Modulation. It toggles an output fast and changes the **ON ratio** (duty cycle).
 
@@ -249,15 +249,15 @@ flowchart LR
 
 ## 📚 What I Learned Today
 
--   [ ] Basics of clock-synchronous circuits
--   [ ] How to use `always_ff`
--   [ ] State machine design methods
--   [ ] Implementation of timers and counters
+- [ ] Basics of clock-synchronous circuits
+- [ ] How to use `always_ff`
+- [ ] State machine design methods
+- [ ] Implementation of timers and counters
 
 ## 🎯 Preview for Tomorrow
 
 In Day 04, we will learn about the 6502 CPU architecture:
 
--   Basic components of a CPU
--   Relationship between registers and memory
--   Instruction execution cycle
+- Basic components of a CPU
+- Relationship between registers and memory
+- Instruction execution cycle

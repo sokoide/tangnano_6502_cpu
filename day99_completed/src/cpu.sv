@@ -57,105 +57,105 @@ module cpu (
     input logic [15:0] boot_program_length         // Actual boot program size
 );
 
-  import cpu_pkg::*;
-  import cpu_types_pkg::*;
-  import cpu_fsm_next_pkg::*;
+    import cpu_pkg::*;
+    import cpu_types_pkg::*;
+    import cpu_fsm_next_pkg::*;
 
-  cpu_ctx_t cur, next;
-  cpu_in_t cpu_inputs;
+    cpu_ctx_t cur, next;
+    cpu_in_t cpu_inputs;
 
-  always_comb begin
-    cpu_inputs = '{
-        dout: dout,
-        vsync: vsync,
-        boot_program_length: boot_program_length,
-        boot_byte: boot_program[cur.boot_idx]
-    };
+    always_comb begin
+        cpu_inputs = '{
+            dout: dout,
+            vsync: vsync,
+            boot_program_length: boot_program_length,
+            boot_byte: boot_program[cur.boot_idx]
+        };
 
-    next = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
+        next = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
 
-    // Always-on sequential helpers (now expressed as next-state updates).
-    next.counter = (cur.counter + 1) & 32'hFFFFFFFF;
-    next.dout_r = dout;
-    next.vsync_meta = vsync;
-    next.vsync_sync = cur.vsync_meta;
+        // Always-on sequential helpers (now expressed as next-state updates).
+        next.counter = (cur.counter + 1) & 32'hFFFFFFFF;
+        next.dout_r = dout;
+        next.vsync_meta = vsync;
+        next.vsync_sync = cur.vsync_meta;
 
-    // Drive module outputs from the registered context.
-    din = cur.din;
-    ada = cur.ada;
-    adb = cur.adb;
-    cea = cur.cea;
-    ceb = cur.ceb;
-    v_ada = cur.v_ada;
-    v_cea = cur.v_cea;
-    v_din = cur.v_din;
-  end
-
-  // Sequential logic: use an asynchronous active-low rst_n.
-  always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      cur <= '{
-          pc: 16'h0200,
-          pc_plus1: 16'h0000,
-          pc_plus2: 16'h0000,
-          pc_plus3: 16'h0000,
-
-          ra: 8'd0,
-          rx: 8'd0,
-          ry: 8'd0,
-          sp: 8'hFF,
-
-          flg_c: 1'b0,
-          flg_z: 1'b0,
-          flg_i: 1'b0,
-          flg_d: 1'b0,
-          flg_b: 1'b0,
-          flg_v: 1'b0,
-          flg_n: 1'b0,
-
-          din: 8'h00,
-          ada: 15'h0000,
-          adb: PROGRAM_START,
-          cea: 1'b0,
-          ceb: 1'b1,
-
-          v_ada: 10'h0000,
-          v_cea: 1'b0,
-          v_din: 8'h00,
-
-          opcode: 8'h00,
-          operands: 16'h0000,
-
-          fetched_data_bytes: 3'd0,
-          fetched_data: 16'h0000,
-          written_data_bytes: 3'd0,
-
-          write_to_vram: 1'b0,
-          dout_r: 8'h00,
-
-          char_code: 8'h20,
-          counter: 32'h0,
-          boot_idx: 15'd0,
-          boot_write: 1'b0,
-
-          vsync_meta: 1'b0,
-          vsync_sync: 1'b0,
-          vsync_stage: 2'd0,
-
-          show_info_counter: 32'd0,
-          show_info_cmd: '0,
-
-          state: INIT,
-          prev_state: INIT,
-          fetch_resume_state: INIT,
-          fetch_stage: FETCH_OPCODE,
-          show_info_stage: SHOW_INFO_FETCH
-      };
-    end else begin
-      cur <= next;
+        // Drive module outputs from the registered context.
+        din = cur.din;
+        ada = cur.ada;
+        adb = cur.adb;
+        cea = cur.cea;
+        ceb = cur.ceb;
+        v_ada = cur.v_ada;
+        v_cea = cur.v_cea;
+        v_din = cur.v_din;
     end
-  end
 
-  /* verilator lint_on WIDTHTRUNC */
-  /* verilator lint_on WIDTHEXPAND */
+    // Sequential logic: use an asynchronous active-low rst_n.
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            cur <= '{
+                pc: 16'h0200,
+                pc_plus1: 16'h0000,
+                pc_plus2: 16'h0000,
+                pc_plus3: 16'h0000,
+
+                ra: 8'd0,
+                rx: 8'd0,
+                ry: 8'd0,
+                sp: 8'hFF,
+
+                flg_c: 1'b0,
+                flg_z: 1'b0,
+                flg_i: 1'b0,
+                flg_d: 1'b0,
+                flg_b: 1'b0,
+                flg_v: 1'b0,
+                flg_n: 1'b0,
+
+                din: 8'h00,
+                ada: 15'h0000,
+                adb: PROGRAM_START,
+                cea: 1'b0,
+                ceb: 1'b1,
+
+                v_ada: 10'h0000,
+                v_cea: 1'b0,
+                v_din: 8'h00,
+
+                opcode: 8'h00,
+                operands: 16'h0000,
+
+                fetched_data_bytes: 3'd0,
+                fetched_data: 16'h0000,
+                written_data_bytes: 3'd0,
+
+                write_to_vram: 1'b0,
+                dout_r: 8'h00,
+
+                char_code: 8'h20,
+                counter: 32'h0,
+                boot_idx: 15'd0,
+                boot_write: 1'b0,
+
+                vsync_meta: 1'b0,
+                vsync_sync: 1'b0,
+                vsync_stage: 2'd0,
+
+                show_info_counter: 32'd0,
+                show_info_cmd: '0,
+
+                state: INIT,
+                prev_state: INIT,
+                fetch_resume_state: INIT,
+                fetch_stage: FETCH_OPCODE,
+                show_info_stage: SHOW_INFO_FETCH
+            };
+        end else begin
+            cur <= next;
+        end
+    end
+
+    /* verilator lint_on WIDTHTRUNC */
+    /* verilator lint_on WIDTHEXPAND */
 endmodule

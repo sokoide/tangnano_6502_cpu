@@ -7,10 +7,10 @@
 
 ## 🎯 Learning Objectives
 
--   Understand the basic syntax of SystemVerilog
--   Learn how to design combinational circuits
--   Learn the difference between `assign` and `always_comb`
--   Understand the basics of testbenches
+- Understand the basic syntax of SystemVerilog
+- Learn how to design combinational circuits
+- Learn the difference between `assign` and `always_comb`
+- Understand the basics of testbenches
 
 ## 📚 Theory
 
@@ -24,8 +24,8 @@ In Day 01 you used a **counter**, which is a _sequential_ circuit (it updates on
 
 Day 02 focuses on **combinational circuits**:
 
--   Output is determined only by the current inputs (no memory).
--   In RTL, you describe them with `assign` or `always_comb`.
+- Output is determined only by the current inputs (no memory).
+- In RTL, you describe them with `assign` or `always_comb`.
 
 ```mermaid
 flowchart LR
@@ -61,29 +61,29 @@ graph LR
 
 ## 🛠️ Implementation Steps
 
-1.  **7-Segment Decoder**:
-    -   Create a module that converts a 4-bit nibble into hexadecimal display signals.
-2.  **4-bit ALU**:
-    -   Implement the main operations using a `case` statement inside an `always_comb` block.
-    -   Ensure all outputs are defined to avoid "inferred latches" (accidental memory).
-3.  **Simulation & Verification**:
-    -   Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
-    -   Use `make test` to run the simulation and check for errors.
-4.  **Hardware Display**:
-    -   Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
+1. **7-Segment Decoder**:
+    - Create a module that converts a 4-bit nibble into hexadecimal display signals.
+2. **4-bit ALU**:
+    - Implement the main operations using a `case` statement inside an `always_comb` block.
+    - Ensure all outputs are defined to avoid "inferred latches" (accidental memory).
+3. **Simulation & Verification**:
+    - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
+    - Use `make test` to run the simulation and check for errors.
+4. **Hardware Display**:
+    - Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
 
 ## 💡 Pure Functions in Hardware
 
 A combinational circuit is basically a **pure function**. Given the same inputs, it will always produce the same outputs immediately. Always remember to provide a `default` case in your logic to ensure your circuit doesn't try to "remember" previous states.
 
-#### `wire` vs `logic` (A Simple Rule for Beginners)
+### `wire` vs `logic` (A Simple Rule for Beginners)
 
 You learned about this in Day 01, but here's a recap for the context of combinational logic:
 
--   `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
-    -   If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
-    -   If you assign to it with `assign`, it acts like a `wire`.
--   `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
+- `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
+  - If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
+  - If you assign to it with `assign`, it acts like a `wire`.
+- `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
 
 **Operators:**
 
@@ -127,8 +127,8 @@ end
 
 #### `assign` vs `always_comb`
 
--   `assign` is great for simple expressions (a wire driven by one expression).
--   `always_comb` is great when you need `if`/`case` or multiple intermediate values.
+- `assign` is great for simple expressions (a wire driven by one expression).
+- `always_comb` is great when you need `if`/`case` or multiple intermediate values.
 
 ```mermaid
 flowchart LR
@@ -139,7 +139,7 @@ flowchart LR
 
 Inside `always_comb` you usually use **blocking** assignment `=`. The key rule is:
 
--   Assign _every output_ in _every path_.
+- Assign _every output_ in _every path_.
 
 If you forget to assign an output in some branch, simulation may infer a “memory” (a latch), which is not what you want for Day 02.
 
@@ -153,8 +153,8 @@ Since we are building circuits _without_ memory today, you **must** specify what
 
 ### Specifications
 
--   Convert a 4-bit input (0-15) to signals for a 7-segment display
--   Active-low drive (lights up at 0)
+- Convert a 4-bit input (0-15) to signals for a 7-segment display
+- Active-low drive (lights up at 0)
 
 ```mermaid
 flowchart LR
@@ -187,9 +187,9 @@ endmodule
 
 ### Specifications
 
--   Two 4-bit inputs (A, B)
--   2-bit operation selection (OP)
--   4-bit output + flags (Zero, Carry)
+- Two 4-bit inputs (A, B)
+- 2-bit operation selection (OP)
+- 4-bit output + flags (Zero, Carry)
 
 ```mermaid
 flowchart LR
@@ -203,10 +203,10 @@ flowchart LR
 
 ### Operations
 
--   00: A + B (Addition)
--   01: A - B (Subtraction)
--   10: A & B (AND)
--   11: A | B (OR)
+- 00: A + B (Addition)
+- 01: A - B (Subtraction)
+- 10: A & B (AND)
+- 11: A | B (OR)
 
 ### Implementation Template
 
@@ -408,19 +408,19 @@ flowchart LR
 
 ## 📚 What I Learned Today
 
--   [ ] Basic syntax of SystemVerilog
--   [ ] How to design combinational circuits
--   [ ] The difference between `assign` and `always_comb`
--   [ ] Use of `case` and `if-else` statements
--   [ ] Basic structure of a testbench
+- [ ] Basic syntax of SystemVerilog
+- [ ] How to design combinational circuits
+- [ ] The difference between `assign` and `always_comb`
+- [ ] Use of `case` and `if-else` statements
+- [ ] Basic structure of a testbench
 
 ## 🎯 Preview for Tomorrow
 
 In Day 03, we will learn about sequential circuits:
 
--   Clock-synchronous circuits
--   Flip-flops and latches
--   Finite State Machines (FSM)
--   Counters and timers
+- Clock-synchronous circuits
+- Flip-flops and latches
+- Finite State Machines (FSM)
+- Counters and timers
 
 **Preparation task**: Review the basics of digital circuits (flip-flops, clocks, setup time).

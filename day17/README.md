@@ -13,9 +13,9 @@ In these modes, the CPU doesn't look at the data at the specified address. Inste
 
 ## 🎯 Learning Objectives
 
--   **Pointer Concepts**: Understand how to fetch an "address of an address."
--   **Pre- vs. Post-Indexing**: Learn the difference between `(zp,X)` and `(zp),Y`.
--   **Complex Memory Fetches**: Manage state transitions for instructions that perform multiple memory reads in a single opcode.
+- **Pointer Concepts**: Understand how to fetch an "address of an address."
+- **Pre- vs. Post-Indexing**: Learn the difference between `(zp,X)` and `(zp),Y`.
+- **Complex Memory Fetches**: Manage state transitions for instructions that perform multiple memory reads in a single opcode.
 
 ## 🏗️ Example Instructions
 
@@ -27,17 +27,17 @@ In these modes, the CPU doesn't look at the data at the specified address. Inste
 
 ## 🛠️ Implementation Steps
 
-1.  **Indirect Address Fetching**:
-    -   Fetch the 2 bytes from the specified memory location (e.g., Zero Page) and store them in a temporary 16-bit internal register.
-2.  **Indexing Logic**:
-    -   `(zp,X)`: Add X to the page-0 address _before_ fetching the pointer.
-    -   `(zp),Y`: Fetch the pointer from page-0 _first_, then add Y to get the final effective address.
-3.  **Advanced FSM Control**:
-    -   Since these instructions take 5 to 6 cycles, ensure your state machine correctly sequences the operand fetch, pointer fetch, and final data access/operation.
+1. **Indirect Address Fetching**:
+    - Fetch the 2 bytes from the specified memory location (e.g., Zero Page) and store them in a temporary 16-bit internal register.
+2. **Indexing Logic**:
+    - `(zp,X)`: Add X to the page-0 address _before_ fetching the pointer.
+    - `(zp),Y`: Fetch the pointer from page-0 _first_, then add Y to get the final effective address.
+3. **Advanced FSM Control**:
+    - Since these instructions take 5 to 6 cycles, ensure your state machine correctly sequences the operand fetch, pointer fetch, and final data access/operation.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
 
     ```asm
     LDA #$20
@@ -49,7 +49,7 @@ In these modes, the CPU doesn't look at the data at the specified address. Inste
     LDA ($10),Y ; Load from address ($8020 + 1) = $8021
     ```
 
--   **FPGA**: Verify on the LCD that the final data loaded into A matches the content of the address pointed to by your memory variable.
+- **FPGA**: Verify on the LCD that the final data loaded into A matches the content of the address pointed to by your memory variable.
 
 ## 🎯 Next Step
 

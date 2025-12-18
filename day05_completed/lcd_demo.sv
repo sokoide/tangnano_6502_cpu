@@ -141,8 +141,14 @@ module lcd_demo (
     endfunction
 
     typedef enum logic [3:0] {
-        S_IDLE, S_WRITE_P, S_WRITE_C, S_WRITE_COLON,
-        S_WRITE_D3, S_WRITE_D2, S_WRITE_D1, S_WRITE_D0
+        S_IDLE,
+        S_WRITE_P,
+        S_WRITE_C,
+        S_WRITE_COLON,
+        S_WRITE_D3,
+        S_WRITE_D2,
+        S_WRITE_D1,
+        S_WRITE_D0
     } vram_write_state_t;
     vram_write_state_t vram_write_state;
 
@@ -153,9 +159,9 @@ module lcd_demo (
             vram_din <= 8'h20;
             vram_write_state <= S_IDLE;
         end else begin
-            vram_cea <= 1'b0; // Default to no write
+            vram_cea <= 1'b0;  // Default to no write
             case (vram_write_state)
-                S_IDLE: if (vsync) vram_write_state <= S_WRITE_P; // Start writing on vsync
+                S_IDLE:  if (vsync) vram_write_state <= S_WRITE_P;  // Start writing on vsync
                 S_WRITE_P: begin
                     vram_cea <= 1'b1;
                     vram_ada <= 0;
@@ -196,7 +202,7 @@ module lcd_demo (
                     vram_cea <= 1'b1;
                     vram_ada <= 7;
                     vram_din <= to_hex(cpu_debug_pc[3:0]);
-                    vram_write_state <= S_IDLE; // Done
+                    vram_write_state <= S_IDLE;  // Done
                 end
                 default: vram_write_state <= S_IDLE;
             endcase

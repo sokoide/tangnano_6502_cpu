@@ -2,19 +2,19 @@
 
 module cpu (
     input  logic        clk,
-    input  logic        rst_n,      // Active-low reset
-    input  logic        pc_enable,  // Enable signal for PC update (used for manual stepping)
+    input  logic        rst_n,        // Active-low reset
+    input  logic        pc_enable,    // Enable signal for PC update (used for manual stepping)
     output logic [15:0] address_bus,
-    input  logic [7:0]  data_in,
+    input  logic [ 7:0] data_in,
     input  logic [15:0] debug_pc,
-    output logic [7:0]  debug_a,
-    output logic [7:0]  debug_x,
-    output logic [7:0]  debug_y
+    output logic [ 7:0] debug_a,
+    output logic [ 7:0] debug_x,
+    output logic [ 7:0] debug_y
 );
 
     logic [15:0] pc;
-    logic [7:0]  a;  // Accumulator
-    logic [7:0]  x, y; // Index registers
+    logic [ 7:0] a;  // Accumulator
+    logic [7:0] x, y;  // Index registers
 
     // State Machine for Instruction Timing
     typedef enum logic [1:0] {

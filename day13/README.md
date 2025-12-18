@@ -13,9 +13,9 @@ These instructions enable "masking," "toggling," and "testing" specific bits—o
 
 ## 🎯 Learning Objectives
 
--   **Bitwise Logic Implementation**: Hardware implementation of AND, OR, and XOR.
--   **Flag Updates**: Verify how N and Z flags are updated after logical operations.
--   **The BIT Instruction**: Understand how to test flags without modifying the Accumulator.
+- **Bitwise Logic Implementation**: Hardware implementation of AND, OR, and XOR.
+- **Flag Updates**: Verify how N and Z flags are updated after logical operations.
+- **The BIT Instruction**: Understand how to test flags without modifying the Accumulator.
 
 ## 🏗️ Instructions to Implement
 
@@ -30,24 +30,26 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🛠️ Implementation Steps
 
-1.  **Extend the ALU**:
-    -   Add `&` (AND), `|` (OR), and `^` (XOR) logic to your `always_comb` block.
-2.  **Flag Update Logic**:
-    -   Update `Z = (result == 0)` and `N = result[7]` for logical results.
-3.  **Decode BIT Instruction**:
-    -   `BIT` updates the Z flag based on `A & Memory`, but **does not change** the value of A.
-    -   Implement the transfer logic for flags: `N = Memory[7]` and `V = Memory[6]`.
+1. **Extend the ALU**:
+    - Add `&` (AND), `|` (OR), and `^` (XOR) logic to your `always_comb` block.
+2. **Flag Update Logic**:
+    - Update `Z = (result == 0)` and `N = result[7]` for logical results.
+3. **Decode BIT Instruction**:
+    - `BIT` updates the Z flag based on `A & Memory`, but **does not change** the value of A.
+    - Implement the transfer logic for flags: `N = Memory[7]` and `V = Memory[6]`.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$FF
     AND #$0F   ; A = $0F, Z=0, N=0
     ORA #$80   ; A = $8F, Z=0, N=1
     EOR #$8F   ; A = $00, Z=1, N=0
     ```
--   **FPGA**: Confirm on the LCD that the Accumulator and N/Z flags change correctly as each operation completes.
+
+- **FPGA**: Confirm on the LCD that the Accumulator and N/Z flags change correctly as each operation completes.
 
 ## 🎯 Next Step
 

@@ -13,9 +13,9 @@ Instructions like `BNE` (Branch if Not Equal) and `BEQ` (Branch if Equal) check 
 
 ## 🎯 Learning Objectives
 
--   **Control Flow**: Understand how loops and conditional branches are achieved at the hardware level.
--   **Relative Addressing**: Implement the mechanism to calculate "how far" to jump from the current Program Counter (PC).
--   **Conditional PC Updates**: Decide whether to jump or proceed to the next instruction based on the Zero (Z) flag.
+- **Control Flow**: Understand how loops and conditional branches are achieved at the hardware level.
+- **Relative Addressing**: Implement the mechanism to calculate "how far" to jump from the current Program Counter (PC).
+- **Conditional PC Updates**: Decide whether to jump or proceed to the next instruction based on the Zero (Z) flag.
 
 ## 🏗️ Instructions to Implement
 
@@ -28,14 +28,14 @@ Instructions like `BNE` (Branch if Not Equal) and `BEQ` (Branch if Equal) check 
 
 ## 🛠️ Implementation Steps
 
-1.  **Relative Address Calculation**:
-    -   The second byte of a branch instruction is a **signed 8-bit offset**.
-    -   Target PC formula: `target_pc = (PC + 2) + $signed(offset);` (Wait until the offset byte is fetched).
-2.  **Condition Check**:
-    -   Inside your `always_ff` block, check the state of the relevant flag.
-    -   Example: `if (opcode == OP_BNE && !Z) PC <= target_pc;`
-3.  **State Machine Extension**:
-    -   Expand your FSM to handle the offset fetch cycle and then decide the next PC value in the following cycle.
+1. **Relative Address Calculation**:
+    - The second byte of a branch instruction is a **signed 8-bit offset**.
+    - Target PC formula: `target_pc = (PC + 2) + $signed(offset);` (Wait until the offset byte is fetched).
+2. **Condition Check**:
+    - Inside your `always_ff` block, check the state of the relevant flag.
+    - Example: `if (opcode == OP_BNE && !Z) PC <= target_pc;`
+3. **State Machine Extension**:
+    - Expand your FSM to handle the offset fetch cycle and then decide the next PC value in the following cycle.
 
 ## 💡 Why Relative Addressing?
 
@@ -43,7 +43,8 @@ Branch instructions use relative offsets rather than absolute addresses. This ma
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$00   ; A = 0, Z = 1
     BEQ SKIP   ; Z=1 so it should jump
@@ -51,7 +52,8 @@ Branch instructions use relative offsets rather than absolute addresses. This ma
     SKIP:
     INX        ; Jump target
     ```
--   **FPGA**: Verify on the LCD that the PC value skips the expected address range during execution.
+
+- **FPGA**: Verify on the LCD that the PC value skips the expected address range during execution.
 
 ## 🎯 Next Step
 

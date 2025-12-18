@@ -11,10 +11,10 @@ module lcd_demo (
     output logic [4:0] LCD_B
 );
 
-    logic [9:0] vram_addr;   // Text-VRAM address (60x17 layout)
-    logic [7:0] vram_data;   // ASCII character code from VRAM
+    logic [9:0] vram_addr;  // Text-VRAM address (60x17 layout)
+    logic [7:0] vram_data;  // ASCII character code from VRAM
     logic [11:0] font_addr;  // Font ROM address (Char index + row)
-    logic [7:0] font_data;   // 1-byte pixel pattern for the current row
+    logic [7:0] font_data;  // 1-byte pixel pattern for the current row
     /* verilator lint_off UNUSEDSIGNAL */
     logic vsync;
     /* verilator lint_on UNUSEDSIGNAL */
@@ -94,9 +94,9 @@ module lcd_demo (
 
     // Simple VRAM initializer (runs once after reset)
     localparam int VRAM_DEPTH = COLUMNS * ROWS;  // 60*17 = 1020
-    localparam int ROW0_LEN   = 9;
-    localparam int ROW1_LEN   = 8;
-    localparam int ROW2_LEN   = 9;
+    localparam int ROW0_LEN = 9;
+    localparam int ROW1_LEN = 8;
+    localparam int ROW2_LEN = 9;
 
     function automatic logic [7:0] row0_char(input int i);
         unique case (i)
@@ -142,7 +142,13 @@ module lcd_demo (
         endcase
     endfunction
 
-    typedef enum logic [2:0] {S_CLEAR, S_ROW0, S_ROW1, S_ROW2, S_DONE} init_state_t;
+    typedef enum logic [2:0] {
+        S_CLEAR,
+        S_ROW0,
+        S_ROW1,
+        S_ROW2,
+        S_DONE
+    } init_state_t;
     init_state_t init_state;
     logic [9:0] init_addr;
     logic [3:0] init_idx;

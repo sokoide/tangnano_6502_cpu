@@ -42,9 +42,9 @@ module top (
     cpu registers (
         .clk(clk),
         .rst_n(rst_n),
-        .pc_enable(1'b1), // For now, run at full speed for sim
+        .pc_enable(1'b1),  // For now, run at full speed for sim
         .address_bus(),
-        .data_in(8'hEA), // Dummy data for wait states
+        .data_in(8'hEA),  // Dummy data for wait states
         .debug_pc(reg_pc),
         .debug_a(reg_a),
         .debug_x(reg_x),

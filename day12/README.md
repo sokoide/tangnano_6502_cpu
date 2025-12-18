@@ -13,16 +13,16 @@ In this mode, the opcode is followed by a 2-byte address (low byte, then high by
 
 ## 🎯 Learning Objectives
 
--   **16-bit Address Handling**: Fetch a full 2-byte address in Little-Endian format.
--   **Full-Range Memory Access**: Master the mode essential for large data tables and IO.
+- **16-bit Address Handling**: Fetch a full 2-byte address in Little-Endian format.
+- **Full-Range Memory Access**: Master the mode essential for large data tables and IO.
 
 ## 🏗️ 6502 Address Format (Little-Endian)
 
 The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, it is stored in memory as follows:
 
-1.  Opcode
-2.  Low Byte of Address (`$CD`)
-3.  High Byte of Address (`$AB`)
+1. Opcode
+2. Low Byte of Address (`$CD`)
+3. High Byte of Address (`$AB`)
 
 ## 🏗️ Instructions to Implement
 
@@ -33,15 +33,16 @@ The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, 
 
 ## 🛠️ Implementation Steps
 
-1.  **Multi-cycle Address Fetch**:
-    -   Fetch the address low byte and store it in a temporary register.
-    -   Fetch the address high byte and combine it into a full 16-bit address.
-2.  **Driving the Address Bus**:
-    -   Drive the `address_bus` with the completed 16-bit value and read/write data in the following cycle.
+1. **Multi-cycle Address Fetch**:
+    - Fetch the address low byte and store it in a temporary register.
+    - Fetch the address high byte and combine it into a full 16-bit address.
+2. **Driving the Address Bus**:
+    - Drive the `address_bus` with the completed 16-bit value and read/write data in the following cycle.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$AA
     STA $0200  ; Store in RAM (Page 2)
@@ -49,7 +50,8 @@ The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, 
     LDA $0200  ; Re-load (A should become $AA)
     JMP $8000  ; Loop back to start
     ```
--   **FPGA**: Confirm on the LCD that the PC and A register values change as expected, indicating successful memory access and jumping.
+
+- **FPGA**: Confirm on the LCD that the PC and A register values change as expected, indicating successful memory access and jumping.
 
 ## 🎯 Next Step
 

@@ -13,11 +13,11 @@ Ultimately, you will build a complete computer system on the FPGA, capable of ru
 
 ## 🎯 Learning Objectives
 
--   **Fundamentals of Digital Circuit Design**: Understand the basics of combinational and sequential logic.
--   **Hardware Description Languages**: Master writing logic circuits using SystemVerilog.
--   **CPU Architecture**: Gain a deep understanding of CPU components—such as the program counter, registers, ALU, and instruction decoder—by implementing them one by one.
--   **Mastering Addressing Modes**: Learn how 6502's powerful addressing modes (indexed, indirect, etc.) are implemented in hardware.
--   **Hardware Debugging**: Learn debugging techniques using both simulation and on-chip hardware (an LCD).
+- **Fundamentals of Digital Circuit Design**: Understand the basics of combinational and sequential logic.
+- **Hardware Description Languages**: Master writing logic circuits using SystemVerilog.
+- **CPU Architecture**: Gain a deep understanding of CPU components—such as the program counter, registers, ALU, and instruction decoder—by implementing them one by one.
+- **Mastering Addressing Modes**: Learn how 6502's powerful addressing modes (indexed, indirect, etc.) are implemented in hardware.
+- **Hardware Debugging**: Learn debugging techniques using both simulation and on-chip hardware (an LCD).
 
 ## 📅 Curriculum Roadmap
 
@@ -75,14 +75,14 @@ Complex addressing modes and hardware-native custom instructions.
 
 ### 🏁 Final Goal (Day 99)
 
--   **Nearly Complete 6502 CPU** (excluding full interrupts).
--   **Running Woz Monitor** or **Apple I Basic**.
--   Custom OS or programs controlling FPGA-native hardware.
+- **Nearly Complete 6502 CPU** (excluding full interrupts).
+- **Running Woz Monitor** or **Apple I Basic**.
+- Custom OS or programs controlling FPGA-native hardware.
 
 ## 🛠️ What You'll Need
 
--   **Hardware**: Sipeed Tang Nano 9K / 20K and 480x272 LCD panel.
--   **Software**: GOWIN EDA, verilator, GTKwave.
+- **Hardware**: Sipeed Tang Nano 9K / 20K and 480x272 LCD panel.
+- **Software**: GOWIN EDA, verilator, GTKwave.
 
 Check [Day 01](./day01/README.md) to get started!
 

@@ -13,15 +13,15 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 ## 🎯 Learning Objectives
 
--   **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).
--   **RAM Control**: Implement a memory region where data can be read and written during execution.
--   **Load/Store**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
+- **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).
+- **RAM Control**: Implement a memory region where data can be read and written during execution.
+- **Load/Store**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
 
 ## 🏗️ What is Zero Page?
 
--   **Address Range**: `$0000` to `$00FF`.
--   **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
--   **Role**: Functionally acts like "extra registers" or high-speed variables for your programs.
+- **Address Range**: `$0000` to `$00FF`.
+- **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
+- **Role**: Functionally acts like "extra registers" or high-speed variables for your programs.
 
 ## 🏗️ Instructions to Implement
 
@@ -34,24 +34,26 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 ## 🛠️ Implementation Steps
 
-1.  **Define RAM Region**:
-    -   Verify your memory map so that writes to `$0000-$00FF` are handled by physical RAM (e.g., Block RAM inside the FPGA).
-2.  **Add Addressing States**:
-    -   Fetch the second byte (lower 8 bits of the address).
-    -   Access memory by setting the upper 8 bits to `$00`.
-3.  **Read/Write Timing**:
-    -   For `STA`, ensure `write_en` is pulsed at the correct clock edge while valid data is on the bus.
+1. **Define RAM Region**:
+    - Verify your memory map so that writes to `$0000-$00FF` are handled by physical RAM (e.g., Block RAM inside the FPGA).
+2. **Add Addressing States**:
+    - Fetch the second byte (lower 8 bits of the address).
+    - Access memory by setting the upper 8 bits to `$00`.
+3. **Read/Write Timing**:
+    - For `STA`, ensure `write_en` is pulsed at the correct clock edge while valid data is on the bus.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$42
     STA $10    ; Store 0x42 at address $0010
     LDA #$00   ; Clear A
     LDA $10    ; Load from $0010 (A should become 0x42 again)
     ```
--   **FPGA**: Confirm on the LCD that A is restored correctly after the load operation.
+
+- **FPGA**: Confirm on the LCD that A is restored correctly after the load operation.
 
 ## 🎯 Next Step
 

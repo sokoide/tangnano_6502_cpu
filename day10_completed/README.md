@@ -13,18 +13,18 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 
 ## 🎯 Learning Objectives
 
--   **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
--   **Stack Pointer (S)**: Implement an 8-bit register to manage memory page 1 ($0100-$01FF).
--   **RAM Writing**: Implement the first CPU-to-memory write logic.
--   **Subroutine Instructions**: Master the behavior of `JSR`, `RTS`, `PHA`, and `PLA`.
+- **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
+- **Stack Pointer (S)**: Implement an 8-bit register to manage memory page 1 ($0100-$01FF).
+- **RAM Writing**: Implement the first CPU-to-memory write logic.
+- **Subroutine Instructions**: Master the behavior of `JSR`, `RTS`, `PHA`, and `PLA`.
 
 ## 🏗️ 6502 Stack Structure
 
--   **Location**: Fixed at addresses `$0100` to `$01FF` (Page 1).
--   **Growth**: The stack grows **downwards** (towards lower addresses).
--   **Pointer (S)**: Holds the offset within Page 1. It typically starts at `$FF` after reset.
-    -   **Push**: Write to `$0100 + S`, then decrement `S`.
-    -   **Pull**: Increment `S`, then read from `$0100 + S`.
+- **Location**: Fixed at addresses `$0100` to `$01FF` (Page 1).
+- **Growth**: The stack grows **downwards** (towards lower addresses).
+- **Pointer (S)**: Holds the offset within Page 1. It typically starts at `$FF` after reset.
+  - **Push**: Write to `$0100 + S`, then decrement `S`.
+  - **Pull**: Increment `S`, then read from `$0100 + S`.
 
 ## 🏗️ Instructions to Implement
 
@@ -41,19 +41,20 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 
 ## 🛠️ Implementation Steps
 
-1.  **Add Stack Pointer**:
-    -   Declare `logic [7:0] S;` in `cpu.sv`. Initialize to `8'hFF`.
-2.  **RAM Write Enable**:
-    -   Add a `write_en` signal to the memory bus. Ensure the ROM/RAM decoder allows writing to the `$0000-$01FF` region.
-3.  **JSR/RTS Multi-cycle Logic**:
-    -   These instructions require several cycles to complete (e.g., pushing two bytes of return address).
-    -   Add intermediate states like `STATE_PUSH_PCL` and `STATE_PUSH_PCH` to your FSM.
-4.  **Update LCD Display**:
-    -   Display the value of `S` on the LCD. Watch it change during pushes and pulls.
+1. **Add Stack Pointer**:
+    - Declare `logic [7:0] S;` in `cpu.sv`. Initialize to `8'hFF`.
+2. **RAM Write Enable**:
+    - Add a `write_en` signal to the memory bus. Ensure the ROM/RAM decoder allows writing to the `$0000-$01FF` region.
+3. **JSR/RTS Multi-cycle Logic**:
+    - These instructions require several cycles to complete (e.g., pushing two bytes of return address).
+    - Add intermediate states like `STATE_PUSH_PCL` and `STATE_PUSH_PCH` to your FSM.
+4. **Update LCD Display**:
+    - Display the value of `S` on the LCD. Watch it change during pushes and pulls.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$AA
     PHA        ; Save A to stack
@@ -65,8 +66,9 @@ The stack allows the CPU to save its "return address" before jumping to a functi
       INX
       RTS
     ```
--   **FPGA**: Confirm on the LCD that A is restored correctly and the Program Counter returns to the address after `JSR`.
 
-## 🏁 Phase 2 Complete!
+- **FPGA**: Confirm on the LCD that A is restored correctly and the Program Counter returns to the address after `JSR`.
+
+## 🏁 Phase 2 Complete
 
 Congratulations! You have built a CPU core with registers, arithmetic, branching, and subroutines. Starting from Day 11, we enter **Phase 3**, where we explore more advanced addressing modes and memory utilization.

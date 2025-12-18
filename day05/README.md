@@ -13,10 +13,10 @@ We will connect the CPU's PC value to the LCD display circuit created in Day 04 
 
 ## 🎯 Learning Objectives
 
--   **Create CPU Module**: Create a basic `cpu.sv` file.
--   **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
--   **Sequential Logic**: Understand how the PC updates on every clock edge.
--   **Visual Verification**: Display the PC on the LCD.
+- **Create CPU Module**: Create a basic `cpu.sv` file.
+- **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
+- **Sequential Logic**: Understand how the PC updates on every clock edge.
+- **Visual Verification**: Display the PC on the LCD.
 
 ## 🏗️ Architecture
 
@@ -34,15 +34,15 @@ graph LR
 
 ## 🛠️ Implementation Steps
 
-1.  **Create `cpu.sv`**:
-    -   Inputs: `clk`, `rst_n`
-    -   Outputs: `address_bus` (16bit), `debug_pc` (16bit)
-2.  **Implement PC**:
-    -   Initialize to `0x8000` on reset.
-    -   Logic: `PC <= PC + 1` whenever enabled.
-3.  **Integrate into Top Module**:
-    -   Modify `lcd_demo.sv` to instantiate your `cpu`.
-    -   Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
+1. **Create `cpu.sv`**:
+    - Inputs: `clk`, `rst_n`
+    - Outputs: `address_bus` (16bit), `debug_pc` (16bit)
+2. **Implement PC**:
+    - Initialize to `0x8000` on reset.
+    - Logic: `PC <= PC + 1` whenever enabled.
+3. **Integrate into Top Module**:
+    - Modify `lcd_demo.sv` to instantiate your `cpu`.
+    - Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
 
 ## 💡 Why start here?
 
@@ -50,8 +50,8 @@ Implementing only the PC allows us to verify the entire toolchain—from SystemV
 
 ## 🧪 Verification
 
--   **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
--   **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
+- **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
+- **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
 
 ## 🎯 Preview for Tomorrow
 

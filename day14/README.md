@@ -13,9 +13,9 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🎯 Learning Objectives
 
--   **Bit Shifting**: Moving bits and filling the empty space with 0.
--   **Bit Rotation**: Circularly shifting bits through the Carry flag.
--   **High-speed Math**: Understanding how shifts perform efficient multiplication and division.
+- **Bit Shifting**: Moving bits and filling the empty space with 0.
+- **Bit Rotation**: Circularly shifting bits through the Carry flag.
+- **High-speed Math**: Understanding how shifts perform efficient multiplication and division.
 
 ## 🏗️ Instructions to Implement
 
@@ -28,18 +28,19 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🛠️ Implementation Steps
 
-1.  **Shift Logic**:
-    -   `ASL`: `new_A = {A[6:0], 1'b0};` `new_C = A[7];`
-    -   `LSR`: `new_A = {1'b0, A[7:1]};` `new_C = A[0];`
-2.  **Rotate Logic**:
-    -   `ROL`: `new_A = {A[6:0], C};` `new_C = A[7];`
-    -   `ROR`: `new_A = {C, A[7:1]};` `new_C = A[0];`
-3.  **Flag Updates**:
-    -   All shift/rotate instructions update Z and N based on the result. The C flag becomes the bit that was shifted or rotated out.
+1. **Shift Logic**:
+    - `ASL`: `new_A = {A[6:0], 1'b0};` `new_C = A[7];`
+    - `LSR`: `new_A = {1'b0, A[7:1]};` `new_C = A[0];`
+2. **Rotate Logic**:
+    - `ROL`: `new_A = {A[6:0], C};` `new_C = A[7];`
+    - `ROR`: `new_A = {C, A[7:1]};` `new_C = A[0];`
+3. **Flag Updates**:
+    - All shift/rotate instructions update Z and N based on the result. The C flag becomes the bit that was shifted or rotated out.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$01
     ASL A      ; A = $02, C=0
@@ -47,7 +48,8 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
     LDA #$80
     ASL A      ; A = $00, C=1, Z=1
     ```
--   **FPGA**: Observe the bits moving left/right on the LCD and confirm that the edge bits correctly transfer to the Carry flag.
+
+- **FPGA**: Observe the bits moving left/right on the LCD and confirm that the edge bits correctly transfer to the Carry flag.
 
 ## 🎯 Next Step
 

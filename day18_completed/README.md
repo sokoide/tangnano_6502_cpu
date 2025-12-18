@@ -13,9 +13,9 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🎯 Learning Objectives
 
--   **Defining Custom Instructions**: How to use unused opcodes.
--   **Hardware Interfacing**: Understanding how instruction execution affects external hardware (like LCD drivers).
--   **Architecture Flexibility**: Learning the concept of "accelerators" where software directly triggers hardware functions.
+- **Defining Custom Instructions**: How to use unused opcodes.
+- **Hardware Interfacing**: Understanding how instruction execution affects external hardware (like LCD drivers).
+- **Architecture Flexibility**: Learning the concept of "accelerators" where software directly triggers hardware functions.
 
 ## 🏗️ Custom Instructions to Implement
 
@@ -30,16 +30,17 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🛠️ Implementation Steps
 
-1.  **Opcode Assignment**:
-    -   Define new instructions in `opcodes.svh`.
-2.  **Decoder and Execution Logic**:
-    -   Change `WVS` to a 2-byte instruction and implement logic to wait for the specified number of rising edges of the `v-sync` signal.
-3.  **External Signal Definition**:
-    -   Add `vsync` input and notification signals to the `cpu` module's ports and connect them to external hardware.
+1. **Opcode Assignment**:
+    - Define new instructions in `opcodes.svh`.
+2. **Decoder and Execution Logic**:
+    - Change `WVS` to a 2-byte instruction and implement logic to wait for the specified number of rising edges of the `v-sync` signal.
+3. **External Signal Definition**:
+    - Add `vsync` input and notification signals to the `cpu` module's ports and connect them to external hardware.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$01
     STA $00    ; Initialize memory
@@ -49,7 +50,8 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
     WVS #$3A   ; Wait for 58 V-Syncs (approx. 1 second)
     JMP LOOP
     ```
--   **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
+
+- **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
 
 ## 🎯 Next Steps
 

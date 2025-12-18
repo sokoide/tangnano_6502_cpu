@@ -1,7 +1,7 @@
 module cpu (
     input  logic        clk,
-    input  logic        rst_n,      // Active-low reset
-    input  logic        pc_enable,  // Enable signal for PC update
+    input  logic        rst_n,        // Active-low reset
+    input  logic        pc_enable,    // Enable signal for PC update
     output logic [15:0] address_bus,
     output logic [15:0] debug_pc
 );

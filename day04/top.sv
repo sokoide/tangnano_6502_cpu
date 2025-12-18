@@ -2,9 +2,9 @@
 // In this module, you will integrate the LCD controller and the CPU registers.
 
 module top (
-    input  logic       clk,      // 27MHz Crystal
-    input  logic       rst_n,    // S1 button
-    input  logic [3:0] switches, // External switches
+    input logic       clk,      // 27MHz Crystal
+    input logic       rst_n,    // S1 button
+    input logic [3:0] switches, // External switches
 
     // LCD Signals
     output logic       LCD_CLK,

@@ -13,9 +13,9 @@ In this mode, the CPU accesses an address calculated by adding the value of the 
 
 ## 🎯 Learning Objectives
 
--   **Index Calculation**: Understand the timing of adding a register value to a base address.
--   **Array Processing**: Buffer or table traversal using loops and the X register.
--   **Multi-cycle Logic**: Handling the extra cycles required for address arithmetic.
+- **Index Calculation**: Understand the timing of adding a register value to a base address.
+- **Array Processing**: Buffer or table traversal using loops and the X register.
+- **Multi-cycle Logic**: Handling the extra cycles required for address arithmetic.
 
 ## 🏗️ Example Instructions
 
@@ -29,15 +29,16 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
 
 ## 🛠️ Implementation Steps
 
-1.  **Add Address Adder**:
-    -   Implement logic to add the 8-bit X or Y register value to the 16-bit fetched base address.
-    -   Example: `effective_address = base_address + X;`
-2.  **State Machine Adjustment**:
-    -   Manage the cycles to fetch the base address bytes, perform the addition, and then perform the final memory access.
+1. **Add Address Adder**:
+    - Implement logic to add the 8-bit X or Y register value to the 16-bit fetched base address.
+    - Example: `effective_address = base_address + X;`
+2. **State Machine Adjustment**:
+    - Manage the cycles to fetch the base address bytes, perform the addition, and then perform the final memory access.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     ; Load array elements into A sequentially
     LDX #$00
@@ -49,7 +50,8 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
     HLT
     DATA: .byte $11, $22, $33
     ```
--   **FPGA**: Confirm on the LCD that A becomes `$11`, `$22`, and then `$33` before the program exits the loop.
+
+- **FPGA**: Confirm on the LCD that A becomes `$11`, `$22`, and then `$33` before the program exits the loop.
 
 ## 🎯 Next Step
 

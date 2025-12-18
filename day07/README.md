@@ -13,10 +13,10 @@ These registers are essential for many addressing modes and are often used as lo
 
 ## 🎯 Learning Objectives
 
--   **Implement X and Y Registers**: Add two 8-bit general-purpose registers to the CPU.
--   **Register Transfer Instructions**: Implement `TAX` (Transfer A to X) and `TAY` (Transfer A to Y).
--   **Increment/Decrement Instructions**: Implement `INX` (Increment X) and `INY` (Increment Y).
--   **Decoder Expansion**: Master handling single-byte instructions with no operands.
+- **Implement X and Y Registers**: Add two 8-bit general-purpose registers to the CPU.
+- **Register Transfer Instructions**: Implement `TAX` (Transfer A to X) and `TAY` (Transfer A to Y).
+- **Increment/Decrement Instructions**: Implement `INX` (Increment X) and `INY` (Increment Y).
+- **Decoder Expansion**: Master handling single-byte instructions with no operands.
 
 ## 🏗️ Instructions to Implement
 
@@ -33,18 +33,18 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 
 ## 🛠️ Implementation Steps
 
-1.  **Declare Registers**:
-    -   In `cpu.sv`, add `logic [7:0] X, Y;`.
-2.  **Extend the Decoder**:
-    -   In the `always_comb` block, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to your `case` statement.
-3.  **Transfer Logic**:
-    -   `TAX`: `X <= A;`
-    -   `TXA`: `A <= X;`
-4.  **Arithmetic Logic**:
-    -   `INX`: `X <= X + 1;`
-    -   Note: These instructions usually update the Zero (Z) and Negative (N) flags, but we will handle flag implementation in Day 08.
-5.  **Update LCD Display**:
-    -   Add `debug_x` and `debug_y` ports to the CPU and display their values on the LCD.
+1. **Declare Registers**:
+    - In `cpu.sv`, add `logic [7:0] X, Y;`.
+2. **Extend the Decoder**:
+    - In the `always_comb` block, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to your `case` statement.
+3. **Transfer Logic**:
+    - `TAX`: `X <= A;`
+    - `TXA`: `A <= X;`
+4. **Arithmetic Logic**:
+    - `INX`: `X <= X + 1;`
+    - Note: These instructions usually update the Zero (Z) and Negative (N) flags, but we will handle flag implementation in Day 08.
+5. **Update LCD Display**:
+    - Add `debug_x` and `debug_y` ports to the CPU and display their values on the LCD.
 
 ## 💡 The Role of Index Registers
 
@@ -52,14 +52,16 @@ The X and Y registers shine when implementing **indexed addressing modes** (e.g.
 
 ## 🧪 Verification
 
--   **Test Program**:
+- **Test Program**:
+
     ```asm
     LDA #$40
     TAX        ; X = 0x40
     INX        ; X = 0x41
     TXA        ; A = 0x41
     ```
--   **FPGA**: Verify on the LCD that the X register changes as expected.
+
+- **FPGA**: Verify on the LCD that the X register changes as expected.
 
 ## 🎯 Next Step
 

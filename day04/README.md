@@ -9,18 +9,18 @@
 
 Before we build the CPU's brain (the Control Unit), we need to establish two critical foundations:
 
-1.  **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
-2.  **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
+1. **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
+2. **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
 
 Today's work is a transition from simple per-day logic to a permanent architectural foundation.
 
 ## 🎯 Learning Objectives
 
--   **LCD Pipeline**: Understand how pixels flow from VRAM (**BSRAM/SDPB**), through Font ROM (**pROM**), to the Panel.
--   **Hardware Memory**: Basics of high-speed memory access using FPGA internal resources (BSRAM).
--   **Clock Management**: Use Phase Locked Loops (PLL) to generate precise frequencies (9MHz for LCD).
--   **6502 Register Set**: Implement A, X, Y, SP, PC, and the Status Register (P).
--   **Instruction Decoding**: Basic categorization of opcodes (Load, Store, Branch, etc.).
+- **LCD Pipeline**: Understand how pixels flow from VRAM (**BSRAM/SDPB**), through Font ROM (**pROM**), to the Panel.
+- **Hardware Memory**: Basics of high-speed memory access using FPGA internal resources (BSRAM).
+- **Clock Management**: Use Phase Locked Loops (PLL) to generate precise frequencies (9MHz for LCD).
+- **6502 Register Set**: Implement A, X, Y, SP, PC, and the Status Register (P).
+- **Instruction Decoding**: Basic categorization of opcodes (Load, Store, Branch, etc.).
 
 ## 🏗️ Architecture
 
@@ -44,15 +44,15 @@ graph TD
 
 ### Part 1: Driving the LCD
 
-1.  **PLL Setup**: Generate a 9MHz clock from the 27MHz base.
-2.  **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv`.
-3.  **Rendering**: Wire `vram.sv` and `font_rom.sv` in `lcd_demo.sv`.
+1. **PLL Setup**: Generate a 9MHz clock from the 27MHz base.
+2. **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv`.
+3. **Rendering**: Wire `vram.sv` and `font_rom.sv` in `lcd_demo.sv`.
 
 ### Part 2: The Register Set
 
-1.  **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`.
-2.  **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators.
-3.  **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly.
+1. **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`.
+2. **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators.
+3. **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly.
 
 ## 💡 Technical Insight: Using BSRAM (SDPB) & pROM
 
@@ -142,10 +142,10 @@ graph LR
 
 The VRAM is logically organized as a 60 columns × 17 rows grid (1020 bytes total). For example, if we map the VRAM starting at address `$E000`:
 
--   `$E000`: Top-left character (Column 0, Row 0)
--   `$E000 + 59`: Top-right character of the first row (Column 59, Row 0)
--   `$E000 + 60`: Leftmost character of the second row (Column 0, Row 1)
--   `$E000 + 1019`: Bottom-right character of the screen (Column 59, Row 16)
+- `$E000`: Top-left character (Column 0, Row 0)
+- `$E000 + 59`: Top-right character of the first row (Column 59, Row 0)
+- `$E000 + 60`: Leftmost character of the second row (Column 0, Row 1)
+- `$E000 + 1019`: Bottom-right character of the screen (Column 59, Row 16)
 
 ```mermaid
 graph TD

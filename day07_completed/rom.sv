@@ -1,20 +1,20 @@
 // rom.sv
 module rom (
     input  logic [15:0] addr,
-    output logic [7:0]  data
+    output logic [ 7:0] data
 );
 
     always_comb begin
         case (addr)
-            16'h8000: data = 8'hA9; // LDA #$40
+            16'h8000: data = 8'hA9;  // LDA #$40
             16'h8001: data = 8'h40;
-            16'h8002: data = 8'hAA; // TAX
-            16'h8003: data = 8'hA8; // TAY
-            16'h8004: data = 8'hE8; // INX
-            16'h8005: data = 8'hC8; // INY
-            16'h8006: data = 8'h8A; // TXA
-            16'h8007: data = 8'h98; // TYA
-            default:  data = 8'hEA; // NOP
+            16'h8002: data = 8'hAA;  // TAX
+            16'h8003: data = 8'hA8;  // TAY
+            16'h8004: data = 8'hE8;  // INX
+            16'h8005: data = 8'hC8;  // INY
+            16'h8006: data = 8'h8A;  // TXA
+            16'h8007: data = 8'h98;  // TYA
+            default:  data = 8'hEA;  // NOP
         endcase
     end
 
