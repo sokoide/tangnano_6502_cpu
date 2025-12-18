@@ -60,7 +60,8 @@ else
   SIM_DEFS :=
 endif
 
-$(FS): $(SRCS) $(TOP_WRAPPER) tools-check
+$(FS): $(SRCS) $(TOP_WRAPPER)
+	@$(MAKE) tools-check
 	$(GWSH) proj.tcl
 
 # operation_index

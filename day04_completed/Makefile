@@ -12,18 +12,24 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
+COMMON_SRCS = lcd_demo.sv cpu_registers.sv flag_calculator.sv simple_decoder.sv \
+	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh
+
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
   GPRJ = hw_20k.gprj
+  TOP_SRCS = hw_top_20k.sv $(COMMON_SRCS)
 else
   DEVICE = GW1NR-9C
   GPRJ = hw_9k.gprj
+  TOP_SRCS = hw_top_9k.sv $(COMMON_SRCS)
 endif
 
 .PHONY: all clean download help tools-check sim sim-build test tools-check-sim
 all: $(PROJECT).fs
 
-$(PROJECT).fs: $(GPRJ) tools-check
+$(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
+	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \

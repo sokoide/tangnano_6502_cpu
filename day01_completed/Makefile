@@ -15,17 +15,14 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
-# Board-specific settings
 ifeq ($(BOARD),20k)
     DEVICE = GW2AR-18C
-    CST_FILE = tang_nano_20k.cst
     GPRJ = led_blink_20k.gprj
-    TOP_FILE = top_20k.sv
+    SRCS = top_20k.sv
 else
     DEVICE = GW1NR-9C
-    CST_FILE = tang_nano_9k.cst
     GPRJ = led_blink_9k.gprj
-    TOP_FILE = top_9k.sv
+    SRCS = top_9k.sv
 endif
 
 # Build targets
@@ -34,7 +31,8 @@ endif
 all: $(PROJECT).fs
 
 # Synthesis and Place & Route
-$(PROJECT).fs: $(TOP_FILE) $(CST_FILE) $(GPRJ) tools-check
+$(PROJECT).fs: $(GPRJ) $(SRCS)
+	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
