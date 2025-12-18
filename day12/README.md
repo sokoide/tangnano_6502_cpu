@@ -15,7 +15,6 @@ In this mode, the opcode is followed by a 2-byte address (low byte, then high by
 
 -   **16-bit Address Handling**: Fetch a full 2-byte address in Little-Endian format.
 -   **Full-Range Memory Access**: Master the mode essential for large data tables and IO.
--   **JMP Instruction**: Implement an unconditional jump to a specific 16-bit address.
 
 ## 🏗️ 6502 Address Format (Little-Endian)
 
@@ -27,11 +26,10 @@ The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, 
 
 ## 🏗️ Instructions to Implement
 
-| Opcode | Mnemonic  | Description                          | Cycles |
-| :----: | --------- | ------------------------------------ | :----: |
-| `0xAD` | `LDA abs` | Load A from specific 16-bit address  |   4    |
-| `0x8D` | `STA abs` | Store A to specific 16-bit address   |   4    |
-| `0x4C` | `JMP abs` | Unconditional Jump to 16-bit address |   3    |
+| Opcode | Mnemonic  | Description                         | Cycles |
+| :----: | --------- | ----------------------------------- | :----: |
+| `0xAD` | `LDA abs` | Load A from specific 16-bit address |   4    |
+| `0x8D` | `STA abs` | Store A to specific 16-bit address  |   4    |
 
 ## 🛠️ Implementation Steps
 
@@ -40,8 +38,6 @@ The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, 
     -   Fetch the address high byte and combine it into a full 16-bit address.
 2.  **Driving the Address Bus**:
     -   Drive the `address_bus` with the completed 16-bit value and read/write data in the following cycle.
-3.  **Handling JMP**:
-    -   Instead of reading/writing memory, `JMP` directly assigns the fetched 16-bit address to the `PC`.
 
 ## 🧪 Verification
 
