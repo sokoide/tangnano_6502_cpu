@@ -68,13 +68,15 @@ module cpu (
                     end else begin
                         address_bus <= pc + 1;
                         case (data_in)
-                            OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM,
+                            OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM,
+                            OP_ADC_IMM, OP_SBC_IMM,
                             OP_BNE, OP_BEQ, OP_BPL, OP_BMI,
                             OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
                             OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM,
                             OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP,
                             OP_INC_ZP, OP_DEC_ZP: begin
                                 pc    <= pc + 1;
+                                address_bus <= pc + 1;
                                 state <= STATE_FETCH_OPERAND;
                             end
                             OP_JSR, OP_JMP_ABS, OP_LDA_ABS, OP_STA_ABS: begin
@@ -118,6 +120,10 @@ module cpu (
                 STATE_FETCH_OPERAND: begin
                     case (current_opcode)
                         OP_LDA_IMM: begin a <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
+                        OP_LDX_IMM: begin x <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
+                        OP_LDY_IMM: begin y <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
+                        OP_LDX_IMM: begin x <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
+                        OP_LDY_IMM: begin y <= data_in; z <= (data_in == 8'h00); n <= data_in[7]; end
                         OP_ADC_IMM: begin logic [8:0] sum; sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c}; a <= sum[7:0]; c <= sum[8]; z <= (sum[7:0] == 8'h00); n <= sum[7]; v <= (a[7] == data_in[7]) && (a[7] != sum[7]); end
                         OP_AND_IMM: begin logic [7:0] res; res = a & data_in; a <= res; z <= (res == 8'h00); n <= res[7]; end
                         OP_ORA_IMM: begin logic [7:0] res; res = a | data_in; a <= res; z <= (res == 8'h00); n <= res[7]; end
@@ -157,7 +163,8 @@ module cpu (
                     endcase
 
                     case (current_opcode)
-                        OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM, OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
+                        OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_LDX_IMM, OP_LDY_IMM,
+                        OP_ADC_IMM, OP_SBC_IMM, OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
                         OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM, OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
                             if (current_opcode != OP_BNE && current_opcode != OP_BEQ &&
                                 current_opcode != OP_BPL && current_opcode != OP_BMI) begin

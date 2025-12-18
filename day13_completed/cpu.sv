@@ -66,7 +66,7 @@ module cpu (
                     end else begin
                         address_bus <= pc + 1;
                         case (data_in)
-                            OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM,
+                            OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_ADC_IMM, OP_SBC_IMM,
                             OP_BNE, OP_BEQ, OP_BPL, OP_BMI,
                             OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
                             OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP: begin

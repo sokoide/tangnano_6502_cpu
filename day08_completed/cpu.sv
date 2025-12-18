@@ -44,7 +44,7 @@ module cpu (
                 STATE_FETCH_OPCODE: begin
                     current_opcode <= data_in;
                     case (data_in)
-                        OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM: begin
+                        OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_ADC_IMM, OP_SBC_IMM: begin
                             pc    <= pc + 1;
                             state <= STATE_FETCH_OPERAND;
                         end
