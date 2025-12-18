@@ -37,7 +37,7 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 | `0x48` | `PHA`     | Push Accumulator (A)               |   3    |
 | `0x68` | `PLA`     | Pull Accumulator (A)               |   4    |
 | `0x4C` | `JMP abs` | Jump to Absolute Address           |   3    |
-| `0xFF` | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
+| `0xFF" | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
 
 ## 🛠️ Implementation Steps
 

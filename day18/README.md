@@ -1,4 +1,4 @@
-# Day 18: Custom Extended Instructions (HLT, WVS, CVR, IFO)
+# Day 18: Custom Extended Instructions (WVS, CVR, IFO)
 
 ---
 
@@ -21,7 +21,6 @@ These opcodes will allow our programs to stop the CPU, synchronize with display 
 
 | Opcode | Mnemonic | Description                                                                                 |
 | :----: | -------- | ------------------------------------------------------------------------------------------- |
-| `0x02` | `HLT`    | **Halt**: Stop the CPU clock or enter an infinite low-power wait state.                     |
 | `0x12` | `WVS`    | **Wait for V-Sync**: Halt until the next Vertical Sync signal (for smooth display updates). |
 | `0x22` | `CVR`    | **Clear VRAM**: Trigger a hardware clear or fill of the Video RAM.                          |
 | `0x32` | `IFO`    | **IO Force**: Force reset/update of the external IO pins.                                   |

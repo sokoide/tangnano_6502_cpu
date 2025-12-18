@@ -38,14 +38,14 @@ Setting up the environment and building the necessary debug tools.
 
 Implementing core CPU functionality and visualizing internal state.
 
-|    Day     | Topic                   | Instructions (Examples)                |
-| :--------: | :---------------------- | :------------------------------------- |
-| **Day 05** | **CPU Skeleton**        | `NOP` (Program Counter only).          |
-| **Day 06** | **Memory Access**       | `LDA #imm` (Immediate load).           |
-| **Day 07** | **Reg Transfers**       | `TAX`, `TAY`, `INX`, `INY`.            |
-| **Day 08** | **Arithmetic (ALU)**    | `ADC`, `SBC` (NVZC Flag calculations). |
-| **Day 09** | **Branching**           | `BNE`, `BEQ`, `BPL`, `BMI`.            |
-| **Day 10** | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`.            |
+|    Day     | Topic                   | Instructions (Examples)                   |
+| :--------: | :---------------------- | :---------------------------------------- |
+| **Day 05** | **CPU Skeleton**        | `NOP` (Program Counter only).             |
+| **Day 06** | **Memory Access**       | `LDA #imm` (Immediate load).              |
+| **Day 07** | **Reg Transfers**       | `TAX`, `TAY`, `INX`, `INY`.               |
+| **Day 08** | **Arithmetic (ALU)**    | `ADC`, `SBC` (NVZC Flag calculations).    |
+| **Day 09** | **Branching**           | `BNE`, `BEQ`, `BPL`, `BMI`.               |
+| **Day 10** | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT`. |
 
 ### Phase 3: Addressing Modes & Data Processing (Day 11-15)
 
@@ -63,13 +63,13 @@ Strengthening memory operations and complex processing.
 
 Complex addressing modes and hardware-native custom instructions.
 
-|    Day     | Topic              | What You'll Learn                                                              |
-| :--------: | :----------------- | :----------------------------------------------------------------------------- |
-| **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                                     |
-| **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).                     |
-| **Day 18** | **Custom Opcodes** | **`HLT` (Halt), `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info).** |
-| **Day 19** | **Integration**    | Integrating UART (Serial) and Timer peripherals.                               |
-| **Day 20** | **Final Polish**   | Cycle optimization and final integration tests.                                |
+|    Day     | Topic              | What You'll Learn                                                |
+| :--------: | :----------------- | :--------------------------------------------------------------- |
+| **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                       |
+| **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).       |
+| **Day 18** | **Custom Opcodes** | **`WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info).** |
+| **Day 19** | **Integration**    | Integrating UART (Serial) and Timer peripherals.                 |
+| **Day 20** | **Final Polish**   | Cycle optimization and final integration tests.                  |
 
 ---
 
