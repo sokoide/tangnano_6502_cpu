@@ -60,144 +60,54 @@ module cpu (
             case (state)
                 STATE_FETCH_OPCODE: begin
                     current_opcode <= data_in;
-                    address_bus <= pc + 1;
-                    case (data_in)
-                        OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM,
-                        OP_BNE, OP_BEQ, OP_BPL, OP_BMI,
-                        OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
-                        OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP: begin
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPERAND;
-                        end
-                        OP_JSR, OP_JMP_ABS, OP_LDA_ABS, OP_STA_ABS: begin
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_LOW;
-                        end
-                        OP_HLT: begin
-                            state <= STATE_EXECUTE;
-                        end
-                        OP_RTS: begin
-                            state <= STATE_PULL_LOW;
-                            address_bus <= 16'h0100 + (s + 8'd1);
-                        end
-                        OP_PHA, OP_PHP: begin
-                            state <= STATE_PUSH_LOW;
-                            write_en <= 1'b1;
-                            address_bus <= 16'h0100 + s;
-                            data_out <= (data_in == OP_PHA) ? a : {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
-                        end
-                        OP_PLA, OP_PLP: begin
-                            state <= STATE_PULL_LOW;
-                            address_bus <= 16'h0100 + (s + 8'd1);
-                        end
-                        // Day 07 instructions (1-byte instructions)
-                        OP_TAX: begin
-                            x     <= a;
-                            z     <= (a == 8'h00);
-                            n     <= a[7];
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TAY: begin
-                            y     <= a;
-                            z     <= (a == 8'h00);
-                            n     <= a[7];
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TXA: begin
-                            a     <= x;
-                            z     <= (x == 8'h00);
-                            n     <= x[7];
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TYA: begin
-                            a     <= y;
-                            z     <= (y == 8'h00);
-                            n     <= y[7];
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_INX: begin
-                            x     <= x + 1;
-                            z     <= ((x + 8'h01) == 8'h00);
-                            n     <= (x + 8'h01) >> 7;
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_INY: begin
-                            y     <= y + 1;
-                            z     <= ((y + 8'h01) == 8'h00);
-                            n     <= (y + 8'h01) >> 7;
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        // Day 08 instructions (1-byte instructions)
-                        OP_CLC: begin
-                            c     <= 1'b0;
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_SEC: begin
-                            c     <= 1'b1;
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_ASL_A: begin
-                            c <= a[7];
-                            a <= {a[6:0], 1'b0};
-                            z <= ({a[6:0], 1'b0} == 8'h00);
-                            n <= a[6];
-                            pc <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_LSR_A: begin
-                            c <= a[0];
-                            a <= {1'b0, a[7:1]};
-                            z <= ({1'b0, a[7:1]} == 8'h00);
-                            n <= 1'b0;
-                            pc <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_ROL_A: begin
-                            automatic logic old_c;
-                            old_c = c;
-                            c <= a[7];
-                            a <= {a[6:0], old_c};
-                            z <= ({a[6:0], old_c} == 8'h00);
-                            n <= a[6];
-                            pc <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_ROR_A: begin
-                            automatic logic old_c;
-                            old_c = c;
-                            c <= a[0];
-                            a <= {old_c, a[7:1]};
-                            z <= ({old_c, a[7:1]} == 8'h00);
-                            n <= old_c;
-                            pc <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        default: begin
-                            pc    <= pc + 1;
-                            address_bus <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                    endcase
+                    if (data_in == OP_HLT) begin
+                        address_bus <= pc;
+                        state <= STATE_EXECUTE;
+                    end else begin
+                        address_bus <= pc + 1;
+                        case (data_in)
+                            OP_LDA_IMM, OP_ADC_IMM, OP_SBC_IMM,
+                            OP_BNE, OP_BEQ, OP_BPL, OP_BMI,
+                            OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
+                            OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP: begin
+                                pc    <= pc + 1;
+                                state <= STATE_FETCH_OPERAND;
+                            end
+                            OP_JSR, OP_JMP_ABS, OP_LDA_ABS, OP_STA_ABS: begin
+                                pc    <= pc + 1;
+                                state <= STATE_FETCH_LOW;
+                            end
+                            OP_RTS: begin
+                                state <= STATE_PULL_LOW;
+                                address_bus <= 16'h0100 + (s + 8'd1);
+                            end
+                            OP_PHA, OP_PHP: begin
+                                state <= STATE_PUSH_LOW;
+                                write_en <= 1'b1;
+                                address_bus <= 16'h0100 + s;
+                                data_out <= (data_in == OP_PHA) ? a : {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
+                            end
+                            OP_PLA, OP_PLP: begin
+                                state <= STATE_PULL_LOW;
+                                address_bus <= 16'h0100 + (s + 8'd1);
+                            end
+                            // Day 07 instructions (1-byte instructions)
+                            OP_TAX: begin x <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_TAY: begin y <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_TXA: begin a <= x; z <= (x == 8'h00); n <= x[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_TYA: begin a <= y; z <= (y == 8'h00); n <= y[7]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_INX: begin x <= x + 1; z <= ((x + 8'h01) == 8'h00); n <= (x + 8'h01) >> 7; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_INY: begin y <= y + 1; z <= ((y + 8'h01) == 8'h00); n <= (y + 8'h01) >> 7; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            // Day 08 instructions (1-byte instructions)
+                            OP_CLC: begin c <= 1'b0; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_SEC: begin c <= 1'b1; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_ASL_A: begin c <= a[7]; a <= {a[6:0], 1'b0}; z <= ({a[6:0], 1'b0} == 8'h00); n <= a[6]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_LSR_A: begin c <= a[0]; a <= {1'b0, a[7:1]}; z <= ({1'b0, a[7:1]} == 8'h00); n <= 1'b0; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_ROL_A: begin automatic logic old_c; old_c = c; c <= a[7]; a <= {a[6:0], old_c}; z <= ({a[6:0], old_c} == 8'h00); n <= a[6]; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            OP_ROR_A: begin automatic logic old_c; old_c = c; c <= a[0]; a <= {old_c, a[7:1]}; z <= ({old_c, a[7:1]} == 8'h00); n <= old_c; pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                            default: begin pc <= pc + 1; address_bus <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        endcase
+                    end
                 end
 
                 STATE_FETCH_OPERAND: begin
@@ -421,7 +331,7 @@ module cpu (
                         end
                     endcase
                     // Stay here for HLT
-                    if (current_opcode == OP_HLT) begin
+                    if (current_opcode == OP_HLT) begin address_bus <= pc;
                         state <= STATE_EXECUTE;
                     end else begin
                         pc <= pc + 1;

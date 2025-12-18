@@ -50,64 +50,16 @@ module cpu (
                             state <= STATE_FETCH_OPERAND;
                         end
                         // Day 07 instructions (1-byte instructions)
-                        OP_TAX: begin
-                            x     <= a;
-                            z     <= (a == 8'h00);
-                            n     <= a[7];
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TAY: begin
-                            y     <= a;
-                            z     <= (a == 8'h00);
-                            n     <= a[7];
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TXA: begin
-                            a     <= x;
-                            z     <= (x == 8'h00);
-                            n     <= x[7];
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_TYA: begin
-                            a     <= y;
-                            z     <= (y == 8'h00);
-                            n     <= y[7];
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_INX: begin
-                            x     <= x + 1;
-                            z     <= ((x + 8'h01) == 8'h00);
-                            n     <= (x + 8'h01) >> 7;
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_INY: begin
-                            y     <= y + 1;
-                            z     <= ((y + 8'h01) == 8'h00);
-                            n     <= (y + 8'h01) >> 7;
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
+                        OP_TAX: begin x <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_TAY: begin y <= a; z <= (a == 8'h00); n <= a[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_TXA: begin a <= x; z <= (x == 8'h00); n <= x[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_TYA: begin a <= y; z <= (y == 8'h00); n <= y[7]; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_INX: begin x <= x + 1; z <= ((x + 8'h01) == 8'h00); n <= (x + 8'h01) >> 7; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_INY: begin y <= y + 1; z <= ((y + 8'h01) == 8'h00); n <= (y + 8'h01) >> 7; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
                         // Day 08 instructions (1-byte instructions)
-                        OP_CLC: begin
-                            c     <= 1'b0;
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        OP_SEC: begin
-                            c     <= 1'b1;
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
-                        default: begin
-                            // Default behavior for 1-byte instructions (e.g. NOP)
-                            pc    <= pc + 1;
-                            state <= STATE_FETCH_OPCODE;
-                        end
+                        OP_CLC: begin c <= 1'b0; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        OP_SEC: begin c <= 1'b1; pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
+                        default: begin pc <= pc + 1; state <= STATE_FETCH_OPCODE; end
                     endcase
                 end
 
