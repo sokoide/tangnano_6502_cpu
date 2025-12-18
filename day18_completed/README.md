@@ -19,11 +19,14 @@ These opcodes will allow our programs to stop the CPU, synchronize with display 
 
 ## 🏗️ Custom Instructions to Implement
 
-| Opcode | Mnemonic | Description                                                                                 |
-| :----: | -------- | ------------------------------------------------------------------------------------------- |
-| `0x12` | `WVS`    | **Wait for V-Sync**: Halt until the next Vertical Sync signal (for smooth display updates). |
-| `0x22` | `CVR`    | **Clear VRAM**: Trigger a hardware clear or fill of the Video RAM.                          |
-| `0x32` | `IFO`    | **IO Force**: Force reset/update of the external IO pins.                                   |
+| Opcode | Mnemonic | Description                                                     |
+| :----: | -------- | --------------------------------------------------------------- |
+| `0x12` | `WVS`    | **Wait for V-Sync**: Wait for next vertical sync (for display). |
+| `0x22` | `CVR`    | **Clear VRAM**: Clear VRAM or fill with a specific color.       |
+| `0x32` | `IFO`    | **Info**: Display debug info (registers, PC, etc.) on screen.   |
+
+> [!NOTE]
+> Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (approx. 40MHz).
 
 ## 🛠️ Implementation Steps
 
