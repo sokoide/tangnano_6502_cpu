@@ -1,6 +1,6 @@
 // Copyright (C)2014-2024 Gowin Semiconductor Corporation.
 // All rights reserved.
-// File Title: IP file (copied from day99_completed for Day04 LCD-only demo)
+// File Title: IP file (copied from day99_completed)
 //
 // This is the Sweet16Font pROM used by the production day99 design.
 // Using the same ROM avoids the “broken glyph” artifacts caused by the
@@ -111,4 +111,3 @@ defparam prom_inst_1.INIT_RAM_1E = 256'h00012222C22221000000F84210F000000F007888
 defparam prom_inst_1.INIT_RAM_1F = 256'h00000032330CAAC00000000000009600000C222212222C000000888880888800;
 
 endmodule //Gowin_pROM_font
-

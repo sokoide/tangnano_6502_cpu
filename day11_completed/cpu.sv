@@ -1,4 +1,3 @@
-// day06_completed/cpu.sv
 `include "include/opcodes.svh"
 
 module cpu (

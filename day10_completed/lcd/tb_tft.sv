@@ -1,4 +1,4 @@
-// Simulation testbench for Day09 TFT bring-up (smoke test)
+// Simulation testbenchfor TFT bring-up (smoke test)
 
 module tb_tft;
     logic       ResetButton;

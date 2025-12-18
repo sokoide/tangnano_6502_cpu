@@ -1,5 +1,3 @@
-// day05_completed/cpu.sv
-
 module cpu (
     input  logic        clk,
     input  logic        rst_n,      // Active-low reset

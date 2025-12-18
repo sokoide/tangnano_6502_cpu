@@ -1,6 +1,6 @@
 // Copyright (C)2014-2024 Gowin Semiconductor Corporation.
 // All rights reserved.
-// File Title: IP file (copied from day99_completed for Day04 LCD-only demo)
+// File Title: IP file (copied from day99_completed)
 //
 // This is the Sweet16Font pROM used by the production day99 design.
 // Using the same ROM avoids the “broken glyph” artifacts caused by the
