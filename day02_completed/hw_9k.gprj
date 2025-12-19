@@ -7,9 +7,7 @@
     <FileList>
         <File path="hw_top_9k.sv" type="file.verilog" enable="1"/>
         <File path="tang_nano_9k.cst" type="file.cst" enable="1"/>
-        <File path="seven_seg_decoder.sv" type="file.verilog" enable="1"/>
         <File path="alu_4bit.sv" type="file.verilog" enable="1"/>
-        <File path="mux_8to1.sv" type="file.verilog" enable="1"/>
     </FileList>
 
 
