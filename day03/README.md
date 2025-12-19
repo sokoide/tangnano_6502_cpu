@@ -256,8 +256,8 @@ flowchart LR
 
 ## 🎯 Preview for Tomorrow
 
-In Day 04, we will learn about the 6502 CPU architecture:
+In Day 04, we will dive into practical CPU components and hardware interaction:
 
-- Basic components of a CPU
-- Relationship between registers and memory
-- Instruction execution cycle
+- **LCD Display**: Learn how to interface with an external LCD module.
+- **CPU Registers**: Implement the core registers (A, X, Y, etc.) of the 6502.
+- **Memory & Flags**: Understand how to manage state and calculate processor flags.
