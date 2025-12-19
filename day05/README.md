@@ -13,10 +13,10 @@ We will connect the CPU's PC value to the LCD display circuit created in Day 04 
 
 ## 🎯 Learning Objectives
 
-- **Create CPU Module**: Create a basic `cpu.sv` file.
-- **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
-- **Sequential Logic**: Understand how the PC updates on every clock edge.
-- **Visual Verification**: Display the PC on the LCD.
+-   **Create CPU Module**: Create a basic `cpu.sv` file.
+-   **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
+-   **Sequential Logic**: Understand how the PC updates on every clock edge.
+-   **Visual Verification**: Display the PC on the LCD.
 
 ## 🏗️ Architecture
 
@@ -44,14 +44,24 @@ graph LR
     - Modify `lcd_demo.sv` to instantiate your `cpu`.
     - Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
 
+## 📘 Concept: What is a Program Counter?
+
+The **Program Counter (PC)** is a register that allows the CPU to remember **"where in memory to read next"**.
+
+-   The CPU sends the address held by the PC to memory.
+-   The memory returns the data (instruction) located at that address.
+-   Typically, the PC increments by one after every instruction fetching step.
+
+In Day 05, we aren't reading from memory yet, but we will implement this basic "PC incrementing" behavior and verify it visually.
+
 ## 💡 Why start here?
 
 Implementing only the PC allows us to verify the entire toolchain—from SystemVerilog code to FPGA deployment and LCD display—before adding the complexity of instruction decoding.
 
 ## 🧪 Verification
 
-- **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
-- **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
+-   **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
+-   **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
 
 ## 🎯 Preview for Tomorrow
 
