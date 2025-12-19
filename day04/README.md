@@ -19,8 +19,8 @@
 
 Before we build the CPU's brain (the Control Unit), we need to establish two critical foundations:
 
-1.  **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
-2.  **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
+1. **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
+2. **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
 
 In hardware development, you cannot simply "print" to a console. By building the LCD controller early, you create a **hardware-native debugger**. Throughout the rest of this course, you will see your registers and PC values updating in real-time on your desk!
 
@@ -30,13 +30,13 @@ Building memory using only FPGA logic (LUTs) quickly consumes resources. Instead
 
 We use two types of memory IP cores:
 
-1.  **SDPB (Semi-Dual Port Block RAM)** for **VRAM**:
-    -   One port is dedicated to the **LCD controller** for reading pixels.
-    -   The other is used by the **CPU** for writing character data.
-    -   This "dual-port" access allows smooth updates without interfering with display timing.
+1. **SDPB (Semi-Dual Port Block RAM)** for **VRAM**:
+    - One port is dedicated to the **LCD controller** for reading pixels.
+    - The other is used by the **CPU** for writing character data.
+    - This "dual-port" access allows smooth updates without interfering with display timing.
 
-2.  **pROM (Programmable ROM)** for **Font ROM**:
-    -   Pre-loaded with font patterns (ASCII bitmaps) upon power-up.
+2. **pROM (Programmable ROM)** for **Font ROM**:
+    - Pre-loaded with font patterns (ASCII bitmaps) upon power-up.
 
 ### Memory Data Flow
 
@@ -76,9 +76,9 @@ graph TD
 
 ### Steps
 
-1.  **PLL Setup**: Generate a 9MHz clock from the 27MHz base using the IP Core Generator.
-2.  **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv` to drive the physical panel.
-3.  **Rendering**: Connect `vram.sv` (SDPB) and `font_rom.sv` (pROM) in `lcd_demo.sv` to display characters.
+1. **PLL Setup**: Generate a 9MHz clock from the 27MHz base using the IP Core Generator.
+2. **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv` to drive the physical panel.
+3. **Rendering**: Connect `vram.sv` (SDPB) and `font_rom.sv` (pROM) in `lcd_demo.sv` to display characters.
 
 ### VRAM Screen Layout
 
@@ -100,22 +100,22 @@ graph TD
 
 ### Steps
 
-1.  **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`. This includes 8-bit registers (A, X, Y, P) and 16-bit registers (PC, SP).
-2.  **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators based on operation results.
-3.  **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly and that flags update as expected.
+1. **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`. This includes 8-bit registers (A, X, Y, P) and 16-bit registers (PC, SP).
+2. **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators based on operation results.
+3. **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly and that flags update as expected.
 
 ## 📝 Assignments
 
 ### Basic Assignments
 
-1.  **LCD**: Display "HELLO FPGA" on the LCD screen using the VRAM.
-2.  **Registers**: Implement the `cpu_registers` module and pass the simulation tests.
-3.  **Integration**: Show the value of a register (e.g., the 'A' register) on the LCD screen.
+1. **LCD**: Display "HELLO FPGA" on the LCD screen using the VRAM.
+2. **Registers**: Implement the `cpu_registers` module and pass the simulation tests.
+3. **Integration**: Show the value of a register (e.g., the 'A' register) on the LCD screen.
 
 ### Advanced Assignments
 
-1.  **Scrolling**: Implement a hardware scrolling feature by modifying the VRAM read address offset.
-2.  **Cursor**: Add a blinking cursor to the display.
+1. **Scrolling**: Implement a hardware scrolling feature by modifying the VRAM read address offset.
+2. **Cursor**: Add a blinking cursor to the display.
 
 ## 📚 What I Learned Today
 
@@ -128,6 +128,6 @@ graph TD
 
 In Day 05, we will build the core processing unit:
 
--   **The ALU (Arithmetic Logic Unit)**: Moving beyond the simple Day 02 ALU to a full CPU-capable ALU.
--   **Control Logic**: connecting instructions to ALU operations.
--   **Execution Cycle**: Fetch, Decode, Execute.
+- **The ALU (Arithmetic Logic Unit)**: Moving beyond the simple Day 02 ALU to a full CPU-capable ALU.
+- **Control Logic**: connecting instructions to ALU operations.
+- **Execution Cycle**: Fetch, Decode, Execute.
