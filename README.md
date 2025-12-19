@@ -59,7 +59,7 @@ Strengthening memory operations and complex processing.
 | **Day 14** | **Shift & Rotate**    | `ASL`, `LSR`, `ROL`, `ROR`.                 |
 | **Day 15** | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `INC`, `DEC`.          |
 
-### Phase 4: Advanced Addressing & Custom Extension (Day 16-20)
+### Phase 4: Advanced Addressing & Custom Extension (Day 16-18)
 
 Complex addressing modes and hardware-native custom instructions.
 
@@ -68,8 +68,6 @@ Complex addressing modes and hardware-native custom instructions.
 | **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                       |
 | **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).       |
 | **Day 18** | **Custom Opcodes** | **`WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info).** |
-| **Day 19** | **Integration**    | Integrating UART (Serial) and Timer peripherals.                 |
-| **Day 20** | **Final Polish**   | Cycle optimization and final integration tests.                  |
 
 ---
 
