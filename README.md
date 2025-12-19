@@ -20,7 +20,7 @@ The key feature is the **Hardware-Native Debugger**: the CPU writes debug info d
 graph TD
     subgraph FPGA_Internals
         CPU[6502 CPU Core]
-        VRAM[VRAM (Dual Port RAM)]
+        VRAM["VRAM (Dual Port RAM)"]
         LCD[LCD Controller]
         ROM[Program ROM]
         GPIO[LEDs / Buttons]

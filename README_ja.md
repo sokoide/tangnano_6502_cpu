@@ -20,7 +20,7 @@
 graph TD
     subgraph FPGA内部
         CPU[6502 CPU コア]
-        VRAM[VRAM (デュアルポート RAM)]
+        VRAM["VRAM (デュアルポート RAM)"]
         LCD[LCD コントローラ]
         ROM[プログラム ROM]
         GPIO[LED / ボタン]
