@@ -44,7 +44,9 @@ graph LR
 
 ## 💡 Pure Functions in Hardware
 
-A combinational circuit is basically a **pure function**. Given the same inputs, it will always produce the same outputs immediately. Always remember to provide a `default` case in your logic to ensure your circuit doesn't try to "remember" previous states.
+Combinational circuits are basically **pure functions**. Given the same inputs, they instantly produce the same outputs. It is critical to always have a default case to ensure you don't accidentally ask the circuit to "remember" its previous state.
+
+**Note**: Unlike sequential logic, `always_comb` and `assign` use `=` (blocking assignment). See [SystemVerilog Cheatsheet](../docs/SYSTEMVERILOG_CHEATSHEET.md) for details.
 
 ## 🛠️ Practice: 4-bit ALU
 

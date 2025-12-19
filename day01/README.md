@@ -214,7 +214,8 @@ flowchart LR
 
 - Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
 - Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
-- Use `<=` (non-blocking assignment) inside `always_ff` so all registers update together on the clock edge.
+- Use `<=` (non-blocking assignment) inside `always_ff` to ensure all registers update simultaneously at the clock edge.
+  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERVERILOG_CHEATSHEET.md) for details.
 
 ### Step 3: Create Constraint File
 

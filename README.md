@@ -64,9 +64,9 @@ This curriculum assumes no prior FPGA experience. Here's what will help:
 
 Each day is split into two folders. Use them as follows:
 
-| Directory | Purpose | How to use |
-| :--- | :--- | :--- |
-| **`dayXX/`** | **Your Workspace** | This folder contains the starter code and README. You will write your implementation here. |
+| Directory              | Purpose                | How to use                                                                                                     |
+| :--------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
+| **`dayXX/`**           | **Your Workspace**     | This folder contains the starter code and README. You will write your implementation here.                     |
 | **`dayXX_completed/`** | **Reference Solution** | Contains the fully working code. If you get stuck, peek here, or copy files to your workspace to move forward. |
 
 **Typical Daily Workflow:**
@@ -81,6 +81,7 @@ Each day is split into two folders. Use them as follows:
 Moving from software to hardware requires a shift in mindset. We have prepared guides to help you bridge the gap:
 
 - **[SystemVerilog Cheatsheet](./docs/SYSTEMVERILOG_CHEATSHEET.md)**: "How do I write an `if` statement?", "What is `<=`, and why isn't it `=`?"
+- **[Common Pitfalls](./docs/COMMON_PITFALLS.md)**: Explains the traps that beginners often fall into, such as assignment timing, mechanical bouncing, and the "X" state.
 - **[Debugging Guide](./docs/DEBUGGING_GUIDE.md)**: How to read waveforms and debug logic that runs in parallel.
 - **[Glossary](./docs/GLOSSARY.md)**: LUTs, FFs, Latches, PLLs... what do they mean?
 
@@ -97,12 +98,12 @@ The roadmap is divided into four main phases.
 
 Setting up the environment and building the necessary debug tools.
 
-|    Day     | Topic                 | What You'll Learn                                           |
-| :--------: | :-------------------- | :---------------------------------------------------------- |
-| **Day 01** | **Blinky LED**        | Environment setup and FPGA programming.                     |
-| **Day 02** | **4-bit ALU**         | Combinational logic and basic logical operations.           |
-| **Day 03** | **Traffic Light FSM** | Sequential logic and Finite State Machines.                 |
-| **Day 04** | **Debug Foundation**  | LCD display circuit (BSRAM/pROM) and base register set.     |
+|    Day     | Topic                 | What You'll Learn                                       |
+| :--------: | :-------------------- | :------------------------------------------------------ |
+| **Day 01** | **Blinky LED**        | Environment setup and FPGA programming.                 |
+| **Day 02** | **4-bit ALU**         | Combinational logic and basic logical operations.       |
+| **Day 03** | **Traffic Light FSM** | Sequential logic and Finite State Machines.             |
+| **Day 04** | **Debug Foundation**  | LCD display circuit (BSRAM/pROM) and base register set. |
 
 ### Phase 2: Core CPU Implementation (Day 05-10)
 
@@ -133,11 +134,11 @@ Strengthening memory operations and complex processing.
 
 Complex addressing modes and hardware-native custom instructions.
 
-|    Day     | Topic              | What You'll Learn                                                |
-| :--------: | :----------------- | :--------------------------------------------------------------- |
-| **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                       |
-| **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).       |
-| **Day 18** | **Custom Opcodes** | `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info).     |
+|    Day     | Topic              | What You'll Learn                                            |
+| :--------: | :----------------- | :----------------------------------------------------------- |
+| **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                   |
+| **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).   |
+| **Day 18** | **Custom Opcodes** | `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info). |
 
 ### 🏁 Final Goal (Day 99)
 

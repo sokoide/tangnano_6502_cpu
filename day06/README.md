@@ -15,17 +15,17 @@ We will also implement the logic to fetch an 8-bit _operand_ that follows the in
 
 Before proceeding, make sure you understand:
 
--   **Program Counter (PC)**: Holds the address of the next instruction
--   **Sequential Logic**: `always_ff @(posedge clk)` for clock-synchronized updates
--   **LCD Display**: How to output debug information to the display
+- **Program Counter (PC)**: Holds the address of the next instruction
+- **Sequential Logic**: `always_ff @(posedge clk)` for clock-synchronized updates
+- **LCD Display**: How to output debug information to the display
 
 ## 🎯 Learning Objectives
 
--   **Implement the Accumulator (A)**: Add the primary 8-bit register for arithmetic and logic operations.
--   **Architectural Structure**: Introduce `opcodes.svh` for symbolic instruction names and `rom.sv` for memory separation.
--   **Instruction Fetch & Decode**: Implement a state machine to fetch opcodes and operands independently.
--   **Handle `LDA #imm` & `NOP`**: Decode and execute basic instructions using the new structure.
--   **Visualize on LCD**: Display both `PC` and `A` register values.
+- **Implement the Accumulator (A)**: Add the primary 8-bit register for arithmetic and logic operations.
+- **Architectural Structure**: Introduce `opcodes.svh` for symbolic instruction names and `rom.sv` for memory separation.
+- **Instruction Fetch & Decode**: Implement a state machine to fetch opcodes and operands independently.
+- **Handle `LDA #imm` & `NOP`**: Decode and execute basic instructions using the new structure.
+- **Visualize on LCD**: Display both `PC` and `A` register values.
 
 ## 🏗️ Architecture
 
@@ -79,15 +79,15 @@ An **Assembler** usually performs this conversion, but in this course, we will w
 
 Machine code instructions can be 1 byte long or take multiple bytes if they need data (operands).
 
--   **1-byte Instruction (e.g., NOP)**
+- **1-byte Instruction (e.g., NOP)**
 
-    -   Just `EA`.
-    -   Means "No Operation", so no extra data is needed.
+  - Just `EA`.
+  - Means "No Operation", so no extra data is needed.
 
--   **2-byte Instruction (e.g., LDA #imm)**
-    -   Uses 2 bytes like `A9 42`.
-    -   1st byte `A9` is the **Opcode** (Operation Code) telling the CPU "We are about to do a Load!".
-    -   2nd byte `42` is the **Operand**, the actual value to load.
+- **2-byte Instruction (e.g., LDA #imm)**
+  - Uses 2 bytes like `A9 42`.
+  - 1st byte `A9` is the **Opcode** (Operation Code) telling the CPU "We are about to do a Load!".
+  - 2nd byte `42` is the **Operand**, the actual value to load.
 
 ## 📘 Architecture Deep Dive: How PC Works
 
@@ -117,16 +117,16 @@ In this way, the PC advances step-by-step, reading machine code from memory, whi
 
 Example in memory:
 
--   Address `0x8000`: `0xA9` (LDA #imm instruction)
--   Address `0x8001`: `0x42` (The value to load)
+- Address `0x8000`: `0xA9` (LDA #imm instruction)
+- Address `0x8001`: `0x42` (The value to load)
 
 When this is executed, the A register will contain the value `0x42`.
 
 ## 🧪 Verification
 
--   **Test Program**: Create a simple ROM that contains `A9 42` (LDA #$42). You can add `EA` (NOP) instructions after it.
--   **Simulation**: Verify that after two clock cycles, the `A` register holds the value `0x42`.
--   **FPGA**: Check the LCD. It should display "A: 42" (or whatever value you chose). The PC should stop incrementing after fetching the operand, or continue if you have more instructions.
+- **Test Program**: Create a simple ROM that contains `A9 42` (LDA #$42). You can add `EA` (NOP) instructions after it.
+- **Simulation**: Verify that after two clock cycles, the `A` register holds the value `0x42`.
+- **FPGA**: Check the LCD. It should display "A: 42" (or whatever value you chose). The PC should stop incrementing after fetching the operand, or continue if you have more instructions.
 
 ## 🎯 Preview for Tomorrow
 
