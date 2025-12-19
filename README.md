@@ -19,6 +19,32 @@ Ultimately, you will build a complete computer system on the FPGA, capable of ru
 - **Mastering Addressing Modes**: Learn how 6502's powerful addressing modes (indexed, indirect, etc.) are implemented in hardware.
 - **Hardware Debugging**: Learn debugging techniques using both simulation and on-chip hardware (an LCD).
 
+## 📋 Prerequisites
+
+This curriculum assumes no prior FPGA experience. Here's what will help:
+
+| Category         | Knowledge                               | Required |
+| ---------------- | --------------------------------------- | :------: |
+| **Essential**    | Basic programming in any language       |    ✅    |
+| **Essential**    | Binary and hexadecimal numbers          |    ✅    |
+| **Essential**    | Logical operations (AND, OR, XOR)       |    ✅    |
+| **Helpful**      | C language (pointers, bit manipulation) |    ⭕    |
+| **Helpful**      | Assembly language concepts              |    ⭕    |
+| **Not Required** | FPGA/Verilog experience                 |    ❌    |
+| **Not Required** | 6502 architecture knowledge             |    ❌    |
+
+## ⏱️ Time Estimate
+
+| Phase                 |    Days     | Estimated Hours |
+| --------------------- | :---------: | :-------------: |
+| Phase 1: Preparations |    01-04    |   12-16 hours   |
+| Phase 2: Core CPU     |    05-10    |   18-24 hours   |
+| Phase 3: Addressing   |    11-15    |   15-20 hours   |
+| Phase 4: Advanced     |    16-18    |   9-12 hours    |
+| **Total**             | **18 days** | **54-72 hours** |
+
+> Typical pace: 1-2 months of weekend study (3-4 hours per session).
+
 ## 📅 Curriculum Roadmap
 
 The roadmap is divided into four main phases.
@@ -87,3 +113,5 @@ Check [Day 01](./day01/README.md) to get started!
 ---
 
 [Full Instruction Set List (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
+
+[Glossary of Terms (GLOSSARY.md)](./docs/GLOSSARY.md)

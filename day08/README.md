@@ -11,6 +11,14 @@ Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's compu
 
 This allows the CPU to perform addition (`ADC`) and subtraction (`SBC`) and observe how the results affect the status flags (N, V, Z, C). This is a major leap towards making logical decisions in programs.
 
+## 🔙 Review: Day 07
+
+Before proceeding, make sure you understand:
+
+- **X and Y Registers**: Index registers used for addressing and counting
+- **Register Transfers**: `TAX`, `TXA` move data between registers
+- **Single-byte Instructions**: Instructions without operands (implied addressing)
+
 ## 🎯 Learning Objectives
 
 - **Implement the ALU**: Create combinational logic for 8-bit addition and subtraction.

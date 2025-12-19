@@ -11,6 +11,14 @@ Today, we implement **Subroutines (Functions)**, a fundamental feature for organ
 
 The stack allows the CPU to save its "return address" before jumping to a function and to temporarily store register values (preserve state) during execution.
 
+## 🔙 Review: Day 09
+
+Before proceeding, make sure you understand:
+
+- **Branch Instructions**: Conditional jumps based on flag states
+- **Relative Addressing**: PC-relative offsets for position-independent code
+- **Signed Offsets**: How 8-bit values can represent -128 to +127
+
 ## 🎯 Learning Objectives
 
 - **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.

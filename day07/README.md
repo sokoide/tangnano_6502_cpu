@@ -11,6 +11,14 @@ In addition to the Accumulator, the 6502 has two versatile 8-bit index registers
 
 These registers are essential for many addressing modes and are often used as loop counters or offsets. We will implement instructions to transfer values between registers and perform basic increment/decrement operations.
 
+## 🔙 Review: Day 06
+
+Before proceeding, make sure you understand:
+
+- **Accumulator (A)**: The primary 8-bit register for data operations
+- **Immediate Addressing**: Data follows immediately after the opcode in memory
+- **State Machine**: `STATE_FETCH_OPCODE` → `STATE_FETCH_OPERAND` transitions
+
 ## 🎯 Learning Objectives
 
 - **Implement X and Y Registers**: Add two 8-bit general-purpose registers to the CPU.

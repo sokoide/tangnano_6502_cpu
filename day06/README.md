@@ -11,6 +11,14 @@ In Day 06, we will breathe more life into our CPU by implementing its first data
 
 We will also implement the logic to fetch an 8-bit _operand_ that follows the instruction code in memory.
 
+## 🔙 Review: Day 05
+
+Before proceeding, make sure you understand:
+
+- **Program Counter (PC)**: Holds the address of the next instruction
+- **Sequential Logic**: `always_ff @(posedge clk)` for clock-synchronized updates
+- **LCD Display**: How to output debug information to the display
+
 ## 🎯 Learning Objectives
 
 - **Implement the Accumulator (A)**: Add the primary 8-bit register for arithmetic and logic operations.

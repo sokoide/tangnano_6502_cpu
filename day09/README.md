@@ -11,6 +11,14 @@ A CPU that only executes instructions in a straight line isn't very capable. Tod
 
 Instructions like `BNE` (Branch if Not Equal) and `BEQ` (Branch if Equal) check the status flags (specifically the Zero flag) and jump the execution point (Program Counter) if a condition is met. This is the foundation of loops and `if` statements.
 
+## 🔙 Review: Day 08
+
+Before proceeding, make sure you understand:
+
+- **ALU**: Performs addition (`ADC`) and subtraction (`SBC`)
+- **Status Flags**: N (Negative), V (Overflow), Z (Zero), C (Carry)
+- **Flag Updates**: How operations automatically set these flags
+
 ## 🎯 Learning Objectives
 
 - **Control Flow**: Understand how loops and conditional branches are achieved at the hardware level.
