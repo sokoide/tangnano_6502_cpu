@@ -12,7 +12,7 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
-SRCS = top.sv alu_4bit.sv mux_8to1.sv seven_seg_decoder.sv
+SRCS = alu_4bit.sv
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C

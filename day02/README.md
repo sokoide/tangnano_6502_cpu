@@ -41,49 +41,7 @@ logic [7:0] data_bus;   // 8-bit wire, a net for connections
 logic [3:0] counter;     // 4-bit variable, can be a register or a wire
 logic select;          // 1-bit variable
 logic [15:0] address;  // 16-bit variable
-- **`always_comb` vs `assign`**: Learn when to use continuous assignment versus block-based logic.
-- **Arithmetic Logic Unit (ALU)**: Implement basic operations like addition, subtraction, AND, and OR.
-- **Unit Testing (Testbenches)**: Verify your logic using simulation before hitting the hardware.
-- **Verilator/GTKWave**: Master the diagnostic tools of an FPGA engineer.
-
-## 🏗️ Architecture
-
-A combinational circuit is like a set of pipes; what goes in immediately determines what comes out.
-
-```mermaid
-graph LR
-    A[Input A] --> ALU
-    B[Input B] --> ALU
-    OP[Opcode] --> ALU
-    ALU --> Result[Result]
-    ALU --> Flags[Zero/Carry Flags]
 ````
-
-## 🛠️ Implementation Steps
-
-1. **7-Segment Decoder**:
-    - Create a module that converts a 4-bit nibble into hexadecimal display signals.
-2. **4-bit ALU**:
-    - Implement the main operations using a `case` statement inside an `always_comb` block.
-    - Ensure all outputs are defined to avoid "inferred latches" (accidental memory).
-3. **Simulation & Verification**:
-    - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
-    - Use `make test` to run the simulation and check for errors.
-4. **Hardware Display**:
-    - Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
-
-## 💡 Pure Functions in Hardware
-
-A combinational circuit is basically a **pure function**. Given the same inputs, it will always produce the same outputs immediately. Always remember to provide a `default` case in your logic to ensure your circuit doesn't try to "remember" previous states.
-
-### `wire` vs `logic` (A Simple Rule for Beginners)
-
-You learned about this in Day 01, but here's a recap for the context of combinational logic:
-
-- `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
-  - If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
-  - If you assign to it with `assign`, it acts like a `wire`.
-- `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
 
 **Operators:**
 
@@ -149,41 +107,44 @@ In C/Python, `if (condition) x = 1;` implies "if condition is false, keep x as i
 In hardware combinational logic, "keep as it is" requires **memory** (a latch).
 Since we are building circuits _without_ memory today, you **must** specify what happens in the `else` case (e.g., `else x = 0;`).
 
-## 🛠️ Practice 1: 7-Segment Decoder
+## 🏗️ Architecture
 
-### Specifications
-
-- Convert a 4-bit input (0-15) to signals for a 7-segment display
-- Active-low drive (lights up at 0)
+A combinational circuit is like a set of pipes; what goes in immediately determines what comes out.
 
 ```mermaid
-flowchart LR
-  D[digit 0..15] --> CASE{"case (digit)"}
-  CASE --> SEG["segments[6:0]<br/>{g,f,e,d,c,b,a}"]
-  SEG --> DISP[7-seg LED]
+graph LR
+    A[Input A] --> ALU
+    B[Input B] --> ALU
+    OP[Opcode] --> ALU
+    ALU --> Result[Result]
+    ALU --> Flags[Zero/Carry Flags]
 ```
 
-### Implementation Hint
+## 🛠️ Implementation Steps
 
-```systemverilog
-module seven_seg_decoder (
-    input  logic [3:0] digit,
-    output logic [6:0] segments  // {g,f,e,d,c,b,a}
-);
+1. **4-bit ALU**:
+    - Implement the main operations using a `case` statement inside an `always_comb` block.
+    - Ensure all outputs are defined to avoid "inferred latches" (accidental memory).
+2. **Simulation & Verification**:
+    - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
+    - Use `make test` to run the simulation and check for errors.
+3. **Hardware Display**:
+    - Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
 
-    always_comb begin
-        case (digit)
-            4'h0: segments = 7'b1000000;  // 0
-            4'h1: segments = 7'b1111001;  // 1
-            // TODO: Implement the remaining digits
-            default: segments = 7'b1111111;  // Off
-        endcase
-    end
+## 💡 Pure Functions in Hardware
 
-endmodule
-```
+A combinational circuit is basically a **pure function**. Given the same inputs, it will always produce the same outputs immediately. Always remember to provide a `default` case in your logic to ensure your circuit doesn't try to "remember" previous states.
 
-## 🛠️ Practice 2: 4-bit ALU
+### `wire` vs `logic` (A Simple Rule for Beginners)
+
+You learned about this in Day 01, but here's a recap for the context of combinational logic:
+
+- `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
+  - If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
+  - If you assign to it with `assign`, it acts like a `wire`.
+- `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
+
+## 🛠️ Practice: 4-bit ALU
 
 ### Specifications
 
@@ -238,31 +199,6 @@ module alu_4bit (
 
         zero = (result == 4'b0000);
     end
-
-endmodule
-```
-
-## 🛠️ Practice 3: Multiplexer
-
-### 8-to-1 Multiplexer
-
-Multiplexer (MUX) = “select one of many inputs”.
-
-```mermaid
-flowchart LR
-  IN[data_in[7:0]] --> MUX[8:1 MUX]
-  SEL[select[2:0]] --> MUX
-  MUX --> OUT[data_out]
-```
-
-```systemverilog
-module mux_8to1 (
-    input  logic [7:0] data_in,
-    input  logic [2:0] select,
-    output logic data_out
-);
-
-    // TODO: Output the appropriate bit of data_in according to select
 
 endmodule
 ```

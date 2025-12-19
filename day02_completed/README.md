@@ -9,32 +9,17 @@ This is the completed project for designing combinational circuits in SystemVeri
 
 ## File Structure
 
-- `seven_seg_decoder.sv` - 7-segment decoder
 - `alu_4bit.sv` - 4-bit ALU
-- `mux_8to1.sv` - 8-to-1 Multiplexer
-- `top.sv` - Integrated test module
 - `tb_alu_4bit.sv` - ALU testbench
 - `Makefile` - Build and test automation
 
 ## Implemented Modules
 
-### 1. 7-Segment Decoder
-
-- Converts a 4-bit input (0-F) to signals for a 7-segment display
-- Active-low output (lights up at 0)
-- Supports hexadecimal display
-
-### 2. 4-bit ALU
+### 1. 4-bit ALU
 
 - Four types of operations: Addition, Subtraction, AND, OR
 - Flag outputs: Zero, Carry
 - Overflow/underflow detection
-
-### 3. 8-to-1 Multiplexer
-
-- Selects one of 8 inputs
-- 3-bit select signal
-- Implemented using a `case` statement
 
 ## How to Build and Test
 

@@ -33,56 +33,20 @@ graph LR
 
 ## 🛠️ 実装ステップ
 
-1. **7 セグメントデコーダ**:
-    - 4 ビットの値を 16 進数の表示信号に変換するモジュールを作成。
-2. **4 ビット ALU**:
+1. **4 ビット ALU**:
     - `always_comb` ブロック内の `case` 文を使用して主要な演算を実装。
     - 「ラッチ（意図しないメモリ）」の発生を防ぐため、すべての出力が常に定義されるようにする。
-3. **シミュレーションと検証**:
+2. **シミュレーションと検証**:
     - ALU に値を流し込むテストベンチ (`tb_alu_4bit.sv`) を作成。
     - `make test` を実行してシミュレーションを行い、エラーがないか確認。
-4. **ハードウェアでの表示**:
+3. **ハードウェアでの表示**:
     - ALU をボードに統合し、LED や 7 セグメントディスプレイで演算結果を確認。
 
 ## 💡 ハードウェアにおける「純粋関数」
 
 組み合わせ回路は、基本的には **純粋関数** です。同じ入力が与えられれば、即座に同じ出力が生成されます。ロジックに必ず `default` ケースを用意し、回路が以前の状態を「覚えよう」としないように注意することが重要です。
 
-## 🛠️ 実習 1: 7 セグメントデコーダ
-
-### 仕様
-
-- 4bit 入力 (0-15) を 7 セグメント表示用の信号に変換
-- アクティブローで駆動 (0 で点灯)
-
-```mermaid
-flowchart LR
-  D[digit 0..15] --> CASE{"case (digit)"}
-  CASE --> SEG["segments[6:0]<br/>{g,f,e,d,c,b,a}"]
-  SEG --> DISP[7セグLED]
-```
-
-### 実装のヒント
-
-```systemverilog
-module seven_seg_decoder (
-    input  logic [3:0] digit,
-    output logic [6:0] segments  // {g,f,e,d,c,b,a}
-);
-
-    always_comb begin
-        case (digit)
-            4'h0: segments = 7'b1000000;  // 0
-            4'h1: segments = 7'b1111001;  // 1
-            // TODO: 残りの数字を実装
-            default: segments = 7'b1111111;  // 消灯
-        endcase
-    end
-
-endmodule
-```
-
-## 🛠️ 実習 2: 4bit ALU
+## 🛠️ 実習: 4bit ALU
 
 ### 仕様
 
@@ -137,31 +101,6 @@ module alu_4bit (
 
         zero = (result == 4'b0000);
     end
-
-endmodule
-```
-
-## 🛠️ 実習 3: マルチプレクサ
-
-### 8-to-1 マルチプレクサ
-
-マルチプレクサ（MUX）は「複数の入力のうち、1 つだけを選んで出力する回路」です。
-
-```mermaid
-flowchart LR
-  IN["data_in[7:0]"] --> MUX[8:1 MUX]
-  SEL["select[2:0]"] --> MUX
-  MUX --> OUT[data_out]
-```
-
-```systemverilog
-module mux_8to1 (
-    input  logic [7:0] data_in,
-    input  logic [2:0] select,
-    output logic data_out
-);
-
-    // TODO: selectに応じてdata_inの適切なビットを出力
 
 endmodule
 ```
