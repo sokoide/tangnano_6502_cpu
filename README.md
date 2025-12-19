@@ -84,6 +84,11 @@ Moving from software to hardware requires a shift in mindset. We have prepared g
 - **[Debugging Guide](./docs/DEBUGGING_GUIDE.md)**: How to read waveforms and debug logic that runs in parallel.
 - **[Glossary](./docs/GLOSSARY.md)**: LUTs, FFs, Latches, PLLs... what do they mean?
 
+## 📘 Other Links
+
+- **[Required Software(PREREQS.md)](./docs/PREREQS.md)**: Install them first
+- **[Full Instruction Set List (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)**: 6522 Instruction Set List.
+
 ## 📅 Curriculum Roadmap
 
 The roadmap is divided into four main phases.
@@ -146,12 +151,3 @@ Complex addressing modes and hardware-native custom instructions.
 - **Software**: GOWIN EDA, verilator, GTKwave.
 
 Check [Day 01](./day01/README.md) to get started!
-
----
-[Required Software(PREREQS.md)](./docs/PREREQS.md)
-
-[Full Instruction Set List (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
-
-[Debugging Guide (DEBUGGING_GUIDE.md)](./docs/DEBUGGING_GUIDE.md)
-
-[Glossary of Terms (GLOSSARY.md)](./docs/GLOSSARY.md)

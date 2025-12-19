@@ -84,6 +84,11 @@ graph TD
 - **[デバッグガイド](./docs/DEBUGGING_GUIDE_ja.md)**: 波形の読み方や、並列に動くロジックのデバッグ方法を解説します。
 - **[用語集](./docs/GLOSSARY_ja.md)**: LUT, FF, ラッチ, PLL... これらの用語の意味を解説します。
 
+## 📘 その他のリンク
+
+- **[必要なソフトウェア(PREREQS_ja.md)](./docs/PREREQS_ja.md)**: はじめにこれらをインストールしてください。
+- **[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)** 6502 CPU命令リスト。
+
 ## 📅 カリキュラム
 
 ロードマップは以下の 4 つのフェーズで構成されています。
@@ -146,12 +151,3 @@ CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しな
 - **ソフトウェア**: GOWIN EDA, verilator, GTKwave
 
 詳細は [Day 01](./day01/README_ja.md) から始めてください！
-
----
-[必要なソフトウェア(PREREQS_ja.md)](./docs/PREREQS_ja.md)
-
-[デバッグガイド (DEBUGGING_GUIDE_ja.md)](./docs/DEBUGGING_GUIDE_ja.md)
-
-[用語集 (GLOSSARY_ja.md)](./docs/GLOSSARY_ja.md)
-
-[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
