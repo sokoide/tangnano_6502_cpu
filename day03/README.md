@@ -5,46 +5,18 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## 📜 Overview
+
+Today, we add the final piece of the architectural puzzle: **"State"**. Unlike combinational circuits which change "instantly", sequential circuits use a **Clock** to determine when to update, and a **Reset** to determine where to start.
+
+Today's goal is to implement a **Traffic Light Controller** as a practical introduction to **Finite State Machines (FSM)**.
+
 ## 🎯 Learning Objectives
 
 - Understand the concept of clock-synchronous circuits
 - Learn the difference between flip-flops and latches
 - Master register design using `always_ff`
 - Understand the basics of Finite State Machines (FSM)
-
-## 📚 Theory
-
-### For Software Engineers: The Clock is Your Update Loop
-
-In Day 02, you learned that combinational logic is like a pure function. Today, you're adding **state**.
-
-Think of a sequential circuit as an object with private member variables (the registers). The `always_ff @(posedge clk)` block is like a special method that gets called automatically on every clock "tick". This is the **only place where the state should change**.
-
-- **State is local:** The `counter` register in the examples is not a global variable. It's a local state variable inside your hardware module.
-- **No pre-emption:** Unlike software threads, these hardware "processes" all execute in perfect lock-step with the clock. One `always_ff` block can't interrupt another. They all trigger on the exact same clock edge.
-
-This clock-driven, synchronous nature is what makes hardware design predictable and manageable.
-
-### What is a sequential circuit?
-
-Sequential circuits “remember” state. The output depends on current inputs **and** stored values (registers).
-
-```mermaid
-flowchart LR
-  CLK((clk)) --> FF[flip-flops / registers]
-  IN[inputs] --> FF
-  FF --> OUT[outputs]
-```
-
-#### Flip-flop vs latch (why we prefer flip-flops)
-
-- **Flip-flop (FF)** updates only on a clock edge (e.g. `posedge clk`) → predictable timing.
-- **Latch** can be transparent while an enable is active → easier to accidentally infer in RTL.
-
-- **`always_ff`**: Understand how to describe registers and flip-flops.
-- **Clock & Reset**: Learn the importance of the `posedge clk` and `negedge rst_n` pattern.
-- **Finite State Machines (FSM)**: Design a multi-state logic system with transitions.
-- **Non-blocking Assignment (`<=`)**: Master the fundamental syntax of synchronous digital design.
 
 ## 🏗️ Architecture
 

@@ -53,6 +53,11 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 - **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
 
-## 🎯 Next Steps
+## 🎉 Congratulations
 
-In Day 19, we will integrate **peripherals (UART, Timers)** to allow the CPU to interact even more with the outside world.
+You have finally completed the entire 18-day curriculum!
+By building a 6502 CPU on an FPGA and adding your own custom instructions, you have gained deep knowledge that bridges the gap between hardware and software.
+
+This journey doesn't end here. The possibilities are endless: you can make this CPU even faster, add more instructions, or even challenge yourself to build a completely new architecture.
+
+We wish you all the best in your future endeavors as an engineer!

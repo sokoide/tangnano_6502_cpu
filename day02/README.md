@@ -5,107 +5,18 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## 📜 Overview
+
+In Day 02, we move from simple sequential circuits (counters) to **combinational circuits**. Combinational circuits handle "computation" in hardware; they have no state and react instantly to changes in input.
+
+Today's goal is to build the mathematical heart of any CPU: a **4-bit ALU (Arithmetic Logic Unit)**.
+
 ## 🎯 Learning Objectives
 
-- Understand the basic syntax of SystemVerilog
-- Learn how to design combinational circuits
-- Learn the difference between `assign` and `always_comb`
-- Understand the basics of testbenches
-
-## 📚 Theory
-
-### For Software Engineers: Combinational Logic is like a Pure Function
-
-Think of the combinational circuits you are building today as **pure functions** in software. Their outputs depend _only_ on their current inputs, with no side effects or memory of past states. `assign` and `always_comb` are the tools you use to describe these "instantaneous" calculations.
-
-### Combinational vs. Sequential (what you’re building today)
-
-In Day 01 you used a **counter**, which is a _sequential_ circuit (it updates on a clock edge and “remembers” state).
-
-Day 02 focuses on **combinational circuits**:
-
-- Output is determined only by the current inputs (no memory).
-- In RTL, you describe them with `assign` or `always_comb`.
-
-```mermaid
-flowchart LR
-  IN[inputs] --> LOGIC[combinational logic] --> OUT[outputs]
-```
-
-### SystemVerilog Basic Syntax
-
-**Data Types:**
-
-````systemverilog
-logic [7:0] data_bus;   // 8-bit wire, a net for connections
-logic [3:0] counter;     // 4-bit variable, can be a register or a wire
-logic select;          // 1-bit variable
-logic [15:0] address;  // 16-bit variable
-````
-
-**Operators:**
-
-```systemverilog
-// Logical Operations
-a & b    // AND
-a | b    // OR
-a ^ b    // XOR
-~a       // NOT
-
-// Comparison Operations
-a == b   // Equal
-a != b   // Not equal
-a > b    // Greater than
-
-// Bitwise Operations
-data[7:4]  // Upper 4 bits
-data[0]    // Least significant bit
-{a, b}     // Concatenation
-```
-
-### How to Describe Combinational Circuits
-
-**Method 1: `assign` statement**
-
-```systemverilog
-assign output = input1 & input2;
-assign sum = a + b;
-```
-
-**Method 2: `always_comb` statement**
-
-```systemverilog
-always_comb begin
-    if (select)
-        output = input1;
-    else
-        output = input2;
-end
-```
-
-#### `assign` vs `always_comb`
-
-- `assign` is great for simple expressions (a wire driven by one expression).
-- `always_comb` is great when you need `if`/`case` or multiple intermediate values.
-
-```mermaid
-flowchart LR
-  A[input signals] --> B{assign / always_comb} --> C[output signals]
-```
-
-#### Blocking assignment `=` and “why default matters”
-
-Inside `always_comb` you usually use **blocking** assignment `=`. The key rule is:
-
-- Assign _every output_ in _every path_.
-
-If you forget to assign an output in some branch, simulation may infer a “memory” (a latch), which is not what you want for Day 02.
-
-#### Software Engineer Pitfall: The "Implicit Else"
-
-In C/Python, `if (condition) x = 1;` implies "if condition is false, keep x as it is".
-In hardware combinational logic, "keep as it is" requires **memory** (a latch).
-Since we are building circuits _without_ memory today, you **must** specify what happens in the `else` case (e.g., `else x = 0;`).
+- **`always_comb` vs `assign`**: Learn when to use continuous assignment versus block-based logic.
+- **Arithmetic Logic Unit (ALU)**: Implement basic operations like addition, subtraction, AND, and OR.
+- **Unit Testing (Testbenches)**: Verify your logic using simulation before hitting the hardware.
+- **Verilator/GTKWave**: Master the diagnostic tools of an FPGA engineer.
 
 ## 🏗️ Architecture
 
@@ -134,15 +45,6 @@ graph LR
 ## 💡 Pure Functions in Hardware
 
 A combinational circuit is basically a **pure function**. Given the same inputs, it will always produce the same outputs immediately. Always remember to provide a `default` case in your logic to ensure your circuit doesn't try to "remember" previous states.
-
-### `wire` vs `logic` (A Simple Rule for Beginners)
-
-You learned about this in Day 01, but here's a recap for the context of combinational logic:
-
-- `logic`: The modern SystemVerilog data type. **For this course, you should use `logic` for almost everything.** It can be used as a simple "variable". The tools are smart enough to figure out if it should become a wire or a register based on how you use it.
-  - If you assign to it in an `always_comb` or `always_ff` block, it acts like a variable (a "register").
-  - If you assign to it with `assign`, it acts like a `wire`.
-- `wire`: Represents a physical wire. It cannot store a value and must be continuously driven by something, for example with an `assign` statement. You'll see it used for module inputs and outputs, which is a common convention.
 
 ## 🛠️ Practice: 4-bit ALU
 

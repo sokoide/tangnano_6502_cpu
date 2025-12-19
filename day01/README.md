@@ -1,16 +1,56 @@
-# Day 01: Tang Nano + GoWin EDA Basics
+# Day 01: FPGA Basics and Environment Setup
 
 ---
 
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## 📜 Overview
+
+Welcome to the first step of building your own 6502 CPU! Before diving into complex logic, you need to get comfortable with the hardware and development environment.
+
+The goal of Day 01 is to set up the FPGA toolchain and implement the hardware equivalent of "Hello World": **Blinking an LED**.
+
 ## 🎯 Learning Objectives
 
-- Understand the basic specifications of Tang Nano 9K/20K
-- Master the basic operations of GoWin EDA
-- Create a blinking LED project as the first HDL project
-- Learn the basic workflow of FPGA development
+- **Hardware Specifications**: Understand the basic configuration of Tang Nano 9K/20K.
+- **Toolchain**: Master the basic workflow of GoWin EDA.
+- **RTL Development**: Create your first SystemVerilog project.
+- **FPGA Programming**: Perform synthesis, place & route, and verify operation on real hardware.
+
+## 🏗️ Architecture
+
+The first design is very simple: a "clock divider" that slows down the high-speed clock signal to a speed visible to the human eye.
+
+```mermaid
+graph LR
+    CLK[27MHz Oscillator] --> CPU[Clock Divider]
+    CPU --> LED(User LED)
+```
+
+## 🛠️ Implementation Steps
+
+1. **Create Project**:
+    - Create a new project named `led_blink` in Gowin EDA.
+    - Select the correct device for your board (9K or 20K).
+2. **Implement Logic (`top.sv`)**:
+    - Implement a 25-bit counter.
+    - Connect the Most Significant Bit (MSB) of the counter to the LED output.
+3. **Set Constraints (`.cst`)**:
+    - Map the logical signal names in your code (`clk`, `led`) to the actual physical pins on the FPGA.
+4. **Build and Program**:
+    - Run Synthesis and Place & Route.
+    - Download the bitstream (`.fs`) to the FPGA using the Programmer tool.
+
+## 💡 From Software Thinking to Hardware Thinking
+
+For software developers, the biggest mental shift is understanding that **"this is not a program."** You are designing **the structure of a circuit** using SystemVerilog. The logic you describe happens **all at once (in parallel)**, unless you use a clock to control timing.
+
+1. **Design (RTL)** - Describe logic using HDL (Hardware Description Language)
+2. **Synthesis** - Convert RTL into connections of LUTs/FFs/RAMs (Netlist)
+3. **Place & Route** - Map the netlist to physical resources inside the FPGA
+4. **Bitstream Generation** - Generate the binary file to write to the FPGA
+5. **Programming** - Write the bitstream to the FPGA
 
 ## 📚 Preparation
 
@@ -26,7 +66,7 @@
 
 ## 📖 Theory
 
-### A Note for Software Engineers: Thinking in Hardware
+### A Hint for Software Engineers: Switching to Hardware Thinking
 
 If you're coming from a software background, the biggest mental shift is this: **you are not writing a program.** You are **describing a hardware circuit.**
 
@@ -114,7 +154,7 @@ make help
 make BOARD=9k download   # or BOARD=20k
 ```
 
-Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.md`.
+Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.md` (or `docs/BOARD_SETUP_ja.md` for Japanese).
 
 ### Step 1: Create Project
 
@@ -148,7 +188,7 @@ module top (
 endmodule
 ```
 
-#### `wire`, `logic`, `always_ff`, `posedge`, `assign` (what they mean)
+#### Understanding `wire`, `logic`, `always_ff`, `posedge`, `assign` with a Diagram
 
 This small module already contains most of the “core grammar” you’ll use later:
 
