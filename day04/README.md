@@ -54,6 +54,22 @@ graph LR
     style ADDR fill:#f9f,stroke:#333,stroke-width:2px
 ```
 
+## 💡 Column: Clock Domains & Dual Port Memory
+
+In this project, we deal with **two different time zones** (Clock Domains):
+
+1. **LCD Domain (9MHz):** The pixel pipeline must run exactly at 9MHz to satisfy the physical LCD panel timing.
+2. **CPU Domain (System Clock):** The logic runs at the main system clock (27MHz, or slower for debugging).
+
+**The Challenge:** What happens if the CPU tries to write to VRAM at the exact same nanosecond the LCD controller tries to read from it? In standard single-port RAM, this would cause a collision.
+
+**The Solution: Dual Port Memory (SDPB)**
+The "SDPB" memory block we use has two independent sets of address and data lines.
+
+- **Port A (Write-Only):** Connected to the CPU clock.
+- **Port B (Read-Only):** Connected to the LCD clock.
+The FPGA hardware inside the BSRAM block handles the arbitration, allowing us to simply "write whenever" and "read whenever" without complex synchronization logic. This is a huge advantage of FPGAs over shared-memory systems in software!
+
 ## 🏗️ Architecture
 
 Day 04 combines a fast rendering pipeline with the CPU's register set.

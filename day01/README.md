@@ -60,9 +60,27 @@ For software developers, the biggest mental shift is understanding that **"this 
 - USB-C Cable
 - PC (Windows/Linux/macOS)
 
-### Software
+### Software Prerequisites
 
-- GoWin EDA (Download and install from the official website)
+#### Required
+
+- **Gowin EDA** (V1.9.10 or later recommended)
+  - Download from the [official Gowin website](https://www.gowinsemi.com/en/support/download_eda/)
+  - Includes `gw_sh` (synthesis tool) and `programmer_cli` (FPGA programmer)
+  - Installation paths:
+    - macOS: `/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/`
+    - Linux: `/opt/GowinEDA/` (or custom path)
+
+#### Optional (but recommended)
+
+- **Verilator** (for linting and simulation)
+  - macOS: `brew install verilator`
+  - Linux: `sudo apt install verilator`
+- **Verible** (for code formatting)
+  - Install from [Verible releases](https://github.com/chipsalliance/verible/releases)
+- **srecord, cc65** (for Day 99 examples)
+  - macOS: `brew install srecord cc65`
+  - Linux: `sudo apt install srecord cc65`
 
 ## 📖 Theory
 

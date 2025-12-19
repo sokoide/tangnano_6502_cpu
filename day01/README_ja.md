@@ -60,9 +60,27 @@ graph LR
 - USB-C ケーブル
 - PC (Windows/Linux/macOS)
 
-### ソフトウェア
+### ソフトウェアの前提条件
 
-- GoWin EDA (公式サイトからダウンロード・インストール)
+#### 必須
+
+- **Gowin EDA** (V1.9.10 以降を推奨)
+  - [Gowin 公式サイト](https://www.gowinsemi.com/en/support/download_eda/)からダウンロード
+  - `gw_sh` (合成ツール) と `programmer_cli` (FPGA プログラマ) が含まれます
+  - インストールパス:
+    - macOS: `/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/`
+    - Linux: `/opt/GowinEDA/` (またはカスタムパス)
+
+#### オプション（ですがおすすめ）
+
+- **Verilator** (リントとシミュレーション用)
+  - macOS: `brew install verilator`
+  - Linux: `sudo apt install verilator`
+- **Verible** (コードフォーマット用)
+  - [Verible リリース](https://github.com/chipsalliance/verible/releases)からインストール
+- **srecord, cc65** (Day 99 のサンプル用)
+  - macOS: `brew install srecord cc65`
+  - Linux: `sudo apt install srecord cc65`
 
 ## 📖 理論学習
 
