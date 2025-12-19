@@ -86,8 +86,8 @@ Moving from software to hardware requires a shift in mindset. We have prepared g
 
 ## 📘 Other Links
 
-- **[Required Software(PREREQS.md)](./docs/PREREQS.md)**: Install them first
-- **[Full Instruction Set List (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)**: 6522 Instruction Set List.
+- **[Required Software](./docs/PREREQS.md)**: Install them first
+- **[Full Instruction Set List](./day99_completed/docs/INSTRUCTIONS.md)**: 6522 Instruction Set List.
 
 ## 📅 Curriculum Roadmap
 

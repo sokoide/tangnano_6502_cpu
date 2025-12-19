@@ -86,8 +86,8 @@ graph TD
 
 ## 📘 その他のリンク
 
-- **[必要なソフトウェア(PREREQS_ja.md)](./docs/PREREQS_ja.md)**: はじめにこれらをインストールしてください。
-- **[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)** 6502 CPU命令リスト。
+- **[必要なソフトウェア](./docs/PREREQS_ja.md)**: はじめにこれらをインストールしてください。
+- **[全命令リスト](./day99_completed/docs/INSTRUCTIONS.md)** 6502 CPU命令リスト。
 
 ## 📅 カリキュラム
 
