@@ -24,16 +24,16 @@ graph TD
         LCD[LCD Controller]
         ROM[Program ROM]
         GPIO[LEDs / Buttons]
-        
+
         CPU -- "Addr/Data" --> ROM
         CPU -- "Addr/Data (Write)" --> VRAM
         CPU -- "Control" --> GPIO
         VRAM -- "Pixel Data (Read)" --> LCD
     end
-    
+
     LCD -- "HDMI / LCD Signals" --> DISPLAY[External Display]
     GPIO -- "Blinky" --> LEDS[On-board LEDs]
-    
+
     style CPU fill:#f96,stroke:#333,stroke-width:2px
     style VRAM fill:#69f,stroke:#333,stroke-width:2px
 ```
@@ -148,6 +148,7 @@ Complex addressing modes and hardware-native custom instructions.
 Check [Day 01](./day01/README.md) to get started!
 
 ---
+[Required Software(PREREQS.md)](./docs/PREREQS.md)
 
 [Full Instruction Set List (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
 

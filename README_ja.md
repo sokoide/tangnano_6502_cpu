@@ -24,16 +24,16 @@ graph TD
         LCD[LCD コントローラ]
         ROM[プログラム ROM]
         GPIO[LED / ボタン]
-        
+
         CPU -- "アドレス/データ" --> ROM
         CPU -- "アドレス/データ (書込)" --> VRAM
         CPU -- "制御信号" --> GPIO
         VRAM -- "ピクセルデータ (読出)" --> LCD
     end
-    
+
     LCD -- "HDMI / LCD 信号" --> DISPLAY[外部ディスプレイ]
     GPIO -- "点滅" --> LEDS[基板上 LED]
-    
+
     style CPU fill:#f96,stroke:#333,stroke-width:2px
     style VRAM fill:#69f,stroke:#333,stroke-width:2px
 ```
@@ -148,9 +148,10 @@ CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しな
 詳細は [Day 01](./day01/README_ja.md) から始めてください！
 
 ---
-
-[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)
+[必要なソフトウェア(PREREQS_ja.md)](./docs/PREREQS_ja.md)
 
 [デバッグガイド (DEBUGGING_GUIDE_ja.md)](./docs/DEBUGGING_GUIDE_ja.md)
 
 [用語集 (GLOSSARY_ja.md)](./docs/GLOSSARY_ja.md)
+
+[全命令リスト (INSTRUCTIONS.md)](./day99_completed/docs/INSTRUCTIONS.md)

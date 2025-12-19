@@ -18,6 +18,20 @@ Day 01 の目標は、FPGA のツールチェーンをセットアップし、�
 - **RTL 開発**: 最初の SystemVerilog プロジェクトを作成する。
 - **FPGA への書き込み**: 合成と配置配線を行い、実機で動作を確認する。
 
+## 📚 事前準備
+
+### ハードウェア
+
+- Tang Nano 9K または Tang Nano 20K
+- USB-C ケーブル
+- PC (Windows/Linux/macOS)
+
+### ソフトウェアの前提条件
+
+以下のソフトウェアをインストールしてください。
+
+[必要なソフトウェア(PREREQS_ja.md)](../docs/PREREQS_ja.md)
+
 ## 🏗️ アーキテクチャ
 
 最初の設計は、高速なクロック信号を人間が視覚的に確認できる速度まで落とす「分周器」という非常にシンプルなものです。
@@ -51,36 +65,6 @@ graph LR
 3. **配置配線（Place & Route）** - ネットリストを FPGA 内の物理リソースに割り当て
 4. **ビットストリーム生成** - FPGA に書き込むバイナリファイルを生成
 5. **プログラミング** - FPGA にビットストリームを書き込み
-
-## 📚 事前準備
-
-### ハードウェア
-
-- Tang Nano 9K または Tang Nano 20K
-- USB-C ケーブル
-- PC (Windows/Linux/macOS)
-
-### ソフトウェアの前提条件
-
-#### 必須
-
-- **Gowin EDA** (V1.9.10 以降を推奨)
-  - [Gowin 公式サイト](https://www.gowinsemi.com/en/support/download_eda/)からダウンロード
-  - `gw_sh` (合成ツール) と `programmer_cli` (FPGA プログラマ) が含まれます
-  - インストールパス:
-    - macOS: `/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/`
-    - Linux: `/opt/GowinEDA/` (またはカスタムパス)
-
-#### オプション（ですがおすすめ）
-
-- **Verilator** (リントとシミュレーション用)
-  - macOS: `brew install verilator`
-  - Linux: `sudo apt install verilator`
-- **Verible** (コードフォーマット用)
-  - [Verible リリース](https://github.com/chipsalliance/verible/releases)からインストール
-- **srecord, cc65** (Day 99 のサンプル用)
-  - macOS: `brew install srecord cc65`
-  - Linux: `sudo apt install srecord cc65`
 
 ## 📖 理論学習
 

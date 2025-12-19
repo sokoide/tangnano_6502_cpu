@@ -18,6 +18,20 @@ The goal of Day 01 is to set up the FPGA toolchain and implement the hardware eq
 - **RTL Development**: Create your first SystemVerilog project.
 - **FPGA Programming**: Perform synthesis, place & route, and verify operation on real hardware.
 
+## 📚 Preparation
+
+### Hardware
+
+- Tang Nano 9K or Tang Nano 20K
+- USB-C Cable
+- PC (Windows/Linux/macOS)
+
+### Software Prerequisites
+
+Install the following software:
+
+[Required Software(PREREQS.md)](../docs/PREREQS.md)
+
 ## 🏗️ Architecture
 
 The first design is very simple: a "clock divider" that slows down the high-speed clock signal to a speed visible to the human eye.
@@ -51,36 +65,6 @@ For software developers, the biggest mental shift is understanding that **"this 
 3. **Place & Route** - Map the netlist to physical resources inside the FPGA
 4. **Bitstream Generation** - Generate the binary file to write to the FPGA
 5. **Programming** - Write the bitstream to the FPGA
-
-## 📚 Preparation
-
-### Hardware
-
-- Tang Nano 9K or Tang Nano 20K
-- USB-C Cable
-- PC (Windows/Linux/macOS)
-
-### Software Prerequisites
-
-#### Required
-
-- **Gowin EDA** (V1.9.10 or later recommended)
-  - Download from the [official Gowin website](https://www.gowinsemi.com/en/support/download_eda/)
-  - Includes `gw_sh` (synthesis tool) and `programmer_cli` (FPGA programmer)
-  - Installation paths:
-    - macOS: `/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/`
-    - Linux: `/opt/GowinEDA/` (or custom path)
-
-#### Optional (but recommended)
-
-- **Verilator** (for linting and simulation)
-  - macOS: `brew install verilator`
-  - Linux: `sudo apt install verilator`
-- **Verible** (for code formatting)
-  - Install from [Verible releases](https://github.com/chipsalliance/verible/releases)
-- **srecord, cc65** (for Day 99 examples)
-  - macOS: `brew install srecord cc65`
-  - Linux: `sudo apt install srecord cc65`
 
 ## 📖 Theory
 

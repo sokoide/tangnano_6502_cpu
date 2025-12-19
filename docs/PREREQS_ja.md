@@ -1,0 +1,88 @@
+# 💻 必要なソフトウェア
+
+- **GoWin EDA** (FPGA 合成・配置配線ツール)
+- **Verilator** (SystemVerilog シミュレータ)
+- **GTKWave** (波形表示ツール)
+- **cc65** (6502 アセンブラ、Day 10 で使用)
+- **srecord** (バイナリ変換ツール)
+- **Make** (ビルドシステム)
+
+## インストール手順
+
+**macOS:**
+
+```bash
+brew update
+brew install -y srecord cc65 golang gtkwave verilator
+```
+
+**Linux (Ubuntu/Debian):**
+
+```bash
+sudo apt update
+sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
+sudo apt install -y --reinstall \
+  libfreetype6 \
+  libfontconfig1
+```
+
+**GoWin EDA:**
+
+- <https://www.gowinsemi.com/ja/support/download_eda/> から macOS, Windows, Linux 用の _Gowin V1.9.11.03 Education_ をダウンロードします
+  - Mac ユーザーは、macOS 版 IDE のみが必要です(コンパイラとプログラマの両方が含まれています)
+  - macOS 版 IDE は /Applications/GowinIDE.app にインストールしてください
+  - Windows ユーザーは、Windows 上に Windows 版 IDE（コンパイラとプログラマ）、WSL 上に Linux 版 IDE（コンパイラ）をインストールする必要があります。WSL からはプログラマを使用できないため、WSLでコンパイルした場合でもWindows 版のプログラマが必要です
+  - Linux 版 IDE は $(HOME)/Gowin/IDE にインストールしてください
+  - Windows 版 IDE は c:\Gowin にインストールしてください
+- macOS のみ
+  - 初回 -> 開くのに失敗する場合
+  - macOS の設定 -> プライバシーとセキュリティ -> 一番下までスクロール -> 実行を許可する
+  - コマンドラインツールにパッチを当てる
+
+```bash
+GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    install_name_tool \
+      -add_rpath @executable_path/../lib \
+      -add_rpath @executable_path/../Frameworks \
+      "$f" 2>/dev/null
+  fi
+done
+
+for f in "$GW/bin/"*; do
+  if file "$f" | grep -q executable; then
+    if otool -L "$f" | grep -q '/Library/Frameworks/Tcl.framework'; then
+      install_name_tool \
+        -change \
+        /Library/Frameworks/Tcl.framework/Versions/8.6/Tcl \
+        @rpath/Tcl.framework/Versions/8.6/Tcl \
+        "$f"
+    fi
+  fi
+done
+```
+
+- WSL only
+
+```bash
+# install IDE and programmer in $HOME/Gowin
+cd $HOME/Gowin/IDE/lib
+mv libfreetype.so.6 libfreetype.so.6.gowin.bak
+
+# set env var
+export QT_QPA_PLATFORM=minimal
+export QT_OPENGL=software
+export QT_XCB_GL_INTEGRATION=none
+```
+
+## macOS のツールパスに関する注意
+
+Gowin EDA をアプリとしてインストールしており、`gw_sh` や `programmer_cli` が `PATH` に通っていない場合、make 実行時にパスを指定可能です：
+
+```bash
+make GWSH=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE/bin/gw_sh \
+     PRG=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/Programmer/bin/programmer_cli \
+     download
+```
