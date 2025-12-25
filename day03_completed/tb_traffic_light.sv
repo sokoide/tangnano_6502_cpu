@@ -8,7 +8,7 @@ module tb_traffic_light;
     logic red, yellow, green;
 
     // Test target instantiation
-    traffic_light uut (
+    traffic_light dut (
         .clk(clk),
         .rst_n(rst_n),
         .red(red),

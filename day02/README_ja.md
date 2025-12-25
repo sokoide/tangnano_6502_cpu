@@ -116,9 +116,9 @@ endmodule
 テストベンチは通常、次の3つのことを行います：
 
 1.  **DUT (Design Under Test) のインスタンス化**:
-    クラスのインスタンスを作成するのと同じです：`ALU uut = new ALU();`
+    クラスのインスタンスを作成するのと同じです：`ALU dut = new ALU();`
 2.  **刺激 (Stimulus) を与える**:
-    入力ポートに特定の値を設定します。引数付きで関数を呼び出すようなものです：`uut.add(5, 3);`
+    入力ポートに特定の値を設定します。引数付きで関数を呼び出すようなものです：`dut.add(5, 3);`
     *   **重要な違い**: 関数呼び出しとは異なり、ハードウェアの信号が伝わるには時間がかかるため、しばしば時間を進める（`#10;`）必要があります。
 3.  **結果をチェックする**:
     `assert` を使って出力を検証します。これは C++ や Python の `assert(result == 8);` と全く同じです。
@@ -134,8 +134,8 @@ module tb_alu_4bit;
     logic zero, carry;
 
     // 2. テスト対象デザイン (DUT) をインスタンス化する
-    //    イメージ: alu_4bit uut = new alu_4bit(a, b, op, result...);
-    alu_4bit uut (
+    //    イメージ: alu_4bit dut = new alu_4bit(a, b, op, result...);
+    alu_4bit dut (
         .a(a), .b(b), .op(op),         // 入力を与える
         .result(result), .zero(zero), .carry(carry) // 出力を観測する
     );
@@ -163,10 +163,10 @@ endmodule
 ```mermaid
 sequenceDiagram
   participant TB as テストベンチ
-  participant UUT as ALU (あなたの設計)
-  TB->>UUT: 入力 a=5, b=3, op=0 を設定
-  Note over TB,UUT: 少しだけ待つ (#10)
-  UUT->>TB: 'result' と 'flags' を出力
+  participant DUT as ALU (あなたの設計)
+  TB->>DUT: 入力 a=5, b=3, op=0 を設定
+  Note over TB,DUT: 少しだけ待つ (#10)
+  DUT->>TB: 'result' と 'flags' を出力
   TB->>TB: 'result' が 8 であることを確認
   TB->>TB: $finish (シミュレーション終了)
 ```

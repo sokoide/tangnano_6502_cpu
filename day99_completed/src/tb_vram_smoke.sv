@@ -10,7 +10,7 @@ module tb_vram_smoke;
     logic [4:0] LCD_B;
     logic       MEMORY_CLK;
 
-    top uut (
+    top dut (
         .ResetButton(ResetButton),
         .XTAL_IN(XTAL_IN),
         .LCD_CLK(LCD_CLK),
@@ -52,11 +52,11 @@ module tb_vram_smoke;
         for (cycles = 0; cycles < 300000; cycles++) begin
             @(posedge MEMORY_CLK);
 
-            if (uut.u_core.v_cea) begin
+            if (dut.u_core.v_cea) begin
                 vram_writes++;
                 if (vram_writes <= 16) begin
-                    $display("[vram] write #%0d addr=%0d data=%02x", vram_writes, uut.u_core.v_ada,
-                             uut.u_core.v_din);
+                    $display("[vram] write #%0d addr=%0d data=%02x", vram_writes, dut.u_core.v_ada,
+                             dut.u_core.v_din);
                 end
             end
 

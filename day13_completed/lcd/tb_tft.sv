@@ -10,7 +10,7 @@ module tb_tft;
     logic [5:0] LCD_G;
     logic [4:0] LCD_B;
 
-    top uut (
+    top dut (
         .ResetButton(ResetButton),
         .XTAL_IN(XTAL_IN),
         .LCD_CLK(LCD_CLK),

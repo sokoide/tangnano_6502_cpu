@@ -12,7 +12,7 @@ module tb_cpu_registers;
     logic [15:0] reg_pc;
 
     // Test target instantiation
-    cpu_registers uut (
+    cpu_registers dut (
         .clk(clk),
         .rst_n(rst_n),
         .a_write(a_write),

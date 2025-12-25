@@ -116,9 +116,9 @@ It's a separate SystemVerilog file that exists **only for simulation**. Its job 
 A testbench typically does three things:
 
 1.  **Instantiate the DUT (Design Under Test)**:
-    Think of this as creating an instance of your class: `ALU uut = new ALU();`
+    Think of this as creating an instance of your class: `ALU dut = new ALU();`
 2.  **Provide Stimulus**:
-    You drive the input ports with specific values. Think of this as calling functions with arguments: `uut.add(5, 3);`
+    You drive the input ports with specific values. Think of this as calling functions with arguments: `dut.add(5, 3);`
     *   **Crucial difference**: You often need to wait for time to pass (`#10;`) because hardware signals take time to propagate, unlike instantaneous function calls.
 3.  **Check Results**:
     Use `assert` to verify outputs. This is exactly like `assert(result == 8);` in C++ or Python.
@@ -134,8 +134,8 @@ module tb_alu_4bit;
     logic zero, carry;
 
     // 2. Instantiate the Design Under Test (DUT)
-    //    Think of this as: alu_4bit uut = new alu_4bit(a, b, op, result...);
-    alu_4bit uut (
+    //    Think of this as: alu_4bit dut = new alu_4bit(a, b, op, result...);
+    alu_4bit dut (
         .a(a), .b(b), .op(op),         // Inputs
         .result(result), .zero(zero), .carry(carry) // Outputs
     );
@@ -163,10 +163,10 @@ endmodule
 ```mermaid
 sequenceDiagram
   participant TB as Testbench
-  participant UUT as ALU (Your Design)
-  TB->>UUT: Set inputs a=5, b=3, op=0
-  Note over TB,UUT: Wait for a short time (#10)
-  UUT->>TB: Produces 'result' and 'flags'
+  participant DUT as ALU (Your Design)
+  TB->>DUT: Set inputs a=5, b=3, op=0
+  Note over TB,DUT: Wait for a short time (#10)
+  DUT->>TB: Produces 'result' and 'flags'
   TB->>TB: Check if 'result' is 8
   TB->>TB: $finish (end simulation)
 ```

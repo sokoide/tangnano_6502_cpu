@@ -9,7 +9,7 @@ module tb_alu_4bit;
     logic zero, carry;
 
     // Instantiation of the unit under test
-    alu_4bit uut (
+    alu_4bit dut (
         .a(a),
         .b(b),
         .op(op),
