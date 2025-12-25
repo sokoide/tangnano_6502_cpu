@@ -73,8 +73,8 @@ Each day is split into two folders. Use them as follows:
 
 1. Read `dayXX/README.md`.
 2. Edit `.sv` files in `dayXX/`.
-3. Run `make test` to verify logic (Simulation).
-4. Run `make download` to program the FPGA (Hardware).
+3. Run `make test` to verify logic (Simulation). **Think of this as running your unit tests.**
+4. Run `make download` to program the FPGA (Hardware). **Think of this as deploying to production.**
 
 ## 📘 Resources for Software Engineers
 
@@ -88,7 +88,7 @@ Moving from software to hardware requires a shift in mindset. We have prepared g
 ## 📘 Other Links
 
 - **[Required Software](./docs/PREREQS.md)**: Install them first
-- **[Full Instruction Set List](./day99_completed/docs/INSTRUCTIONS.md)**: 6522 Instruction Set List.
+- **[Full Instruction Set List](./day99_completed/docs/INSTRUCTIONS.md)**: 6502 Instruction Set List.
 
 ## 📅 Curriculum Roadmap
 
@@ -149,6 +149,9 @@ Complex addressing modes and hardware-native custom instructions.
 ## 🛠️ What You'll Need
 
 - **Hardware**: Sipeed Tang Nano 9K / 20K and 480x272 LCD panel.
-- **Software**: GOWIN EDA, verilator, GTKwave.
+- **Software**:
+  - **GOWIN EDA**: The IDE and toolchain for synthesizing code for the FPGA (like GCC/Clang but for hardware).
+  - **Verilator**: A fast SystemVerilog simulator used for running "unit tests" on your PC.
+  - **GTKwave**: A waveform viewer to visualize signals over time (your "debugger" for logic).
 
 Check [Day 01](./day01/README.md) to get started!

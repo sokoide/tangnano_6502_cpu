@@ -47,7 +47,13 @@ Before proceeding, make sure you understand:
 
 ## 💡 Why Relative Addressing?
 
-Branch instructions use relative offsets rather than absolute addresses. This makes the code **position-independent**, meaning it can work correctly no matter where it's loaded in memory without being recompiled.
+Branch instructions use relative offsets rather than absolute addresses.
+
+**Analogy:**
+*   **Absolute Addressing** is like a GPS coordinate: "Go to Latitude 35.6895, Longitude 139.6917."
+*   **Relative Addressing** is like walking directions: "Go forward 3 steps" or "Go back 5 steps."
+
+This makes the code **position-independent**, meaning it can work correctly no matter where it's loaded in memory without being recompiled.
 
 ## 🧪 Verification
 

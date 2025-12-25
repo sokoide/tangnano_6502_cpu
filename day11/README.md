@@ -21,7 +21,13 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 - **Address Range**: `$0000` to `$00FF`.
 - **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
-- **Role**: Functionally acts like "extra registers" or high-speed variables for your programs.
+
+**Analogy:**
+Think of Zero Page as the **"VIP Section"** or **"L1 Cache"** of memory.
+*   **Normal Memory (Absolute)**: Requires a full street address (16-bit) to find. "1234 Main St."
+*   **Zero Page**: Only requires a nickname (8-bit) because it's right in the neighborhood. "Bob's House."
+
+It is functionally used like "extra registers" or high-speed variables for your programs.
 
 ## 🏗️ Instructions to Implement
 

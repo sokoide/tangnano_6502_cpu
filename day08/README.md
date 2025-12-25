@@ -30,10 +30,13 @@ Before proceeding, make sure you understand:
 
 The 6502 flags are updated automatically by many instructions. We focus on the four primary arithmetic flags:
 
-- **N (Negative)**: Set to 1 if bit 7 of the result is 1 (negative number).
-- **V (Overflow)**: Set to 1 if a signed arithmetic result exceeds ±127.
-- **Z (Zero)**: Set to 1 if the result is 0.
-- **C (Carry)**: Set to 1 if addition overflows or subtraction does NOT borrow.
+**Analogy:**
+Think of these as the **"return status"** of a function call. After you run `ADC` (Add), the CPU implicitly returns these booleans to tell you *how* it went.
+
+- **N (Negative)**: "Result is negative?" (Bit 7 is 1)
+- **V (Overflow)**: "Did signed math break?" (Result exceeded ±127)
+- **Z (Zero)**: "Is the result zero?" (Result is 0)
+- **C (Carry)**: "Did unsigned math overflow?" (Result > 255)
 
 ## 🏗️ Instructions to Implement
 

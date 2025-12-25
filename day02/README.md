@@ -109,42 +109,46 @@ endmodule
 
 ## 🧪 What is a Testbench? (Your First "Unit Test" in Hardware)
 
-If you're a software engineer, think of a **testbench** as a **unit test for your hardware module**.
+If you're a software engineer, think of a **testbench** as a **unit test file** (like `test_alu.cpp` or `alu_test.py`).
 
-It's a separate SystemVerilog file that exists **only for simulation**. Its job is to "wrap around" your design, feed it inputs, and check if the outputs are correct. This code is **never synthesized** into an actual FPGA circuit.
+It's a separate SystemVerilog file that exists **only for simulation**. Its job is to "mock" the environment around your circuit, feed it inputs, and check if the outputs match your expectations. This code is **never synthesized** into an actual FPGA circuit.
 
 A testbench typically does three things:
 
-1. **Instantiate the DUT**: "DUT" stands for "Design Under Test". In your testbench, you create an instance of the module you want to test (e.g., `alu_4bit`).
-2. **Provide Stimulus**: You drive the input ports of your DUT with various values to simulate different scenarios (e.g., `a = 5; b = 3;`). The `#10` is a **simulation-only delay** to give the circuit time to react to the new inputs.
-3. **Check Results**: You use `assert` or `$display` to verify that the DUT's output ports produce the expected values. If an `assert` fails, the simulation stops and reports an error.
+1.  **Instantiate the DUT (Design Under Test)**:
+    Think of this as creating an instance of your class: `ALU uut = new ALU();`
+2.  **Provide Stimulus**:
+    You drive the input ports with specific values. Think of this as calling functions with arguments: `uut.add(5, 3);`
+    *   **Crucial difference**: You often need to wait for time to pass (`#10;`) because hardware signals take time to propagate, unlike instantaneous function calls.
+3.  **Check Results**:
+    Use `assert` to verify outputs. This is exactly like `assert(result == 8);` in C++ or Python.
 
 ```systemverilog
 // This is a testbench module, not for synthesis!
 module tb_alu_4bit;
 
-    // 1. Create signals to connect to the DUT
+    // 1. Signals to connect to the DUT (like variables to hold return values)
     logic [3:0] a, b;
     logic [1:0] op;
     logic [3:0] result;
     logic zero, carry;
 
     // 2. Instantiate the Design Under Test (DUT)
-    //    Think of this as: alu_4bit uut = new alu_4bit();
+    //    Think of this as: alu_4bit uut = new alu_4bit(a, b, op, result...);
     alu_4bit uut (
-        .a(a), .b(b), .op(op),         // Provide inputs
-        .result(result), .zero(zero), .carry(carry) // Observe outputs
+        .a(a), .b(b), .op(op),         // Inputs
+        .result(result), .zero(zero), .carry(carry) // Outputs
     );
 
-    // 3. Provide stimulus and check results
+    // 3. Test Scenario
     initial begin
         // Test case 1: 5 + 3 = 8
         a = 4'd5;
         b = 4'd3;
         op = 2'b00;
-        #10; // Wait for the combinational logic to settle
+        #10; // Wait 10 time units for the circuit to stabilize
 
-        // Check the result. If not correct, show an error.
+        // Verify
         assert (result == 4'd8) else $error("Test failed: 5+3 != 8");
 
         // TODO: Add more test cases here...

@@ -68,12 +68,17 @@ For software engineers, the relationship between Assembly and Machine Code might
 The code we write is called **Assembly Language**, which uses human-readable **Mnemonics**.
 However, the CPU cannot understand this directly. It only understands **Machine Code**, which is just a sequence of numbers.
 
+**Analogy:**
+*   **Assembly** is like your C++ or Python source code. It's for humans.
+*   **Machine Code** is like the compiled `.exe` or `.pyc` bytecode. It's for the machine.
+*   **Assembler** is the compiler that translates one to the other.
+
 | Language         | Example    | Description                                      |
 | :--------------- | :--------- | :----------------------------------------------- |
 | **Assembly**     | `LDA #$A9` | For humans. Means "Load value into Accumulator". |
 | **Machine Code** | `A9 42`    | For CPU. A sequence of hex bytes.                |
 
-An **Assembler** usually performs this conversion, but in this course, we will write machine code by hand (hand-assembly).
+In this course, we will write machine code by hand (hand-assembly) to truly understand what the CPU sees.
 
 ### 2. Instruction Length (1-byte vs 2-byte)
 

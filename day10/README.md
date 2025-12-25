@@ -22,6 +22,7 @@ Before proceeding, make sure you understand:
 ## 🎯 Learning Objectives
 
 - **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
+    - **Analogy**: Think of a stack of plates in a cafeteria. You can only add a plate to the top (Push) or take one off the top (Pop/Pull). Or think of your **Browser Back Button history** (Last visited page is the first one you go back to).
 - **Stack Pointer (S)**: Implement an 8-bit register to manage memory page 1 ($0100-$01FF).
 - **RAM Writing**: Implement the first CPU-to-memory write logic.
 - **Subroutine Instructions**: Master the behavior of `JSR`, `RTS`, `PHA`, and `PLA`.

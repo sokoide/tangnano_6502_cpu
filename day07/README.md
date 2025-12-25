@@ -56,7 +56,13 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 
 ## 💡 The Role of Index Registers
 
-The X and Y registers shine when implementing **indexed addressing modes** (e.g., `LDA $1234,X`). This allows the CPU to efficiently read data from tables or arrays in memory.
+The X and Y registers shine when implementing **indexed addressing modes** (e.g., `LDA $1234,X`).
+
+**Analogy:**
+Think of them as `i` in a `for` loop or an array index.
+*   `LDA $1234,X` is equivalent to `A = memory[0x1234 + X]` or `A = array[i]`.
+
+This allows the CPU to efficiently read data from tables or arrays in memory.
 
 ## 🧪 Verification
 

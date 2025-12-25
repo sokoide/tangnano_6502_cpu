@@ -61,14 +61,18 @@ In this project, we deal with **two different time zones** (Clock Domains):
 1. **LCD Domain (9MHz):** The pixel pipeline must run exactly at 9MHz to satisfy the physical LCD panel timing.
 2. **CPU Domain (System Clock):** The logic runs at the main system clock (27MHz, or slower for debugging).
 
-**The Challenge:** What happens if the CPU tries to write to VRAM at the exact same nanosecond the LCD controller tries to read from it? In standard single-port RAM, this would cause a collision.
+**Analogy for Software Engineers:**
+Imagine two drummers playing at different tempos.
+*   **LCD Drummer (9MHz):** Very strict tempo. If they miss a beat, the screen flickers.
+*   **CPU Drummer (System Clock):** Can play fast or slow (variable tempo for debugging).
+
+**The Challenge:** What happens if the CPU drummer tries to hand a note (data) to the LCD drummer exactly when the LCD drummer is busy hitting a cymbal? In standard memory (single-port), they would crash into each other (timing violation/metastability).
 
 **The Solution: Dual Port Memory (SDPB)**
-The "SDPB" memory block we use has two independent sets of address and data lines.
-
-- **Port A (Write-Only):** Connected to the CPU clock.
-- **Port B (Read-Only):** Connected to the LCD clock.
-The FPGA hardware inside the BSRAM block handles the arbitration, allowing us to simply "write whenever" and "read whenever" without complex synchronization logic. This is a huge advantage of FPGAs over shared-memory systems in software!
+The "SDPB" memory block acts like a **mailbox with two doors**.
+*   **Door A (CPU side):** The CPU puts mail in whenever it wants.
+*   **Door B (LCD side):** The LCD takes mail out whenever it wants.
+The hardware handles the "magic" of ensuring they don't collide, allowing us to simply "write whenever" and "read whenever" without complex synchronization locks (mutexes). This is a huge advantage of FPGAs!
 
 ## 🏗️ Architecture
 

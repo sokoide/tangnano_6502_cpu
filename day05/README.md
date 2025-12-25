@@ -48,11 +48,13 @@ graph LR
 
 The **Program Counter (PC)** is a register that allows the CPU to remember **"where in memory to read next"**.
 
-- The CPU sends the address held by the PC to memory.
-- The memory returns the data (instruction) located at that address.
-- Typically, the PC increments by one after every instruction fetching step.
+**Analogy:**
+Think of the PC as a **bookmark** in a book, or the **Instruction Pointer (IP)** if you've done assembly debugging.
+1.  Read the instruction at the bookmark's location.
+2.  Do what it says.
+3.  Move the bookmark to the next line.
 
-In Day 05, we aren't reading from memory yet, but we will implement this basic "PC incrementing" behavior and verify it visually.
+In Day 05, we aren't reading from memory yet, but we will implement this basic "move the bookmark forward" behavior and verify it visually.
 
 ## 💡 Why start here?
 
