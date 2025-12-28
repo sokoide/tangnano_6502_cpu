@@ -11,9 +11,10 @@ Today, we implement the most complex and powerful addressing modes of the 6502: 
 
 **Analogy:**
 Think of this as a **"Scavenger Hunt"** or **"Pointer to a Pointer"** in C (`**ptr`).
-1.  **Immediate**: "The treasure is here."
-2.  **Absolute**: "The treasure is at 123 Main St."
-3.  **Indirect**: "Go to 123 Main St. There you will find a note with the address of the treasure."
+
+1. **Immediate**: "The treasure is here."
+2. **Absolute**: "The treasure is at 123 Main St."
+3. **Indirect**: "Go to 123 Main St. There you will find a note with the address of the treasure."
 
 This is the hardware implementation of "pointers" in languages like C, and it is essential for operating systems and sophisticated applications.
 

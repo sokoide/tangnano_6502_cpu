@@ -63,15 +63,15 @@ In this project, we deal with **two different time zones** (Clock Domains):
 
 **Analogy for Software Engineers:**
 Imagine two drummers playing at different tempos.
-*   **LCD Drummer (9MHz):** Very strict tempo. If they miss a beat, the screen flickers.
-*   **CPU Drummer (System Clock):** Can play fast or slow (variable tempo for debugging).
+- **LCD Drummer (9MHz):** Very strict tempo. If they miss a beat, the screen flickers.
+- **CPU Drummer (System Clock):** Can play fast or slow (variable tempo for debugging).
 
 **The Challenge:** What happens if the CPU drummer tries to hand a note (data) to the LCD drummer exactly when the LCD drummer is busy hitting a cymbal? In standard memory (single-port), they would crash into each other (timing violation/metastability).
 
 **The Solution: Dual Port Memory (SDPB)**
 The "SDPB" memory block acts like a **mailbox with two doors**.
-*   **Door A (CPU side):** The CPU puts mail in whenever it wants.
-*   **Door B (LCD side):** The LCD takes mail out whenever it wants.
+- **Door A (CPU side):** The CPU puts mail in whenever it wants.
+- **Door B (LCD side):** The LCD takes mail out whenever it wants.
 The hardware handles the "magic" of ensuring they don't collide, allowing us to simply "write whenever" and "read whenever" without complex synchronization locks (mutexes). This is a huge advantage of FPGAs!
 
 ## 🏗️ Architecture

@@ -3,7 +3,7 @@
 ---
 
 🌐 Available languages:
-[English](./README.md) | [日本語](./日本語/README_ja.md)
+[English](./README.md) | [日本語](./README_ja.md)
 
 ## 📜 概要
 

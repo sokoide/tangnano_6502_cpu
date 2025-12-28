@@ -115,12 +115,12 @@ It's a separate SystemVerilog file that exists **only for simulation**. Its job 
 
 A testbench typically does three things:
 
-1.  **Instantiate the DUT (Design Under Test)**:
+1. **Instantiate the DUT (Design Under Test)**:
     Think of this as creating an instance of your class: `ALU dut = new ALU();`
-2.  **Provide Stimulus**:
+2. **Provide Stimulus**:
     You drive the input ports with specific values. Think of this as calling functions with arguments: `dut.add(5, 3);`
-    *   **Crucial difference**: You often need to wait for time to pass (`#10;`) because hardware signals take time to propagate, unlike instantaneous function calls.
-3.  **Check Results**:
+    - **Crucial difference**: You often need to wait for time to pass (`#10;`) because hardware signals take time to propagate, unlike instantaneous function calls.
+3. **Check Results**:
     Use `assert` to verify outputs. This is exactly like `assert(result == 8);` in C++ or Python.
 
 ```systemverilog

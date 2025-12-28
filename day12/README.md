@@ -26,9 +26,9 @@ The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, 
 
 **Analogy:**
 Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
-*   The "smallest" unit (Day) comes first.
-*   The "biggest" unit (Year) comes last.
-*   Big-Endian would be "Year-Month-Day" (2025-12-25).
+- The "smallest" unit (Day) comes first.
+- The "biggest" unit (Year) comes last.
+- Big-Endian would be "Year-Month-Day" (2025-12-25).
 
 ## 🏗️ Instructions to Implement
 

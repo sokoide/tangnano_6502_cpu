@@ -1,4 +1,4 @@
-# Day 11: Zero Page Addressing & RAM
+# Day 13: Logical Operations & BIT
 
 ---
 
@@ -7,54 +7,50 @@
 
 ## 📜 Overview
 
-So far, all our programs have used "Immediate (`#imm`)" or "Register-to-Register" operations. From today, we start working with **Memory** in earnest.
+In addition to arithmetic, bitwise manipulation is a core responsibility of a CPU. Today, we implement **Logical Operations (AND, ORA, EOR)** and the **BIT** instruction for checking bit states.
 
-Our first step is implementing a key 6502 feature: **Zero Page Addressing**. This mode allows the CPU to quickly read/write to the first 256 bytes of memory (`$0000` to `$00FF`), making it perfect for storing variables.
+These instructions enable "masking," "toggling," and "testing" specific bits—operations that are essential for low-level hardware control.
 
 ## 🎯 Learning Objectives
 
-- **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).
-- **RAM Control**: Implement a memory region where data can be read and written during execution.
-- **Load/Store**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
-
-## 🏗️ What is Zero Page?
-
-- **Address Range**: `$0000` to `$00FF`.
-- **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
-- **Role**: Functionally acts like "extra registers" or high-speed variables for your programs.
+- **Bitwise Logic Implementation**: Hardware implementation of AND, OR, and XOR.
+- **Flag Updates**: Verify how N and Z flags are updated after logical operations.
+- **The BIT Instruction**: Understand how to test flags without modifying the Accumulator.
 
 ## 🏗️ Instructions to Implement
 
-| Opcode | Mnemonic | Description                   | Cycles |
-| :----: | -------- | ----------------------------- | :----: |
-| `0xA5` | `LDA zp` | Load A from Zero Page address |   3    |
-| `0x85` | `STA zp` | Store A to Zero Page address  |   3    |
-| `0xA6` | `LDX zp` | Load X from Zero Page address |   3    |
-| `0x86` | `STX zp` | Store X to Zero Page address  |   3    |
+| Opcode | Mnemonic   | Description                   | Cycles |
+| :----: | ---------- | ----------------------------- | :----: |
+| `0x29` | `AND #imm` | A = A & Operand               |   2    |
+| `0x09` | `ORA #imm` | A = A \| Operand              |   2    |
+| `0x49` | `EOR #imm` | A = A ^ Operand               |   2    |
+| `0x24` | `BIT zp`   | Test bits in memory against A |   3    |
+
+_Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to the V flag, which is unique._
 
 ## 🛠️ Implementation Steps
 
-1. **Define RAM Region**:
-    - Verify your memory map so that writes to `$0000-$00FF` are handled by physical RAM (e.g., Block RAM inside the FPGA).
-2. **Add Addressing States**:
-    - Fetch the second byte (lower 8 bits of the address).
-    - Access memory by setting the upper 8 bits to `$00`.
-3. **Read/Write Timing**:
-    - For `STA`, ensure `write_en` is pulsed at the correct clock edge while valid data is on the bus.
+1. **Extend the ALU**:
+    - Add `&` (AND), `|` (OR), and `^` (XOR) logic to your `always_comb` block.
+2. **Flag Update Logic**:
+    - Update `Z = (result == 0)` and `N = result[7]` for logical results.
+3. **Decode BIT Instruction**:
+    - `BIT` updates the Z flag based on `A & Memory`, but **does not change** the value of A.
+    - Implement the transfer logic for flags: `N = Memory[7]` and `V = Memory[6]`.
 
 ## 🧪 Verification
 
 - **Test Program**:
 
     ```asm
-    LDA #$42
-    STA $10    ; Store 0x42 at address $0010
-    LDA #$00   ; Clear A
-    LDA $10    ; Load from $0010 (A should become 0x42 again)
+    LDA #$FF
+    AND #$0F   ; A = $0F, Z=0, N=0
+    ORA #$80   ; A = $8F, Z=0, N=1
+    EOR #$8F   ; A = $00, Z=1, N=0
     ```
 
-- **FPGA**: Confirm on the LCD that A is restored correctly after the load operation.
+- **FPGA**: Confirm on the LCD that the Accumulator and N/Z flags change correctly as each operation completes.
 
 ## 🎯 Next Step
 
-In Day 12, we will implement **Absolute Addressing**, allowing the CPU to reach any address in the full 64KB range ($0000 - $FFFF).
+In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.
