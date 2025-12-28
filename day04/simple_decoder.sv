@@ -41,10 +41,10 @@ module simple_decoder (
         case (opcode)
             // 実装例: LDA (Immediate)
             8'hA9: is_load = 1'b1;
-            
+
             // 演習: ここに他の命令を追加してください
-            
-            default: is_nop = 1'b1; // 未知のオペコードは NOP として扱う
+
+            default: is_nop = 1'b1;  // 未知のオペコードは NOP として扱う
         endcase
     end
 

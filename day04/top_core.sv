@@ -6,9 +6,9 @@
 // 3. 命令デコーダによる命令の分類
 
 module top_core (
-    input  logic       rst_n,
-    input  logic       XTAL_IN,
-    input  logic [3:0] switches,
+    input logic       rst_n,
+    input logic       XTAL_IN,
+    input logic [3:0] switches,
 
     // LCD Signals
     output logic       LCD_CLK,
@@ -81,14 +81,38 @@ module top_core (
                 test_state   <= test_state + 1;
 
                 case (test_state)
-                    3'b000: begin a_write <= 1'b1; test_data <= 8'h55; test_opcode <= 8'hA9; end // LDA
-                    3'b001: begin x_write <= 1'b1; test_data <= 8'hAA; test_opcode <= 8'hA2; end // LDX
-                    3'b010: begin y_write <= 1'b1; test_data <= 8'h33; test_opcode <= 8'hA0; end // LDY
-                    3'b011: begin pc_write <= 1'b1; test_addr <= 16'h1234; test_opcode <= 8'h4C; end // JMP
-                    3'b100: begin test_opcode <= 8'h85; end // STA
-                    3'b101: begin test_opcode <= 8'h69; end // ADC
-                    3'b110: begin test_opcode <= 8'h10; end // BPL
-                    3'b111: begin test_opcode <= 8'hEA; end // NOP
+                    3'b000: begin
+                        a_write <= 1'b1;
+                        test_data <= 8'h55;
+                        test_opcode <= 8'hA9;
+                    end  // LDA
+                    3'b001: begin
+                        x_write <= 1'b1;
+                        test_data <= 8'hAA;
+                        test_opcode <= 8'hA2;
+                    end  // LDX
+                    3'b010: begin
+                        y_write <= 1'b1;
+                        test_data <= 8'h33;
+                        test_opcode <= 8'hA0;
+                    end  // LDY
+                    3'b011: begin
+                        pc_write <= 1'b1;
+                        test_addr <= 16'h1234;
+                        test_opcode <= 8'h4C;
+                    end  // JMP
+                    3'b100: begin
+                        test_opcode <= 8'h85;
+                    end  // STA
+                    3'b101: begin
+                        test_opcode <= 8'h69;
+                    end  // ADC
+                    3'b110: begin
+                        test_opcode <= 8'h10;
+                    end  // BPL
+                    3'b111: begin
+                        test_opcode <= 8'hEA;
+                    end  // NOP
                 endcase
             end
 

@@ -7,9 +7,17 @@
 
 ## 📜 Overview
 
-Today, we add the final piece of the architectural puzzle: **"State"**. Unlike combinational circuits which change "instantly", sequential circuits use a **Clock** to determine when to update, and a **Reset** to determine where to start.
+Up until Day 02, we learned about arithmetic logic using combinational circuits. However, for a CPU to execute programs, it needs to "remember" values and transition through "states" over time.
 
-Today's goal is to implement a **Traffic Light Controller** as a practical introduction to **Finite State Machines (FSM)**.
+Today's goal is to master the basics of **sequential circuits**, which operate in synchronization with a clock signal.
+
+## 🔙 Review: Day 02
+
+Before proceeding, make sure you understand:
+
+- **ALU (Arithmetic Logic Unit)**: The calculation core of the CPU that performs addition, subtraction, and logic operations
+- **`always_comb`**: The block used for describing combinational logic
+- **Unit Testing**: How to verify circuit behavior in simulation using testbenches
 
 ## 🎯 Learning Objectives
 
@@ -22,9 +30,9 @@ Today's goal is to implement a **Traffic Light Controller** as a practical intro
 
 A state machine cycles through defined states (Red, Green, Yellow) based on a timer. In this project, we follow the **Two-Block FSM style** (or Three-Block) which is a standard industry practice for clarity and reliability.
 
-1.  **Sequential Block (`always_ff`)**: Updates the `current_state` on the clock edge.
-2.  **Combinational Block (`always_comb`)**: Determines the `next_state` based on inputs and `current_state`.
-3.  **Output Block (`assign` or `always_comb`)**: Drives outputs based on the `current_state`.
+1. **Sequential Block (`always_ff`)**: Updates the `current_state` on the clock edge.
+2. **Combinational Block (`always_comb`)**: Determines the `next_state` based on inputs and `current_state`.
+3. **Output Block (`assign` or `always_comb`)**: Drives outputs based on the `current_state`.
 
 ```mermaid
 stateDiagram-v2
@@ -45,7 +53,7 @@ stateDiagram-v2
     - Implement the `always_ff` block to update the `current_state`.
     - Implement the `always_comb` block to calculate the `next_state`.
 4. **Peripheral Integration**:
-    - Connect the state outputs to the physical LEDs. 
+    - Connect the state outputs to the physical LEDs.
     - **Note for Tang Nano 9K**: LEDs are **Active Low** (0 = ON). You might need to invert the signals in your board wrapper.
 
 ## 🧪 Simulation with Parameters
@@ -68,6 +76,7 @@ In hardware, the clock is your **heartbeat**. Every `posedge clk`, all registers
 
 **Analogy for Software Engineers:**
 Think of the clock like the **frame update loop (tick)** in a game engine or the **event loop** in JavaScript.
+
 - **Combinational Logic** is like the code inside `update()`: it calculates the new state based on the current state.
 - **Clock Edge** is the moment the frame actually renders and the new state is saved for the next frame.
 

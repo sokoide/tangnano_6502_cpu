@@ -41,24 +41,18 @@ module traffic_light #(
     always_comb begin
         case (current_state)
             RED_STATE: begin
-                if (timer >= TIMER_LIMIT_RED)
-                    next_state = GREEN_STATE;
-                else
-                    next_state = RED_STATE;
+                if (timer >= TIMER_LIMIT_RED) next_state = GREEN_STATE;
+                else next_state = RED_STATE;
             end
 
             GREEN_STATE: begin
-                if (timer >= TIMER_LIMIT_GREEN)
-                    next_state = YELLOW_STATE;
-                else
-                    next_state = GREEN_STATE;
+                if (timer >= TIMER_LIMIT_GREEN) next_state = YELLOW_STATE;
+                else next_state = GREEN_STATE;
             end
 
             YELLOW_STATE: begin
-                if (timer >= TIMER_LIMIT_YELLOW)
-                    next_state = RED_STATE;
-                else
-                    next_state = YELLOW_STATE;
+                if (timer >= TIMER_LIMIT_YELLOW) next_state = RED_STATE;
+                else next_state = YELLOW_STATE;
             end
 
             default: begin

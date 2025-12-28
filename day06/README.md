@@ -69,6 +69,7 @@ The code we write is called **Assembly Language**, which uses human-readable **M
 However, the CPU cannot understand this directly. It only understands **Machine Code**, which is just a sequence of numbers.
 
 **Analogy:**
+
 - **Assembly** is like your C++ or Python source code. It's for humans.
 - **Machine Code** is like the compiled `.exe` or `.pyc` bytecode. It's for the machine.
 - **Assembler** is the compiler that translates one to the other.

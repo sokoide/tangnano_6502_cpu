@@ -3,11 +3,11 @@
 // 演算結果に基づいてプロセッサのステータスフラグ (N, Z, C, V) を計算します。
 
 module flag_calculator (
-    input logic [7:0] result,      // Result of operation / 演算結果
+    input logic [7:0] result,  // Result of operation / 演算結果
     input logic [7:0] operand_a,   // First operand (usually Accumulator) / 第1オペランド (通常はアキュムレータ)
     input logic [7:0] operand_b,   // Second operand (usually from Memory) / 第2オペランド (通常はメモリ)
-    input logic       operation,   // 0:ADD (ADC), 1:SUB (SBC)
-    input logic       carry_in,    // Incoming carry flag / 入力キャリーフラグ
+    input logic operation,  // 0:ADD (ADC), 1:SUB (SBC)
+    input logic carry_in,  // Incoming carry flag / 入力キャリーフラグ
 
     output logic flag_n,  // Negative / ネガティブ (負)
     output logic flag_z,  // Zero / ゼロ

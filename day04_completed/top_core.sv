@@ -11,9 +11,9 @@
 // 3. 命令デコーダによるオペコードの分類と制御信号の生成
 
 module top_core (
-    input  logic       rst_n,    // Active-low reset / 非アクティブ低レベル・リセット
-    input  logic       XTAL_IN,  // 27MHz Main Clock / 27MHz メインクロック入力
-    input  logic [3:0] switches, // Debug switches / デバッグ用スイッチ
+    input logic       rst_n,    // Active-low reset / 非アクティブ低レベル・リセット
+    input logic       XTAL_IN,  // 27MHz Main Clock / 27MHz メインクロック入力
+    input logic [3:0] switches, // Debug switches / デバッグ用スイッチ
 
     // LCD Signals / LCDインターフェース信号
     output logic       LCD_CLK,
@@ -23,10 +23,10 @@ module top_core (
     output logic [4:0] LCD_B,
 
     // Debug LEDs (Instruction categories) / デバッグ用LED (命令カテゴリ表示)
-    output logic led_load,       // Lit if LDA/LDX/LDY / LDA/LDX/LDYの時に点灯
-    output logic led_store,      // Lit if STA/STX/STY / STA/STX/STYの時に点灯
-    output logic led_arithmetic, // Lit if ADC/SBC etc. / ADC/SBC等の算術演算時に点灯
-    output logic led_branch      // Lit if BNE/BEQ etc. / BNE/BEQ等の分岐命令時に点灯
+    output logic led_load,        // Lit if LDA/LDX/LDY / LDA/LDX/LDYの時に点灯
+    output logic led_store,       // Lit if STA/STX/STY / STA/STX/STYの時に点灯
+    output logic led_arithmetic,  // Lit if ADC/SBC etc. / ADC/SBC等の算術演算時に点灯
+    output logic led_branch       // Lit if BNE/BEQ etc. / BNE/BEQ等の分岐命令時に点灯
 );
 
     // -------------------------------------------------------------------------
@@ -65,12 +65,12 @@ module top_core (
     cpu_registers registers (
         .clk(LCD_CLK),
         .rst_n(rst_n),
-        .a_write(a_write),    // Enable write to A / Aレジスタへの書き込み有効
-        .x_write(x_write),    // Enable write to X / Xレジスタへの書き込み有効
-        .y_write(y_write),    // Enable write to Y / Yレジスタへの書き込み有効
+        .a_write(a_write),  // Enable write to A / Aレジスタへの書き込み有効
+        .x_write(x_write),  // Enable write to X / Xレジスタへの書き込み有効
+        .y_write(y_write),  // Enable write to Y / Yレジスタへの書き込み有効
         .sp_write(sp_write),  // Enable write to SP / SPへの書き込み有効
         .pc_write(pc_write),  // Enable write to PC / PCへの書き込み有効
-        .p_write(p_write),    // Enable write to P / Pレジスタへの書き込み有効
+        .p_write(p_write),  // Enable write to P / Pレジスタへの書き込み有効
         .data_in(test_data),  // 8-bit data input / 8ビットデータ入力
         .addr_in(test_addr),  // 16-bit address input (for PC) / 16ビットアドレス入力(PC用)
         .reg_a(reg_a),
@@ -93,13 +93,13 @@ module top_core (
     // 識別していることを視覚的に確認できます。
     simple_decoder decoder (
         .opcode       (test_opcode),
-        .is_load      (led_load),       // LDA, LDX, LDY
-        .is_store     (led_store),      // STA, STX, STY
+        .is_load      (led_load),        // LDA, LDX, LDY
+        .is_store     (led_store),       // STA, STX, STY
         .is_transfer  (),
-        .is_arithmetic(led_arithmetic), // ADC, SBC
+        .is_arithmetic(led_arithmetic),  // ADC, SBC
         .is_logical   (),
         .is_shift     (),
-        .is_branch    (led_branch),     // BPL, BMI, BNE, BEQ, etc.
+        .is_branch    (led_branch),      // BPL, BMI, BNE, BEQ, etc.
         .is_jump      (),
         .is_compare   (),
         .is_flag      (),
@@ -116,14 +116,14 @@ module top_core (
     // Day 04では、存在確認とインスタンス化のみを行います。
     logic [7:0] dummy_res;
     logic dummy_c_in, dummy_c_out, dummy_v_out, dummy_z_out, dummy_n_out;
-    assign dummy_res = test_data;
+    assign dummy_res  = test_data;
     assign dummy_c_in = 1'b0;
 
     flag_calculator u_flags (
         .result(dummy_res),
         .operand_a(reg_a),
         .operand_b(test_data),
-        .operation(1'b0), // ADC
+        .operation(1'b0),  // ADC
         .carry_in(dummy_c_in),
         .flag_n(dummy_n_out),
         .flag_z(dummy_z_out),
@@ -149,7 +149,7 @@ module top_core (
             test_counter <= 25'b0;
             test_state <= 3'b000;
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b0;
-            test_opcode <= 8'hEA; // NOP (No Operation)
+            test_opcode <= 8'hEA;  // NOP (No Operation)
         end else begin
             test_counter <= test_counter + 1;
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
@@ -162,21 +162,45 @@ module top_core (
 
                 case (test_state)
                     // Write 0x55 to A (LDA Immediate)
-                    3'b000: begin a_write <= 1'b1; test_data <= 8'h55; test_opcode <= 8'hA9; end
+                    3'b000: begin
+                        a_write <= 1'b1;
+                        test_data <= 8'h55;
+                        test_opcode <= 8'hA9;
+                    end
                     // Write 0xAA to X (LDX Immediate)
-                    3'b001: begin x_write <= 1'b1; test_data <= 8'hAA; test_opcode <= 8'hA2; end
+                    3'b001: begin
+                        x_write <= 1'b1;
+                        test_data <= 8'hAA;
+                        test_opcode <= 8'hA2;
+                    end
                     // Write 0x33 to Y (LDY Immediate)
-                    3'b010: begin y_write <= 1'b1; test_data <= 8'h33; test_opcode <= 8'hA0; end
+                    3'b010: begin
+                        y_write <= 1'b1;
+                        test_data <= 8'h33;
+                        test_opcode <= 8'hA0;
+                    end
                     // Jump to 0x1234 (JMP Absolute)
-                    3'b011: begin pc_write <= 1'b1; test_addr <= 16'h1234; test_opcode <= 8'h4C; end
+                    3'b011: begin
+                        pc_write <= 1'b1;
+                        test_addr <= 16'h1234;
+                        test_opcode <= 8'h4C;
+                    end
                     // STA (Store A) - Lit LED Store
-                    3'b100: begin test_opcode <= 8'h85; end
+                    3'b100: begin
+                        test_opcode <= 8'h85;
+                    end
                     // ADC (Add with Carry) - Lit LED Arithmetic
-                    3'b101: begin test_opcode <= 8'h69; end
+                    3'b101: begin
+                        test_opcode <= 8'h69;
+                    end
                     // BPL (Branch on Plus) - Lit LED Branch
-                    3'b110: begin test_opcode <= 8'h10; end
+                    3'b110: begin
+                        test_opcode <= 8'h10;
+                    end
                     // NOP (No Operation)
-                    3'b111: begin test_opcode <= 8'hEA; end
+                    3'b111: begin
+                        test_opcode <= 8'hEA;
+                    end
                 endcase
             end
 
@@ -185,14 +209,14 @@ module top_core (
             // switch[3]がONの場合、switch[2:0]に基づいてオペコードを強制指定します。
             if (switches[3]) begin
                 case (switches[2:0])
-                    3'b000: test_opcode <= 8'hA9; // LDA
-                    3'b001: test_opcode <= 8'h85; // STA
-                    3'b010: test_opcode <= 8'h69; // ADC
-                    3'b011: test_opcode <= 8'h10; // BPL
-                    3'b100: test_opcode <= 8'hAA; // TAX
-                    3'b101: test_opcode <= 8'h4C; // JMP
-                    3'b110: test_opcode <= 8'hC9; // CMP
-                    3'b111: test_opcode <= 8'hEA; // NOP
+                    3'b000: test_opcode <= 8'hA9;  // LDA
+                    3'b001: test_opcode <= 8'h85;  // STA
+                    3'b010: test_opcode <= 8'h69;  // ADC
+                    3'b011: test_opcode <= 8'h10;  // BPL
+                    3'b100: test_opcode <= 8'hAA;  // TAX
+                    3'b101: test_opcode <= 8'h4C;  // JMP
+                    3'b110: test_opcode <= 8'hC9;  // CMP
+                    3'b111: test_opcode <= 8'hEA;  // NOP
                 endcase
             end
         end

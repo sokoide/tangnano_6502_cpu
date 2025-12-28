@@ -157,6 +157,7 @@ make BOARD=9k download   # または BOARD=20k
 > **コラム: CLI での開発（上級者向け）**
 > GUI よりもターミナルでの操作を好む方のために、`day01_completed` には `Makefile` が用意されています。
 > 以下のコマンドでビルドと書き込みが可能です。`gw_sh` と `programmer_cli` へのパスが通っていることを確認してください。
+>
 > ```bash
 > # パスが通っていない場合は環境変数で指定
 > export GWSH=/path/to/Gowin_EDA/IDE/bin/gw_sh

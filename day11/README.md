@@ -24,6 +24,7 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 **Analogy:**
 Think of Zero Page as the **"VIP Section"** or **"L1 Cache"** of memory.
+
 - **Normal Memory (Absolute)**: Requires a full street address (16-bit) to find. "1234 Main St."
 - **Zero Page**: Only requires a nickname (8-bit) because it's right in the neighborhood. "Bob's House."
 

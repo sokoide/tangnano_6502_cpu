@@ -5,11 +5,11 @@
 
 module counter_8bit (
 
-    input  logic clk,
+    input logic clk,
 
-    input  logic rst_n,    // Active Low Reset
+    input logic rst_n,  // Active Low Reset
 
-    input  logic enable,   // Increment only when enable is high
+    input logic enable,  // Increment only when enable is high
 
     output logic [7:0] count,
 

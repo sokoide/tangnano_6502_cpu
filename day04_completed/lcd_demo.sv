@@ -32,7 +32,7 @@ module lcd_demo (
 
     logic [9:0] vram_addr;  // Text-VRAM address (60x17 layout) / テキストVRAMアドレス
     logic [7:0] vram_data;  // ASCII character code from VRAM / VRAMからのASCII文字コード
-    logic [11:0] font_addr; // Font ROM address / フォントROMアドレス
+    logic [11:0] font_addr;  // Font ROM address / フォントROMアドレス
     logic [7:0] font_data;  // 1-byte pixel pattern / 1バイトのピクセルパターン
     /* verilator lint_off UNUSEDSIGNAL */
     logic vsync;
@@ -125,30 +125,54 @@ module lcd_demo (
 
     function automatic logic [7:0] row0_char(input int i);
         unique case (i)
-            0: row0_char = "V"; 1: row0_char = "R"; 2: row0_char = "A"; 3: row0_char = "M";
-            4: row0_char = " "; 5: row0_char = "T"; 6: row0_char = "E"; 7: row0_char = "X";
-            8: row0_char = "T"; default: row0_char = " ";
+            0: row0_char = "V";
+            1: row0_char = "R";
+            2: row0_char = "A";
+            3: row0_char = "M";
+            4: row0_char = " ";
+            5: row0_char = "T";
+            6: row0_char = "E";
+            7: row0_char = "X";
+            8: row0_char = "T";
+            default: row0_char = " ";
         endcase
     endfunction
 
     function automatic logic [7:0] row1_char(input int i);
         unique case (i)
-            0: row1_char = "C"; 1: row1_char = "H"; 2: row1_char = "A"; 3: row1_char = "R";
-            4: row1_char = " "; 5: row1_char = "L"; 6: row1_char = "C"; 7: row1_char = "D";
+            0: row1_char = "C";
+            1: row1_char = "H";
+            2: row1_char = "A";
+            3: row1_char = "R";
+            4: row1_char = " ";
+            5: row1_char = "L";
+            6: row1_char = "C";
+            7: row1_char = "D";
             default: row1_char = " ";
         endcase
     endfunction
 
     function automatic logic [7:0] row2_char(input int i);
         unique case (i)
-            0: row2_char = "F"; 1: row2_char = "P"; 2: row2_char = "G"; 3: row2_char = "A";
-            4: row2_char = " "; 5: row2_char = "S"; 6: row2_char = "H"; 7: row2_char = "O";
-            8: row2_char = "W"; default: row2_char = " ";
+            0: row2_char = "F";
+            1: row2_char = "P";
+            2: row2_char = "G";
+            3: row2_char = "A";
+            4: row2_char = " ";
+            5: row2_char = "S";
+            6: row2_char = "H";
+            7: row2_char = "O";
+            8: row2_char = "W";
+            default: row2_char = " ";
         endcase
     endfunction
 
     typedef enum logic [2:0] {
-        S_CLEAR, S_ROW0, S_ROW1, S_ROW2, S_DONE
+        S_CLEAR,
+        S_ROW0,
+        S_ROW1,
+        S_ROW2,
+        S_DONE
     } init_state_t;
     init_state_t init_state;
     logic [9:0] init_addr;

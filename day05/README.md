@@ -11,6 +11,14 @@ It's time to start implementing the CPU! The goal of Day 05 is to implement the 
 
 We will connect the CPU's PC value to the LCD display circuit created in Day 04 to visually verify that the PC increments with every clock cycle. This is the "Hello World" of CPU design.
 
+## 🔙 Review: Day 04
+
+Before proceeding, make sure you understand:
+
+- **6502 Register Set**: The role and structure of A, X, Y, PC, SP, and P
+- **Flag Calculation**: How the N, Z, C, and V flags are derived from arithmetic results
+- **LCD Rendering**: The pipeline that displays characters read from VRAM
+
 ## 🎯 Learning Objectives
 
 - **Create CPU Module**: Create a basic `cpu.sv` file.

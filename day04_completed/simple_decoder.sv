@@ -6,21 +6,21 @@
 // これはCPU制御ユニット(Control Unit)を構築するための第一歩です。
 
 module simple_decoder (
-    input  logic [7:0] opcode,        // 8-bit Instruction Opcode / 8ビット命令オペコード
+    input logic [7:0] opcode,  // 8-bit Instruction Opcode / 8ビット命令オペコード
 
     // Category output flags / カテゴリ出力フラグ
-    output logic       is_load,       // LDA, LDX, LDY
-    output logic       is_store,      // STA, STX, STY
-    output logic       is_transfer,   // TAX, TAY, TSX, TXA, TXS, TYA
-    output logic       is_arithmetic, // ADC, SBC
-    output logic       is_logical,    // AND, ORA, EOR
-    output logic       is_shift,      // ASL, LSR, ROL, ROR
-    output logic       is_branch,     // BCC, BCS, BEQ, BMI, BNE, BPL, BVC, BVS
-    output logic       is_jump,       // JMP, JSR, RTS
-    output logic       is_compare,    // CMP, CPX, CPY
-    output logic       is_flag,       // CLC, SEC, CLI, SEI, CLV, CLD, SED
-    output logic       is_stack,      // PHA, PHP, PLA, PLP
-    output logic       is_nop         // NOP (No Operation)
+    output logic is_load,        // LDA, LDX, LDY
+    output logic is_store,       // STA, STX, STY
+    output logic is_transfer,    // TAX, TAY, TSX, TXA, TXS, TYA
+    output logic is_arithmetic,  // ADC, SBC
+    output logic is_logical,     // AND, ORA, EOR
+    output logic is_shift,       // ASL, LSR, ROL, ROR
+    output logic is_branch,      // BCC, BCS, BEQ, BMI, BNE, BPL, BVC, BVS
+    output logic is_jump,        // JMP, JSR, RTS
+    output logic is_compare,     // CMP, CPX, CPY
+    output logic is_flag,        // CLC, SEC, CLI, SEI, CLV, CLD, SED
+    output logic is_stack,       // PHA, PHP, PLA, PLP
+    output logic is_nop          // NOP (No Operation)
 );
 
     always_comb begin
@@ -71,10 +71,10 @@ module simple_decoder (
             8'h49, 8'h45, 8'h55, 8'h4D, 8'h5D, 8'h59, 8'h41, 8'h51: is_logical = 1'b1;
 
             // Shift/Rotate: Bit manipulations / シフト・回転演算
-            8'h0A, 8'h06, 8'h16, 8'h0E, 8'h1E: is_shift = 1'b1; // ASL
-            8'h4A, 8'h46, 8'h56, 8'h4E, 8'h5E: is_shift = 1'b1; // LSR
-            8'h2A, 8'h26, 8'h36, 8'h2E, 8'h3E: is_shift = 1'b1; // ROL
-            8'h6A, 8'h66, 8'h76, 8'h6E, 8'h7E: is_shift = 1'b1; // ROR
+            8'h0A, 8'h06, 8'h16, 8'h0E, 8'h1E: is_shift = 1'b1;  // ASL
+            8'h4A, 8'h46, 8'h56, 8'h4E, 8'h5E: is_shift = 1'b1;  // LSR
+            8'h2A, 8'h26, 8'h36, 8'h2E, 8'h3E: is_shift = 1'b1;  // ROL
+            8'h6A, 8'h66, 8'h76, 8'h6E, 8'h7E: is_shift = 1'b1;  // ROR
 
             // Branch: Relative jumps / 条件分岐
             8'h10, 8'h30, 8'h50, 8'h70, 8'h90, 8'hB0, 8'hD0, 8'hF0: is_branch = 1'b1;
@@ -83,9 +83,9 @@ module simple_decoder (
             8'h4C, 8'h6C, 8'h20, 8'h60: is_jump = 1'b1;
 
             // Compare: A, X, Y against memory / メモリとの比較
-            8'hC9, 8'hC5, 8'hD5, 8'hCD, 8'hDD, 8'hD9, 8'hC1, 8'hD1: is_compare = 1'b1; // CMP
-            8'hE0, 8'hE4, 8'hEC: is_compare = 1'b1; // CPX
-            8'hC0, 8'hC4, 8'hCC: is_compare = 1'b1; // CPY
+            8'hC9, 8'hC5, 8'hD5, 8'hCD, 8'hDD, 8'hD9, 8'hC1, 8'hD1: is_compare = 1'b1;  // CMP
+            8'hE0, 8'hE4, 8'hEC: is_compare = 1'b1;  // CPX
+            8'hC0, 8'hC4, 8'hCC: is_compare = 1'b1;  // CPY
 
             // Flag: Processor state control / フラグ操作
             8'h18, 8'h38, 8'h58, 8'h78, 8'hB8, 8'hD8, 8'hF8: is_flag = 1'b1;

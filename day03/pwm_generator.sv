@@ -4,9 +4,9 @@
 // Pulse Width Modulation (PWM) Generator
 // Controls the average power delivered by an electrical signal by turning it ON and OFF fast.
 module pwm_generator (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (100% ON)
+    input logic clk,
+    input logic rst_n,
+    input logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (100% ON)
     output logic pwm_out
 );
 

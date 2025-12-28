@@ -2,12 +2,12 @@
 // Implementation goal: Complete the cases for subtraction, AND, and OR.
 
 module alu_4bit (
-    input  logic [3:0] a,      // 4-bit input A
-    input  logic [3:0] b,      // 4-bit input B
-    input  logic [1:0] op,     // 2-bit operation selector
-    output logic [3:0] result, // 4-bit computation result
-    output logic zero,         // Flag: set to 1 if result is 0
-    output logic carry         // Flag: set to 1 if addition has carry or subtraction has borrow
+    input  logic [3:0] a,       // 4-bit input A
+    input  logic [3:0] b,       // 4-bit input B
+    input  logic [1:0] op,      // 2-bit operation selector
+    output logic [3:0] result,  // 4-bit computation result
+    output logic       zero,    // Flag: set to 1 if result is 0
+    output logic       carry    // Flag: set to 1 if addition has carry or subtraction has borrow
 );
 
     logic [4:0] temp_result;

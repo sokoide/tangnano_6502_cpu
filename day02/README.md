@@ -11,6 +11,14 @@ In Day 02, we move from simple sequential circuits (counters) to **combinational
 
 Today's goal is to build the mathematical heart of any CPU: a **4-bit ALU (Arithmetic Logic Unit)**.
 
+## 🔙 Review: Day 01
+
+Before proceeding, make sure you understand:
+
+- **FPGA Dev Flow**: The process from hardware description (Verilog/SV) to synthesis, place & route, and bitstream download to the actual board (Tang Nano)
+- **SystemVerilog Basics**: Module definitions, I/O ports, and the basic use of the `logic` type
+- **Combinational Logic Basics**: Simple logic using `assign` statements (e.g., LED control)
+
 ## 🎯 Learning Objectives
 
 - **`always_comb` vs `assign`**: Learn when to use continuous assignment versus block-based logic.

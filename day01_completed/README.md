@@ -160,8 +160,9 @@ Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.m
 
 > [!TIP]
 > **Pro Tips: For CLI Users**
-> If you prefer working in the terminal rather than the GUI, we've provided a `Makefile` in `day01_completed`. 
+> If you prefer working in the terminal rather than the GUI, we've provided a `Makefile` in `day01_completed`.
 > You can build and program the FPGA using just a few commands. Ensure `gw_sh` and `programmer_cli` are in your `PATH` or set them as environment variables.
+>
 > ```bash
 > export GWSH=/path/to/Gowin_EDA/IDE/bin/gw_sh
 > export PRG=/path/to/Gowin_EDA/Programmer/bin/programmer_cli

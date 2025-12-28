@@ -35,7 +35,7 @@ module top_core (
     clock_divider clk_div (
         .clk_in   (clk),
         .rst_n    (internal_rst_n),
-        .div_ratio(4'd10),    // Divide by 10
+        .div_ratio(4'd10),           // Divide by 10
         .clk_out  (slow_clk)
     );
 
@@ -46,7 +46,7 @@ module top_core (
             enable_counter <= 24'b0;
             counter_enable <= 1'b0;
         end else begin
-            if (enable_counter == 24'd13_499_999) begin // 0.5 sec @ 27MHz
+            if (enable_counter == 24'd13_499_999) begin  // 0.5 sec @ 27MHz
                 enable_counter <= 24'b0;
                 counter_enable <= 1'b1;
             end else begin
@@ -102,7 +102,7 @@ module top_core (
     // Use low bits of counter since we now have a slow counter_enable
     assign leds[3] = count_out[0];
     assign leds[4] = count_out[1];
-    assign leds[5] = count_out[2]; 
+    assign leds[5] = count_out[2];
 
     // Clock divider output
     assign div_clk_out = slow_clk;

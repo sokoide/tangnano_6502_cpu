@@ -10,8 +10,12 @@ module tb_alu_4bit;
 
     // Instantiate the Design Under Test (DUT)
     alu_4bit dut (
-        .a(a), .b(b), .op(op),
-        .result(result), .zero(zero), .carry(carry)
+        .a(a),
+        .b(b),
+        .op(op),
+        .result(result),
+        .zero(zero),
+        .carry(carry)
     );
 
     initial begin
@@ -26,7 +30,8 @@ module tb_alu_4bit;
         b  = 4'd3;
         op = 2'b00;
         #10;
-        assert (result == 4'd8) else $error("Addition failed");
+        assert (result == 4'd8)
+        else $error("Addition failed");
         $display("Test 1 passed: 5 + 3 = %d", result);
 
         // TODO: Add more test cases for Subtraction, AND, and OR

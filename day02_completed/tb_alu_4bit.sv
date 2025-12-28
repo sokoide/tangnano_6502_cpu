@@ -34,7 +34,7 @@ module tb_alu_4bit;
         a  = 4'd5;
         b  = 4'd3;
         op = 2'b00;
-        #10; // Wait for 10 time units for the signals to propagate through the logic
+        #10;  // Wait for 10 time units for the signals to propagate through the logic
         assert (result == 4'd8)
         else $error("Test 1 failed: 5+3 should be 8, got %d", result);
         assert (zero == 1'b0)
@@ -97,7 +97,7 @@ module tb_alu_4bit;
         $display("Test 6 passed: 12 | 10 = %d", result);
 
         $display("All ALU tests completed successfully!");
-        $finish; // End the simulation
+        $finish;  // End the simulation
     end
 
 endmodule

@@ -6,8 +6,8 @@
 // FPGA設計では、これらは通常フリップフロップとして構成されます。
 
 module cpu_registers (
-    input logic clk,     // System Clock / システムクロック
-    input logic rst_n,   // Active-low Reset / 非アクティブ低レベル・リセット
+    input logic clk,   // System Clock / システムクロック
+    input logic rst_n, // Active-low Reset / 非アクティブ低レベル・リセット
 
     // Register write enables / レジスタ書き込み有効化信号
     input logic a_write,   // Accumulator (A) / アキュムレータ
@@ -18,8 +18,8 @@ module cpu_registers (
     input logic p_write,   // Processor Status (P) / プロセッサステータス
 
     // Data inputs / データ入力
-    input logic [ 7:0] data_in, // 8-bit data input / 8ビットデータ入力
-    input logic [15:0] addr_in, // 16-bit address for PC / PC用16ビットアドレス入力
+    input logic [ 7:0] data_in,  // 8-bit data input / 8ビットデータ入力
+    input logic [15:0] addr_in,  // 16-bit address for PC / PC用16ビットアドレス入力
 
     // Register outputs (for monitoring and ALU use) / レジスタ出力（監視およびALU用）
     output logic [ 7:0] reg_a,   // Accumulator: Primary register for arithmetic/logic / A: 算術演算・論理演算の主要レジスタ
@@ -36,9 +36,9 @@ module cpu_registers (
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             // Initial states after reset / リセット直後の初期状態
-            reg_a  <= 8'h00;
-            reg_x  <= 8'h00;
-            reg_y  <= 8'h00;
+            reg_a <= 8'h00;
+            reg_x <= 8'h00;
+            reg_y <= 8'h00;
             reg_sp <= 8'hFF;     // Stack pointer typically resets to 0xFF (top of page 1) / SPは通常0xFF(ページ1の最上部)にリセット
             reg_pc <= 16'h0200;  // Standard reset vector start for this training / この演習用プログラムの開始位置
             reg_p  <= 8'h34;     // Default status (Break=0, Unused=1, IRQ=1) / 初期ステータスフラグの状態
@@ -46,12 +46,12 @@ module cpu_registers (
             // Synchronous writes on clock edge / クロック同期での書き込み
             // Note: Multiple registers can be updated simultaneously if their 'write' flags are set.
             // 注: 複数の'write'フラグがセットされていれば、複数のレジスタを同時に更新可能です。
-            if (a_write)  reg_a  <= data_in;
-            if (x_write)  reg_x  <= data_in;
-            if (y_write)  reg_y  <= data_in;
+            if (a_write) reg_a <= data_in;
+            if (x_write) reg_x <= data_in;
+            if (y_write) reg_y <= data_in;
             if (sp_write) reg_sp <= data_in;
             if (pc_write) reg_pc <= addr_in;
-            if (p_write)  reg_p  <= data_in;
+            if (p_write) reg_p <= data_in;
         end
     end
 

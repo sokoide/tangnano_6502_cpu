@@ -65,9 +65,9 @@ module top_core (
 
     // Traffic light controller with parameters for faster switching
     traffic_light #(
-        .TIMER_LIMIT_RED(26'd13_500_000),    // 0.5s
+        .TIMER_LIMIT_RED(26'd13_500_000),  // 0.5s
         .TIMER_LIMIT_GREEN(26'd13_500_000),  // 0.5s
-        .TIMER_LIMIT_YELLOW(26'd6_750_000)   // 0.25s
+        .TIMER_LIMIT_YELLOW(26'd6_750_000)  // 0.25s
     ) traffic (
         .clk(clk),
         .rst_n(rst_n),

@@ -60,6 +60,7 @@ The X and Y registers shine when implementing **indexed addressing modes** (e.g.
 
 **Analogy:**
 Think of them as `i` in a `for` loop or an array index.
+
 - `LDA $1234,X` is equivalent to `A = memory[0x1234 + X]` or `A = array[i]`.
 
 This allows the CPU to efficiently read data from tables or arrays in memory.
