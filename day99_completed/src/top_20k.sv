@@ -16,7 +16,7 @@ module top (
     output logic MEMORY_CLK
 );
     logic rst_n;
-    assign rst_n = !ResetButton;
+    assign rst_n = ~ResetButton;
 
     top_core u_core (
         .rst_n(rst_n),

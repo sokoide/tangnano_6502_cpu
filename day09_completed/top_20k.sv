@@ -11,7 +11,7 @@ module top_unused (
     output logic [4:0] LCD_B
 );
     logic rst_n;
-    assign rst_n = !ResetButton;
+    assign rst_n = ~ResetButton;
 
     lcd_demo u_demo (
         .rst_n  (rst_n),
