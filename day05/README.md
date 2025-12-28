@@ -50,9 +50,10 @@ The **Program Counter (PC)** is a register that allows the CPU to remember **"wh
 
 **Analogy:**
 Think of the PC as a **bookmark** in a book, or the **Instruction Pointer (IP)** if you've done assembly debugging.
-1.  Read the instruction at the bookmark's location.
-2.  Do what it says.
-3.  Move the bookmark to the next line.
+
+1. Read the instruction at the bookmark's location.
+2. Do what it says.
+3. Move the bookmark to the next line.
 
 In Day 05, we aren't reading from memory yet, but we will implement this basic "move the bookmark forward" behavior and verify it visually.
 

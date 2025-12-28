@@ -1,4 +1,4 @@
-# Day 11: Zero Page Addressing & RAM
+# Day 12: Absolute Addressing (16-bit)
 
 ---
 
@@ -7,54 +7,59 @@
 
 ## 📜 Overview
 
-So far, all our programs have used "Immediate (`#imm`)" or "Register-to-Register" operations. From today, we start working with **Memory** in earnest.
+The Zero Page we learned on Day 11 is useful but limited to 256 bytes. Today, we implement **Absolute Addressing**, which enables the CPU to access the full 64KB memory range.
 
-Our first step is implementing a key 6502 feature: **Zero Page Addressing**. This mode allows the CPU to quickly read/write to the first 256 bytes of memory (`$0000` to `$00FF`), making it perfect for storing variables.
+In this mode, the opcode is followed by a 2-byte address (low byte, then high byte). This allows the CPU to read or write to any memory location, as well as interact with memory-mapped ROM and peripherals.
 
 ## 🎯 Learning Objectives
 
-- **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).
-- **RAM Control**: Implement a memory region where data can be read and written during execution.
-- **Load/Store**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
+- **16-bit Address Handling**: Fetch a full 2-byte address in Little-Endian format.
+- **Full-Range Memory Access**: Master the mode essential for large data tables and IO.
 
-## 🏗️ What is Zero Page?
+## 🏗️ 6502 Address Format (Little-Endian)
 
-- **Address Range**: `$0000` to `$00FF`.
-- **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
-- **Role**: Functionally acts like "extra registers" or high-speed variables for your programs.
+The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, it is stored in memory as follows:
+
+1. Opcode
+2. Low Byte of Address (`$CD`)
+3. High Byte of Address (`$AB`)
+
+**Analogy:**
+Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
+
+- The "smallest" unit (Day) comes first.
+- The "biggest" unit (Year) comes last.
+- Big-Endian would be "Year-Month-Day" (2025-12-25).
 
 ## 🏗️ Instructions to Implement
 
-| Opcode | Mnemonic | Description                   | Cycles |
-| :----: | -------- | ----------------------------- | :----: |
-| `0xA5` | `LDA zp` | Load A from Zero Page address |   3    |
-| `0x85` | `STA zp` | Store A to Zero Page address  |   3    |
-| `0xA6` | `LDX zp` | Load X from Zero Page address |   3    |
-| `0x86` | `STX zp` | Store X to Zero Page address  |   3    |
+| Opcode | Mnemonic  | Description                         | Cycles |
+| :----: | --------- | ----------------------------------- | :----: |
+| `0xAD` | `LDA abs` | Load A from specific 16-bit address |   4    |
+| `0x8D` | `STA abs` | Store A to specific 16-bit address  |   4    |
 
 ## 🛠️ Implementation Steps
 
-1. **Define RAM Region**:
-    - Verify your memory map so that writes to `$0000-$00FF` are handled by physical RAM (e.g., Block RAM inside the FPGA).
-2. **Add Addressing States**:
-    - Fetch the second byte (lower 8 bits of the address).
-    - Access memory by setting the upper 8 bits to `$00`.
-3. **Read/Write Timing**:
-    - For `STA`, ensure `write_en` is pulsed at the correct clock edge while valid data is on the bus.
+1. **Multi-cycle Address Fetch**:
+    - Fetch the address low byte and store it in a temporary register.
+    - Fetch the address high byte and combine it into a full 16-bit address.
+2. **Driving the Address Bus**:
+    - Drive the `address_bus` with the completed 16-bit value and read/write data in the following cycle.
 
 ## 🧪 Verification
 
 - **Test Program**:
 
     ```asm
-    LDA #$42
-    STA $10    ; Store 0x42 at address $0010
-    LDA #$00   ; Clear A
-    LDA $10    ; Load from $0010 (A should become 0x42 again)
+    LDA #$AA
+    STA $0200  ; Store in RAM (Page 2)
+    LDA #$00
+    LDA $0200  ; Re-load (A should become $AA)
+    JMP $8000  ; Loop back to start
     ```
 
-- **FPGA**: Confirm on the LCD that A is restored correctly after the load operation.
+- **FPGA**: Confirm on the LCD that the PC and A register values change as expected, indicating successful memory access and jumping.
 
 ## 🎯 Next Step
 
-In Day 12, we will implement **Absolute Addressing**, allowing the CPU to reach any address in the full 64KB range ($0000 - $FFFF).
+In Day 13, we will enhance our data processing capabilities by implementing **Logical Operations (AND, ORA, EOR, BIT)**.

@@ -48,8 +48,8 @@ In hardware, the clock is your **heartbeat**. Every `posedge clk`, all registers
 
 **Analogy for Software Engineers:**
 Think of the clock like the **frame update loop (tick)** in a game engine or the **event loop** in JavaScript.
-*   **Combinational Logic** is like the code inside `update()`: it calculates the new state based on the current state.
-*   **Clock Edge** is the moment the frame actually renders and the new state is saved for the next frame.
+- **Combinational Logic** is like the code inside `update()`: it calculates the new state based on the current state.
+- **Clock Edge** is the moment the frame actually renders and the new state is saved for the next frame.
 
 This synchronicity is what allows complex systems like 6502 to function reliably without chaotic race conditions.
 
