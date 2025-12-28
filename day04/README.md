@@ -35,17 +35,93 @@ Follow these steps for Day 04. Refer to the `TODO` comments in each file.
 First, complete the registers that hold the CPU state and the logic for calculating status flags.
 
 1. **`cpu_registers.sv`**:
-    - Implement the `always_ff` block to hold the 6502 registers.
-    - Define reset values and write operations when enable signals (`a_write`, etc.) are high.
+
+```mermaid
+graph TD
+    subgraph "CPU Registers (cpu_registers.sv)"
+        subgraph "Inputs"
+            DI[data_in 8-bit]
+            AI[addr_in 16-bit]
+            WE[Write Enables: a_write, x_write, etc.]
+        end
+        
+        subgraph "Register File (always_ff)"
+            A[Accumulator A]
+            X[Index Register X]
+            Y[Index Register Y]
+            SP[Stack Pointer]
+            PC[Program Counter]
+            P[Status Register]
+        end
+        
+        DI --> A & X & Y & SP & P
+        AI --> PC
+        WE -.-> A & X & Y & SP & PC & P
+        
+        subgraph "Outputs"
+            A --> reg_a
+            X --> reg_x
+            Y --> reg_y
+            SP --> reg_sp
+            PC --> reg_pc
+            P --> reg_p
+        end
+    end
+```
+
+Implement an `always_ff` block to manage the 6502 register set (A, X, Y, SP, PC, P). Define the reset state (e.g., PC=0x0200, SP=0xFF) and update logic triggered by write-enable signals (`a_write`, etc.).
 2. **`flag_calculator.sv`**:
-    - Implement combinational logic to calculate N, Z, C, and V flags based on the operation result.
-    - Pay special attention to Carry (C) and Overflow (V) calculation logic.
+
+```mermaid
+graph TD
+    subgraph "Flag Calculator (flag_calculator.sv)"
+        Res[result 8-bit]
+        Ops[operand_a, b]
+        CarryIn[carry_in]
+        
+        Res --> N[Flag N: Negative bit 7]
+        Res --> Z[Flag Z: Zero if result == 0]
+        
+        Ops & CarryIn --> Adder[Adder/Subtractor Logic]
+        Adder --> C[Flag C: Carry out]
+        Adder --> V[Flag V: Overflow bit]
+    end
+```
+
+Implement combinational logic to derive status flags (N, Z, C, V) from the operation result. Ensure the Carry (C) and Overflow (V) flags are calculated correctly based on arithmetic rules.
 3. **`simple_decoder.sv`**:
-    - Use a `case` statement to set category flags (like `is_load`) based on specific opcodes.
+
+```mermaid
+graph LR
+    subgraph "Instruction Decoder (simple_decoder.sv)"
+        Op[opcode 8-bit] --> Case{case opcode}
+        Case -- "0xA9, 0xA2, ..." --> Load[is_load = 1]
+        Case -- "0x85, 0x86, ..." --> Store[is_store = 1]
+        Case -- "0x69, 0xE9, ..." --> Arith[is_arithmetic = 1]
+        Case -- "others" --> NOP[is_nop = 1]
+    end
+```
+
+Implement decoding logic using a `case` statement to translate 8-bit opcodes into category flags like `is_load`. This allows the CPU to identify the type of instruction to execute.
 
 ### Step 2: System Integration (`top_core.sv`)
 
 Integrate the components into `top_core.sv`.
+
+```mermaid
+graph TD
+    subgraph "Top Core (top_core.sv)"
+        TestCtrl[Test Sequence Controller]
+        
+        TestCtrl -->|opcode| Decoder[simple_decoder]
+        TestCtrl -->|data/addr, write| Regs[cpu_registers]
+        TestCtrl -->|result, operands| Flags[flag_calculator]
+        
+        Decoder -->|is_load, etc.| LEDs[Debug LEDs]
+        Regs -->|reg_a, pc, etc.| LCD[LCD Demo / Debug Display]
+        Flags -->|N, Z, C, V| Regs
+    end
+```
 
 1. **`top_core.sv`**:
     - Instantiate `lcd_demo` to enable screen output.

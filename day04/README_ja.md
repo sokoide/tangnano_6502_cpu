@@ -35,17 +35,93 @@ Day 04 では、以下の順序で実装を進めます。各ファイルにあ�
 まず、CPU の内部状態を保持する「レジスタ」と、演算結果を判定する「フラグ計算」を完成させます。
 
 1. **`cpu_registers.sv`**:
-    - 6502 の各レジスタ (A, X, Y, SP, PC, P) を保持する `always_ff` ブロックを記述します。
-    - 各レジスタのリセット値と、書き込み有効信号 (`a_write` 等) が '1' の時の動作を実装してください。
+
+```mermaid
+graph TD
+    subgraph "CPU Registers (cpu_registers.sv)"
+        subgraph "Inputs"
+            DI[data_in 8-bit]
+            AI[addr_in 16-bit]
+            WE[Write Enables: a_write, x_write, etc.]
+        end
+        
+        subgraph "Register File (always_ff)"
+            A[Accumulator A]
+            X[Index Register X]
+            Y[Index Register Y]
+            SP[Stack Pointer]
+            PC[Program Counter]
+            P[Status Register]
+        end
+        
+        DI --> A & X & Y & SP & P
+        AI --> PC
+        WE -.-> A & X & Y & SP & PC & P
+        
+        subgraph "Outputs"
+            A --> reg_a
+            X --> reg_x
+            Y --> reg_y
+            SP --> reg_sp
+            PC --> reg_pc
+            P --> reg_p
+        end
+    end
+```
+
+6502 の各レジスタ (A, X, Y, SP, PC, P) を保持する `always_ff` ブロックを記述します。各レジスタのリセット値（PC=0x0200, SP=0xFFなど）と、書き込み有効信号 (`a_write` 等) が '1' の時の更新動作を実装してください。
 2. **`flag_calculator.sv`**:
-    - 演算結果 (`result`) から、ステータスフラグ (N, Z, C, V) を計算する組合せ回路を記述します。
-    - 特に Carry (C) と Overflow (V) の計算方法に注意してください。
+
+```mermaid
+graph TD
+    subgraph "Flag Calculator (flag_calculator.sv)"
+        Res[result 8-bit]
+        Ops[operand_a, b]
+        CarryIn[carry_in]
+        
+        Res --> N[Flag N: Negative bit 7]
+        Res --> Z[Flag Z: Zero if result == 0]
+        
+        Ops & CarryIn --> Adder[Adder/Subtractor Logic]
+        Adder --> C[Flag C: Carry out]
+        Adder --> V[Flag V: Overflow bit]
+    end
+```
+
+演算結果 (`result`) からステータスフラグ (N, Z, C, V) を計算する組合せ回路を記述します。特にキャリー (C) とオーバーフロー (V) の判定ロジックを正しく実装してください。
 3. **`simple_decoder.sv`**:
-    - `case` 文を使用して、特定のオペコードに対して `is_load` 等のカテゴリフラグを立てるロジックを実装します。
+
+```mermaid
+graph LR
+    subgraph "Instruction Decoder (simple_decoder.sv)"
+        Op[opcode 8-bit] --> Case{case opcode}
+        Case -- "0xA9, 0xA2, ..." --> Load[is_load = 1]
+        Case -- "0x85, 0x86, ..." --> Store[is_store = 1]
+        Case -- "0x69, 0xE9, ..." --> Arith[is_arithmetic = 1]
+        Case -- "others" --> NOP[is_nop = 1]
+    end
+```
+
+`case` 文を使用して、8ビットのオペコードから `is_load` 等のカテゴリフラグを生成するデコードロジックを実装します。これにより、命令の種類を判別できるようになります。
 
 ### ステップ 2: システムの統合 (`top_core.sv`)
 
 個別の部品ができたら、それらを `top_core.sv` で一つにまとめます。
+
+```mermaid
+graph TD
+    subgraph "Top Core (top_core.sv)"
+        TestCtrl[Test Sequence Controller]
+        
+        TestCtrl -->|opcode| Decoder[simple_decoder]
+        TestCtrl -->|data/addr, write| Regs[cpu_registers]
+        TestCtrl -->|result, operands| Flags[flag_calculator]
+        
+        Decoder -->|is_load, etc.| LEDs[Debug LEDs]
+        Regs -->|reg_a, pc, etc.| LCD[LCD Demo / Debug Display]
+        Flags -->|N, Z, C, V| Regs
+    end
+```
 
 1. **`top_core.sv`**:
     - `lcd_demo` をインスタンス化し、画面出力を有効にします。
