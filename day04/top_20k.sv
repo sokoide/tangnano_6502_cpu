@@ -1,4 +1,4 @@
-// Day 04 Completed: Board Wrapper for Tang Nano 20K
+// Day 04: Board Wrapper for Tang Nano 20K
 /* verilator lint_off DECLFILENAME */
 module top (
     input  logic       ResetButton,

@@ -1,4 +1,4 @@
-// Day 04 Completed: Board Wrapper for Tang Nano 20K
+// Day 04: Board Wrapper for Tang Nano 9K
 /* verilator lint_off DECLFILENAME */
 module top (
     input  logic       ResetButton,
@@ -11,7 +11,7 @@ module top (
     output logic [5:0] led       // 6 LEDs (Active Low)
 );
     logic rst_n;
-    assign rst_n = ~ResetButton;
+    assign rst_n = ResetButton;
 
     logic l_load, l_store, l_arith, l_branch;
 
@@ -30,7 +30,7 @@ module top (
         .led_branch(l_branch)
     );
 
-    // Invert for Tang Nano 20K (Active Low)
+    // Invert for Tang Nano 9K (Active Low)
     assign led[0] = ~l_load;
     assign led[1] = ~l_store;
     assign led[2] = ~l_arith;

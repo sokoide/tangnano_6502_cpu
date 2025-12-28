@@ -1,153 +1,73 @@
-# Day 04: The Foundation (LCD & Registers)
+# Day 04: Foundation (LCD Display & Register Set)
 
 ---
 
-🌐 Available languages:
+🌐 Languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
 ## 🎯 Learning Objectives
 
-- **LCD Pipeline**: Understand how pixels flow from VRAM (**BSRAM/SDPB**), through Font ROM (**pROM**), to the Panel.
-- **Hardware Memory**: Basics of high-speed memory access using FPGA internal resources (BSRAM).
-- **Clock Management**: Use Phase Locked Loops (PLL) to generate precise frequencies (9MHz for LCD).
-- **6502 Register Set**: Implement A, X, Y, SP, PC, and the Status Register (P).
-- **Instruction Decoding**: Basic categorization of opcodes (Load, Store, Branch, etc.).
+-   **LCD Pipeline**: Complete the data flow from VRAM (**BSRAM/SDPB**) through Font ROM (**pROM**) to the LCD panel.
+-   **6502 Register Set**: Implement A, X, Y, SP, PC, and Status (P) registers in hardware.
+-   **Instruction Decoding**: Build a decoder to classify 8-bit opcodes into instruction categories (Load, Store, Branch, etc.).
+-   **System Integration**: Understand the separation between board wrappers (`top_9k.sv`/`top_20k.sv`) and the logic core (`top_core.sv`).
 
-## 📚 Theory
+## 🛠️ Implementation Steps
 
-### For Software Engineers: A Window into the Machine
+Follow these steps for Day 04. Refer to the `TODO` comments in each file.
 
-Before we build the CPU's brain (the Control Unit), we need to establish two critical foundations:
+### Step 1: Implement Core Logic
 
-1. **A Window into the Machine (LCD)**: Building a display pipeline so we can see what the CPU is doing.
-2. **The Internal State (Registers)**: Implementing the architectural registers where the 6502 stores its data and flags.
+First, complete the registers that hold the CPU state and the logic for calculating status flags.
 
-In hardware development, you cannot simply "print" to a console. By building the LCD controller early, you create a **hardware-native debugger**. Throughout the rest of this course, you will see your registers and PC values updating in real-time on your desk!
+1.  **`cpu_registers.sv`**:
+    -   Implement the `always_ff` block to hold the 6502 registers.
+    -   Define reset values and write operations when enable signals (`a_write`, etc.) are high.
+2.  **`flag_calculator.sv`**:
+    -   Implement combinational logic to calculate N, Z, C, and V flags based on the operation result.
+    -   Pay special attention to Carry (C) and Overflow (V) calculation logic.
+3.  **`simple_decoder.sv`**:
+    -   Use a `case` statement to set category flags (like `is_load`) based on specific opcodes.
 
-### FPGA Memory: BSRAM (SDPB) & pROM
+### Step 2: System Integration (`top_core.sv`)
 
-Building memory using only FPGA logic (LUTs) quickly consumes resources. Instead, we use the dedicated **BSRAM (Block Static RAM)** blocks available on the Tang Nano 9K.
+Integrate the components into `top_core.sv`.
 
-We use two types of memory IP cores:
+1.  **`top_core.sv`**:
+    -   Instantiate `lcd_demo` to enable screen output.
+    -   Instantiate `cpu_registers` and `simple_decoder`, connecting them to the test signals.
+    -   Connect decoder outputs to the board LEDs (`led_load`, etc.) for verification.
 
-1. **SDPB (Semi-Dual Port Block RAM)** for **VRAM**:
-    - One port is dedicated to the **LCD controller** for reading pixels.
-    - The other is used by the **CPU** for writing character data.
-    - This "dual-port" access allows smooth updates without interfering with display timing.
+### Step 3: Verification
 
-2. **pROM (Programmable ROM)** for **Font ROM**:
-    - Pre-loaded with font patterns (ASCII bitmaps) upon power-up.
+Verify your implementation using simulation and the actual board.
 
-### Memory Data Flow
+1.  **Simulation**:
+    -   Run `make sim` and ensure that LCD signals (DEN) are output correctly and the simulation results in `PASS`.
+2.  **Hardware Verification**:
+    -   Run `make download` (for Tang Nano 9K) and verify that the demo screen appears on the LCD and the LEDs blink in sequence.
 
-The Font ROM takes two inputs: **"Which character (ASCII)"** and **"Which row of that character"**. It outputs an 8-bit bitmap representing one row of pixels.
+## 💡 Design Pattern: Wrapper and Core Separation
 
-```mermaid
-graph LR
-    subgraph "Input Address (12-bit)"
-        A["ASCII Code (8-bit) <br/> 0x41 ('A')"] --> ADDR["ROM Address <br/> 0x410 - 0x41F"]
-        R["Row Index (4-bit) <br/> 0 - 15"] --> ADDR
-    end
-    ADDR --> ROM["Font pROM <br/> (4KB)"]
-    ROM --> DATA["Pixel Data (8-bit) <br/> e.g., 0x18, 0x3C..."]
+This project strictly separates the **Logic Core (`top_core.sv`)** from **Board-Specific Wrappers (`top_9k.sv` / `top_20k.sv`)**.
 
-    style ADDR fill:#f9f,stroke:#333,stroke-width:2px
-```
+-   **`top_core.sv` (System Core)**: Contains the 6502 logic and system integration common to any FPGA board.
+-   **`top_9k.sv` / `top_20k.sv` (Board Wrapper)**: Handles board-specific pin definitions, reset button polarity, and LED signal inversions (Active-Low vs. Active-High).
 
-## 💡 Column: Clock Domains & Dual Port Memory
+This separation improves portability and allows learners to focus on the hardware description (Core) rather than board-specific details. Other lessons follow this same structure.
 
-In this project, we deal with **two different time zones** (Clock Domains):
+## 📝 Exercises
 
-1. **LCD Domain (9MHz):** The pixel pipeline must run exactly at 9MHz to satisfy the physical LCD panel timing.
-2. **CPU Domain (System Clock):** The logic runs at the main system clock (27MHz, or slower for debugging).
+### Basic Tasks
+- [ ] Complete `cpu_registers.sv` and verify PC is `0x0200` and SP is `0xFF` after reset.
+- [ ] Implement `flag_calculator.sv` so the Negative flag is set when the result is negative (bit 7 is 1).
+- [ ] Set `is_load` to 1 for LDA, LDX, and LDY instructions in `simple_decoder.sv`.
+- [ ] Instantiate all modules in `top_core.sv` and verify that LEDs blink in sequence on the actual board.
 
-**Analogy for Software Engineers:**
-Imagine two drummers playing at different tempos.
-- **LCD Drummer (9MHz):** Very strict tempo. If they miss a beat, the screen flickers.
-- **CPU Drummer (System Clock):** Can play fast or slow (variable tempo for debugging).
+### Advanced Tasks
+- [ ] Add your favorite 6502 opcodes to `simple_decoder.sv` and light up the corresponding LEDs.
+- [ ] Predict and verify the state of bit 7 (Negative flag) in the P register when writing `0x55` to the A register.
 
-**The Challenge:** What happens if the CPU drummer tries to hand a note (data) to the LCD drummer exactly when the LCD drummer is busy hitting a cymbal? In standard memory (single-port), they would crash into each other (timing violation/metastability).
+## 📚 Technical Overview
 
-**The Solution: Dual Port Memory (SDPB)**
-The "SDPB" memory block acts like a **mailbox with two doors**.
-- **Door A (CPU side):** The CPU puts mail in whenever it wants.
-- **Door B (LCD side):** The LCD takes mail out whenever it wants.
-The hardware handles the "magic" of ensuring they don't collide, allowing us to simply "write whenever" and "read whenever" without complex synchronization locks (mutexes). This is a huge advantage of FPGAs!
-
-## 🏗️ Architecture
-
-Day 04 combines a fast rendering pipeline with the CPU's register set.
-
-```mermaid
-graph TD
-    subgraph "Display Path"
-        LCD[LCD Controller] --> VRAM
-        VRAM --> FR[Font ROM]
-        FR --> LCD
-    end
-    subgraph "CPU State"
-        REG[Register Set] --> FLAGS[Flag Logic]
-        DEC[Simple Decoder] -- Test signals --> REG
-    end
-    LCD -- Debug visualization --> REG
-```
-
-## 🛠️ Practice 1: Driving the LCD
-
-### Steps
-
-1. **PLL Setup**: Generate a 9MHz clock from the 27MHz base using the IP Core Generator.
-2. **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv` to drive the physical panel.
-3. **Rendering**: Connect `vram.sv` (SDPB) and `font_rom.sv` (pROM) in `lcd_demo.sv` to display characters.
-
-### VRAM Screen Layout
-
-The VRAM is logically organized as a **60 columns × 17 rows** grid (1020 bytes total).
-
-```mermaid
-graph TD
-    subgraph "Screen Coordinates"
-        C["Column <br/> 0 - 59"]
-        R["Row <br/> 0 - 16"]
-    end
-    C --> CALC["Address Calculation <br/> $E000 + (Row * 60) + Column"]
-    R --> CALC
-    CALC --> VRAM["VRAM (SDPB) <br/> 1020 bytes"]
-    VRAM --> OUT["ASCII Code <br/> at Position"]
-```
-
-## 🛠️ Practice 2: The Register Set
-
-### Steps
-
-1. **Register Storage**: Implement the synchronous register file in `cpu_registers.sv`. This includes 8-bit registers (A, X, Y, P) and 16-bit registers (PC, SP).
-2. **Flag Logic**: Implement the Zero (Z), Negative (N), and Carry (C) flag calculators based on operation results.
-3. **Test Bench**: Use `tb_cpu_registers.sv` to verify that data is written and read correctly and that flags update as expected.
-
-## 📝 Assignments
-
-### Basic Assignments
-
-1. **LCD**: Display "HELLO FPGA" on the LCD screen using the VRAM.
-2. **Registers**: Implement the `cpu_registers` module and pass the simulation tests.
-3. **Integration**: Show the value of a register (e.g., the 'A' register) on the LCD screen.
-
-### Advanced Assignments
-
-1. **Scrolling**: Implement a hardware scrolling feature by modifying the VRAM read address offset.
-2. **Cursor**: Add a blinking cursor to the display.
-
-## 📚 What I Learned Today
-
-- [ ] How to use FPGA internal Block RAM (BSRAM)
-- [ ] How to interface with an LCD panel (HSYNC/VSYNC)
-- [ ] The architecture of the 6502 register set
-- [ ] How to calculate CPU status flags (Zero, Negative)
-
-## 🎯 Preview for Tomorrow
-
-In Day 05, we will build the core processing unit:
-
-- **The ALU (Arithmetic Logic Unit)**: Moving beyond the simple Day 02 ALU to a full CPU-capable ALU.
-- **Control Logic**: connecting instructions to ALU operations.
-- **Execution Cycle**: Fetch, Decode, Execute.
+(Further details on memory mapping and pipeline architecture...)
