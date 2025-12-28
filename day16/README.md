@@ -40,12 +40,14 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
 Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     LDA #$AA
     PHA        ; Push 0xAA onto stack
     LDA #$00
     PLA        ; Pull from stack (A = 0xAA)
     ```
+
 - **Simulation**: Run `make sim` and verify that data is correctly saved and restored via stack operations (Push/Pull), and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the stack pointer (S) and A register values change as expected.
 

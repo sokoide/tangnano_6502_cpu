@@ -21,11 +21,11 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
-  - **Analogy**: Think of a stack of plates in a cafeteria. You can only add a plate to the top (Push) or take one off the top (Pop/Pull). Or think of your **Browser Back Button history** (Last visited page is the first one you go back to).
-- **Stack Pointer (S)**: Implement an 8-bit register to manage memory page 1 ($0100-$01FF).
-- **RAM Writing**: Implement the first CPU-to-memory write logic.
-- **Subroutine Instructions**: Master the behavior of `JSR`, `RTS`, `PHA`, and `PLA`.
+- **Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
+- **Stack Pointer (S)**: Implement an 8-bit register to manage Page 1 ($0100-$01FF).
+- **Memory Writing**: Implement logic to save data from the CPU to RAM.
+- **Basic Subroutine Instructions**: Implement the behavior of `JSR`, `RTS`, `PHA`, and `PLA`.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ 6502 Stack Structure
 
@@ -65,6 +65,7 @@ Before proceeding, make sure you understand:
 Starting from Day 05, **the testbench (`day10/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     SEC        ; C = 1
     LDA #$0A
@@ -72,6 +73,7 @@ Starting from Day 05, **the testbench (`day10/sim/`) is provided in a complete s
     CLC        ; C = 0
     SBC #$01   ; A = 3, C = 1
     ```
+
 - **Simulation**: Run `make sim` and verify that the SBC results and carry (borrow) flags behave as expected and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 

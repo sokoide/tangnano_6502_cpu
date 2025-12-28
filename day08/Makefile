@@ -25,7 +25,7 @@ else
   SRCS = top_9k.sv $(COMMON_SRCS)
 endif
 
-.PHONY: all clean download help tools-check sim sim-build test tools-check-sim
+.PHONY: all clean download help tools-check sim sim-build test tools-check-sim sim-cpu sim-cpu-build
 all: $(PROJECT).fs
 
 $(PROJECT).fs: $(GPRJ) $(SRCS)
@@ -69,7 +69,7 @@ tools-check-sim:
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
 
 sim-build: tools-check-sim
-	@echo "[sim] Building with Verilator..."
+	@echo "[sim] Building TFT simulation with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
 		-o V$(SIM_TOP) \
 		sim/Gowin_rPLL9_stub.sv \
@@ -77,9 +77,17 @@ sim-build: tools-check-sim
 	lcd/tb_tft.sv top_9k.sv lcd_demo.sv rom.sv \
 	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
 
-sim: sim-build
-	@echo "[sim] Running..."
+sim-cpu-build: tools-check-sim
+	@echo "[sim] Building CPU logic simulation with Verilator..."
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module tb_cpu \
+		-o Vtb_cpu \
+		sim/tb_cpu.sv cpu.sv
+
+sim: sim-build sim-cpu-build
+	@echo "[sim] Running TFT simulation..."
 	@./obj_dir/V$(SIM_TOP)
+	@echo "[sim] Running CPU logic simulation..."
+	@./obj_dir/Vtb_cpu
 
 test: sim
 

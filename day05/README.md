@@ -25,6 +25,7 @@ Before proceeding, make sure you understand:
 - **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
 - **Sequential Logic**: Understand how the PC updates on every clock edge.
 - **Visual Verification**: Display the PC on the LCD.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ Architecture
 

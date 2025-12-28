@@ -21,10 +21,11 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement X and Y Registers**: Add two 8-bit general-purpose registers to the CPU.
-- **Register Transfer Instructions**: Implement `TAX` (Transfer A to X) and `TAY` (Transfer A to Y).
-- **Increment/Decrement Instructions**: Implement `INX` (Increment X) and `INY` (Increment Y).
-- **Decoder Expansion**: Master handling single-byte instructions with no operands.
+- **Implement X and Y Registers**: Add two general-purpose 8-bit index registers.
+- **Implement Transfer Instructions**: Implement `TAX`, `TAY`, `TXA`, and `TYA`.
+- **Implement Increment/Decrement**: Implement `INX` and `INY`.
+- **Expand Decoder**: Master handling 1-byte instructions (no operands).
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ Instructions to Implement
 
@@ -70,12 +71,14 @@ This allows the CPU to efficiently read data from tables or arrays in memory.
 Starting from Day 05, **the testbench (`day07/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     LDA #$40
     TAX        ; X = 0x40
     INX        ; X = 0x41
     TXA        ; A = 0x41
     ```
+
 - **Simulation**: Run `make sim` and verify that the registers change as expected and the simulation outputs `PASS`.
 - **FPGA**: Verify on the LCD that the X register changes as expected.
 

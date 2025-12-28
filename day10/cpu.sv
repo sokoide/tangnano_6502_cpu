@@ -21,7 +21,7 @@ module cpu (
 );
 
     logic [15:0] pc;
-    logic [ 7:0] a, x, y;
+    logic [7:0] a, x, y;
     logic n, v, z, c;
 
     typedef enum logic [1:0] {
@@ -44,7 +44,10 @@ module cpu (
             a <= 8'h00;
             x <= 8'h00;
             y <= 8'h00;
-            n <= 1'b0; v <= 1'b0; z <= 1'b0; c <= 1'b0;
+            n <= 1'b0;
+            v <= 1'b0;
+            z <= 1'b0;
+            c <= 1'b0;
             state <= STATE_FETCH_OPCODE;
         end else if (pc_enable) begin
             case (state)
@@ -56,11 +59,11 @@ module cpu (
                             state <= STATE_FETCH_OPERAND;
                         end
                         OP_SEC: begin
-                            c <= 1'b1;
+                            c  <= 1'b1;
                             pc <= pc + 1;
                         end
                         OP_CLC: begin
-                            c <= 1'b0;
+                            c  <= 1'b0;
                             pc <= pc + 1;
                         end
                         default: pc <= pc + 1;

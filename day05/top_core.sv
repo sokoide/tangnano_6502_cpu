@@ -12,7 +12,7 @@ module top_core (
 
     // Debug outputs for LCD
     output logic [15:0] debug_pc,
-    output logic [7:0]  unused_flags
+    output logic [ 7:0] unused_flags
 );
 
     // -------------------------------------------------------------------------

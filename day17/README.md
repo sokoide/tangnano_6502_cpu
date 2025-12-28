@@ -47,13 +47,16 @@ This is the hardware implementation of "pointers" in languages like C, and it is
 Starting from Day 05, **the testbench (`day17/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     JSR sub    ; Jump to Subroutine
     HLT
+
 sub:
     LDA #$42
     RTS        ; Return from Subroutine
     ```
+
 - **Simulation**: Run `make sim` and verify that the subroutine call and return work correctly and the simulation outputs `PASS`.
 - **FPGA**: Observe the PC jumping to the subroutine and returning correctly on the LCD.
 

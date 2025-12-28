@@ -45,7 +45,6 @@ Starting from Day 05, **the testbench (`day18/sim/`) is provided in a complete s
 - **Simulation**: Run `make sim` and verify that the system works in harmony and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that all CPU states transition as intended by the program.
 
-
 ## 🎉 Congratulations
 
 You have finally completed the entire 18-day curriculum!

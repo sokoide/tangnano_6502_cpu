@@ -42,13 +42,16 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 Starting from Day 05, **the testbench (`day14/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     LDX #$05
+
 loop:
     DEX
     BNE loop   ; Repeat until X is 0
     BRK
     ```
+
 - **Simulation**: Run `make sim` and verify that conditional branching works correctly based on flags and the simulation outputs `PASS`.
 - **FPGA**: Observe the loop execution and final stop at a specific address on the LCD.
 

@@ -13,9 +13,10 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 ## 🎯 Learning Objectives
 
-- **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).
-- **RAM Control**: Implement a memory region where data can be read and written during execution.
-- **Load/Store**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
+- **Zero Page Mechanism**: Learn the speed and convenience of accessing Page 0 (`$0000` to `$00FF`).
+- **RAM Control**: Implement a memory area where data can be read and written during execution.
+- **Load/Store Instructions**: Implement basic memory access instructions like `LDA zp` and `STA zp`.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ What is Zero Page?
 
@@ -54,12 +55,14 @@ It is functionally used like "extra registers" or high-speed variables for your 
 Starting from Day 05, **the testbench (`day11/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     LDA #$42
     STA $10    ; Store 0x42 to address $0010
     LDA #$00
     LDA $10    ; Load from address $0010 (A = 0x42)
     ```
+
 - **Simulation**: Run `make sim` and verify that the RAM write and read operations work correctly and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the A register value changes as expected.
 

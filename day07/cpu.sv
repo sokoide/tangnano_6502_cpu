@@ -20,7 +20,7 @@ module cpu (
 );
 
     logic [15:0] pc;
-    logic [ 7:0] a, x, y;
+    logic [7:0] a, x, y;
 
     typedef enum logic [1:0] {
         STATE_FETCH_OPCODE,
@@ -58,7 +58,7 @@ module cpu (
                             state <= STATE_FETCH_OPERAND;
                         end
                         // TODO: ここに TAX, TAY, TXA, TYA, INX, INY を追加
-                        
+
                         default: begin
                             pc <= pc + 1;
                             state <= STATE_FETCH_OPCODE;

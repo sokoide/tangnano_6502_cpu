@@ -21,9 +21,10 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Control Flow**: Understand how loops and conditional branches are achieved at the hardware level.
-- **Relative Addressing**: Implement the mechanism to calculate "how far" to jump from the current Program Counter (PC).
-- **Conditional PC Updates**: Decide whether to jump or proceed to the next instruction based on the Zero (Z) flag.
+- **Implement Branch Instructions**: Learn conditional execution based on flag states.
+- **Relative Addressing**: Implement position-independent code using PC-relative offsets.
+- **Signed Offsets**: Achieve jumps from -128 to +127 using 8-bit values.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ Instructions to Implement
 
@@ -61,6 +62,7 @@ This makes the code **position-independent**, meaning it can work correctly no m
 Starting from Day 05, **the testbench (`day09/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     CLC        ; C = 0
     LDA #$01
@@ -68,6 +70,7 @@ Starting from Day 05, **the testbench (`day09/sim/`) is provided in a complete s
     SEC        ; C = 1
     ADC #$01   ; A = 5, C = 0
     ```
+
 - **Simulation**: Run `make sim` and verify that the results and flags (NVZC) change as expected and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 

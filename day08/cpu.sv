@@ -22,8 +22,8 @@ module cpu (
 
     typedef enum logic [2:0] {
         S_FETCH_OPCODE,
-        S_FETCH_ADDR,     // ゼロページアドレスを取得
-        S_READ_MEM,       // そのアドレスからデータを読み出す
+        S_FETCH_ADDR,      // ゼロページアドレスを取得
+        S_READ_MEM,        // そのアドレスからデータを読み出す
         S_EXECUTE_LDA_IMM
     } state_t;
     state_t state;
@@ -35,7 +35,7 @@ module cpu (
     // 1. S_FETCH_OPCODE で OP_LDA_ZP を検出。
     // 2. S_FETCH_ADDR で data_in をアドレス（下位8ビット）として保持し、PCを+1。
     // 3. S_READ_MEM で address_bus にそのアドレスを出力し、data_in を A に格納。
-    
+
     logic [7:0] zp_addr;
 
     always_ff @(posedge clk or negedge rst_n) begin

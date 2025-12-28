@@ -21,11 +21,12 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement the Accumulator (A)**: Add the primary 8-bit register for arithmetic and logic operations.
-- **Architectural Structure**: Introduce `opcodes.svh` for symbolic instruction names and `rom.sv` for memory separation.
-- **Instruction Fetch & Decode**: Implement a state machine to fetch opcodes and operands independently.
-- **Handle `LDA #imm` & `NOP`**: Decode and execute basic instructions using the new structure.
-- **Visualize on LCD**: Display both `PC` and `A` register values.
+- **Implement Accumulator (A)**: Add an 8-bit register that serves as the primary for arithmetic and logic operations.
+- **Structure Architecture**: Define instructions in `opcodes.svh` and separate memory into `rom.sv`.
+- **Fetch and Decode**: Introduce a state machine to manage multi-cycle instruction execution.
+- **Implement `LDA #imm` and `NOP`**: Build basic instructions using the new structure.
+- **LCD Visualization**: Display the A register value along with the PC.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ Architecture
 

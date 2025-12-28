@@ -51,12 +51,14 @@ Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
 Starting from Day 05, **the testbench (`day12/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     LDA #$55
     STA $1234  ; Store to Absolute address $1234
     LDA #$00
     LDA $1234  ; Load from address $1234 (A = 0x55)
     ```
+
 - **Simulation**: Run `make sim` and verify that Absolute addressing read/write works correctly and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the PC and A register values change as expected.
 

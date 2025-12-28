@@ -27,7 +27,7 @@ module cpu (
 );
 
     logic [15:0] pc;
-    logic [ 7:0] a, x, y, s;
+    logic [7:0] a, x, y, s;
     logic n, v, z, c;
 
     // -------------------------------------------------------------------------
@@ -39,8 +39,14 @@ module cpu (
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             pc <= 16'h8000;
-            a <= 8'h00; x <= 8'h00; y <= 8'h00; s <= 8'hFF;
-            n <= 1'b0; v <= 1'b0; z <= 1'b0; c <= 1'b0;
+            a <= 8'h00;
+            x <= 8'h00;
+            y <= 8'h00;
+            s <= 8'hFF;
+            n <= 1'b0;
+            v <= 1'b0;
+            z <= 1'b0;
+            c <= 1'b0;
             write_en <= 1'b0;
             vram_clear <= 1'b0;
             show_info <= 1'b0;

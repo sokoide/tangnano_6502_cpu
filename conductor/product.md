@@ -35,3 +35,4 @@ TangNano 9K/20KとGoWIN IDEを使って、FPGAの開発方法と、必要な知�
 - **Reproducibility:** 誰でもREADMEに従えば環境構築から実行まで行えること。
 - **Comprehensive Docs:** 各回路の意図や設計思想が明文化されていること。
 - **Simulation First:** 実機に書き込む前に、シミュレーションで正しさを検証する習慣を促進する。
+- **Test-Driven Learning:** 各ステップに専用のテストベンチを用意し、テストをパスすることを学習の達成基準とする。

@@ -8,16 +8,16 @@
 module cpu (
     input  logic        clk,
     input  logic        rst_n,
-    input  logic [7:0]  data_in,      // Data from memory
+    input  logic [ 7:0] data_in,      // Data from memory
     output logic [15:0] address_bus,
-    output logic [7:0]  debug_a,
+    output logic [ 7:0] debug_a,
     output logic [15:0] debug_pc
 );
 
     logic [15:0] pc;
-    logic [7:0]  a;
-    logic [7:0]  ir;  // Instruction Register
-    
+    logic [ 7:0] a;
+    logic [ 7:0] ir;  // Instruction Register
+
     typedef enum logic [1:0] {
         S_FETCH,
         S_DECODE,

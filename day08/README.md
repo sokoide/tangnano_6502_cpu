@@ -21,10 +21,11 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement the ALU**: Create combinational logic for 8-bit addition and subtraction.
-- **Status Register (P)**: Add logic to hold N, V, Z, and C flags.
-- **`ADC` / `SBC` Instructions**: Learn the mechanics of arithmetic with carry.
-- **Flag Update Logic**: Calculate Negative, Overflow, Zero, and Carry flags from operation results.
+- **Implement ALU**: Create combinational logic for 8-bit addition and subtraction.
+- **Implement Status Register (P)**: Add logic to hold N, V, Z, and C flags.
+- **Implement `ADC` / `SBC`**: Learn how arithmetic works with carry/borrow.
+- **Flag Update Logic**: Calculate flags (Negative, Overflow, Zero, Carry) from results.
+- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
 ## 🏗️ Status Flags
 
@@ -71,6 +72,7 @@ In the 6502, it is standard to call `SEC` (Set Carry) before an `SBC` operation.
 Starting from Day 05, **the testbench (`day08/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
 - **Test Program**:
+
     ```asm
     SEC        ; C = 1
     LDA #$0A   ; A = 10
@@ -80,9 +82,9 @@ Starting from Day 05, **the testbench (`day08/sim/`) is provided in a complete s
     LDA #$FF   ; A = -1
     ADC #$01   ; A = 0, C = 1, Z = 1 (overflow)
     ```
+
 - **Simulation**: Run `make sim` and verify that the result and flags change correctly and the simulation outputs `PASS`.
 - **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
-
 
 ## 🎯 Next Step
 
