@@ -39,19 +39,12 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🧪 Verification
 
-- **Test Program**:
+Starting from Day 05, **the testbench (`day18/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
-    ```asm
-    LDA #$01
-    STA $00    ; Initialize memory
-    LOOP:
-    INC $00
-    IFO        ; Debug display
-    WVS #$3A   ; Wait for 58 V-Syncs (approx. 1 second)
-    JMP LOOP
-    ```
+- **Test Program**: Execute a program using all the features learned so far.
+- **Simulation**: Run `make sim` and verify that the system works in harmony and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that all CPU states transition as intended by the program.
 
-- **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
 
 ## 🎉 Congratulations
 

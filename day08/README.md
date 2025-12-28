@@ -68,19 +68,21 @@ In the 6502, it is standard to call `SEC` (Set Carry) before an `SBC` operation.
 
 ## 🧪 Verification
 
-- **Test Program**:
+Starting from Day 05, **the testbench (`day08/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
+- **Test Program**:
     ```asm
     SEC        ; C = 1
     LDA #$0A   ; A = 10
-    SBC #$05   ; A = 5, C = 1 (No borrow)
+    SBC #$05   ; A = 5, C = 1 (no borrow)
 
     CLC        ; C = 0
     LDA #$FF   ; A = -1
-    ADC #$01   ; A = 0, C = 1, Z = 1 (Carry out)
+    ADC #$01   ; A = 0, C = 1, Z = 1 (overflow)
     ```
+- **Simulation**: Run `make sim` and verify that the result and flags change correctly and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 
-- **FPGA**: Verify on the LCD that the calculation results and flags change correctly.
 
 ## 🎯 Next Step
 

@@ -40,16 +40,19 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day13/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    LDA #$FF
-    AND #$0F   ; A = $0F, Z=0, N=0
-    ORA #$80   ; A = $8F, Z=0, N=1
-    EOR #$8F   ; A = $00, Z=1, N=0
+    LDA #$01
+    JMP loop
+    LDA #$02   ; This instruction will be skipped
+loop:
+    INX
+    JMP loop   ; Infinite loop
     ```
-
-- **FPGA**: Confirm on the LCD that the Accumulator and N/Z flags change correctly as each operation completes.
+- **Simulation**: Run `make sim` and verify that the PC is correctly updated to the jump target and the simulation outputs `PASS`.
+- **FPGA**: Observe the PC jumping non-linearly on the LCD.
 
 ## 🎯 Next Step
 

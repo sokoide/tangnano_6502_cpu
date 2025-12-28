@@ -130,9 +130,11 @@ When this is executed, the A register will contain the value `0x42`.
 
 ## 🧪 Verification
 
-- **Test Program**: Create a simple ROM that contains `A9 42` (LDA #$42). You can add `EA` (NOP) instructions after it.
-- **Simulation**: Verify that after two clock cycles, the `A` register holds the value `0x42`.
-- **FPGA**: Check the LCD. It should display "A: 42" (or whatever value you chose). The PC should stop incrementing after fetching the operand, or continue if you have more instructions.
+Starting from Day 05, **the testbench (`day06/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
+- **Test Program**: Create a simple ROM containing `A9 42` (LDA #$42).
+- **Simulation**: Run `make sim`. Success is achieved if the `A` register holds `0x42` after two clock cycles and the simulation outputs `PASS`.
+- **FPGA**: Check the LCD. It should display "A: 42" (or your chosen value).
 
 ## 🎯 Preview for Tomorrow
 

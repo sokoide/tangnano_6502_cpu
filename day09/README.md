@@ -58,17 +58,18 @@ This makes the code **position-independent**, meaning it can work correctly no m
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day09/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    LDA #$00   ; A = 0, Z = 1
-    BEQ SKIP   ; Z=1 so it should jump
-    LDA #$FF   ; This should be skipped
-    SKIP:
-    INX        ; Jump target
+    CLC        ; C = 0
+    LDA #$01
+    ADC #$02   ; A = 3, C = 0, Z = 0
+    SEC        ; C = 1
+    ADC #$01   ; A = 5, C = 0
     ```
-
-- **FPGA**: Verify on the LCD that the PC value skips the expected address range during execution.
+- **Simulation**: Run `make sim` and verify that the results and flags (NVZC) change as expected and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 
 ## 🎯 Next Step
 

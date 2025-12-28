@@ -44,19 +44,18 @@ This is the hardware implementation of "pointers" in languages like C, and it is
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day17/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    LDA #$20
-    STA $10    ; Store $20 at $0010
-    LDA #$80
-    STA $11    ; Store $80 at $0011 -> Pointer value is now $8020
-
-    LDY #$01
-    LDA ($10),Y ; Load from address ($8020 + 1) = $8021
+    JSR sub    ; Jump to Subroutine
+    HLT
+sub:
+    LDA #$42
+    RTS        ; Return from Subroutine
     ```
-
-- **FPGA**: Verify on the LCD that the final data loaded into A matches the content of the address pointed to by your memory variable.
+- **Simulation**: Run `make sim` and verify that the subroutine call and return work correctly and the simulation outputs `PASS`.
+- **FPGA**: Observe the PC jumping to the subroutine and returning correctly on the LCD.
 
 ## 🎯 Next Step
 

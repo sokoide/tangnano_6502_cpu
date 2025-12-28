@@ -51,16 +51,17 @@ It is functionally used like "extra registers" or high-speed variables for your 
 
 ## 🧪 Verification
 
-- **Test Program**:
+Starting from Day 05, **the testbench (`day11/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
+- **Test Program**:
     ```asm
     LDA #$42
-    STA $10    ; Store 0x42 at address $0010
-    LDA #$00   ; Clear A
-    LDA $10    ; Load from $0010 (A should become 0x42 again)
+    STA $10    ; Store 0x42 to address $0010
+    LDA #$00
+    LDA $10    ; Load from address $0010 (A = 0x42)
     ```
-
-- **FPGA**: Confirm on the LCD that A is restored correctly after the load operation.
+- **Simulation**: Run `make sim` and verify that the RAM write and read operations work correctly and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the A register value changes as expected.
 
 ## 🎯 Next Step
 

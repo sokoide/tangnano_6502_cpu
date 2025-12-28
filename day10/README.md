@@ -62,21 +62,18 @@ Before proceeding, make sure you understand:
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day10/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    LDA #$AA
-    PHA        ; Save A to stack
-    LDA #$00   ; Overwrite A
-    PLA        ; Restore A ($AA)
-    JSR SUB    ; Call subroutine
-    HLT        ; Should return here
-    SUB:
-      INX
-      RTS
+    SEC        ; C = 1
+    LDA #$0A
+    SBC #$05   ; A = 5, C = 1 (no borrow)
+    CLC        ; C = 0
+    SBC #$01   ; A = 3, C = 1
     ```
-
-- **FPGA**: Confirm on the LCD that A is restored correctly and the Program Counter returns to the address after `JSR`.
+- **Simulation**: Run `make sim` and verify that the SBC results and carry (borrow) flags behave as expected and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 
 ## 🏁 Phase 2 Complete
 

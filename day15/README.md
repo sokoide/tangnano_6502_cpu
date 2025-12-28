@@ -39,19 +39,11 @@ Comparisons are heavily used just before branches to make decisions, while memor
 
 ## 🧪 Verification
 
-- **Test Program**:
+Starting from Day 05, **the testbench (`day15/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
-    ```asm
-    LDA #$10
-    CMP #$10   ; Z=1, C=1
-    BNE FAIL   ; Should not jump
-
-    LDA #$00
-    STA $10    ; Save 0 at $0010
-    INC $10    ; Memory at $0010 becomes 1
-    ```
-
-- **FPGA**: Confirm on the LCD that memory values and status flags change as expected during comparisons and memory updates.
+- **Test Program**: A comprehensive program combining implemented instructions (LDA, STA, JMP, Branch, ALU, etc.).
+- **Simulation**: Run `make sim` and verify the system works correctly and the simulation outputs `PASS`.
+- **FPGA**: Confirm the register and flag states on the LCD as the program progresses.
 
 ## 🏁 Phase 3 Complete
 

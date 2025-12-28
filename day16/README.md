@@ -37,21 +37,17 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    ; Load array elements into A sequentially
-    LDX #$00
-    LOOP:
-    LDA DATA,X ; Load from DATA + X
-    INX
-    CPX #$03
-    BNE LOOP
-    HLT
-    DATA: .byte $11, $22, $33
+    LDA #$AA
+    PHA        ; Push 0xAA onto stack
+    LDA #$00
+    PLA        ; Pull from stack (A = 0xAA)
     ```
-
-- **FPGA**: Confirm on the LCD that A becomes `$11`, `$22`, and then `$33` before the program exits the loop.
+- **Simulation**: Run `make sim` and verify that data is correctly saved and restored via stack operations (Push/Pull), and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the stack pointer (S) and A register values change as expected.
 
 ## 🎯 Next Step
 

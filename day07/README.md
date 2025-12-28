@@ -67,15 +67,16 @@ This allows the CPU to efficiently read data from tables or arrays in memory.
 
 ## 🧪 Verification
 
-- **Test Program**:
+Starting from Day 05, **the testbench (`day07/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
+- **Test Program**:
     ```asm
     LDA #$40
     TAX        ; X = 0x40
     INX        ; X = 0x41
     TXA        ; A = 0x41
     ```
-
+- **Simulation**: Run `make sim` and verify that the registers change as expected and the simulation outputs `PASS`.
 - **FPGA**: Verify on the LCD that the X register changes as expected.
 
 ## 🎯 Next Step

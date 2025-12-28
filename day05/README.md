@@ -113,8 +113,10 @@ Implementing only the PC allows us to verify the entire toolchain—from SystemV
 
 ## 🧪 Verification
 
-- **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
-- **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
+Starting from Day 05, **the testbench (`day05/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
+- **Simulation**: Run `make sim`. Success is achieved if the `PC` increments (`8000` -> `8001` -> `8002` ...) and the simulation outputs `PASS`.
+- **FPGA**: If the PC value appears on the LCD and counts up, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock further in `lcd_demo.sv`).
 
 ## 🎯 Preview for Tomorrow
 

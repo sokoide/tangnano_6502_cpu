@@ -39,17 +39,18 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🧪 Verification
 
+Starting from Day 05, **the testbench (`day14/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+
 - **Test Program**:
-
     ```asm
-    LDA #$01
-    ASL A      ; A = $02, C=0
-    ASL A      ; A = $04, C=0
-    LDA #$80
-    ASL A      ; A = $00, C=1, Z=1
+    LDX #$05
+loop:
+    DEX
+    BNE loop   ; Repeat until X is 0
+    BRK
     ```
-
-- **FPGA**: Observe the bits moving left/right on the LCD and confirm that the edge bits correctly transfer to the Carry flag.
+- **Simulation**: Run `make sim` and verify that conditional branching works correctly based on flags and the simulation outputs `PASS`.
+- **FPGA**: Observe the loop execution and final stop at a specific address on the LCD.
 
 ## 🎯 Next Step
 
