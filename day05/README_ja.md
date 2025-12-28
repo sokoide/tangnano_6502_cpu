@@ -28,42 +28,84 @@ Day 04 で作成した LCD 表示回路に CPU の PC の値を接続し、PC �
 
 ## 🏗️ アーキテクチャ
 
-今回は非常にシンプルです。
+CPU の中身はまだ空っぽですが、すべての動作の基本となるプログラムカウンタ（PC）を中心に構成されます。
 
 ```mermaid
-graph LR
-    CLK --> CPU
-    RESET --> CPU
-    subgraph CPU
-        PC[Program Counter]
+graph TD
+    subgraph "CPU (cpu.sv)"
+        subgraph "内部レジスタ"
+            PC[Program Counter 16-bit]
+        end
+        
+        CLK[clk] --> PC
+        RST[rst_n] --> PC
+        EN[pc_enable] --> PC
+        
+        PC --> AB[address_bus 16-bit]
+        PC --> DPC[debug_pc 16-bit]
     end
-    CPU -- Debug Info (PC) --> LCD
 ```
 
 ## 🛠️ 実装ステップ
 
-1. **`cpu.sv` の作成**:
-    - 入力: `clk`, `rst_n`
-    - 出力: `address_bus` (16bit), `debug_pc` (16bit)
-2. **PC の実装**:
-    - リセット時に `0x8000` に初期化。
-    - イネーブル信号が有効なときに `PC <= PC + 1` するロジックを記述。
-3. **トップモジュールへの統合**:
-    - `lcd_demo.sv` を改造し、作成した `cpu` インスタンスを接続。
-    - LCD の画面上に `debug_pc` の値を 16 進数で表示するように `vram` への書き込みロジックを修正。
+### ステップ 1: CPU モジュール (`cpu.sv`) の作成
+
+CPU の最小限のインターフェースと、PC がインクリメントされるロジックを記述します。
+
+```mermaid
+graph TD
+    Reset{rst_n == 0?} -- Yes --> P8000[PC = 0x8000]
+    Reset -- No --> Enable{pc_enable == 1?}
+    Enable -- Yes --> Inc[PC = PC + 1]
+    Enable -- No --> Hold[PC = PC]
+```
+
+1. **PC の初期化**: 6502 は通常 `0xFFFC` から開始しますが、このプロジェクトでは簡略化のため `0x8000` を開始アドレスとします。
+2. **PC の更新**: クロックの立ち上がりで、リセット解除かつ `pc_enable` が有効な時に `+1` します。
+
+### ステップ 2: 画面表示 (`lcd_demo.sv`) との統合
+
+CPU の内部状態（`debug_pc`）を LCD に表示するための「デバッグ表示パイプライン」を完成させます。
+
+```mermaid
+graph TD
+    subgraph "CPU"
+        PC[debug_pc]
+    end
+    
+    subgraph "LCD Demo (lcd_demo.sv)"
+        Writer[VRAM Writer State Machine]
+        VRAM[VRAM SDPB]
+        SD[LCD Panel]
+    end
+    
+    PC -->|16進数変換| Writer
+    Writer -->|'P', 'C', ':', 'X', 'X', 'X', 'X'| VRAM
+    VRAM -->|テキスト描画| SD
+```
+
+1. **インスタンス化**: `lcd_demo.sv` の中で `cpu` モジュールを実体化します。
+2. **書き込みロジック**: PC の値を 16 進数文字（0-F）に変換し、VRAM の特定のアドレス（画面の端など）に書き込むようにステートマシンを修正します。
 
 ## 📘 概念: プログラムカウンタ (PC) とは？
 
-**PC (Program Counter)** は、CPU が **「次にメモリのどこを読むべきか」** を覚えているためのレジスタ（記憶場所）です。
+**PC (Program Counter)** は、CPU が **「次にメモリのどこを読むべきか」** を覚えているためのレジスタです。
 
-**わかりやすい例え:**
-PC は、本に挟んだ **「しおり（ブックマーク）」** だと思ってください。あるいは、アセンブリデバッグをしたことがあるなら **インストラクションポインタ (IP)** そのものです。
+```mermaid
+graph LR
+    Start([リセット]) --> Init[PC = 0x8000]
+    Init --> Fetch[フェッチ: PCをアドレスバスに出力]
+    Fetch --> Execute[実行: PCをインクリメント]
+    Execute --> Fetch
+```
 
-1. しおりのページにある命令を読む。
-2. その命令を実行する。
-3. しおりを次の行（アドレス）に進める。
+本に挟んだ **「しおり」** をイメージしてください。
 
-Day 05 ではまだメモリを読みませんが、この基本的な「しおりを先に進める」動作だけを作り、その動きを目で見て確認します。
+1. しおりのページにある命令を **フェッチ（取り出し）** する。
+2. その命令を **実行** する。
+3. しおりを次の行（アドレス）に **進める**。
+
+Day 05 ではまだメモリから命令を読みませんが、この「しおりを先に進める」という CPU の心臓部の動作だけを作り、その動きを目で見て確認します。
 
 ## 💡 なぜここから始めるのか？
 
