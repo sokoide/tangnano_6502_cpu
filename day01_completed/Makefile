@@ -2,7 +2,7 @@
 # Tang Nano FPGA Development
 
 # Project configuration
-PROJECT = led_blink
+PROJECT = day01
 TOP_MODULE = top
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
@@ -17,11 +17,11 @@ $(info GWSH='$(GWSH)')
 
 ifeq ($(BOARD),20k)
     DEVICE = GW2AR-18C
-    GPRJ = led_blink_20k.gprj
+    GPRJ = day01_20k.gprj
     SRCS = top_20k.sv
 else
     DEVICE = GW1NR-9C
-    GPRJ = led_blink_9k.gprj
+    GPRJ = day01_9k.gprj
     SRCS = top_9k.sv
 endif
 
@@ -60,7 +60,7 @@ download: $(PROJECT).fs
 	rc="$$?"; \
 	cat "$$tmp"; \
 	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished\\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
 	rm -f "$$tmp"; \
 	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
 	exit "$$rc"

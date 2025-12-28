@@ -20,7 +20,11 @@ Today's goal is to implement a **Traffic Light Controller** as a practical intro
 
 ## 🏗️ Architecture
 
-A state machine cycles through defined states (Red, Green, Yellow) based on a timer.
+A state machine cycles through defined states (Red, Green, Yellow) based on a timer. In this project, we follow the **Two-Block FSM style** (or Three-Block) which is a standard industry practice for clarity and reliability.
+
+1.  **Sequential Block (`always_ff`)**: Updates the `current_state` on the clock edge.
+2.  **Combinational Block (`always_comb`)**: Determines the `next_state` based on inputs and `current_state`.
+3.  **Output Block (`assign` or `always_comb`)**: Drives outputs based on the `current_state`.
 
 ```mermaid
 stateDiagram-v2
@@ -34,13 +38,29 @@ stateDiagram-v2
 
 1. **Clock Divider / Timer**:
     - Create a counter that counts up to a certain value to create delays (e.g., 2 seconds).
+    - **Pro Tip**: Use a `parameter` for the limit so you can speed it up during simulation!
 2. **State Definition**:
-    - Use a `typedef enum` to define the states of the traffic light.
+    - Use a `typedef enum` to define the states. **Always explicitly list all states in your `case` statement.**
 3. **State Transition Logic**:
     - Implement the `always_ff` block to update the `current_state`.
     - Implement the `always_comb` block to calculate the `next_state`.
 4. **Peripheral Integration**:
-    - Connect the state outputs to the physical LEDs on your Tang Nano board.
+    - Connect the state outputs to the physical LEDs. 
+    - **Note for Tang Nano 9K**: LEDs are **Active Low** (0 = ON). You might need to invert the signals in your board wrapper.
+
+## 🧪 Simulation with Parameters
+
+To avoid waiting for 50 million cycles in simulation, we use parameters to shorten the time:
+
+```systemverilog
+// In your module
+module traffic_light #(
+    parameter TIMER_LIMIT = 26'd50_000_000
+) (...);
+
+// In your testbench
+traffic_light #(.TIMER_LIMIT(26'd10)) dut (...);
+```
 
 ## 💡 The Tick of the Clock
 

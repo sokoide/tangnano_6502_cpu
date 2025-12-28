@@ -1,24 +1,23 @@
 // Day 03 Completed: SystemVerilog Sequential Circuits
 // Integrated test module for sequential circuits
 
-module top (
+module top_core (
     input  logic       clk,
     input  logic       rst_n,
     input  logic [3:0] switches,          // Input switches
-    output logic [7:0] count_out,         // Counter output
+    output logic [5:0] leds,              // 6 LEDs
     output logic       pwm_out,           // PWM output
-    output logic       red_led,           // Traffic light red
-    output logic       yellow_led,        // Traffic light yellow
-    output logic       green_led,         // Traffic light green
     output logic       shift_serial_out,  // Shift register serial output
     output logic       div_clk_out        // Divided clock output
 );
 
     // Internal signals
+    logic [7:0] count_out;
     logic slow_clk;
     logic counter_enable;
     logic counter_overflow;
     logic [7:0] pwm_duty;
+    logic red_led, yellow_led, green_led;
 
     // Clock divider (27MHz to ~1Hz for visible operation)
     clock_divider clk_div (
@@ -84,6 +83,14 @@ module top (
         .shift_data   (),                 // Not used in this demo
         .serial_out   (shift_serial_out)
     );
+
+    // Map traffic light to LEDs
+    // On Tang Nano 9K, LEDs are Active Low (0 = ON).
+    // Let's keep logic inside core as Active High and invert in board wrapper if needed.
+    assign leds[0] = red_led;
+    assign leds[1] = yellow_led;
+    assign leds[2] = green_led;
+    assign leds[5:3] = count_out[2:0]; // Show lower bits of counter on other LEDs
 
     // Clock divider output
     assign div_clk_out = slow_clk;

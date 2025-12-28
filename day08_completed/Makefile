@@ -17,11 +17,11 @@ COMMON_SRCS = top.sv lcd_demo.sv cpu.sv rom.sv \
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
+  GPRJ = day08_20k.gprj
   SRCS = top_20k.sv $(COMMON_SRCS)
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
+  GPRJ = day08_9k.gprj
   SRCS = top_9k.sv $(COMMON_SRCS)
 endif
 
@@ -53,7 +53,7 @@ download: $(PROJECT).fs
 	rc="$$?"; \
 	cat "$$tmp"; \
 	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
 	rm -f "$$tmp"; \
 	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
 	exit "$$rc"

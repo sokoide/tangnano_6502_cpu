@@ -47,19 +47,8 @@ module traffic_light #(
                     next_state = RED_STATE;
             end
 
-            GREEN_STATE: begin
-                if (timer >= TIMER_LIMIT_GREEN)
-                    next_state = YELLOW_STATE;
-                else
-                    next_state = GREEN_STATE;
-            end
-
-            YELLOW_STATE: begin
-                if (timer >= TIMER_LIMIT_YELLOW)
-                    next_state = RED_STATE;
-                else
-                    next_state = YELLOW_STATE;
-            end
+            // TODO: Implement GREEN_STATE (transitions to YELLOW_STATE)
+            // TODO: Implement YELLOW_STATE (transitions back to RED_STATE)
 
             default: begin
                 next_state = RED_STATE;

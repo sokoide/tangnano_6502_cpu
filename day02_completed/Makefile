@@ -16,12 +16,12 @@ SRCS = alu_4bit.sv
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
-  TOP_SRCS = hw_top_20k.sv $(SRCS)
+  GPRJ = day02_20k.gprj
+  TOP_SRCS = top_20k.sv $(SRCS)
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
-  TOP_SRCS = hw_top_9k.sv $(SRCS)
+  GPRJ = day02_9k.gprj
+  TOP_SRCS = top_9k.sv $(SRCS)
 endif
 
 .PHONY: all clean download help tools-check sim sim-build test tools-check-sim
@@ -51,7 +51,7 @@ download: $(PROJECT).fs
 	rc="$$?"; \
 	cat "$$tmp"; \
 	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished\\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
 	rm -f "$$tmp"; \
 	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
 	exit "$$rc"

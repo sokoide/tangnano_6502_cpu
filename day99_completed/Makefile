@@ -17,7 +17,7 @@ SRCS= \
 # src/gowin_rpll_9K/gowin_rpll40.v \
 
 BOARD ?= 9k
-PROJECT := lcd_cpu_bsram
+PROJECT := day99
 BITSTREAM_BASE := $(PROJECT)_$(BOARD)
 PROJ := $(BITSTREAM_BASE).gprj
 export PROJ
@@ -76,14 +76,14 @@ $(FS): $(SRCS) $(TOP_WRAPPER)
 # 5: embFlash Erase,Program;
 # ...
 download: $(FS)
-	# SRAM
-	@fs="$(FS)"; \
+	@echo "Programming Tang Nano $(BOARD)..."
+	@fs="$(abspath $(FS))"; \
 	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
 	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
 	rc="$$?"; \
 	cat "$$tmp"; \
 	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished\\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
 	rm -f "$$tmp"; \
 	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
 	exit "$$rc"
