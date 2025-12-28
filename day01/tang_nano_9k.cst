@@ -1,7 +1,14 @@
 // Tang Nano 9K Pin Constraints
 // LED Blink Project
 
+// Constraints for Tang Nano 9K
+// FPGA: GW1NR-LV9QN88PC6/I5
+
+// Clock: 27MHz crystal oscillator
 IO_LOC "clk" 52;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+// LED: On-board LED (active low or high depending on board version, usually high)
 IO_LOC "led" 10;
 IO_PORT "led" IO_TYPE=LVCMOS18;
+

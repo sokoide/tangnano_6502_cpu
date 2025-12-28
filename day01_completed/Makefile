@@ -33,18 +33,21 @@ all: $(PROJECT).fs
 # Synthesis and Place & Route
 $(PROJECT).fs: $(GPRJ) $(SRCS)
 	@$(MAKE) tools-check
-	@echo "Building for Tang Nano $(BOARD)..."
+	@echo "Building for Tang Nano $(BOARD) using $(GPRJ)..."
+	@rm -rf impl
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
+		"set_option -verilog_std sysv2017" \
 		"run all" \
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)
+	@rm -f $(BUILD_TCL)
 	@# Gowin emits bitstreams under impl/pnr/. Copy the first .fs we find to $(PROJECT).fs.
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
 	if [ -n "$$fs" ]; then \
 	  cp -f "$$fs" "$(PROJECT).fs"; \
 	else \
-	  echo "[ERROR] Bitstream not found. Look under impl/pnr/ for a .fs output." >&2; \
+	  echo "[ERROR] Bitstream not found. Check impl/pnr/ for errors." >&2; \
 	  exit 1; \
 	fi
 
@@ -79,9 +82,7 @@ tools-check:
 
 # Clean build artifacts
 clean:
-	rm -f *.fs *.rpt *.log
-
-	rm -f $(BUILD_TCL)
+	rm -rf impl $(PROJECT).fs *.rpt *.log $(BUILD_TCL)
 
 # Help
 help:

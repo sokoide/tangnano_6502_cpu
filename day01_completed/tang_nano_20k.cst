@@ -1,7 +1,14 @@
 // Tang Nano 20K Pin Constraints
 // LED Blink Project - Completed
 
+// Constraints for Tang Nano 20K
+// FPGA: GW2AR-LV18QN88C8/I7
+
+// Clock: 27MHz crystal oscillator
 IO_LOC "clk" 4;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// LED: On-board LED
 IO_LOC "led" 15;
 IO_PORT "led" IO_TYPE=LVCMOS33;
+

@@ -153,6 +153,17 @@ make BOARD=9k download   # または BOARD=20k
 
 9K/20K の差分や macOS のツールパスなどは `docs/BOARD_SETUP_ja.md` を参照してください。
 
+> [!TIP]
+> **コラム: CLI での開発（上級者向け）**
+> GUI よりもターミナルでの操作を好む方のために、`day01_completed` には `Makefile` が用意されています。
+> 以下のコマンドでビルドと書き込みが可能です。`gw_sh` と `programmer_cli` へのパスが通っていることを確認してください。
+> ```bash
+> # パスが通っていない場合は環境変数で指定
+> export GWSH=/path/to/Gowin_EDA/IDE/bin/gw_sh
+> export PRG=/path/to/Gowin_EDA/Programmer/bin/programmer_cli
+> make BOARD=9k download
+> ```
+
 ### Step 1: プロジェクト作成
 
 1. GoWin EDA を起動

@@ -1,170 +1,332 @@
-# Day 01 Completed: LED Blink Project
-
-This is the completed version of the simple LED blinking project for the Tang Nano FPGA.
+# Day 01: FPGA Basics and Environment Setup
 
 ---
 
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
-## File Structure
+## 📜 Overview
 
-- `top_9k.sv` - Top module for Tang Nano 9K (LED blink, open-drain style output)
-- `top_20k.sv` - Top module for Tang Nano 20K (LED blink, push-pull output)
-- `tang_nano_9k.cst` - Pin constraints for Tang Nano 9K
-- `tang_nano_20k.cst` - Pin constraints for Tang Nano 20K
-- `led_blink_9k.gprj`, `led_blink_20k.gprj` - GoWin EDA project files
-- `Makefile` - Build automation
+Welcome to the first step of building your own 6502 CPU! Before diving into complex logic, you need to get comfortable with the hardware and development environment.
 
-## Functionality
+The goal of Day 01 is to set up the FPGA toolchain and implement the hardware equivalent of "Hello World": **Blinking an LED**.
 
-- Divides the 27MHz clock with a 25-bit counter
-- Blinks the LED at approximately 0.8Hz (about 1.25-second intervals)
-- Compatible with both Tang Nano 9K and 20K
+## 🎯 Learning Objectives
 
-## How to Build
+- **Hardware Specifications**: Understand the basic configuration of Tang Nano 9K/20K.
+- **Toolchain**: Master the basic workflow of GoWin EDA.
+- **RTL Development**: Create your first SystemVerilog project.
+- **FPGA Programming**: Perform synthesis, place & route, and verify operation on real hardware.
 
-### For Tang Nano 9K
+## 📚 Preparation
 
-```bash
-make BOARD=9k download
+### Hardware
+
+- Tang Nano 9K or Tang Nano 20K
+- USB-C Cable
+- PC (Windows/Linux/macOS)
+
+### Software Prerequisites
+
+Install the following software:
+
+[Required Software(PREREQS.md)](../docs/PREREQS.md)
+
+## 🏗️ Architecture
+
+The first design is very simple: a "clock divider" that slows down the high-speed clock signal to a speed visible to the human eye.
+
+```mermaid
+graph LR
+    CLK[27MHz Oscillator] --> CPU[Clock Divider]
+    CPU --> LED(User LED)
 ```
 
-### For Tang Nano 20K
+## 🛠️ Implementation Steps
 
-```bash
-make BOARD=20k download
+1. **Create Project**:
+    - Create a new project named `led_blink` in Gowin EDA.
+    - Select the correct device for your board (9K or 20K).
+2. **Implement Logic (`top.sv`)**:
+    - Implement a 25-bit counter.
+    - Connect the Most Significant Bit (MSB) of the counter to the LED output.
+3. **Set Constraints (`.cst`)**:
+    - Map the logical signal names in your code (`clk`, `led`) to the actual physical pins on the FPGA.
+4. **Build and Program**:
+    - Run Synthesis and Place & Route.
+    - Download the bitstream (`.fs`) to the FPGA using the Programmer tool.
+
+## 💡 From Software Thinking to Hardware Thinking
+
+For software developers, the biggest mental shift is understanding that **"this is not a program."** You are designing **the structure of a circuit** using SystemVerilog. The logic you describe happens **all at once (in parallel)**, unless you use a clock to control timing.
+
+1. **Design (RTL)** - Describe logic using HDL (Hardware Description Language)
+2. **Synthesis** - Convert RTL into connections of LUTs/FFs/RAMs (Netlist)
+3. **Place & Route** - Map the netlist to physical resources inside the FPGA
+4. **Bitstream Generation** - Generate the binary file to write to the FPGA
+5. **Programming** - Write the bitstream to the FPGA
+
+## 📖 Theory
+
+### A Hint for Software Engineers: Switching to Hardware Thinking
+
+If you're coming from a software background, the biggest mental shift is this: **you are not writing a program.** You are **describing a hardware circuit.**
+
+- **Sequential vs. Parallel:** A CPU runs instructions one by one. In an FPGA, everything you describe happens **at the same time (in parallel)**, unless you explicitly tell it to happen in sequence using a clock.
+- **Code describes structure, not execution:** Your SystemVerilog code describes how components are wired together. An `assign led = a & b;` statement doesn't "run" once; it creates a physical AND gate connected to `a`, `b`, and `led`.
+- **The Clock is King:** The clock signal (`clk`) is what brings order to the parallelism. It allows you to create sequential logic (e.g., "on the next clock tick, increment this counter"). This is what the `always_ff @(posedge clk)` block does.
+
+Keep this in mind as you learn. You are a circuit designer, not just a programmer!
+
+#### Analogy: The Build Process
+
+- **Synthesis** $\approx$ **Compilation**: Checks syntax and translates your code into low-level logic primitives (gates, LUTs).
+- **Place & Route** $\approx$ **Linking + Physical Layout**: Decides exactly _where_ on the chip each piece of logic goes and connects the physical wires. This is computationally intensive, which is why it often takes longer than software compilation!
+
+### Tang Nano Basic Specifications
+
+**Tang Nano 9K:**
+
+- FPGA: Gowin GW1NR-9C
+- Logic Elements: 8,640 LUT4
+- Memory: 468Kbit BSRAM
+- PLLs: 2
+- I/O Pins: 63
+
+**Tang Nano 20K:**
+
+- FPGA: Gowin GW2AR-18C
+- Logic Elements: 20,736 LUT4
+- Memory: 828Kbit BSRAM
+- PLLs: 4
+- I/O Pins: 107
+
+### Glossary (first-time FPGA terms)
+
+This Day introduces a few terms you’ll keep seeing later. Here’s what they mean.
+
+#### RTL (Register-Transfer Level)
+
+**RTL** is the style of HDL code where you describe:
+
+- **Registers** (state updated on a clock edge), and
+- **Combinational logic** (pure “wires/logic” between registers).
+
+In practice, your `.sv` files (like `top.sv`) are RTL.
+
+#### LUT / FF / (Block) RAM
+
+FPGA chips are built from configurable building blocks:
+
+- **LUT (Look-Up Table)**: implements small boolean logic (like AND/OR/XOR and small truth tables).
+    Many designs are “mapped” into LUTs.
+- **FF (Flip-Flop)**: a 1-bit register that stores state and updates on a clock edge (`posedge`/`negedge`).
+- **RAM / BSRAM (Block SRAM)**: on-chip memory blocks (used for ROM/RAM/FIFOs, etc.).
+
+Later, when we say “Synthesis maps RTL into LUT/FF/RAM”, this is what we mean.
+
+#### Pull-up / Pull-down (why inputs need them)
+
+If an input pin is not driven by anything, it can “float” and randomly read as 0 or 1.
+A **pull-up** biases it weakly toward 1, and a **pull-down** biases it weakly toward 0.
+
+```mermaid
+flowchart LR
+  subgraph Floating
+    F[Input pin] --> Q1["can read 0 or 1<br/>(unstable)"]
+  end
+  subgraph Pull-up
+    PU[Input pin] --> R1[weak resistor to VCC] --> ONE[stable '1' when not driven]
+  end
+  subgraph Pull-down
+    PD[Input pin] --> R0[weak resistor to GND] --> ZERO[stable '0' when not driven]
+  end
 ```
 
-## Verification
+On FPGA pins, pull-ups/downs are often configured via constraints (see `PULL_MODE` below).
 
-After programming, confirm that the LED on the board blinks at approximately 1.25-second intervals.
+## 🛠️ Practice: Blinking LED Project
 
-## What is a `.cst` (constraint) file?
+If you want to run this on real hardware with minimal setup friction, use the working reference project in `day01_completed/`:
+This completed project contains board-specific files for both Tang Nano 9K and 20K, which is the recommended way to run the examples.
 
-FPGA designs don’t run on a “generic board”. The same RTL can be wired to different packages/boards, so the FPGA tools need a mapping from **logical port names** (like `clk`, `led`) to **physical pins**.
+```bash
+cd day01_completed
+make help
+make BOARD=9k download   # or BOARD=20k
+```
 
-Gowin uses `.cst` files for this. You will typically see:
+Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.md` (or `docs/BOARD_SETUP_ja.md` for Japanese).
 
-- `IO_LOC "signal" <pin>;`
-  Assigns a design port (or top-level signal) to a physical package pin number.
-- `IO_PORT "signal" ...;`
-  Sets electrical I/O properties for that pin.
+> [!TIP]
+> **Pro Tips: For CLI Users**
+> If you prefer working in the terminal rather than the GUI, we've provided a `Makefile` in `day01_completed`. 
+> You can build and program the FPGA using just a few commands. Ensure `gw_sh` and `programmer_cli` are in your `PATH` or set them as environment variables.
+> ```bash
+> export GWSH=/path/to/Gowin_EDA/IDE/bin/gw_sh
+> export PRG=/path/to/Gowin_EDA/Programmer/bin/programmer_cli
+> make BOARD=9k download
+> ```
 
-For example, in `tang_nano_9k.cst`:
+### Step 1: Create Project
 
-- `IO_LOC "clk" 52;` means the `clk` port is physically connected to pin 52.
-- `IO_PORT "clk" IO_TYPE=LVCMOS33 ...;` means the input expects 3.3V CMOS levels.
+1. Launch GoWin EDA
+2. Select "File" → "New Project"
+3. Project name: `led_blink`
+4. Device selection:
+    - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
+    - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
 
-### Common `IO_PORT` options (beginner-friendly)
+### Step 2: Create HDL Code
 
-- `IO_TYPE=...`
-  The I/O standard (voltage level + electrical behavior).
-  - `LVCMOS33`: 3.3V CMOS logic levels.
-  - `LVCMOS18`: 1.8V CMOS logic levels.
-    Your board may have different banks powered at different voltages, so output pins often _must_ match the bank voltage.
-- `PULL_MODE=...`
-  Built-in weak pull resistor configuration (when the pin is not actively driven).
-  - `UP`: weak pull-up.
+Create a `top.sv` file and write the following code:
+
+```systemverilog
+module top (
+    input  logic clk,    // 27MHz clock
+    output logic led     // LED output
+);
+
+    // Clock divider for visible blinking (approx. 1Hz)
+    logic [24:0] counter;
+
+    always_ff @(posedge clk) begin
+        counter <= counter + 1;
+    end
+
+    // Blink LED (use the most significant bit of the counter)
+    assign led = counter[24];
+
+endmodule
+```
+
+#### Understanding `wire`, `logic`, `always_ff`, `posedge`, `assign` with a Diagram
+
+This small module already contains most of the “core grammar” you’ll use later:
+
+```mermaid
+flowchart LR
+  CLK(("clk<br/>(input logic)")) --> FF["FFs: logic [24:0] counter<br/>(always_ff @ posedge clk)"]
+  FF -->|"counter[24]"| COMB["combinational wiring<br/>(assign led = ...)"]
+  COMB --> LED(("led<br/>(output logic)"))
+```
+
+- `logic`: The modern SystemVerilog data type that can be used for both wires and registers. As a rule for beginners, **you should prefer `logic` for almost everything**.
+  - If you drive it with `assign`, it acts like a wire.
+  - If you drive it inside `always_ff`, it acts like a register.
+- `wire`: The older Verilog type for connecting components. You only strictly need it for signals with multiple drivers (like bidirectional buses), which we don't use here.
+- `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. `logic` is generally recommended for new SystemVerilog code.
+
+- `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
+- `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
+
+**Important Rule for Software Engineers:**
+
+- Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
+- Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
+- Use `<=` (non-blocking assignment) inside `always_ff` to ensure all registers update simultaneously at the clock edge.
+  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERVERILOG_CHEATSHEET.md) for details.
+
+### Step 3: Create Constraint File
+
+Create a `tang_nano.cst` file:
+
+**Tang Nano 9K:**
+
+```systemverilog
+IO_LOC "clk" 52;
+IO_LOC "led" 10;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_PORT "led" IO_TYPE=LVCMOS18;
+```
+
+**Tang Nano 20K:**
+
+```systemverilog
+IO_LOC "clk" 4;
+IO_LOC "led" 15;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_PORT "led" IO_TYPE=LVCMOS33;
+```
+
+#### What is a `.cst` file? What are `IO_TYPE` / `PULL_MODE`?
+
+A `.cst` file tells the FPGA tools how your top-level ports connect to real pins and what electrical settings to use.
+
+- `IO_LOC "name" <pin>;` maps a port name to a physical pin number.
+- `IO_PORT "name" ...;` sets electrical properties.
+
+Common options:
+
+- `IO_TYPE=LVCMOS33` / `LVCMOS18`: the I/O voltage standard (3.3V / 1.8V).
+- `PULL_MODE=UP|DOWN|NONE`:
+  - `UP`: weak pull-up (helps prevent floating inputs).
   - `DOWN`: weak pull-down.
   - `NONE`: no pull resistor.
-    For clock inputs you usually want `NONE` (external oscillator drives it). For buttons/switches, a pull-up/down can make the signal stable when not pressed.
-- `DRIVE=...` (for outputs)
-  Output drive strength (mA). Higher is “stronger”, but can increase noise/EMI; use what your board needs.
 
-## FPGA build flow: Synthesis vs Place & Route
+Clock input pins are normally driven strongly by the board oscillator, so `PULL_MODE=NONE` is typical.
 
-FPGA toolchains typically do:
+### Step 4: Synthesize and Place & Route
 
-```mermaid
-flowchart TD
-  A[SystemVerilog RTL<br/>top_9k.sv / top_20k.sv] --> B[Synthesis<br/>RTL → LUT/FF/RAM netlist]
-  B --> C[Place & Route<br/>place cells + route wires]
-  C --> D["Bitstream generation<br/>.fs (configuration data)"]
-  D --> E["Programming<br/>download to FPGA (SRAM)"]
-```
+1. Run "Process" → "Synthesize"
+2. Confirm there are no errors
+3. Run "Process" → "Place & Route"
 
-1. **Synthesis**
-   Converts your SystemVerilog into a network of logic primitives (LUTs, flip-flops, RAM blocks, etc.).
-2. **Place & Route (P&R)**
-   Physically places those primitives onto actual resources on the FPGA chip and routes the wires between them, meeting timing constraints if possible.
-3. **Bitstream generation**
-   Produces a configuration file (e.g. `.fs`) that programs the FPGA.
-4. **Programming**
-   Downloads the bitstream into the FPGA (SRAM) so it starts running on hardware.
+### Step 5: Programming
 
-## SystemVerilog basics used here
+1. Select "Process" → "Program Device"
+2. Connect the Tang Nano via USB
+3. Run "SRAM Program"
+4. Confirm that the LED blinks at approximately 0.8-second intervals
 
-```mermaid
-flowchart LR
-  subgraph Clocked logic
-    clk((clk)) --> ff["Counter register<br/>(flip-flops)"]
-    ff -->|"counter[24]"| comb[Combinational logic]
-  end
-  comb --> led((led))
-```
+## 🔧 Troubleshooting
 
-### `always_ff` / `posedge` (clocked logic)
+### Common Issues
 
-In this project, the counter is a _register_ that updates on the rising edge of the clock:
+1. **Device not recognized**
 
-- `posedge clk` means “when `clk` goes from 0 → 1”.
-- In a clocked block you typically use **non-blocking assignment** `<=`:
-  - `counter <= counter + 1;` means “update `counter` after the clock edge”.
-  - This models flip-flops and avoids common simulation mismatches.
+    - Check if the USB driver is installed correctly
+    - Check if the switch on the Tang Nano is in the correct position
 
-You’ll see `always @(posedge clk)` here; many codebases prefer `always_ff @(posedge clk)` (a SystemVerilog keyword that helps catch mistakes). Both represent edge-triggered sequential logic, but `always_ff` enforces stricter rules.
+2. **Synthesis error**
 
-### `assign` (continuous combinational wiring)
+    - Check for syntax errors in the SystemVerilog code
+    - Confirm that the module name and file name match
 
-`assign led = counter[24];` is a **continuous assignment**:
+3. **Place & Route error**
+    - Check if the pin numbers in the constraint file are correct
+    - Confirm that the constraint file corresponds to the board you are using
 
-- It describes “wiring” logic: whenever `counter[24]` changes, `led` updates immediately (combinationally).
-- This is the natural way to drive a top-level `output wire led` from a simple expression.
+## 📝 Assignments
 
-```mermaid
-flowchart LR
-  C["counter[24]"] -->|"assign"| L[led]
-```
+### Basic Assignments
 
-### “Can I just write `=`? Do I need `wire`?”
+1. Try changing the blinking speed (by changing the bit position of the counter)
+2. Make two LEDs blink alternately
+3. Change the brightness of the LED using PWM
 
-- **`=` (blocking assignment)** is mainly used inside combinational `always_comb` logic, or for temporary variables in a procedural block.
-- **`<=` (non-blocking assignment)** is the standard for flip-flops (clocked logic).
-- A signal driven by `assign ...` must be a net type (`wire`) or an `output` that behaves like a net.
-- A signal assigned inside an `always` block is typically declared as `logic` (SystemVerilog).
+### Advanced Assignments
 
-In other words, this pattern is common and correct:
+1. Control the blinking speed of the LED with a switch input
+2. Display a counter on a 7-segment display
+3. Display various colors with an RGB LED
 
-- `counter` is written in an `always @(posedge clk)` block → declare it as `logic`.
-- `led` is driven by `assign` → declare it as `wire` (or an output net).
+## 📚 What I Learned Today
 
-### Why does the 9K version use `1'bz`?
+- [ ] Basic specifications of Tang Nano
+- [ ] Basic operations of GoWin EDA
+- [ ] Basic syntax of SystemVerilog
+- [ ] Understanding of the FPGA development flow
+- [ ] Role of the constraint file
+- [ ] On-device testing
 
-On some Tang Nano 9K builds, the user LED pin is in a 1.8V I/O bank and behaves better when driven “open-drain style”:
+## 🎯 Preview for Tomorrow
 
-- `0` turns the LED **on** (sink current)
-- `Z` means **high impedance** (pin is effectively disconnected), letting the board’s pull-up/pull-down behavior define “off”
+In Day 02, we will learn in detail about combinational circuits in SystemVerilog:
 
-That’s why `top_9k.sv` uses `assign led = counter[24] ? 1'b0 : 1'bz;`.
+- How to use `always_comb`
+- Conditional branching (if-else, case)
+- Logical operations and bit manipulation
+- Connections between modules
 
-## Learning Points
-
-1. **Basic SystemVerilog Syntax**
-   - Module definition
-   - Clock-synchronous circuits using `always_ff` / `posedge`
-   - Combinational circuits using `assign`
-
-2. **Clock Division**
-   - Divider circuit using a counter
-   - Calculation of bit width (27MHz / 2^25 ≈ 0.8Hz)
-
-3. **FPGA Development Flow**
-   - Synthesis
-   - Place & Route
-   - Bitstream Generation
-   - Programming
-
-4. **Constraint File**
-   - Specifying pin assignments
-   - Setting electrical properties
+**Preparation task**: Review the basics of binary, hexadecimal, and logical operations.

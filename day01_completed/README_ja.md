@@ -1,171 +1,328 @@
-# Day 01 Completed: LED Blink Project
-
-Tang Nano FPGA用のシンプルなLEDチカチカプロジェクトの完成版です。
+# Day 01: FPGA 基礎と環境構築
 
 ---
 
-🌐 Available languages:
+🌐 対応言語:
 [English](./README.md) | [日本語](./README_ja.md)
 
-## ファイル構成
+## 📜 概要
 
-- `top_9k.sv` - Tang Nano 9K用トップ（LED点滅。open-drain風の出力）
-- `top_20k.sv` - Tang Nano 20K用トップ（LED点滅。通常のpush-pull出力）
-- `tang_nano_9k.cst` - Tang Nano 9K用ピン制約（ピン配置・電気特性）
-- `tang_nano_20k.cst` - Tang Nano 20K用ピン制約（ピン配置・電気特性）
-- `led_blink_9k.gprj`, `led_blink_20k.gprj` - GoWin EDAプロジェクトファイル
-- `Makefile` - ビルド自動化（BOARDで切り替え）
+6502 CPU 自作への第一歩へようこそ！複雑なロジックの世界に飛び込む前に、まずはハードウェアと開発環境に慣れる必要があります。
 
-## 機能
+Day 01 の目標は、FPGA のツールチェーンをセットアップし、ハードウェアにおける「Hello World」である **LED チカチカ（L チカ）** を実装することです。
 
-- 27MHzクロックを25bitカウンタで分周
-- 約0.8Hz (約1.25秒間隔) でLED点滅
-- Tang Nano 9K/20K 両対応
+## 🎯 学習目標
 
-## ビルド方法
+- **ハードウェア仕様**: Tang Nano 9K/20K の基本構成を理解する。
+- **ツールチェーン**: Gowin EDA の基本的なワークフローに慣れる。
+- **RTL 開発**: 最初の SystemVerilog プロジェクトを作成する。
+- **FPGA への書き込み**: 合成と配置配線を行い、実機で動作を確認する。
 
-### Tang Nano 9K の場合
+## 📚 事前準備
 
-```bash
-make BOARD=9k download
-```
+### ハードウェア
 
-### Tang Nano 20K の場合
+- Tang Nano 9K または Tang Nano 20K
+- USB-C ケーブル
+- PC (Windows/Linux/macOS)
 
-```bash
-make BOARD=20k download
-```
+### ソフトウェアの前提条件
 
-## 動作確認
+以下のソフトウェアをインストールしてください。
 
-プログラム後、ボード上のLEDが約1.25秒間隔で点滅することを確認してください。
+[必要なソフトウェア(PREREQS_ja.md)](../docs/PREREQS_ja.md)
 
-## `.cst`（制約ファイル）とは？
+## 🏗️ アーキテクチャ
 
-FPGAは「RTLを書けば勝手にピンにつながる」わけではありません。
-トップモジュールのポート名（例：`clk`, `led`）を、FPGAの**物理ピン番号**へ結び付ける必要があります。
-
-Gowinではその指定を `.cst` に書きます。
-
-- `IO_LOC "信号名" ピン番号;`
-  その信号をどの物理ピンに出す/入れるかを指定します。
-- `IO_PORT "信号名" ...;`
-  そのピンの電気特性（電圧、プルアップ、ドライブ強度など）を指定します。
-
-例：`tang_nano_9k.cst`
-
-- `IO_LOC "clk" 52;` → `clk` はピン52につながる
-- `IO_PORT "clk" IO_TYPE=LVCMOS33 ...;` → `clk` は3.3V CMOSの入力として扱う
-
-### よく使う `IO_PORT` の項目（初心者向け）
-
-- `IO_TYPE=...`
-  I/O規格（電圧レベルなど）です。
-  - `LVCMOS33`: 3.3V CMOS
-  - `LVCMOS18`: 1.8V CMOS
-    FPGA内部は「バンク」という単位でI/O電圧が決まることが多く、**そのバンクの電圧と一致するIO_TYPE**を選ぶ必要があります。
-- `PULL_MODE=...`
-  ピンが未駆動のときに効く弱い抵抗です。
-  - `UP`: 弱いプルアップ
-  - `DOWN`: 弱いプルダウン
-  - `NONE`: なし
-    ボタン入力などはプルアップ/ダウンで安定させます。クロック入力は外部発振器が駆動するので `NONE` が多いです。
-- `DRIVE=...`（主に出力）
-  出力の駆動強度(mA)です。強すぎるとノイズが増えることがあるため、ボードに合う値を使います。
-
-## FPGA開発フロー：合成と配置配線は何をしている？
-
-FPGAのビルドはだいたい次の流れです。
+最初の設計は、高速なクロック信号を人間が視覚的に確認できる速度まで落とす「分周器」という非常にシンプルなものです。
 
 ```mermaid
-flowchart TD
-  A[SystemVerilog RTL<br/>top_9k.sv / top_20k.sv] --> B[合成（Synthesis）<br/>RTL → LUT/FF/RAMのネットリスト]
-  B --> C[配置配線（Place & Route）<br/>部品配置 + 配線]
-  C --> D[ビットストリーム生成<br/>.fs（設定データ）]
-  D --> E[書き込み（Programming）<br/>FPGAへダウンロード（SRAM）]
+graph LR
+    CLK[27MHz 発振器] --> CPU[分周回路]
+    CPU --> LED(User LED)
 ```
 
-1. **合成（Synthesis）**
-   SystemVerilogを、FPGA内部の部品（LUT、FF、RAMなど）のつながりに変換します。
-2. **配置配線（Place & Route / P&R）**
-   その部品をFPGAのどこに置くか（配置）と、配線をどう通すか（配線）を決めます。
-   このときタイミング（動作周波数）が満たせるかも評価されます。
-3. **ビットストリーム生成**
-   FPGAに書き込むための設定データ（例：`.fs`）を作ります。
-4. **書き込み（Programming）**
-   ボードのFPGAにダウンロードして動かします。
+## 🛠️ 実装ステップ
 
-## SystemVerilogの基本（このDayで出てくるところ）
+1. **プロジェクトの作成**:
+    - Gowin EDA で `led_blink` という名前の新しいプロジェクトを作成。
+    - 使用するボード（9K または 20K）に合わせて正しいデバイスを選択。
+2. **ロジックの実装 (`top.sv`)**:
+    - 25 ビットのカウンタを実装。
+    - カウンタの最上位ビット（MSB）を LED 出力に接続。
+3. **制約の設定 (`.cst`)**:
+    - コード上の論理信号名（`clk`, `led`）を、FPGA の実際の物理ピンに割り当てる。
+4. **ビルドと書き込み**:
+    - Synthesize（合成）と Place & Route（配置配線）を実行。
+    - Programmer ツールを使用してビットストリーム（`.fs`）を FPGA にダウンロード。
+
+## 💡 ソフトウェア思考からハードウェア思考へ
+
+ソフトウェア開発者にとって最大の意識改革は、「**これはプログラムではない**」と理解することです。あなたは SystemVerilog で**回路の構造**を設計しています。記述したロジックは（クロックでタイミングを制御しない限り）すべて**同時（並列）**に動作します。
+
+1. **設計（RTL）** - HDL (Hardware Description Language) でロジックを記述
+2. **合成（Synthesis）** - RTL を LUT/FF/RAM のつながり（ネットリスト）に変換
+3. **配置配線（Place & Route）** - ネットリストを FPGA 内の物理リソースに割り当て
+4. **ビットストリーム生成** - FPGA に書き込むバイナリファイルを生成
+5. **プログラミング** - FPGA にビットストリームを書き込み
+
+## 📖 理論学習
+
+### ソフトウェアエンジニアのためのヒント：ハードウェア思考への切り替え
+
+ソフトウェア開発の経験がある方にとって、最も大きな意識の転換は「**これはプログラムではない**」という点です。 HDL は**ハードウェア回路を記述するための言語**です。
+
+- **逐次処理 vs 並列処理:** CPU は命令を一つずつ実行しますが、FPGA では、記述した回路はすべて**同時に（並列で）動作します**。クロックを使って順序を明示しない限り、すべてが並列です。
+- **コードは構造を記述する:** SystemVerilog のコードは、部品がどう配線されているかを記述します。`assign led = a & b;` は一度だけ「実行」されるのではなく、`a`、`b`、`led` に接続された物理的な AND ゲートを「生成」します。
+- **クロックがすべてを支配する:** クロック信号 (`clk`) は、並列動作に秩序をもたらすためのものです。クロックを使うことで、「次のクロックの立ち上がりで、このカウンタをインクリメントする」といった順序だった動作（シーケンシャルなロジック）を作ることができます。`always_ff @(posedge clk)` ブロックがまさにその役割を果たします。
+
+この考え方を念頭に置いて学習を進めてみてください。あなたは単なるプログラマーではなく、回路設計者になるのです！
+
+#### アナロジー：ビルドプロセス
+
+- **合成 (Synthesis)** $\approx$ **コンパイル**: 構文をチェックし、コードを低レベルの論理要素（ゲートや LUT）に変換します。
+- **配置配線 (Place & Route)** $\approx$ **リンク + 物理レイアウト**: チップ上の _どこ_ に回路を置くかを決め、物理的な配線を繋ぎます。これは計算コストが高く、ソフトウェアのコンパイルより時間がかかる主な理由です！
+
+### Tang Nano の基本仕様
+
+**Tang Nano 9K:**
+
+- FPGA: Gowin GW1NR-9C
+- 論理エレメント: 8,640 LUT4
+- メモリ: 468Kbit BSRAM
+- PLL: 2 個
+- I/O ピン数: 63
+
+**Tang Nano 20K:**
+
+- FPGA: Gowin GW2AR-18C
+- 論理エレメント: 20,736 LUT4
+- メモリ: 828Kbit BSRAM
+- PLL: 4 個
+- I/O ピン数: 107
+
+### 用語集（この Day で初めて出てくる言葉）
+
+この Day は FPGA 入門なので、以降も頻出する単語をここで定義しておきます。
+
+#### RTL（Register-Transfer Level）
+
+**RTL**は「レジスタ（クロックで更新される状態）」と「その間の組み合わせ回路」を中心に書く設計スタイルです。
+ざっくり言うと `.sv` に書く回路記述（`top.sv`など）が RTL です。
+
+#### LUT / FF /（Block）RAM
+
+FPGA は、設定可能な部品の集合体です。
+
+- **LUT（Look-Up Table）**：小さな真理値表で論理関数を実現する部品（AND/OR/XOR などはここにマッピングされることが多い）。
+- **FF（Flip-Flop）**：1 ビットのレジスタ。クロックのエッジ（`posedge`/`negedge`）で値が更新されます。
+- **RAM / BSRAM（Block SRAM）**：FPGA 内蔵のメモリブロック（ROM/RAM/FIFO などに使う）。
+
+後で「合成で RTL が LUT/FF/RAM に変換される」と言うときの LUT/FF/RAM はこれです。
+
+#### プルアップ／プルダウン（なぜ必要？）
+
+入力ピンがどこにも接続されていないと、電気的に「フワフワ（浮く）」して 0/1 が不定になりがちです。
+そこで弱い抵抗で 1 側に寄せるのが **プルアップ**、0 側に寄せるのが **プルダウン**です。
 
 ```mermaid
 flowchart LR
-  subgraph クロック同期回路
-    clk((clk)) --> ff[カウンタ（レジスタ）<br/>＝フリップフロップ]
-    ff -->|"counter[24]"| comb[組み合わせ回路]
+  subgraph "フローティング（未接続）"
+    F[入力ピン] --> Q1[0/1が不定になりやすい]
   end
-  comb --> led((led))
+  subgraph プルアップ
+    PU[入力ピン] --> R1[VCCへの弱い抵抗] --> ONE[未駆動時は'1'寄り]
+  end
+  subgraph プルダウン
+    PD[入力ピン] --> R0[GNDへの弱い抵抗] --> ZERO[未駆動時は'0'寄り]
+  end
 ```
 
-### `always_ff` / `posedge`（クロック同期回路）
+FPGA では制約（`.cst`）の `PULL_MODE` で設定することがあります。
 
-このプロジェクトではカウンタをクロックの立ち上がりで更新します。
+## 🛠️ 実習: LED チカチカプロジェクト
 
-- `posedge clk` は「`clk` が 0→1 になった瞬間」を意味します。
-- クロック同期回路では **ノンブロッキング代入** `<=` を使うのが基本です。
-  - `counter <= counter + 1;` は「クロックのタイミングで値が更新される」ことを表します。
+実機で「手順通りに動く」ことを優先する場合は、動作確認済みの完成版プロジェクト `day01_completed/` を使うのが最短です：
+この完成版プロジェクトには、Tang Nano 9K と 20K それぞれに対応したファイルが含まれており、実機で試す場合はこちらを使うことをお勧めします。
 
-コードでは `always @(posedge clk)` を使っていますが、SystemVerilogでは `always_ff @(posedge clk)` と書く流儀もあります（`always_ff` のほうが「FFとして書いている」ことが明確で、ミスを検出しやすいです）。
+```bash
+cd day01_completed
+make help
+make BOARD=9k download   # または BOARD=20k
+```
 
-### `assign`（組み合わせ回路・配線）
+9K/20K の差分や macOS のツールパスなどは `docs/BOARD_SETUP_ja.md` を参照してください。
 
-`assign led = counter[24];` のように書くと、これは**常に成り立つ配線ルール**になります。
+> [!TIP]
+> **コラム: CLI での開発（上級者向け）**
+> GUI よりもターミナルでの操作を好む方のために、`day01_completed` には `Makefile` が用意されています。
+> 以下のコマンドでビルドと書き込みが可能です。`gw_sh` と `programmer_cli` へのパスが通っていることを確認してください。
+> ```bash
+> # パスが通っていない場合は環境変数で指定
+> export GWSH=/path/to/Gowin_EDA/IDE/bin/gw_sh
+> export PRG=/path/to/Gowin_EDA/Programmer/bin/programmer_cli
+> make BOARD=9k download
+> ```
 
-- `counter[24]` が変われば `led` もすぐに変わる（組み合わせ回路）
-- `output wire led` のような「ネット（配線）」を式で駆動するのに向いています
+### Step 1: プロジェクト作成
+
+1. GoWin EDA を起動
+2. "File" → "New Project" を選択
+3. プロジェクト名: `led_blink`
+4. デバイス選択:
+    - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
+    - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
+
+### Step 2: HDL コード作成
+
+`top.sv` ファイルを作成し、以下のコードを記述:
+
+```systemverilog
+module top (
+    input  logic clk,    // 27MHz clock
+    output logic led     // LED output
+);
+
+    // Clock divider for visible blinking (約1Hz)
+    logic [24:0] counter;
+
+    always_ff @(posedge clk) begin
+        counter <= counter + 1;
+    end
+
+    // LED点滅 (counterの最上位ビットを使用)
+    assign led = counter[24];
+
+endmodule
+```
+
+#### `wire` / `logic` / `always_ff` / `posedge` / `assign` を図で理解する
+
+この短い例には、以降も何度も出てくる「回路記述の基本」が詰まっています。
 
 ```mermaid
 flowchart LR
-  C["counter[24]"] -->|"assign"| L[led]
+  CLK(("clk<br/>(input logic)")) --> FF["FF群: logic [24:0] counter<br/>(always_ff @ posedge clk)"]
+  FF -->|"counter[24]"| COMB["組み合わせ配線<br/>(assign led = ...)"]
+  COMB --> LED(("led<br/>(output logic)"))
 ```
 
-### `=`で代入しちゃだめ？ `wire`にしないとだめ？
+- `logic`: 最近の SystemVerilog で使われるデータ型で、配線とレジスタの両方に使えます。初心者向けのルールとして、**ほぼすべての場面で `logic` を使うことを推奨します**。
+  - `assign` で駆動すれば配線として振る舞います。
+  - `always_ff` 内で駆動すればレジスタとして振る舞います。
+- `wire`: 古い Verilog で配線を表す型です。複数のドライバを持つ信号（双方向バスなど）には必須ですが、このコースでは使用しません。基本的には `logic` で代用可能です。
+- `reg`: 古い Verilog で値を保持する変数のためのデータ型で、`always` ブロック内で使われます。新しい SystemVerilog のコードでは一般的に `logic` が推奨されます。
 
-結論から言うと、「どこで代入するか」で使い分けます。
+- `always_ff @(posedge clk)`: これは**シーケンシャル（順序）かつクロック同期**のロジックブロックを記述します。このブロック内のコードは、`clk` 信号の立ち上がりエッジ（0 から 1 への遷移）でのみ実行されます。これにより、状態を保持する**レジスタ**（フリップフロップなど）が作られます。
+- `assign`: このキーワードは**組み合わせ（Combinational）ロジック**を作ります。これは、直接的な配線接続やロジックゲートのように、常に真である関係を記述します。例えば、`assign led = counter[24];` は、`counter` レジスタの 25 番目のビットを `led` 出力に直接接続する配線を生成します。
 
-- **クロック同期回路**（`always @(posedge clk)` など）では `<=` を使うのが基本
-  → 代入される信号は `logic`（SystemVerilog）で宣言します。
-- **`assign` で駆動する信号**は、`wire`（ネット）として扱うのが自然
-  → `output wire led` を `assign` で駆動する、という形がよくあります。
+**ソフトウェアエンジニアのための重要ルール:**
 
-「`wire`してはいけない」わけではなく、**`always`ブロックで代入する信号を`wire`にすると（古いVerilogでは）扱えない**、というのがポイントです。
+- `always_ff` は **メモリ（状態）** を持つ部品を作ると考えてください。クロックが「刻む」ときにだけ変化します。
+- `assign` は **メモリを持たない** 部品を作ると考えてください。入力が変化すると、出力は _即座に_ 変化します。これが並列ハードウェアの本質です。
+- `always_ff` の中では `<=` （ノンブロッキング代入）を使い、すべてのレジスタがクロックエッジで同時に更新されるようにします。
+  - **重要**: `always_ff` で `=` を使うとバグの原因になります。詳しくは [SystemVerilog チートシート](../docs/SYSTEMVERILOG_CHEATSHEET_ja.md) の「代入: = vs <=」を参照してください。
 
-### 9K版で `1'bz` を出している理由
+### Step 3: 制約ファイル作成
 
-Tang Nano 9Kでは、LEDピンが1.8Vバンクにあり、`1`で強く駆動すると挙動が微妙になるケースがあります。
-そのため `top_9k.sv` は open-drain風にして、
+`tang_nano.cst` ファイルを作成:
 
-- `0` を出す → LED ON（電流を吸い込む）
-- `Z`（ハイインピーダンス）→ LED OFF（ピンを駆動しない）
+**Tang Nano 9K:**
 
-というやり方を取っています。
+```systemverilog
+IO_LOC "clk" 52;
+IO_LOC "led" 10;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_PORT "led" IO_TYPE=LVCMOS18;
+```
 
-## 学習ポイント
+**Tang Nano 20K:**
 
-1. **SystemVerilogの基本構文**
-   - モジュール定義
-   - always_ff / posedge によるクロック同期回路
-   - assign文による組み合わせ回路
+```systemverilog
+IO_LOC "clk" 4;
+IO_LOC "led" 15;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_PORT "led" IO_TYPE=LVCMOS33;
+```
 
-2. **クロック分周**
-   - カウンタによる分周回路
-   - ビット幅の計算 (27MHz / 2^25 ≈ 0.8Hz)
+#### `.cst`（制約ファイル）とは？ `IO_TYPE` / `PULL_MODE` とは？
 
-3. **FPGA開発フロー**
-   - 合成 (Synthesis)
-   - 配置配線 (Place & Route)
-   - ビットストリーム生成
-   - プログラミング
+`.cst` は「論理名（`clk`, `led`）を、基板の物理ピンへ結びつけ、電気特性も指定する」ためのファイルです。
 
-4. **制約ファイル**
-   - ピン配置の指定
-   - 電気的特性の設定
+- `IO_LOC "name" ピン番号;`：その信号をどの物理ピンに割り当てるか
+- `IO_PORT "name" ...;`：そのピンの電気特性
+
+よく使う項目：
+
+- `IO_TYPE=LVCMOS33` / `LVCMOS18`：I/O の電圧規格（3.3V / 1.8V）。ボードの I/O バンク電圧に合わせます。
+- `PULL_MODE=UP|DOWN|NONE`：
+  - `UP`：弱いプルアップ（入力が浮くのを防ぐ）
+  - `DOWN`：弱いプルダウン
+  - `NONE`：なし
+
+クロック入力は基板の発振器が強く駆動するので、`PULL_MODE=NONE` が一般的です。
+
+### Step 4: 合成・配置配線
+
+1. "Process" → "Synthesize" を実行
+2. エラーがないことを確認
+3. "Process" → "Place & Route" を実行
+
+### Step 5: プログラミング
+
+1. "Process" → "Program Device" を選択
+2. Tang Nano を USB で接続
+3. "SRAM Program" を実行
+4. LED が約 0.8 秒間隔で点滅することを確認
+
+## 🔧 トラブルシューティング
+
+### よくある問題
+
+1. **デバイスが認識されない**
+
+    - USB ドライバーが正しくインストールされているか確認
+    - Tang Nano のスイッチが適切な位置にあるか確認
+
+2. **合成エラー**
+
+    - SystemVerilog の構文エラーをチェック
+    - モジュール名とファイル名が一致しているか確認
+
+3. **配置配線エラー**
+    - 制約ファイルのピン番号が正しいか確認
+    - 使用しているボードに対応した制約ファイルか確認
+
+## 📝 課題
+
+### 基礎課題
+
+1. 点滅速度を変更してみる (counter のビット位置を変更)
+2. 2 つの LED を交互に点滅させる
+3. PWM を使って LED の明度を変化させる
+
+### 発展課題
+
+1. スイッチ入力で LED の点滅速度を制御
+2. 7 セグメントディスプレイにカウンタ表示
+3. RGB LED で様々な色を表示
+
+## 📚 今日学んだこと
+
+- [ ] Tang Nano の基本仕様
+- [ ] GoWin EDA の基本操作
+- [ ] SystemVerilog の基本構文
+- [ ] FPGA 開発フローの理解
+- [ ] 制約ファイルの役割
+- [ ] 実機での動作確認
+
+## 🎯 明日の予習
+
+Day 02 では SystemVerilog の組み合わせ回路について詳しく学習します:
+
+- always_comb 文の使い方
+- 条件分岐 (if-else, case)
+- 論理演算とビット操作
+- モジュール間の接続
+
+**準備課題**: 2 進数、16 進数、論理演算の基本を復習しておきましょう。
