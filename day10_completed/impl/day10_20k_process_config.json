@@ -35,7 +35,7 @@
  "INCREMENTAL_PLACE_AND_ROUTING" : "0",
  "INCREMENTAL_PLACE_ONLY" : "0",
  "IncludePath" : [
-  "include"
+
  ],
  "Incremental_Compile" : "",
  "Initialize_Primitives" : false,
@@ -50,7 +50,7 @@
  "MULTIJUMP_MODE" : "Single",
  "MULTIJUMP_SPI_FLASH_ADDRESS" : "000000",
  "Multi_Boot" : true,
- "OUTPUT_BASE_NAME" : "lcd_cpu_bsram_20k",
+ "OUTPUT_BASE_NAME" : "day10_20k",
  "POWER_ON_RESET_MONITOR" : true,
  "PRINT_BSRAM_VALUE" : true,
  "PROGRAM_DONE_BYPASS" : false,
@@ -65,7 +65,7 @@
  "Ram_RW_Check" : false,
  "Replicate_Resources" : false,
  "Report_Auto-Placed_Io_Information" : false,
- "Route_Maxfan" : 23,
+ "Route_Maxfan" : "23",
  "Route_Option" : "0",
  "Run_Timing_Driven" : true,
  "SECURE_MODE" : false,
