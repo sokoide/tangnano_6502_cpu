@@ -12,7 +12,7 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
-COMMON_SRCS = top.sv lcd_demo.sv cpu.sv rom.sv \
+COMMON_SRCS = top_core.sv lcd_demo.sv cpu.sv rom.sv \
 	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh
 
 ifeq ($(BOARD),20k)

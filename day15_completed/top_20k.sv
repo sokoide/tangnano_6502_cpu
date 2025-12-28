@@ -1,7 +1,7 @@
 // Day 04: Tang Nano 20K LCD preview
 
 /* verilator lint_off DECLFILENAME */
-module top_unused (
+module top (
     input  logic       ResetButton,
     input  logic       XTAL_IN,
     output logic       LCD_CLK,

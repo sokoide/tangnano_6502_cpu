@@ -1,7 +1,7 @@
 // Day 04 Completed: 6502 Register Set & Instruction Decoding
 // This module provides a test harness for the CPU's internal registers.
 
-module top (
+module top_core (
     input logic       clk,
     input logic       rst_n,
     input logic [3:0] switches, // Input switches for control

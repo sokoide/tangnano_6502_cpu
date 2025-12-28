@@ -162,7 +162,7 @@ test: sim
 # Optional: BSRAM (SDPB) smoke test using existing tb
 SIM_RAM_TOP ?= tb_top
 SIM_RAM_SRCS := \
-	src/tb_top.sv \
+	src/tb_top_core.sv \
 	sim/GSR.sv \
 	sim/Gowin_SDPB.sv
 
