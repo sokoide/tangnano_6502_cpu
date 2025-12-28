@@ -15,36 +15,48 @@ Today's goal is to build the mathematical heart of any CPU: a **4-bit ALU (Arith
 
 - **`always_comb` vs `assign`**: Learn when to use continuous assignment versus block-based logic.
 - **Arithmetic Logic Unit (ALU)**: Implement basic operations like addition, subtraction, AND, and OR.
+- **Hardware Feedback**: Notice the **faster LED blinking speed** compared to Day 01, confirming your code update.
 - **Unit Testing (Testbenches)**: Verify your logic using simulation before hitting the hardware.
 - **Verilator/GTKWave**: Master the diagnostic tools of an FPGA engineer.
 
 ## 🏗️ Architecture
 
-A combinational circuit is like a set of pipes; what goes in immediately determines what comes out.
+A combinational circuit is like a set of pipes; what goes in immediately determines what comes out. In this lesson, we use a clock divider to drive the LED, but we've adjusted the counter to blink much faster than in Day 01.
 
 ```mermaid
 graph LR
-    A[Input A] --> ALU
-    B[Input B] --> ALU
-    OP[Opcode] --> ALU
-    ALU --> Result[Result]
-    ALU --> Flags[Zero/Carry Flags]
+    CLK[27MHz] --> DIV["Clock Divider (Faster)"]
+    DIV --> LED(User LED)
 ```
 
 ## 🛠️ Implementation Steps
 
 1. **4-bit ALU**:
     - Implement the main operations using a `case` statement inside an `always_comb` block.
-    - Ensure all outputs are defined to avoid "inferred latches" (accidental memory).
-2. **Simulation & Verification**:
+    - Ensure all outputs are defined to avoid **"inferred latches"** (accidental memory).
+2. **Update LED Speed**:
+    - In `top.sv`, we now use a lower bit of the counter (e.g., `counter[22]`) to make the LED blink approximately 4 times faster than Day 01. This is a quick way to verify that your new bitstream was successfully downloaded.
+3. **Simulation & Verification**:
     - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
     - Use `make test` to run the simulation and check for errors.
-3. **Hardware Display**:
+4. **Hardware Display**:
     - Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
+
+> [!TIP]
+> **Pro Tips: Robust Cleaning**
+> The `Makefile` in this project is configured to protect your Gowin IDE project settings (`impl/*.json`). Running `make clean` will remove build artifacts like `.fs` and `.log` files but will **not** delete your IDE configuration.
 
 ## 💡 Pure Functions in Hardware
 
-Combinational circuits are basically **pure functions**. Given the same inputs, they instantly produce the same outputs. It is critical to always have a default case to ensure you don't accidentally ask the circuit to "remember" its previous state.
+Combinational circuits are basically **pure functions**. Given the same inputs, they instantly produce the same outputs.
+
+### Why `always_comb`?
+
+While `assign` is great for simple wires, `always_comb` is preferred for complex logic because:
+
+- It allows using `if-else` and `case` statements.
+- The simulator automatically warns you if you accidentally create a "latch" (memory) by forgetting an `else` or `default` case.
+- It makes the intent clear: "This block is for combinational computation."
 
 **Note**: Unlike sequential logic, `always_comb` and `assign` use `=` (blocking assignment). See [SystemVerilog Cheatsheet](../docs/SYSTEMVERILOG_CHEATSHEET.md) for details.
 

@@ -34,7 +34,7 @@ all: $(PROJECT).fs
 $(PROJECT).fs: $(GPRJ) $(SRCS)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD) using $(GPRJ)..."
-	@rm -rf impl
+	@rm -rf impl/gwsynthesis impl/pnr
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
 		"set_option -verilog_std sysv2017" \
@@ -82,7 +82,7 @@ tools-check:
 
 # Clean build artifacts
 clean:
-	rm -rf impl $(PROJECT).fs *.rpt *.log $(BUILD_TCL)
+	rm -rf impl/gwsynthesis impl/pnr $(PROJECT).fs *.rpt *.log $(BUILD_TCL)
 
 # Help
 help:

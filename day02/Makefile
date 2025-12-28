@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := all
-PROJECT = day12
+PROJECT = day02
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
-SIM_TOP ?= tb_tft
+SIM_TOP = tb_alu_4bit
 VERILATOR ?= verilator
 
 BASE := $(if \
@@ -12,23 +12,22 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
-COMMON_SRCS = lcd_demo.sv rom.sv ram.sv cpu.sv \
-	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
+SRCS = alu_4bit.sv
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
   GPRJ = hw_20k.gprj
-  SRCS = top_20k.sv $(COMMON_SRCS)
+  TOP_SRCS = $(SRCS)
 else
   DEVICE = GW1NR-9C
   GPRJ = hw_9k.gprj
-  SRCS = top_9k.sv $(COMMON_SRCS)
+  TOP_SRCS = $(SRCS)
 endif
 
 .PHONY: all clean download help tools-check sim sim-build test tools-check-sim
 all: $(PROJECT).fs
 
-$(PROJECT).fs: $(GPRJ) $(SRCS)
+$(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -36,7 +35,6 @@ $(PROJECT).fs: $(GPRJ) $(SRCS)
 		"open_project $(GPRJ)" \
 		"set_option -verilog_std sysv2017" \
 		"set_option -top_module top" \
-		"set_option -use_sspi_as_gpio 1" \
 		"run all" \
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)
@@ -53,7 +51,7 @@ download: $(PROJECT).fs
 	rc="$$?"; \
 	cat "$$tmp"; \
 	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
+	if grep -q "Finished\\." "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
 	rm -f "$$tmp"; \
 	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
 	exit "$$rc"
@@ -70,23 +68,22 @@ tools-check-sim:
 
 sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary \
 		-o V$(SIM_TOP) \
-		sim/Gowin_rPLL9_stub.sv \
-		sim/gowin_rpll40_stub.sv \
-	lcd/tb_tft.sv top_9k.sv lcd_demo.sv rom.sv ram.sv \
-	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
+		tb_alu_4bit.sv alu_4bit.sv
 
 sim: sim-build
 	@echo "[sim] Running..."
 	@./obj_dir/V$(SIM_TOP)
 
+# README compatibility
 test: sim
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
 	rm -rf obj_dir/
+
 
 help:
 	@echo "Targets: make | make download | make clean"

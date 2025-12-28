@@ -1,14 +1,18 @@
-// Testbench for 4bit ALU
-// Testbench for 4bit ALU
+// Testbench for 4-bit ALU
+// Think of this as a "Unit Test" for your hardware design.
+// This code is ONLY for simulation and will not be programmed into the FPGA.
 
 module tb_alu_4bit;
 
+    // 1. Local signals to connect to the Design Under Test (DUT)
+    // These act like variables that hold input values and capture outputs.
     logic [3:0] a, b;
     logic [1:0] op;
     logic [3:0] result;
     logic zero, carry;
 
-    // Instantiation of the unit under test
+    // 2. Instantiate the Design Under Test (DUT)
+    // This is like creating an instance of a class: ALU dut = new ALU();
     alu_4bit dut (
         .a(a),
         .b(b),
@@ -18,14 +22,19 @@ module tb_alu_4bit;
         .carry(carry)
     );
 
+    // 3. Test scenario (Initial block runs once at the start of simulation)
     initial begin
-        $display("Starting ALU 4bit tests...");
+        // Waveform generation: enables viewing signal changes in GTKWave
+        $dumpfile("tb_alu_4bit.vcd");
+        $dumpvars(0, tb_alu_4bit);
+
+        $display("Starting ALU 4-bit tests...");
 
         // Test case 1: 5 + 3 = 8
         a  = 4'd5;
         b  = 4'd3;
         op = 2'b00;
-        #10;
+        #10; // Wait for 10 time units for the signals to propagate through the logic
         assert (result == 4'd8)
         else $error("Test 1 failed: 5+3 should be 8, got %d", result);
         assert (zero == 1'b0)
@@ -88,7 +97,7 @@ module tb_alu_4bit;
         $display("Test 6 passed: 12 | 10 = %d", result);
 
         $display("All ALU tests completed successfully!");
-        $finish;
+        $finish; // End the simulation
     end
 
 endmodule

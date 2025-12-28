@@ -62,6 +62,7 @@ endif
 
 $(FS): $(SRCS) $(TOP_WRAPPER)
 	@$(MAKE) tools-check
+	@rm -rf impl/gwsynthesis impl/pnr
 	$(GWSH) proj.tcl
 
 # operation_index
@@ -91,7 +92,7 @@ wave:
 	gtkwave ./waveform.vcd
 
 clean:
-	rm -rf obj_dir waveform.*
+	rm -rf obj_dir waveform.* impl/gwsynthesis impl/pnr
 
 #--------------------------------------------------
 # Helpers

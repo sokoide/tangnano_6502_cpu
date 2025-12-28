@@ -30,6 +30,8 @@ all: $(PROJECT).fs
 $(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
+	@rm -rf impl/gwsynthesis impl/pnr
+	@rm -rf impl/gwsynthesis impl/pnr
 	@printf '%s\n' \
 		"open_project $(GPRJ)" \
 		"set_option -verilog_std sysv2017" \
@@ -37,6 +39,7 @@ $(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
 		"run all" \
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)
+	@rm -f $(BUILD_TCL)
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
 	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
 	  echo "[ERROR] Bitstream not found under impl/pnr/." >&2; exit 1; fi
@@ -78,9 +81,7 @@ sim: sim-build
 test: sim
 
 clean:
-	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-	rm -rf obj_dir/
-
+	rm -rf impl/gwsynthesis impl/pnr $(PROJECT).fs *.rpt *.log *.vcd $(BUILD_TCL) obj_dir/
 help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"
