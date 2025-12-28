@@ -27,15 +27,15 @@ module top_core (
         .clk_out  (slow_clk)
     );
 
-    // Enable counter every 1000 fast clocks for visible counting
-    logic [9:0] enable_counter;
+    // Enable counter every ~0.1s for fast visible movement (2.7M cycles @ 27MHz)
+    logic [23:0] enable_counter;
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            enable_counter <= 10'b0;
+            enable_counter <= 24'b0;
             counter_enable <= 1'b0;
         end else begin
-            if (enable_counter == 10'd999) begin
-                enable_counter <= 10'b0;
+            if (enable_counter >= 24'd2_699_999) begin
+                enable_counter <= 24'b0;
                 counter_enable <= 1'b1;
             end else begin
                 enable_counter <= enable_counter + 1;
@@ -54,7 +54,7 @@ module top_core (
     );
 
     // PWM generator - duty cycle controlled by switches
-    assign pwm_duty = {switches, 4'b0000};  // Extend switches to 8 bits
+    assign pwm_duty = {switches, 4'b0000};
 
     pwm_generator pwm (
         .clk(clk),
@@ -63,8 +63,12 @@ module top_core (
         .pwm_out(pwm_out)
     );
 
-    // Traffic light controller
-    traffic_light traffic (
+    // Traffic light controller with parameters for faster switching
+    traffic_light #(
+        .TIMER_LIMIT_RED(26'd13_500_000),    // 0.5s
+        .TIMER_LIMIT_GREEN(26'd13_500_000),  // 0.5s
+        .TIMER_LIMIT_YELLOW(26'd6_750_000)   // 0.25s
+    ) traffic (
         .clk(clk),
         .rst_n(rst_n),
         .red(red_led),
@@ -72,27 +76,26 @@ module top_core (
         .green(green_led)
     );
 
-    // Shift register
+    // Shift register (connected but not driving LEDs in this core mapping)
     shift_register shifter (
-        .clk          (slow_clk),         // Use slow clock for visible shifting
+        .clk          (slow_clk),
         .rst_n        (rst_n),
-        .shift_enable (1'b1),             // Always shifting
-        .serial_in    (switches[0]),      // Input from switch 0
-        .load_enable  (switches[1]),      // Load enable from switch 1
-        .parallel_data(count_out),        // Load counter value
-        .shift_data   (),                 // Not used in this demo
+        .shift_enable (1'b1),
+        .serial_in    (switches[0]),
+        .load_enable  (switches[1]),
+        .parallel_data(count_out),
+        .shift_data   (),
         .serial_out   (shift_serial_out)
     );
 
-    // Map traffic light to LEDs
-    // On Tang Nano 9K, LEDs are Active Low (0 = ON).
-    // Let's keep logic inside core as Active High and invert in board wrapper if needed.
+    // Map traffic light and counter to LEDs (Active High internally)
     assign leds[0] = red_led;
     assign leds[1] = yellow_led;
     assign leds[2] = green_led;
-    assign leds[5:3] = count_out[2:0]; // Show lower bits of counter on other LEDs
+    assign leds[3] = count_out[0];
+    assign leds[4] = count_out[1];
+    assign leds[5] = count_out[2];
 
-    // Clock divider output
     assign div_clk_out = slow_clk;
 
 endmodule
