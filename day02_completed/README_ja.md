@@ -84,7 +84,7 @@ flowchart LR
     subgraph "make test" の自動化フロー
         direction LR
         C(Verilator ツール)
-        D{C++コンパイラ<br/>(g++など)}
+        D{"C++コンパイラ<br/>(g++など)"}
         E[実行可能な<br/>シミュレーションプログラム]
         F[プログラム実行]
     end

@@ -89,7 +89,7 @@ flowchart LR
     subgraph "make test" Automation
         direction LR
         C(Verilator Tool)
-        D{C++ Compiler<br/>(like g++)}
+        D{"C++ Compiler<br/>(like g++)"}
         E[Executable<br/>Sim-Program]
         F[Run Program]
     end
