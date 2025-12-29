@@ -19,12 +19,38 @@
 
 ## 🏗️ 実装する命令
 
+```mermaid
+graph TD
+    A[Accumulator A]
+    Op[Operand]
+    Logic{ALU Logic}
+    Result[Result A]
+    Flags[Flags N/Z]
+
+    A --> Logic
+    Op --> Logic
+    Logic -- AND/ORA/EOR --> Result
+    Result --> Flags
+```
+
 | オペコード | ニーモニック | 説明                                   | サイクル数 |
 | :--------: | ------------ | -------------------------------------- | :--------: |
 |   `0x29`   | `AND #imm`   | A = A & オペランド                     |     2      |
 |   `0x09`   | `ORA #imm`   | A = A \| オペランド                    |     2      |
 |   `0x49`   | `EOR #imm`   | A = A ^ オペランド                     |     2      |
 |   `0x24`   | `BIT zp`     | A とメモリの AND 演算 (フラグのみ更新) |     3      |
+
+```mermaid
+graph TD
+    Mem[Memory Data]
+    A[Accumulator A]
+    Mem -->|Bit 7| N["N (Negative Flag)"]
+    Mem -->|Bit 6| V["V (Overflow Flag)"]
+    Mem & A --> AND{AND}
+    AND -->|Result == 0?| Z["Z (Zero Flag)"]
+    A -.-> NoteA("Aレジスタの値は不変")
+    style NoteA fill:#eee,stroke-dasharray: 5 5
+```
 
 ※ `BIT` 命令は、メモリの内容のビット 7 を N フラグに、ビット 6 を V フラグにコピーするという特殊な動作も持ちます。
 

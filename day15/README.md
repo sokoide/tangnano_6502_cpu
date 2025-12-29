@@ -19,6 +19,16 @@ Comparisons are heavily used just before branches to make decisions, while memor
 
 ## 🏗️ Instructions to Implement
 
+```mermaid
+sequenceDiagram
+    participant CPU
+    participant RAM
+    CPU->>RAM: Read Address A
+    RAM-->>CPU: Data D
+    Note over CPU: D = D + 1
+    CPU->>RAM: Write D+1 to Address A
+```
+
 | Opcode | Mnemonic   | Description                   | Cycles |
 | :----: | ---------- | ----------------------------- | :----: |
 | `0xC9` | `CMP #imm` | Compare A with immediate      |   2    |

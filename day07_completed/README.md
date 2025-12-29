@@ -20,6 +20,20 @@ These registers are essential for many addressing modes and are often used as lo
 
 ## 🏗️ Instructions to Implement
 
+```mermaid
+graph TD
+    A["Accumulator (A)"]
+    X[Index X]
+    Y[Index Y]
+
+    A -- TAX --> X
+    A -- TAY --> Y
+    X -- TXA --> A
+    Y -- TYA --> A
+    X -- INX --> X
+    Y -- INY --> Y
+```
+
 | Opcode | Mnemonic | Description | Cycles |
 | :----: | -------- | ----------- | :----: |
 | `0xAA` | `TAX`    | Copy A to X |   2    |

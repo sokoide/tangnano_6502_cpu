@@ -19,6 +19,16 @@ Phase 3 の締めくくりとして、値を比較してフラグを更新する
 
 ## 🏗️ 実装する命令
 
+```mermaid
+sequenceDiagram
+    participant CPU
+    participant RAM
+    CPU->>RAM: Read Address A
+    RAM-->>CPU: Data D
+    Note over CPU: D = D + 1
+    CPU->>RAM: Write D+1 to Address A
+```
+
 | オペコード | ニーモニック | 説明                        | サイクル数 |
 | :--------: | ------------ | --------------------------- | :--------: |
 |   `0xC9`   | `CMP #imm`   | A と即値を比較              |     2      |

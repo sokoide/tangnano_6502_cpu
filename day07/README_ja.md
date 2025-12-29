@@ -29,6 +29,20 @@
 
 ## 🏗️ 実装する命令
 
+```mermaid
+graph TD
+    A["Accumulator (A)"]
+    X[Index X]
+    Y[Index Y]
+
+    A -- TAX --> X
+    A -- TAY --> Y
+    X -- TXA --> A
+    Y -- TYA --> A
+    X -- INX --> X
+    Y -- INY --> Y
+```
+
 | オペコード | ニーモニック | 説明                | サイクル数 |
 | :--------: | ------------ | ------------------- | :--------: |
 |   `0xAA`   | `TAX`        | A の値を X にコピー |     2      |

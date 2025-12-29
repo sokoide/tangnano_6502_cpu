@@ -29,6 +29,15 @@ Before proceeding, make sure you understand:
 
 ## 🏗️ Status Flags
 
+```mermaid
+graph TD
+    ALU[ALU Operation] --> Result[Result]
+    Result --> N["N: Negative?"]
+    Result --> Z["Z: Zero?"]
+    ALU --> V["V: Overflow?"]
+    ALU --> C["C: Carry?"]
+```
+
 The 6502 flags are updated automatically by many instructions. We focus on the four primary arithmetic flags:
 
 **Analogy:**

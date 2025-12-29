@@ -19,6 +19,27 @@
 
 ## 🏗️ 実装する命令（例）
 
+```mermaid
+graph TD
+    subgraph "JMP (abs)"
+        Instr[Instruction<br/>JMP $1000]
+        Ptr[Pointer at $1000<br/>Contains $2034]
+        Target[Target Address<br/>$2034]
+        Instr -->|Fetch Pointer| Ptr
+        Ptr -->|Jump to| Target
+    end
+
+    subgraph "LDA (zp),Y"
+        ZP[ZP Address]
+        Ptr2[Read Pointer from ZP]
+        AddY{+ Y}
+        Eff[Effective Address]
+        ZP --> Ptr2
+        Ptr2 --> AddY
+        AddY --> Eff
+    end
+```
+
 | オペコード | Mnemonic     | 説明                                         | サイクル数 |
 | :--------: | ------------ | -------------------------------------------- | :--------: |
 |   `0x6C`   | `JMP (abs)`  | 指定番地に書かれた 16bit アドレスへジャンプ  |     5      |

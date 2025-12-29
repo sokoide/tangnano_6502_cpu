@@ -18,6 +18,17 @@ Day 11 で学んだゼロページは便利ですが、256 バイトしかあり
 
 ## 🏗️ 6502 のアドレス形式 (リトルエンディアン)
 
+```mermaid
+graph LR
+    subgraph Memory Layout for LDA $ABCD
+        Byte1[Opcode: 0xAD]
+        Byte2["Low Byte: 0xCD"]
+        Byte3["High Byte: 0xAB"]
+    end
+    
+    Byte1 --> Byte2 --> Byte3
+```
+
 6502 は **リトルエンディアン** です。16 ビットのアドレス `$ABCD` を指定する場合、メモリ上には以下のように並びます。
 
 1. オペコード

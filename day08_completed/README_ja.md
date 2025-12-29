@@ -20,6 +20,15 @@
 
 ## 🏗️ ステータスフラグ
 
+```mermaid
+graph TD
+    ALU[ALU Operation] --> Result[Result]
+    Result --> N["N: Negative?"]
+    Result --> Z["Z: Zero?"]
+    ALU --> V["V: Overflow?"]
+    ALU --> C["C: Carry?"]
+```
+
 6502 のフラグは多くの命令によって自動的に更新されます。今回は、主要な 4 つの算術フラグに焦点を当てます。
 
 - **N (Negative)**: 結果のビット 7 が 1（負数）の場合に 1。

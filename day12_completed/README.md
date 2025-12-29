@@ -18,6 +18,17 @@ In this mode, the opcode is followed by a 2-byte address (low byte, then high by
 
 ## 🏗️ 6502 Address Format (Little-Endian)
 
+```mermaid
+graph LR
+    subgraph Memory Layout for LDA $ABCD
+        Byte1[Opcode: 0xAD]
+        Byte2["Low Byte: 0xCD"]
+        Byte3["High Byte: 0xAB"]
+    end
+    
+    Byte1 --> Byte2 --> Byte3
+```
+
 The 6502 uses **Little-Endian**. When specifying a 16-bit address like `$ABCD`, it is stored in memory as follows:
 
 1. Opcode

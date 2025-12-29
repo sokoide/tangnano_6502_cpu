@@ -20,6 +20,21 @@
 
 ## 🏗️ ゼロページ・アドレッシングとは
 
+```mermaid
+graph LR
+    subgraph Instruction
+        OP[Opcode]
+        ADDR["Address<br/>(8-bit)"]
+    end
+    
+    subgraph Memory
+        ZP["Zero Page<br/>$0000-$00FF"]
+        Rest["Rest of Memory<br/>$0100-$FFFF"]
+    end
+
+    ADDR -->|Points to| ZP
+```
+
 - **アドレス範囲**: `$0000` ～ `$00FF`。
 - **メリット**: アドレス指定に 1 バイト（オフセット）しか使わないため、命令が短く、実行も高速です。
 

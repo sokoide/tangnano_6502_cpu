@@ -19,6 +19,14 @@ CPU が一直線に命令を実行するだけでは、複雑なプログラム�
 
 ## 🏗️ 実装する命令
 
+```mermaid
+graph TD
+    Fetch[Fetch Opcode] --> Decode{Decode}
+    Decode -- "BNE (Z=0?)" --> CheckZ{"Z Flag == 0?"}
+    CheckZ -- Yes --> AddOffset[PC = PC + Offset]
+    CheckZ -- No --> Next[Next Instruction]
+```
+
 | オペコード | ニーモニック | 説明                                      | 条件  |
 | :--------: | ------------ | ----------------------------------------- | ----- |
 |   `0xD0`   | `BNE`        | 等しくない（Zero フラグ=0）場合に分岐     | Z = 0 |

@@ -19,6 +19,20 @@ In this mode, the CPU accesses an address calculated by adding the value of the 
 
 ## 🏗️ Example Instructions
 
+```mermaid
+graph LR
+    Base[Base Address<br/>$1000]
+    RegX[Register X<br/>$05]
+    Adder{+}
+    Eff[Effective Address<br/>$1005]
+    Mem[Memory]
+
+    Base --> Adder
+    RegX --> Adder
+    Adder --> Eff
+    Eff -->|Access| Mem
+```
+
 | Opcode | Mnemonic    | Description                   | Cycles |
 | :----: | ----------- | ----------------------------- | :----: |
 | `0xBD` | `LDA abs,X` | Load A from address (abs + X) |   4+   |

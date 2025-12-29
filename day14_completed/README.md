@@ -19,6 +19,39 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🏗️ Instructions to Implement
 
+```mermaid
+graph LR
+    subgraph ASL
+        C1[C]
+        A1[76543210]
+        Zero[0]
+        A1 -->|MSB| C1
+        Zero -->|Fill LSB| A1
+    end
+
+    subgraph ROL
+        C2[C]
+        A2[76543210]
+        C2 -->|Into LSB| A2
+        A2 -->|MSB| C2
+    end
+
+    subgraph LSR
+        C3[C]
+        A3[76543210]
+        Zero3[0]
+        A3 -->|LSB| C3
+        Zero3 -->|Fill MSB| A3
+    end
+
+    subgraph ROR
+        C4[C]
+        A4[76543210]
+        C4 -->|Into MSB| A4
+        A4 -->|LSB| C4
+    end
+```
+
 | Opcode | Mnemonic | Description                         | Cycles |
 | :----: | -------- | ----------------------------------- | :----: |
 | `0x0A` | `ASL A`  | Arithmetic Shift Left (Fill with 0) |   2    |

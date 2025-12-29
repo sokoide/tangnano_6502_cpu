@@ -19,6 +19,15 @@ FPGA で CPU を自作する醍醐味の一つは、既存のアーキテクチ�
 
 ## 🏗️ 実装するカスタム命令
 
+```mermaid
+graph TD
+    CPU[CPU Execution] --> Fetch["Fetch 0x12 (WVS)"]
+    Fetch --> Wait{Wait for VSync?}
+    VSync[VSync Signal] --> Wait
+    Wait -- No --> Wait
+    Wait -- Yes --> Next[Next Instruction]
+```
+
 | オペコード | ニーモニック | 説明                                                              |
 | :--------: | ------------ | ----------------------------------------------------------------- |
 |   `0x12`   | `WVS #count` | **Wait for V-Sync**: 指定した回数の垂直同期信号を待つ。           |

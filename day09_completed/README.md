@@ -19,6 +19,14 @@ Instructions like `BNE` (Branch if Not Equal) and `BEQ` (Branch if Equal) check 
 
 ## 🏗️ Instructions to Implement
 
+```mermaid
+graph TD
+    Fetch[Fetch Opcode] --> Decode{Decode}
+    Decode -- "BNE (Z=0?)" --> CheckZ{"Z Flag == 0?"}
+    CheckZ -- Yes --> AddOffset[PC = PC + Offset]
+    CheckZ -- No --> Next[Next Instruction]
+```
+
 | Opcode | Mnemonic | Description                  | Condition |
 | :----: | -------- | ---------------------------- | --------- |
 | `0xD0` | `BNE`    | Branch if Not Equal (Zero=0) | Z = 0     |

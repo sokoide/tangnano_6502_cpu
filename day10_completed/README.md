@@ -20,6 +20,14 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 
 ## 🏗️ 6502 Stack Structure
 
+```mermaid
+graph TD
+    subgraph Push Operation
+        A[Register A] -->|Write to Memory| RAM[RAM Address $0100 + S]
+        S[Stack Pointer S] -->|Decrement| S_new[S = S - 1]
+    end
+```
+
 - **Location**: Fixed at addresses `$0100` to `$01FF` (Page 1).
 - **Growth**: The stack grows **downwards** (towards lower addresses).
 - **Pointer (S)**: Holds the offset within Page 1. It typically starts at `$FF` after reset.

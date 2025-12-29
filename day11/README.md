@@ -20,6 +20,21 @@ Our first step is implementing a key 6502 feature: **Zero Page Addressing**. Thi
 
 ## 🏗️ What is Zero Page?
 
+```mermaid
+graph LR
+    subgraph Instruction
+        OP[Opcode]
+        ADDR["Address<br/>(8-bit)"]
+    end
+    
+    subgraph Memory
+        ZP["Zero Page<br/>$0000-$00FF"]
+        Rest["Rest of Memory<br/>$0100-$FFFF"]
+    end
+
+    ADDR -->|Points to| ZP
+```
+
 - **Address Range**: `$0000` to `$00FF`.
 - **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
 

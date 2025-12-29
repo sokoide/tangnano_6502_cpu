@@ -20,6 +20,15 @@ This allows the CPU to perform addition (`ADC`) and subtraction (`SBC`) and obse
 
 ## 🏗️ Status Flags
 
+```mermaid
+graph TD
+    ALU[ALU Operation] --> Result[Result]
+    Result --> N["N: Negative?"]
+    Result --> Z["Z: Zero?"]
+    ALU --> V["V: Overflow?"]
+    ALU --> C["C: Carry?"]
+```
+
 The 6502 flags are updated automatically by many instructions. We focus on the four primary arithmetic flags:
 
 - **N (Negative)**: Set to 1 if bit 7 of the result is 1 (negative number).

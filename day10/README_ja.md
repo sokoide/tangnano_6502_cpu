@@ -29,6 +29,14 @@
 
 ## 🏗️ 6502 のスタック構造
 
+```mermaid
+graph TD
+    subgraph Push Operation
+        A[Register A] -->|Write to Memory| RAM[RAM Address $0100 + S]
+        S[Stack Pointer S] -->|Decrement| S_new[S = S - 1]
+    end
+```
+
 - **場所**: メモリのアドレス `$0100` ～ `$01FF`（ページ 1）に固定されています。
 - **向き**: スタックは **下方**（アドレスが減る方向）に成長します。
 - **スタックポインタ (S)**: ページ内のオフセットを保持します。リセット時は `$FF` が一般的です。

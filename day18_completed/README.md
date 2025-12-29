@@ -19,6 +19,15 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🏗️ Custom Instructions to Implement
 
+```mermaid
+graph TD
+    CPU[CPU Execution] --> Fetch["Fetch 0x12 (WVS)"]
+    Fetch --> Wait{Wait for VSync?}
+    VSync[VSync Signal] --> Wait
+    Wait -- No --> Wait
+    Wait -- Yes --> Next[Next Instruction]
+```
+
 | Opcode | Mnemonic     | Description                                                   |
 | :----: | ------------ | ------------------------------------------------------------- |
 | `0x12` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |

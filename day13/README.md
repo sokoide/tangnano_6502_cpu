@@ -19,12 +19,38 @@ These instructions enable "masking," "toggling," and "testing" specific bits—o
 
 ## 🏗️ Instructions to Implement
 
+```mermaid
+graph TD
+    A[Accumulator A]
+    Op[Operand]
+    Logic{ALU Logic}
+    Result[Result A]
+    Flags[Flags N/Z]
+
+    A --> Logic
+    Op --> Logic
+    Logic -- AND/ORA/EOR --> Result
+    Result --> Flags
+```
+
 | Opcode | Mnemonic   | Description                   | Cycles |
 | :----: | ---------- | ----------------------------- | :----: |
 | `0x29` | `AND #imm` | A = A & Operand               |   2    |
 | `0x09` | `ORA #imm` | A = A \| Operand              |   2    |
 | `0x49` | `EOR #imm` | A = A ^ Operand               |   2    |
 | `0x24` | `BIT zp`   | Test bits in memory against A |   3    |
+
+```mermaid
+graph TD
+    Mem[Memory Data]
+    A[Accumulator A]
+    Mem -->|Bit 7| N["N (Negative Flag)"]
+    Mem -->|Bit 6| V["V (Overflow Flag)"]
+    Mem & A --> AND{AND}
+    AND -->|Result == 0?| Z["Z (Zero Flag)"]
+    A -.-> NoteA("Accumulator remains unchanged")
+    style NoteA fill:#eee,stroke-dasharray: 5 5
+```
 
 _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to the V flag, which is unique._
 

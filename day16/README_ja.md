@@ -19,6 +19,20 @@
 
 ## 🏗️ 実装する命令（例）
 
+```mermaid
+graph LR
+    Base[Base Address<br/>$1000]
+    RegX[Register X<br/>$05]
+    Adder{+}
+    Eff[Effective Address<br/>$1005]
+    Mem[Memory]
+
+    Base --> Adder
+    RegX --> Adder
+    Adder --> Eff
+    Eff -->|Access| Mem
+```
+
 | オペコード | ニーモニック | 説明                               | サイクル数 |
 | :--------: | ------------ | ---------------------------------- | :--------: |
 |   `0xBD`   | `LDA abs,X`  | アドレス (abs + X) から A にロード |     4+     |
