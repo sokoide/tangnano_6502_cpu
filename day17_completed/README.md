@@ -11,6 +11,10 @@ Today, we implement the most complex and powerful addressing modes of the 6502: 
 
 In these modes, the CPU doesn't look at the data at the specified address. Instead, it looks at that address to find _another_ address, and then accesses the data there. This is the hardware implementation of "pointers" in languages like C, and it is essential for operating systems and sophisticated applications.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Pointer Concepts**: Understand how to fetch an "address of an address."

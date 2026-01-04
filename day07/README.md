@@ -11,6 +11,10 @@ In addition to the Accumulator, the 6502 has two versatile 8-bit index registers
 
 These registers are essential for many addressing modes and are often used as loop counters or offsets. We will implement instructions to transfer values between registers and perform basic increment/decrement operations.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🔙 Review: Day 06
 
 Before proceeding, make sure you understand:

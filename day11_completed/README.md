@@ -11,6 +11,10 @@ So far, all our programs have used "Immediate (`#imm`)" or "Register-to-Register
 
 Our first step is implementing a key 6502 feature: **Zero Page Addressing**. This mode allows the CPU to quickly read/write to the first 256 bytes of memory (`$0000` to `$00FF`), making it perfect for storing variables.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Zero Page Concept**: Understand the speed and convenience of accessing Page 0 (`$00xx`).

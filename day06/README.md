@@ -11,6 +11,10 @@ In Day 06, we will breathe more life into our CPU by implementing its first data
 
 We will also implement the logic to fetch an 8-bit _operand_ that follows the instruction code in memory.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🔙 Review: Day 05
 
 Before proceeding, make sure you understand:

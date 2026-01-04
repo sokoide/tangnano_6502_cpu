@@ -11,6 +11,10 @@ On Day 06, we gave our CPU its first "intelligence" by implementing the **`LDA #
 
 Today, the CPU evolved from simply "stepping forward" to "manipulating data according to instructions."
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 💡 Stepping Up: From Day 05 to Day 06
 
 In Day 05, the CPU learned its minimum movement: "just take one step (PC+1)." In Day 06, we finally tackled the core function of a CPU: "understanding instructions and moving data."

@@ -11,6 +11,10 @@ Today, we implement one of the features that makes the 6502 incredibly powerful:
 
 In this mode, the CPU accesses an address calculated by adding the value of the **X** or **Y** register to a base address. This enables efficient processing of arrays, tables, and lists using loops.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Index Calculation**: Understand the timing of adding a register value to a base address.

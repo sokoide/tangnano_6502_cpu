@@ -11,6 +11,10 @@ To wrap up Phase 3, we implement **Comparison Instructions (CMP, CPX, CPY)** and
 
 Comparisons are heavily used just before branches to make decisions, while memory inc/dec instructions are useful for managing counters stored in RAM.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **The Mechanism of Comparison**: Understand that comparing is just a subtraction where the result is discarded and only flags are updated.

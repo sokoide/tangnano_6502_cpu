@@ -11,6 +11,10 @@ A CPU that only executes instructions in a straight line isn't very capable. Tod
 
 Instructions like `BNE` (Branch if Not Equal) and `BEQ` (Branch if Equal) check the status flags (specifically the Zero flag) and jump the execution point (Program Counter) if a condition is met. This is the foundation of loops and `if` statements.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **Control Flow**: Understand how loops and conditional branches are achieved at the hardware level.

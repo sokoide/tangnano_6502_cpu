@@ -11,6 +11,10 @@ The Zero Page we learned on Day 11 is useful but limited to 256 bytes. Today, we
 
 In this mode, the opcode is followed by a 2-byte address (low byte, then high byte). This allows the CPU to read or write to any memory location, as well as interact with memory-mapped ROM and peripherals.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **16-bit Address Handling**: Fetch a full 2-byte address in Little-Endian format.

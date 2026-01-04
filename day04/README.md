@@ -11,6 +11,10 @@ Until now, we have verified operations using only LEDs—providing just "one bit
 
 In Day 04, we will build an **"LCD Debug Dashboard"** to support our CPU development. The goal today is to create the environment that will let us see CPU internals (like instructions and registers) in real-time once the CPU is brought up.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **LCD Pipeline**: Complete the flow from VRAM through Font ROM to the LCD panel.
@@ -27,10 +31,11 @@ The **Memory Map** defines how the CPU's address space is connected to various m
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Free RAM | General-purpose RAM for user programs |
-| `0x0200 - 0x7BFF` | Program ROM | Area storing the program code |
+| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
+| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
+| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
 | `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or expansion |
+| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
 
 ### VRAM to LCD Mapping
 

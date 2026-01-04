@@ -9,6 +9,10 @@
 
 In Day 04, we established a critical foundation for CPU development: **A Window into the Machine (LCD)**. By building a display pipeline, we can now visually observe what the CPU is doing inside the FPGA.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **LCD Pipeline**: Understand how pixels flow from VRAM (**BSRAM/SDPB**), through Font ROM (**pROM**), to the Panel.
@@ -68,10 +72,11 @@ Used for the **Font ROM**. It comes pre-loaded with font patterns upon power-up,
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Free RAM | General-purpose RAM for user programs |
-| `0x0200 - 0x7BFF` | Program ROM | Area storing the program code |
+| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
+| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
+| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
 | `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or expansion |
+| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
 
 ### VRAM Screen Layout
 

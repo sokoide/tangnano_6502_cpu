@@ -11,6 +11,10 @@ Today, we implement **Subroutines (Functions)**, a fundamental feature for organ
 
 The stack allows the CPU to save its "return address" before jumping to a function and to temporarily store register values (preserve state) during execution.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.

@@ -11,6 +11,10 @@ One of the best parts of building your own CPU on an FPGA is adding "original in
 
 This allows the program to halt the CPU, control VRAM writing, and perform other unique operations.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Defining Custom Instructions**: How to use unused opcodes.

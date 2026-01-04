@@ -13,6 +13,10 @@ The goal of Day 05 is to implement the most fundamental elements of a CPU: the *
 
 We connected the CPU's internal state to the LCD display circuit built on Day 04 to visually verify that the PC increments with every clock cycle.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **Implement 6502 Register Set**: Create `cpu_registers.sv` to hold the A, X, Y, SP, and P registers.

@@ -11,6 +11,10 @@ In addition to arithmetic, bitwise manipulation is a core responsibility of a CP
 
 These instructions enable "masking," "toggling," and "testing" specific bits—operations that are essential for low-level hardware control.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Bitwise Logic Implementation**: Hardware implementation of AND, OR, and XOR.

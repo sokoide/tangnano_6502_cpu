@@ -13,6 +13,10 @@ In Day 05, we will implement the **"Register Set"** for memory and the **"Progra
 
  These are the most fundamental building blocks for an autonomous CPU.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - Implement the **6502 Register Set (A, X, Y, SP, P)** as sequential logic.

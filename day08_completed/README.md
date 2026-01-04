@@ -11,6 +11,10 @@ Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's compu
 
 This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
 
+## 🧠 Memory Model Note
+
+Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+
 ## 🎯 Learning Objectives
 
 - **Integrate ALU**: Fully support 8-bit addition and subtraction.

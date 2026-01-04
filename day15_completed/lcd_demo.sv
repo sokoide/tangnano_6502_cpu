@@ -39,7 +39,7 @@ module lcd_demo (
 
     vram vram_inst (
         .clk  (LCD_CLK),
-        .rst_n(rst_n),
+        .rst_n(cpu_rst_n),
         .addr (vram_addr),
         .data (vram_data)
     );
@@ -111,6 +111,19 @@ module lcd_demo (
     logic [ 7:0] ram_data_out;
     logic [ 7:0] rom_data_out;
 
+    logic [15:0] rom_addr;
+
+    // Boot init: copy ROM program into RAM so CPU runs from BSRAM.
+    localparam int BOOT_LEN = 10;
+    logic [ 3:0] boot_index;
+    logic        boot_done;
+    logic [15:0] boot_addr;
+    logic        boot_active;
+    logic        cpu_rst_n;
+    logic [14:0] ram_addr;
+    logic [ 7:0] ram_din;
+    logic        ram_we;
+
     // Slow down PC increment for visual debugging (if on FPGA)
     logic [23:0] counter;
     logic        pc_enable;
@@ -134,7 +147,7 @@ module lcd_demo (
 
     cpu u_cpu (
         .clk(cpu_clk),
-        .rst_n(rst_n),
+        .rst_n(cpu_rst_n),
         .pc_enable(pc_enable),
         .address_bus(cpu_address_bus),
         .data_in(cpu_data_in),
@@ -150,18 +163,40 @@ module lcd_demo (
 
     // Memory (ROM)
     rom u_rom (
-        .addr(font_addr),
+        .addr(rom_addr),
         .data(rom_data_out)
     );
 
     // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
-        .addr(font_addr),
-        .write_en(cpu_write_en && (!cpu_address_bus[15])),
-        .din(cpu_data_out),
+        .addr(ram_addr),
+        .write_en(ram_we),
+        .din(ram_din),
         .dout(ram_data_out)
     );
+
+    assign boot_addr = 16'h0200 + boot_index;
+    assign boot_active = !boot_done;
+    assign cpu_rst_n = rst_n && boot_done;
+    assign rom_addr = boot_active ? boot_addr : cpu_address_bus;
+    assign ram_addr = boot_active ? boot_addr[14:0] : cpu_address_bus[14:0];
+    assign ram_din = boot_active ? rom_data_out : cpu_data_out;
+    assign ram_we = boot_active ? 1'b1 : (cpu_write_en && (!cpu_address_bus[15]));
+
+    always_ff @(posedge cpu_clk or negedge rst_n) begin
+        if (!rst_n) begin
+            boot_index <= 4'd0;
+            boot_done  <= 1'b0;
+        end else if (!boot_done) begin
+            if (boot_index == (BOOT_LEN - 1)) begin
+                boot_done <= 1'b1;
+            end else begin
+                boot_index <= boot_index + 1'b1;
+            end
+        end
+    end
+
 
     always_comb begin
         if (!cpu_address_bus[15]) begin

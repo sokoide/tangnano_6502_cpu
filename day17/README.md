@@ -18,6 +18,10 @@ Think of this as a **"Scavenger Hunt"** or **"Pointer to a Pointer"** in C (`**p
 
 This is the hardware implementation of "pointers" in languages like C, and it is essential for operating systems and sophisticated applications.
 
+## 🧠 Memory Model Note
+
+From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+
 ## 🎯 Learning Objectives
 
 - **Pointer Concepts**: Understand how to fetch an "address of an address."
