@@ -43,7 +43,7 @@ module tb_alu_4bit;
         else $error("Test 1 failed: carry flag should be 0");
         $display("Test 1 passed: 5 + 3 = %d", result);
 
-        // Test case 2: 15 + 1 = 16 (overflow)
+        // Test case 2: 15 + 1'b1 = 16 (overflow)
         a  = 4'd15;
         b  = 4'd1;
         op = 2'b00;
@@ -54,7 +54,7 @@ module tb_alu_4bit;
         else $error("Test 2 failed: zero flag should be 1");
         assert (carry == 1'b1)
         else $error("Test 2 failed: carry flag should be 1");
-        $display("Test 2 passed: 15 + 1 = %d (carry=%b)", result, carry);
+        $display("Test 2 passed: 15 + 1'b1 = %d (carry=%b)", result, carry);
 
         // Test case 3: 8 - 3 = 5
         a  = 4'd8;

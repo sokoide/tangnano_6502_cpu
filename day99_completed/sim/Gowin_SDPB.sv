@@ -15,7 +15,7 @@ module Gowin_SDPB (
 
     integer i;
     initial begin
-        for (i = 0; i < 32768; i = i + 1) begin
+        for (i = 0; i < 32768; i = i + 1'b1) begin
             mem[i] = 8'h00;
         end
         dout = 8'h00;

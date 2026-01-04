@@ -33,7 +33,7 @@ module counter_8bit (
 
             // Non-blocking assignment (<=) is mandatory here
 
-            count <= count + 1;
+            count <= count + 1'b1;
 
         end
 

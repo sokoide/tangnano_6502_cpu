@@ -193,46 +193,46 @@ module lcd_demo (
             vram_cea <= 1'b0;
             unique case (init_state)
                 S_CLEAR: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= init_addr;
                     vram_din <= 8'h20;
                     if (init_addr == VRAM_DEPTH - 1) begin
                         init_state <= S_ROW0;
                         init_idx   <= 4'd0;
                     end else begin
-                        init_addr <= init_addr + 10'd1;
+                        init_addr <= init_addr + 1'b1;
                     end
                 end
                 S_ROW0: begin
-                    vram_cea <= 1'b1;
-                    vram_ada <= (1 * COLUMNS + 4 + init_idx);
+                    vram_cea <= 1;
+                    vram_ada <= (10'd1 * COLUMNS + 10'd4 + init_idx);
                     vram_din <= row0_char(init_idx);
                     if (init_idx == ROW0_LEN - 1) begin
                         init_state <= S_ROW1;
                         init_idx   <= 4'd0;
                     end else begin
-                        init_idx <= init_idx + 4'd1;
+                        init_idx <= init_idx + 1'b1;
                     end
                 end
                 S_ROW1: begin
-                    vram_cea <= 1'b1;
-                    vram_ada <= (5 * COLUMNS + 8 + init_idx);
+                    vram_cea <= 1;
+                    vram_ada <= (10'd5 * COLUMNS + 10'd8 + init_idx);
                     vram_din <= row1_char(init_idx);
                     if (init_idx == ROW1_LEN - 1) begin
                         init_state <= S_ROW2;
                         init_idx   <= 4'd0;
                     end else begin
-                        init_idx <= init_idx + 4'd1;
+                        init_idx <= init_idx + 1'b1;
                     end
                 end
                 S_ROW2: begin
-                    vram_cea <= 1'b1;
-                    vram_ada <= (9 * COLUMNS + 10 + init_idx);
+                    vram_cea <= 1;
+                    vram_ada <= (10'd9 * COLUMNS + 10'd10 + init_idx);
                     vram_din <= row2_char(init_idx);
                     if (init_idx == ROW2_LEN - 1) begin
                         init_state <= S_DONE;
                     end else begin
-                        init_idx <= init_idx + 4'd1;
+                        init_idx <= init_idx + 1'b1;
                     end
                 end
                 default: init_state <= S_DONE;

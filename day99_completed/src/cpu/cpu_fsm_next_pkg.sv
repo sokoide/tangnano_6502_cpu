@@ -1285,7 +1285,7 @@ package cpu_fsm_next_pkg;
                     1: begin
                         next.fetched_data[7:0] = cur.dout_r;
                         next = request_data_fetch(next,
-                                                  {1'b0, ((cur.operands[14:0] + 15'd1) & RAMW15)});
+                                                  {1'b0, ((cur.operands[14:0] + 1'b1) & RAMW15)});
                     end
                     2: begin
                         logic [15:0] ind_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
@@ -1301,7 +1301,7 @@ package cpu_fsm_next_pkg;
                 unique case (cur.written_data_bytes)
                     0: begin
                         stack_addr = (STACK + {8'h00, cur.sp}) & RAMW16;
-                        next.sp = (cur.sp - 8'd1) & 8'hFF;
+                        next.sp = (cur.sp - 1'b1) & 8'hFF;
                         next.ada = stack_addr[14:0];
                         next.din = cur.pc_plus2[15:8];
                         next.cea = 1;
@@ -1311,7 +1311,7 @@ package cpu_fsm_next_pkg;
                     1: begin
                         stack_addr = (STACK + {8'h00, cur.sp}) & RAMW16;
                         ret_addr = cur.pc + 16'd2;
-                        next.sp = (cur.sp - 8'd1) & 8'hFF;
+                        next.sp = (cur.sp - 1'b1) & 8'hFF;
                         next.ada = stack_addr[14:0];
                         next.din = ret_addr[7:0];
                         next.cea = 1;
@@ -1330,21 +1330,21 @@ package cpu_fsm_next_pkg;
             8'h60: begin  // RTS
                 unique case (cur.fetched_data_bytes)
                     0: begin
-                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        new_sp = (cur.sp + 1'b1) & 8'hFF;
                         stack_addr = (STACK + {8'h00, new_sp}) & RAMW16;
                         next.sp = new_sp;
                         next = request_data_fetch(next, stack_addr);
                     end
                     1: begin
                         next.fetched_data[7:0] = cur.dout_r;
-                        new_sp = (cur.sp + 8'd1) & 8'hFF;
+                        new_sp = (cur.sp + 1'b1) & 8'hFF;
                         stack_addr = (STACK + {8'h00, new_sp}) & RAMW16;
                         next.sp = new_sp;
                         next = request_data_fetch(next, stack_addr);
                     end
                     2: begin
                         next.fetched_data[15:8] = cur.dout_r;
-                        pc1 = cur.fetched_data + 16'd1;
+                        pc1 = cur.fetched_data + 1'b1;
                         next = return_to_opcode_fetch(next, pc1 & RAMW16);
                     end
                     default: begin
@@ -1354,7 +1354,7 @@ package cpu_fsm_next_pkg;
             end
             8'h48: begin  // PHA
                 stack_addr = (STACK + {8'h00, cur.sp}) & RAMW16;
-                next.sp = (cur.sp - 8'd1) & 8'hFF;
+                next.sp = (cur.sp - 1'b1) & 8'hFF;
                 next.ada = stack_addr[14:0];
                 next.din = cur.ra;
                 next.cea = 1;
@@ -1363,7 +1363,7 @@ package cpu_fsm_next_pkg;
             end
             8'h68: begin  // PLA
                 if (cur.fetched_data_bytes == 0) begin
-                    new_sp = (cur.sp + 8'd1) & 8'hFF;
+                    new_sp = (cur.sp + 1'b1) & 8'hFF;
                     stack_addr = (STACK + {8'h00, new_sp}) & RAMW16;
                     next.sp = new_sp;
                     next = request_data_fetch(next, stack_addr);
@@ -1385,7 +1385,7 @@ package cpu_fsm_next_pkg;
                     cur.flg_c
                 };
                 stack_addr = (STACK + {8'h00, cur.sp}) & RAMW16;
-                next.sp = (cur.sp - 8'd1) & 8'hFF;
+                next.sp = (cur.sp - 1'b1) & 8'hFF;
                 next.ada = stack_addr[14:0];
                 next.din = status;
                 next.cea = 1;
@@ -1636,7 +1636,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r + 8'd1;
+                    result = cur.dout_r + 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus2);
@@ -1648,7 +1648,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r + 8'd1;
+                    result = cur.dout_r + 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus2);
@@ -1659,7 +1659,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r + 8'd1;
+                    result = cur.dout_r + 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus3);
@@ -1670,7 +1670,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r + 8'd1;
+                    result = cur.dout_r + 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus3);
@@ -1681,7 +1681,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r - 8'd1;
+                    result = cur.dout_r - 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus2);
@@ -1693,7 +1693,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r - 8'd1;
+                    result = cur.dout_r - 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus2);
@@ -1704,7 +1704,7 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r - 8'd1;
+                    result = cur.dout_r - 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus3);
@@ -1715,29 +1715,29 @@ package cpu_fsm_next_pkg;
                 if (cur.fetched_data_bytes == 0) begin
                     next = request_data_fetch(next, target_addr);
                 end else begin
-                    result = cur.dout_r - 8'd1;
+                    result = cur.dout_r - 1'b1;
                     next   = update_logic_flags(next, result);
                     next   = apply_ram_write(next, target_addr, result);
                     next   = return_to_opcode_fetch(next, cur.pc_plus3);
                 end
             end
             8'hE8: begin  // INX
-                next.rx = (cur.rx + 8'd1) & 8'hFF;
+                next.rx = (cur.rx + 1'b1) & 8'hFF;
                 next = update_logic_flags(next, next.rx);
                 next = return_to_opcode_fetch(next, cur.pc_plus1);
             end
             8'hC8: begin  // INY
-                next.ry = (cur.ry + 8'd1) & 8'hFF;
+                next.ry = (cur.ry + 1'b1) & 8'hFF;
                 next = update_logic_flags(next, next.ry);
                 next = return_to_opcode_fetch(next, cur.pc_plus1);
             end
             8'hCA: begin  // DEX
-                next.rx = (cur.rx - 8'd1) & 8'hFF;
+                next.rx = (cur.rx - 1'b1) & 8'hFF;
                 next = update_logic_flags(next, next.rx);
                 next = return_to_opcode_fetch(next, cur.pc_plus1);
             end
             8'h88: begin  // DEY
-                next.ry = (cur.ry - 8'd1) & 8'hFF;
+                next.ry = (cur.ry - 1'b1) & 8'hFF;
                 next = update_logic_flags(next, next.ry);
                 next = return_to_opcode_fetch(next, cur.pc_plus1);
             end
@@ -1779,9 +1779,9 @@ package cpu_fsm_next_pkg;
             INIT_VRAM: begin
                 next.v_cea = 1;
                 next.v_din = cur.char_code;
-                next.char_code = (cur.char_code < 8'h7F) ? (cur.char_code + 1) & 8'hFF : 8'h20;
+                next.char_code = (cur.char_code < 8'h7F) ? (cur.char_code + 1'b1) & 8'hFF : 8'h20;
                 if ({22'd0, cur.v_ada} <= (COLUMNS * ROWS)) begin
-                    next.v_ada = (cur.v_ada + 1) & VRAMW10;
+                    next.v_ada = (cur.v_ada + 1'b1) & VRAMW10;
                 end else begin
                     next.v_cea = 0;
                 end
@@ -1797,19 +1797,19 @@ package cpu_fsm_next_pkg;
                     if ({1'b0, cur.boot_idx} == in.boot_program_length) begin
                         next.v_cea = 1;
                     end else begin
-                        next.boot_idx   = (cur.boot_idx + 1) & RAMW15;
+                        next.boot_idx   = (cur.boot_idx + 1'b1) & RAMW15;
                         next.boot_write = 1;
                     end
                 end
             end
             FETCH_REQ: begin
-                next.pc_plus1 = (cur.pc + 16'd1) & RAMW16;
+                next.pc_plus1 = (cur.pc + 1'b1) & RAMW16;
                 next.pc_plus2 = (cur.pc + 16'd2) & RAMW16;
                 next.pc_plus3 = (cur.pc + 16'd3) & RAMW16;
             end
             FETCH_WAIT: begin
                 if (cur.fetch_stage == FETCH_DATA) begin
-                    next.fetched_data_bytes = cur.fetched_data_bytes + 1;
+                    next.fetched_data_bytes = cur.fetched_data_bytes + 1'b1;
                 end
             end
             FETCH_RECV: begin
@@ -1840,7 +1840,7 @@ package cpu_fsm_next_pkg;
                 endcase
             end
             WRITE_REQ: begin
-                next.written_data_bytes = cur.written_data_bytes + 1;
+                next.written_data_bytes = cur.written_data_bytes + 1'b1;
                 next.cea = 0;
                 next.v_cea = 0;
             end
@@ -2022,7 +2022,7 @@ package cpu_fsm_next_pkg;
                         next.fetch_resume_state = SHOW_INFO2;
                     end
 
-                    next.show_info_counter = cur.show_info_counter + 1;
+                    next.show_info_counter = cur.show_info_counter + 1'b1;
 
                     if (cur.show_info_counter == 32'd1020) begin
                         next.show_info_counter = 0;
@@ -2046,7 +2046,7 @@ package cpu_fsm_next_pkg;
             CLEAR_VRAM2: begin
                 logic [15:0] shadow_addr;
                 if ({22'd0, cur.v_ada} <= (COLUMNS * ROWS)) begin
-                    next.v_ada = (cur.v_ada + 1) & VRAMW10;
+                    next.v_ada = (cur.v_ada + 1'b1) & VRAMW10;
                     next.v_din = 8'h20;
                     next.v_cea = 1;
                     shadow_addr = ({6'd0, cur.v_ada} + SHADOW_VRAM_START16) & RAMW16;

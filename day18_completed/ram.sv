@@ -1,4 +1,4 @@
-// ram.sv - 1024-byte RAM for Page 0-3 ($0000-$03FF)
+// ram.sv - 1'b1024-byte RAM for Page 0-3 ($0000-$03FF)
 module ram (
     input  logic       clk,
     input  logic [9:0] addr,      // 10-bit address for $0000-$03FF

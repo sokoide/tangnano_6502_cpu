@@ -113,7 +113,7 @@ module lcd_demo (
 
     // Run CPU at full speed (synchronization is handled by WVS instruction)
     logic        pc_enable;
-    assign pc_enable = 1'b1;
+    assign pc_enable = 1;
 
     logic cpu_vram_clear;
     logic cpu_show_info;
@@ -203,238 +203,238 @@ module lcd_demo (
                 end
 
                 S_CLEAR: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= debug_counter[9:0];
                     vram_din <= 8'h20;
                     if (debug_counter == 1023) begin
                         debug_counter <= 0;
                         debug_state   <= S_WRITE_REGS;
                     end else begin
-                        debug_counter <= debug_counter + 1;
+                        debug_counter <= debug_counter + 1'b1;
                     end
                 end
 
                 S_WRITE_REGS: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     case (debug_counter)
                         0: begin
-                            vram_ada <= 0 * COLUMNS + 0;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd0;
                             vram_din <= "R";
                         end
                         1: begin
-                            vram_ada <= 0 * COLUMNS + 1;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd1;
                             vram_din <= "e";
                         end
                         2: begin
-                            vram_ada <= 0 * COLUMNS + 2;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd2;
                             vram_din <= "g";
                         end
                         3: begin
-                            vram_ada <= 0 * COLUMNS + 3;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd3;
                             vram_din <= "i";
                         end
                         4: begin
-                            vram_ada <= 0 * COLUMNS + 4;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd4;
                             vram_din <= "s";
                         end
                         5: begin
-                            vram_ada <= 0 * COLUMNS + 5;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd5;
                             vram_din <= "t";
                         end
                         6: begin
-                            vram_ada <= 0 * COLUMNS + 6;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd6;
                             vram_din <= "e";
                         end
                         7: begin
-                            vram_ada <= 0 * COLUMNS + 7;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd7;
                             vram_din <= "r";
                         end
                         8: begin
-                            vram_ada <= 0 * COLUMNS + 8;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd8;
                             vram_din <= "s";
                         end
                         9: begin
-                            vram_ada <= 0 * COLUMNS + 9;
+                            vram_ada <= 10'd0 * COLUMNS + 10'd9;
                             vram_din <= ")";
                         end
                         10: begin
-                            vram_ada <= 1 * COLUMNS + 0;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd0;
                             vram_din <= "A";
                         end
                         11: begin
-                            vram_ada <= 1 * COLUMNS + 1;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd1;
                             vram_din <= " ";
                         end
                         12: begin
-                            vram_ada <= 1 * COLUMNS + 2;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         13: begin
-                            vram_ada <= 1 * COLUMNS + 3;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         14: begin
-                            vram_ada <= 1 * COLUMNS + 4;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         15: begin
-                            vram_ada <= 1 * COLUMNS + 5;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd5;
                             vram_din <= to_hex(cpu_debug_a[7:4]);
                         end
                         16: begin
-                            vram_ada <= 1 * COLUMNS + 6;
+                            vram_ada <= 10'd1 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_a[3:0]);
                         end
                         17: begin
-                            vram_ada <= 2 * COLUMNS + 0;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd0;
                             vram_din <= "X";
                         end
                         18: begin
-                            vram_ada <= 2 * COLUMNS + 1;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd1;
                             vram_din <= " ";
                         end
                         19: begin
-                            vram_ada <= 2 * COLUMNS + 2;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         20: begin
-                            vram_ada <= 2 * COLUMNS + 3;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         21: begin
-                            vram_ada <= 2 * COLUMNS + 4;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         22: begin
-                            vram_ada <= 2 * COLUMNS + 5;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd5;
                             vram_din <= to_hex(cpu_debug_x[7:4]);
                         end
                         23: begin
-                            vram_ada <= 2 * COLUMNS + 6;
+                            vram_ada <= 10'd2 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_x[3:0]);
                         end
                         24: begin
-                            vram_ada <= 3 * COLUMNS + 0;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd0;
                             vram_din <= "Y";
                         end
                         25: begin
-                            vram_ada <= 3 * COLUMNS + 1;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd1;
                             vram_din <= " ";
                         end
                         26: begin
-                            vram_ada <= 3 * COLUMNS + 2;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         27: begin
-                            vram_ada <= 3 * COLUMNS + 3;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         28: begin
-                            vram_ada <= 3 * COLUMNS + 4;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         29: begin
-                            vram_ada <= 3 * COLUMNS + 5;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd5;
                             vram_din <= to_hex(cpu_debug_y[7:4]);
                         end
                         30: begin
-                            vram_ada <= 3 * COLUMNS + 6;
+                            vram_ada <= 10'd3 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_y[3:0]);
                         end
                         31: begin
-                            vram_ada <= 4 * COLUMNS + 0;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd0;
                             vram_din <= "P";
                         end
                         32: begin
-                            vram_ada <= 4 * COLUMNS + 1;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd1;
                             vram_din <= "C";
                         end
                         33: begin
-                            vram_ada <= 4 * COLUMNS + 2;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         34: begin
-                            vram_ada <= 4 * COLUMNS + 3;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         35: begin
-                            vram_ada <= 4 * COLUMNS + 4;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         36: begin
-                            vram_ada <= 4 * COLUMNS + 5;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd5;
                             vram_din <= to_hex(cpu_debug_pc[15:12]);
                         end
                         37: begin
-                            vram_ada <= 4 * COLUMNS + 6;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_pc[11:8]);
                         end
                         38: begin
-                            vram_ada <= 4 * COLUMNS + 7;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd7;
                             vram_din <= to_hex(cpu_debug_pc[7:4]);
                         end
                         39: begin
-                            vram_ada <= 4 * COLUMNS + 8;
+                            vram_ada <= 10'd4 * COLUMNS + 10'd8;
                             vram_din <= to_hex(cpu_debug_pc[3:0]);
                         end
                         40: begin
-                            vram_ada <= 5 * COLUMNS + 0;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd0;
                             vram_din <= "S";
                         end
                         41: begin
-                            vram_ada <= 5 * COLUMNS + 1;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd1;
                             vram_din <= "P";
                         end
                         42: begin
-                            vram_ada <= 5 * COLUMNS + 2;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         43: begin
-                            vram_ada <= 5 * COLUMNS + 3;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         44: begin
-                            vram_ada <= 5 * COLUMNS + 4;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         45: begin
-                            vram_ada <= 5 * COLUMNS + 5;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd5;
                             vram_din <= "1";
                         end
                         46: begin
-                            vram_ada <= 5 * COLUMNS + 6;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_s[7:4]);
                         end
                         47: begin
-                            vram_ada <= 5 * COLUMNS + 7;
+                            vram_ada <= 10'd5 * COLUMNS + 10'd7;
                             vram_din <= to_hex(cpu_debug_s[3:0]);
                         end
                         48: begin
-                            vram_ada <= 6 * COLUMNS + 0;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd0;
                             vram_din <= "P";
                         end
                         49: begin
-                            vram_ada <= 6 * COLUMNS + 1;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd1;
                             vram_din <= " ";
                         end
                         50: begin
-                            vram_ada <= 6 * COLUMNS + 2;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd2;
                             vram_din <= ":";
                         end
                         51: begin
-                            vram_ada <= 6 * COLUMNS + 3;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd3;
                             vram_din <= "0";
                         end
                         52: begin
-                            vram_ada <= 6 * COLUMNS + 4;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd4;
                             vram_din <= "x";
                         end
                         53: begin
-                            vram_ada <= 6 * COLUMNS + 5;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd5;
                             vram_din <= to_hex(cpu_debug_p[7:4]);
                         end
                         54: begin
-                            vram_ada <= 6 * COLUMNS + 6;
+                            vram_ada <= 10'd6 * COLUMNS + 10'd6;
                             vram_din <= to_hex(cpu_debug_p[3:0]);
                         end
                         default: vram_cea <= 1'b0;
@@ -443,12 +443,12 @@ module lcd_demo (
                         debug_counter <= 0;
                         debug_state   <= S_WRITE_MEM_HEADER;
                     end else begin
-                        debug_counter <= debug_counter + 1;
+                        debug_counter <= debug_counter + 1'b1;
                     end
                 end
 
                 S_WRITE_MEM_HEADER: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 8 * COLUMNS + debug_counter[5:0];
                     case (debug_counter)
                         0: vram_din <= "M";
@@ -506,12 +506,12 @@ module lcd_demo (
                         sub_state <= 0;
                         debug_state <= S_WRITE_MEM_LOOP;
                     end else begin
-                        debug_counter <= debug_counter + 1;
+                        debug_counter <= debug_counter + 1'b1;
                     end
                 end
 
                 S_WRITE_MEM_LOOP: begin
-                    automatic logic [4:0] row = 9 + debug_addr[6:4];
+                    automatic logic [4:0] row = 5'd9 + debug_addr[6:4];
                     automatic logic [5:0] col;
                     if (debug_addr[3:2] == 0) col = 9 + (debug_addr[1:0] * 2);
                     else if (debug_addr[3:2] == 1) col = 18 + (debug_addr[1:0] * 2);
@@ -520,44 +520,44 @@ module lcd_demo (
 
                     case (sub_state)
                         0: begin  // Row label "0xXX:"
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + 0;
+                            vram_cea  <= 1;
+                            vram_ada  <= row * COLUMNS + 10'd0;
                             vram_din  <= "0";
                             sub_state <= 1;
                         end
                         1: begin
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + 1;
+                            vram_cea  <= 1;
+                            vram_ada  <= 10'(row * COLUMNS + 1'b1);
                             vram_din  <= "x";
                             sub_state <= 2;
                         end
                         2: begin
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + 2;
+                            vram_cea  <= 1;
+                            vram_ada  <= row * COLUMNS + 10'd2;
                             vram_din  <= to_hex(debug_addr[7:4]);
                             sub_state <= 3;
                         end
                         3: begin
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + 3;
+                            vram_cea  <= 1;
+                            vram_ada  <= row * COLUMNS + 10'd3;
                             vram_din  <= to_hex(debug_addr[3:0]);
                             sub_state <= 4;
                         end
                         4: begin
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + 4;
+                            vram_cea  <= 1;
+                            vram_ada  <= row * COLUMNS + 10'd4;
                             vram_din  <= ":";
                             sub_state <= 5;
                         end
                         5: begin  // Data High Nibble
-                            vram_cea  <= 1'b1;
+                            vram_cea  <= 1;
                             vram_ada  <= row * COLUMNS + col;
                             vram_din  <= to_hex(ram_data_out[7:4]);
                             sub_state <= 6;
                         end
                         6: begin  // Data Low Nibble
-                            vram_cea  <= 1'b1;
-                            vram_ada  <= row * COLUMNS + col + 1;
+                            vram_cea  <= 1;
+                            vram_ada  <= 10'(row * COLUMNS + col + 1'b1);
                             vram_din  <= to_hex(ram_data_out[3:0]);
                             sub_state <= 7;
                         end
@@ -567,23 +567,23 @@ module lcd_demo (
                                 sub_state <= 8;
                                 debug_counter <= 0;
                             end else begin
-                                debug_addr <= debug_addr + 1;
+                                debug_addr <= debug_addr + 1'b1;
                                 sub_state  <= 5;
                             end
                         end
                         8: begin  // Bit pattern (LED)
-                            vram_cea <= 1'b1;
-                            vram_ada <= row * COLUMNS + 52 + debug_counter[2:0];
+                            vram_cea <= 1;
+                            vram_ada <= row * COLUMNS + 10'd52 + debug_counter[2:0];
                             vram_din <= ram_data_out[7-debug_counter[2:0]] ? "1" : "0";
                             if (debug_counter == 7) begin
                                 if (debug_addr == 16'h007F) begin
                                     debug_state <= S_IDLE;
                                 end else begin
-                                    debug_addr <= debug_addr + 1;
+                                    debug_addr <= debug_addr + 1'b1;
                                     sub_state  <= 0;
                                 end
                             end else begin
-                                debug_counter <= debug_counter + 1;
+                                debug_counter <= debug_counter + 1'b1;
                             end
                         end
                         default: sub_state <= 0;

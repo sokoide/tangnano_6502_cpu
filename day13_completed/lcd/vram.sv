@@ -24,19 +24,19 @@ module vram (
     assign data = ram[addr];
 
     initial begin
-        for (idx = 0; idx < DEPTH; idx = idx + 1) begin
+        for (idx = 0; idx < DEPTH; idx = idx + 1'b1) begin
             ram[idx] = 8'h20;
         end
 
-        for (idx = 0; idx < ROW0_LEN; idx = idx + 1) begin
+        for (idx = 0; idx < ROW0_LEN; idx = idx + 1'b1) begin
             ram[1*COLUMNS+4+idx] = ROW0_TEXT[idx];
         end
 
-        for (idx = 0; idx < ROW1_LEN; idx = idx + 1) begin
+        for (idx = 0; idx < ROW1_LEN; idx = idx + 1'b1) begin
             ram[5*COLUMNS+8+idx] = ROW1_TEXT[idx];
         end
 
-        for (idx = 0; idx < ROW2_LEN; idx = idx + 1) begin
+        for (idx = 0; idx < ROW2_LEN; idx = idx + 1'b1) begin
             ram[9*COLUMNS+10+idx] = ROW2_TEXT[idx];
         end
     end

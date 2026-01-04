@@ -107,7 +107,7 @@ module lcd_demo (
         if (!rst_n) begin
             counter <= 24'd0;
         end else begin
-            counter <= counter + 1;
+            counter <= counter + 1'b1;
         end
     end
 
@@ -233,193 +233,193 @@ module lcd_demo (
             case (vram_write_state)
                 S_IDLE:  if (vsync) vram_write_state <= S_WRITE_P;  // Start writing on vsync
                 S_WRITE_P: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 0;
                     vram_din <= "P";
                     vram_write_state <= S_WRITE_C;
                 end
                 S_WRITE_C: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 1;
                     vram_din <= "C";
                     vram_write_state <= S_WRITE_COLON;
                 end
                 S_WRITE_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 2;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_PC3;
                 end
                 S_WRITE_PC3: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 3;
                     vram_din <= to_hex(cpu_debug_pc[15:12]);
                     vram_write_state <= S_WRITE_PC2;
                 end
                 S_WRITE_PC2: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 4;
                     vram_din <= to_hex(cpu_debug_pc[11:8]);
                     vram_write_state <= S_WRITE_PC1;
                 end
                 S_WRITE_PC1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 5;
                     vram_din <= to_hex(cpu_debug_pc[7:4]);
                     vram_write_state <= S_WRITE_PC0;
                 end
                 S_WRITE_PC0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 6;
                     vram_din <= to_hex(cpu_debug_pc[3:0]);
                     vram_write_state <= S_WRITE_SPACE1;
                 end
                 S_WRITE_SPACE1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 7;
                     vram_din <= " ";
                     vram_write_state <= S_WRITE_A_LABEL;
                 end
                 S_WRITE_A_LABEL: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 8;
                     vram_din <= "A";
                     vram_write_state <= S_WRITE_A_COLON;
                 end
                 S_WRITE_A_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 9;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_A1;
                 end
                 S_WRITE_A1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 10;
                     vram_din <= to_hex(cpu_debug_a[7:4]);
                     vram_write_state <= S_WRITE_A0;
                 end
                 S_WRITE_A0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 11;
                     vram_din <= to_hex(cpu_debug_a[3:0]);
                     vram_write_state <= S_WRITE_SPACE2;
                 end
                 S_WRITE_SPACE2: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 12;
                     vram_din <= " ";
                     vram_write_state <= S_WRITE_X_LABEL;
                 end
                 S_WRITE_X_LABEL: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 13;
                     vram_din <= "X";
                     vram_write_state <= S_WRITE_X_COLON;
                 end
                 S_WRITE_X_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 14;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_X1;
                 end
                 S_WRITE_X1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 15;
                     vram_din <= to_hex(cpu_debug_x[7:4]);
                     vram_write_state <= S_WRITE_X0;
                 end
                 S_WRITE_X0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 16;
                     vram_din <= to_hex(cpu_debug_x[3:0]);
                     vram_write_state <= S_WRITE_SPACE3;
                 end
                 S_WRITE_SPACE3: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 17;
                     vram_din <= " ";
                     vram_write_state <= S_WRITE_Y_LABEL;
                 end
                 S_WRITE_Y_LABEL: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 18;
                     vram_din <= "Y";
                     vram_write_state <= S_WRITE_Y_COLON;
                 end
                 S_WRITE_Y_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 19;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_Y1;
                 end
                 S_WRITE_Y1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 20;
                     vram_din <= to_hex(cpu_debug_y[7:4]);
                     vram_write_state <= S_WRITE_Y0;
                 end
                 S_WRITE_Y0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 21;
                     vram_din <= to_hex(cpu_debug_y[3:0]);
                     vram_write_state <= S_WRITE_SPACE4;
                 end
                 S_WRITE_SPACE4: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 22;
                     vram_din <= " ";
                     vram_write_state <= S_WRITE_S_LABEL;
                 end
                 S_WRITE_S_LABEL: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 23;
                     vram_din <= "S";
                     vram_write_state <= S_WRITE_S_COLON;
                 end
                 S_WRITE_S_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 24;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_S1;
                 end
                 S_WRITE_S1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 25;
                     vram_din <= to_hex(cpu_debug_s[7:4]);
                     vram_write_state <= S_WRITE_S0;
                 end
                 S_WRITE_S0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 26;
                     vram_din <= to_hex(cpu_debug_s[3:0]);
                     vram_write_state <= S_WRITE_SPACE5;
                 end
                 S_WRITE_SPACE5: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 27;
                     vram_din <= " ";
                     vram_write_state <= S_WRITE_P_LABEL;
                 end
                 S_WRITE_P_LABEL: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 28;
                     vram_din <= "P";
                     vram_write_state <= S_WRITE_P_COLON;
                 end
                 S_WRITE_P_COLON: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 29;
                     vram_din <= ":";
                     vram_write_state <= S_WRITE_P1;
                 end
                 S_WRITE_P1: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 30;
                     vram_din <= to_hex(cpu_debug_p[7:4]);
                     vram_write_state <= S_WRITE_P0;
                 end
                 S_WRITE_P0: begin
-                    vram_cea <= 1'b1;
+                    vram_cea <= 1;
                     vram_ada <= 31;
                     vram_din <= to_hex(cpu_debug_p[3:0]);
                     vram_write_state <= S_IDLE;

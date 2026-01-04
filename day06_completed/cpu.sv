@@ -34,11 +34,11 @@ module cpu (
             case (state)
                 STATE_FETCH_OPCODE: begin
                     if (data_in == OP_LDA_IMM) begin
-                        pc    <= pc + 1;
+                        pc    <= pc + 1'b1;
                         state <= STATE_FETCH_OPERAND;
                     end else begin
                         // Default behavior for 1-byte instructions (e.g. NOP)
-                        pc    <= pc + 1;
+                        pc    <= pc + 1'b1;
                         state <= STATE_FETCH_OPCODE;
                     end
                 end
@@ -46,7 +46,7 @@ module cpu (
                 STATE_FETCH_OPERAND: begin
                     // Load the immediate value into Accumulator
                     a     <= data_in;
-                    pc    <= pc + 1;
+                    pc    <= pc + 1'b1;
                     state <= STATE_FETCH_OPCODE;
                 end
 

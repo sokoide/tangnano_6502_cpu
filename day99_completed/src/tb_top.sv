@@ -74,8 +74,8 @@ module tb_top;
         ceb = 1;  // enable read
         oce = 1;  // enable output
 
-        repeat (1) @(posedge clk);
-        repeat (1) @(posedge clk);
+        repeat (1'b1) @(posedge clk);
+        repeat (1'b1) @(posedge clk);
         if (dout !== 8'h06) begin
             $display("❌ ERROR: Expected 0x06 at 0x%04x, got %02x", adb, dout);
         end else begin

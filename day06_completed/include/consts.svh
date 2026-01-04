@@ -17,8 +17,8 @@ localparam int PROGRAM_START = 32'h00000200;
 // LCD Display Parameters
 localparam logic [15:0] CHAR_WIDTH = 16'd8;  // pixels per character
 localparam logic [15:0] CHAR_HEIGHT = 16'd16;  // pixels per character
-localparam int COLUMNS = 60;  // characters per row (480/8)
-localparam int ROWS = 17;  // character rows (272/16)
+localparam logic [9:0] COLUMNS = 10'd60;  // characters per row (480/8)
+localparam logic [9:0] ROWS = 10'd17;  // character rows (272/16)
 
 // LCD Timing Parameters (for 480x272 display)
 localparam int H_PixelValid = 480;

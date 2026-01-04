@@ -54,7 +54,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r + 8'd1;
+                    automatic logic [7:0] result = dout_r + 1'b1;
                     ada <= {7'd0, operands[7:0]};
                     din <= result;
                     cea   = 1;
@@ -73,7 +73,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r + 8'd1;
+                    automatic logic [7:0] result = dout_r + 1'b1;
                     ada <= {7'd0, operands[7:0]};  // Keep original address (legacy behavior)
                     din <= result;
                     cea   = 1;
@@ -91,7 +91,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r + 8'd1;
+                    automatic logic [7:0] result = dout_r + 1'b1;
                     ada <= operands[14:0] & RAMW[14:0];
                     din <= result;
                     cea   = 1;
@@ -110,7 +110,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r + 8'd1;
+                    automatic logic [7:0] result = dout_r + 1'b1;
                     ada <= operands[14:0] & RAMW[14:0];  // Keep original address (legacy behavior)
                     din <= result;
                     cea   = 1;
@@ -123,14 +123,14 @@ package cpu_exec_inc_dec_pkg;
 
             // INX
             8'hE8: begin
-                rx = (rx + 1) & 8'hFF;
+                rx = (rx + 1'b1) & 8'hFF;
                 flg_z = (rx == 8'h00);
                 flg_n = rx[7];
                 fetch_next_opcode(1, pc, pc_plus1, pc_plus2, pc_plus3, adb, state, fetch_stage);
             end
             // INY
             8'hC8: begin
-                ry = (ry + 1) & 8'hFF;
+                ry = (ry + 1'b1) & 8'hFF;
                 flg_z = (ry == 8'h00);
                 flg_n = ry[7];
                 fetch_next_opcode(1, pc, pc_plus1, pc_plus2, pc_plus3, adb, state, fetch_stage);
@@ -144,7 +144,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r - 8'd1;
+                    automatic logic [7:0] result = dout_r - 1'b1;
                     ada <= {7'd0, operands[7:0]};
                     din <= result;
                     cea   = 1;
@@ -163,7 +163,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r - 8'd1;
+                    automatic logic [7:0] result = dout_r - 1'b1;
                     ada <= {7'd0, (operands[7:0] + rx) & 8'hFF};
                     din <= result;
                     cea   = 1;
@@ -181,7 +181,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [7:0] result = dout_r - 8'd1;
+                    automatic logic [7:0] result = dout_r - 1'b1;
                     ada <= operands[14:0] & RAMW[14:0];
                     din <= result;
                     cea   = 1;
@@ -200,7 +200,7 @@ package cpu_exec_inc_dec_pkg;
                     fetch_stage = FETCH_DATA;
                     fetch_resume_state <= DECODE_EXECUTE;
                 end else begin
-                    automatic logic [ 7:0] result = dout_r - 8'd1;
+                    automatic logic [ 7:0] result = dout_r - 1'b1;
                     automatic logic [15:0] addr = operands[15:0] + {8'h00, rx};
                     ada <= addr[14:0] & RAMW[14:0];
                     din <= result;
@@ -214,7 +214,7 @@ package cpu_exec_inc_dec_pkg;
 
             // DEX
             8'hCA: begin
-                rx = (rx - 1) & 8'hFF;
+                rx = (rx - 1'b1) & 8'hFF;
                 flg_z = (rx == 8'h00);
                 flg_n = rx[7];
                 fetch_next_opcode(1, pc, pc_plus1, pc_plus2, pc_plus3, adb, state, fetch_stage);

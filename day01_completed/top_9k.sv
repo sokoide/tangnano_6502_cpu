@@ -11,7 +11,7 @@ module top (
 
     // Sequential logic: updates on the rising edge of the clock
     always_ff @(posedge clk) begin
-        counter <= counter + 1;
+        counter <= counter + 1'b1;
     end
 
     // Use bit 24 to toggle the LED

@@ -49,7 +49,7 @@ module cpu (
                     current_opcode <= data_in;
                     case (data_in)
                         OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_ADC_IMM, OP_SBC_IMM: begin
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPERAND;
                         end
                         // Day 07 instructions (1-byte instructions)
@@ -57,57 +57,57 @@ module cpu (
                             x <= a;
                             z <= (a == 8'h00);
                             n <= a[7];
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TAY: begin
                             y <= a;
                             z <= (a == 8'h00);
                             n <= a[7];
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TXA: begin
                             a <= x;
                             z <= (x == 8'h00);
                             n <= x[7];
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TYA: begin
                             a <= y;
                             z <= (y == 8'h00);
                             n <= y[7];
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_INX: begin
-                            x <= x + 1;
+                            x <= x + 1'b1;
                             z <= ((x + 8'h01) == 8'h00);
                             n <= (x + 8'h01) >> 7;
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_INY: begin
-                            y <= y + 1;
+                            y <= y + 1'b1;
                             z <= ((y + 8'h01) == 8'h00);
                             n <= (y + 8'h01) >> 7;
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         // Day 08 instructions (1-byte instructions)
                         OP_CLC: begin
                             c <= 1'b0;
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_SEC: begin
                             c <= 1'b1;
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         default: begin
-                            pc <= pc + 1;
+                            pc <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                     endcase
@@ -150,7 +150,7 @@ module cpu (
                         end
                         default: ;
                     endcase
-                    pc    <= pc + 1;
+                    pc    <= pc + 1'b1;
                     state <= STATE_FETCH_OPCODE;
                 end
 

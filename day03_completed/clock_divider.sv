@@ -19,11 +19,11 @@ module clock_divider (
             counter <= 4'b0;
             clk_out <= 1'b0;
         end else begin
-            if (counter >= div_ratio - 1) begin
+            if (counter >= div_ratio - 1'b1) begin
                 counter <= 4'b0;
                 clk_out <= 1'b0;
             end else begin
-                counter <= counter + 1;
+                counter <= counter + 1'b1;
                 if (counter >= threshold) begin
                     clk_out <= 1'b1;
                 end else begin

@@ -70,7 +70,7 @@ module cpu (
                         address_bus <= pc;
                         state <= STATE_EXECUTE;
                     end else begin
-                        address_bus <= pc + 1;
+                        address_bus <= pc + 1'b1;
                         case (data_in)
                             OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM,
                                                                             OP_ADC_IMM, OP_SBC_IMM,
@@ -79,19 +79,19 @@ module cpu (
                                                                             OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM,
                                                                             OP_LDA_ZP, OP_STA_ZP, OP_LDX_ZP, OP_STX_ZP, OP_LDY_ZP, OP_STY_ZP, OP_BIT_ZP,
                                                                             OP_INC_ZP, OP_DEC_ZP: begin
-                                pc    <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc    <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPERAND;
                             end
                             OP_JSR, OP_JMP_ABS, OP_LDA_ABS, OP_STA_ABS,
                                                         OP_LDA_ABX, OP_LDA_ABY, OP_STA_ABX: begin
-                                pc    <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc    <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_LOW;
                             end
                             OP_RTS: begin
                                 state <= STATE_PULL_LOW;
-                                address_bus <= 16'h0100 + (s + 8'd1);
+                                address_bus <= 16'h0100 + (s + 1'b1);
                             end
                             OP_PHA, OP_PHP: begin
                                 state <= STATE_PUSH_LOW;
@@ -101,83 +101,83 @@ module cpu (
                             end
                             OP_PLA, OP_PLP: begin
                                 state <= STATE_PULL_LOW;
-                                address_bus <= 16'h0100 + (s + 8'd1);
+                                address_bus <= 16'h0100 + (s + 1'b1);
                             end
                             // Day 07 instructions (1-byte instructions)
                             OP_TAX: begin
                                 x <= a;
                                 z <= (a == 8'h00);
                                 n <= a[7];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_TAY: begin
                                 y <= a;
                                 z <= (a == 8'h00);
                                 n <= a[7];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_TXA: begin
                                 a <= x;
                                 z <= (x == 8'h00);
                                 n <= x[7];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_TYA: begin
                                 a <= y;
                                 z <= (y == 8'h00);
                                 n <= y[7];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_INX: begin
-                                x <= x + 1;
+                                x <= x + 1'b1;
                                 z <= ((x + 8'h01) == 8'h00);
                                 n <= (x + 8'h01) >> 7;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_INY: begin
-                                y <= y + 1;
+                                y <= y + 1'b1;
                                 z <= ((y + 8'h01) == 8'h00);
                                 n <= (y + 8'h01) >> 7;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_DEX: begin
-                                x <= x - 1;
+                                x <= x - 1'b1;
                                 z <= ((x - 8'h01) == 8'h00);
                                 n <= (x - 8'h01) >> 7;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_DEY: begin
-                                y <= y - 1;
+                                y <= y - 1'b1;
                                 z <= ((y - 8'h01) == 8'h00);
                                 n <= (y - 8'h01) >> 7;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_CLC: begin
                                 c <= 1'b0;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_SEC: begin
                                 c <= 1'b1;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_ASL_A: begin
@@ -185,8 +185,8 @@ module cpu (
                                 a <= {a[6:0], 1'b0};
                                 z <= ({a[6:0], 1'b0} == 8'h00);
                                 n <= a[6];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_LSR_A: begin
@@ -194,8 +194,8 @@ module cpu (
                                 a <= {1'b0, a[7:1]};
                                 z <= ({1'b0, a[7:1]} == 8'h00);
                                 n <= 1'b0;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_ROL_A: begin
@@ -205,8 +205,8 @@ module cpu (
                                 a <= {a[6:0], old_c};
                                 z <= ({a[6:0], old_c} == 8'h00);
                                 n <= a[6];
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             OP_ROR_A: begin
@@ -216,13 +216,13 @@ module cpu (
                                 a <= {old_c, a[7:1]};
                                 z <= ({old_c, a[7:1]} == 8'h00);
                                 n <= old_c;
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                             default: begin
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                                 state <= STATE_FETCH_OPCODE;
                             end
                         endcase
@@ -316,11 +316,11 @@ module cpu (
                                 default: take_branch = 1'b0;
                             endcase
                             if (take_branch) begin
-                                pc <= (pc + 16'd1) + 16'($signed(data_in));
-                                address_bus <= (pc + 16'd1) + 16'($signed(data_in));
+                                pc <= (pc + 1'b1) + 16'($signed(data_in));
+                                address_bus <= (pc + 1'b1) + 16'($signed(data_in));
                             end else begin
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                             end
                         end
                         OP_LDA_ZP, OP_LDX_ZP, OP_LDY_ZP, OP_BIT_ZP, OP_INC_ZP, OP_DEC_ZP: begin
@@ -342,8 +342,8 @@ module cpu (
                         OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM, OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
                             if (current_opcode != OP_BNE && current_opcode != OP_BEQ &&
                                 current_opcode != OP_BPL && current_opcode != OP_BMI) begin
-                                pc <= pc + 1;
-                                address_bus <= pc + 1;
+                                pc <= pc + 1'b1;
+                                address_bus <= pc + 1'b1;
                             end
                             state <= STATE_FETCH_OPCODE;
                         end
@@ -352,8 +352,8 @@ module cpu (
                             state <= STATE_EXECUTE;
                         end
                         default: begin
-                            pc <= pc + 1;
-                            address_bus <= pc + 1;
+                            pc <= pc + 1'b1;
+                            address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                     endcase
@@ -361,8 +361,8 @@ module cpu (
 
                 STATE_FETCH_LOW: begin
                     temp_addr[7:0] <= data_in;
-                    pc <= pc + 1;
-                    address_bus <= pc + 1;
+                    pc <= pc + 1'b1;
+                    address_bus <= pc + 1'b1;
                     state <= STATE_FETCH_HIGH;
                 end
 
@@ -392,27 +392,27 @@ module cpu (
                 end
 
                 STATE_PUSH_HIGH: begin
-                    s <= s - 1;
+                    s <= s - 1'b1;
                     state <= STATE_PUSH_LOW;
                     write_en <= 1'b1;
-                    address_bus <= 16'h0100 + (s - 8'd1);
+                    address_bus <= 16'h0100 + (s - 1'b1);
                     data_out <= pc[7:0];  // Push Low byte (PCL)
                 end
 
                 STATE_PUSH_LOW: begin
-                    s <= s - 1;
+                    s <= s - 1'b1;
                     if (current_opcode == OP_JSR) begin
                         pc <= temp_addr;
                         address_bus <= temp_addr;
                     end else begin
-                        pc <= pc + 1;
-                        address_bus <= pc + 1;
+                        pc <= pc + 1'b1;
+                        address_bus <= pc + 1'b1;
                     end
                     state <= STATE_FETCH_OPCODE;
                 end
 
                 STATE_PULL_LOW: begin
-                    s <= s + 1;
+                    s <= s + 1'b1;
                     temp_addr[7:0] <= data_in;
                     if (current_opcode == OP_RTS) begin
                         state <= STATE_PULL_HIGH;
@@ -421,21 +421,21 @@ module cpu (
                         a <= data_in;
                         z <= (data_in == 8'h00);
                         n <= data_in[7];
-                        pc <= pc + 1;
-                        address_bus <= pc + 1;
+                        pc <= pc + 1'b1;
+                        address_bus <= pc + 1'b1;
                         state <= STATE_FETCH_OPCODE;
                     end else if (current_opcode == OP_PLP) begin
                         {n, v, temp_addr[5:2], z, c} <= data_in;  // Reuse temp_addr bits
-                        pc <= pc + 1;
-                        address_bus <= pc + 1;
+                        pc <= pc + 1'b1;
+                        address_bus <= pc + 1'b1;
                         state <= STATE_FETCH_OPCODE;
                     end
                 end
 
                 STATE_PULL_HIGH: begin
-                    s <= s + 1;
-                    pc <= {data_in, temp_addr[7:0]} + 16'd1;
-                    address_bus <= {data_in, temp_addr[7:0]} + 16'd1;
+                    s <= s + 1'b1;
+                    pc <= {data_in, temp_addr[7:0]} + 1'b1;
+                    address_bus <= {data_in, temp_addr[7:0]} + 1'b1;
                     state <= STATE_FETCH_OPCODE;
                 end
 
@@ -484,16 +484,16 @@ module cpu (
                         address_bus <= pc;
                         state <= STATE_EXECUTE;
                     end else if (current_opcode != OP_INC_ZP && current_opcode != OP_DEC_ZP) begin
-                        pc <= pc + 1;
-                        address_bus <= pc + 1;
+                        pc <= pc + 1'b1;
+                        address_bus <= pc + 1'b1;
                         state <= STATE_FETCH_OPCODE;
                     end
                 end
 
                 STATE_WRITE_BACK: begin
                     write_en <= 1'b0;
-                    pc <= pc + 1;
-                    address_bus <= pc + 1;
+                    pc <= pc + 1'b1;
+                    address_bus <= pc + 1'b1;
                     state <= STATE_FETCH_OPCODE;
                 end
 

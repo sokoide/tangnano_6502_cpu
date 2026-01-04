@@ -80,7 +80,7 @@ package cpu_exec_control_flow_pkg;
                     end
                     1: begin
                         fetched_data[7:0] = dout_r;
-                        start_fetch_data((operands[14:0] + 15'd1) & RAMW[14:0], adb, state,
+                        start_fetch_data((operands[14:0] + 1'b1) & RAMW[14:0], adb, state,
                                          fetch_stage, fetch_resume_state);
                     end
                     2: begin
@@ -101,7 +101,7 @@ package cpu_exec_control_flow_pkg;
                         logic [15:0] stack_addr;
                         stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                         ada <= stack_addr[14:0] & RAMW[14:0];
-                        sp = sp - 1'd1;
+                        sp = sp - 1'b1;
                         din <= pc_plus2[15:8];
                         cea <= 1;
                         v_cea = 0;
@@ -113,7 +113,7 @@ package cpu_exec_control_flow_pkg;
                         stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                         ret_addr   = pc + 16'd2;
                         ada <= stack_addr[14:0] & RAMW[14:0];
-                        sp = sp - 1'd1;
+                        sp = sp - 1'b1;
                         din <= ret_addr[7:0];
                         cea <= 1;
                         v_cea = 0;
@@ -134,7 +134,7 @@ package cpu_exec_control_flow_pkg;
                 case (fetched_data_bytes)
                     0: begin
                         logic [15:0] stack_addr;
-                        sp = sp + 1'd1;
+                        sp = sp + 1'b1;
                         stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                         start_fetch_data(stack_addr[14:0] & RAMW[14:0], adb, state, fetch_stage,
                                          fetch_resume_state);
@@ -142,7 +142,7 @@ package cpu_exec_control_flow_pkg;
                     1: begin
                         logic [15:0] stack_addr;
                         fetched_data[7:0] = dout_r;
-                        sp = sp + 1'd1;
+                        sp = sp + 1'b1;
                         stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                         start_fetch_data(stack_addr[14:0] & RAMW[14:0], adb, state, fetch_stage,
                                          fetch_resume_state);
@@ -150,7 +150,7 @@ package cpu_exec_control_flow_pkg;
                     2: begin
                         logic [15:0] pc1;
                         fetched_data[15:8] = dout_r;
-                        pc1 = fetched_data + 16'd1;
+                        pc1 = fetched_data + 1'b1;
                         pc  <= pc1 & RAMW[15:0];
                         adb <= pc1[14:0] & RAMW[14:0];
                         state = FETCH_REQ;
@@ -164,7 +164,7 @@ package cpu_exec_control_flow_pkg;
                 logic [15:0] stack_addr;
                 stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                 ada <= stack_addr[14:0] & RAMW[14:0];
-                sp = sp - 1'd1;
+                sp = sp - 1'b1;
                 din <= ra;
                 cea   = 1;
                 v_cea = 0;
@@ -174,7 +174,7 @@ package cpu_exec_control_flow_pkg;
             8'h68: begin
                 if (fetched_data_bytes == 0) begin
                     logic [15:0] stack_addr;
-                    sp = sp + 1'd1;
+                    sp = sp + 1'b1;
                     stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                     start_fetch_data(stack_addr[14:0] & RAMW[14:0], adb, state, fetch_stage,
                                      fetch_resume_state);
@@ -190,7 +190,7 @@ package cpu_exec_control_flow_pkg;
                 logic [15:0] stack_addr;
                 stack_addr = (STACK + {8'h00, sp}) & RAMW[15:0];
                 ada <= stack_addr[14:0] & RAMW[14:0];
-                sp = sp - 1'd1;
+                sp = sp - 1'b1;
                 din <= {flg_n, flg_v, 1'b1, flg_b, flg_d, flg_i, flg_z, flg_c};
                 cea   = 1;
                 v_cea = 0;

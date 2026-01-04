@@ -18,7 +18,7 @@ module cpu (
             pc <= 16'h8000;
         end else if (pc_enable) begin
             // For now, just increment PC on every cycle
-            pc <= pc + 1;
+            pc <= pc + 1'b1;
         end
     end
 

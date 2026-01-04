@@ -75,7 +75,7 @@ module cpu (
         next = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
 
         // Always-on sequential helpers (now expressed as next-state updates).
-        next.counter = (cur.counter + 1) & 32'hFFFFFFFF;
+        next.counter = (cur.counter + 1'b1) & 32'hFFFFFFFF;
         next.dout_r = dout;
         next.vsync_meta = vsync;
         next.vsync_sync = cur.vsync_meta;

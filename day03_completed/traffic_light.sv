@@ -32,7 +32,7 @@ module traffic_light #(
                 current_state <= next_state;
                 timer <= 26'b0;
             end else begin
-                timer <= timer + 1;
+                timer <= timer + 1'b1;
             end
         end
     end

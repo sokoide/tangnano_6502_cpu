@@ -40,7 +40,7 @@ module top_core (
                 enable_counter <= 24'b0;
                 counter_enable <= 1'b1;
             end else begin
-                enable_counter <= enable_counter + 1;
+                enable_counter <= enable_counter + 1'b1;
                 counter_enable <= 1'b0;
             end
         end

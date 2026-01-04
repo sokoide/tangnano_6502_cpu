@@ -201,6 +201,28 @@ module top (
 endmodule
 ```
 
+### How to Write Numeric Literals (The Importance of Bit-Width)
+
+For software engineers, an `int` is typically 32 or 64 bits. However, in the world of hardware (HDL), it is crucial to **explicitly specify the bit-width** (the exact number of physical wires) down to a single bit.
+
+Format: `[Width]'[Base][Value]`
+
+- **Width**: Specifies how many bits (wires) the value occupies.
+- **Base**: `d` (decimal), `h` (hex), `b` (binary), etc.
+- **Value**: The actual value in that base.
+
+**Examples:**
+- `1'b1`: A **1-bit** binary value of 1 (equivalent to an ON/OFF switch or a single signal wire).
+- `8'hFF`: An **8-bit** hex value of 255 (exactly 1 byte of data).
+- `16'd10`: A **16-bit** decimal value of 10 (the width of the 6502 address bus).
+
+**Why is explicit bit-width necessary?**
+
+1. **Resource Efficiency**: Using a 32-bit integer for a signal that only needs 1 bit wastes precious physical resources (LUTs and wiring) inside the FPGA.
+2. **Avoiding Warnings**: If you just write `1`, most tools treat it as a "32-bit integer" by default. Trying to add this to an 8-bit register will trigger a "Truncation Warning" (e.g., "32 bits truncated to 8 bits").
+
+To maintain a clean build without warnings, this project consistently uses bit-specified literals, such as `counter + 1'b1`.
+
 #### Understanding `wire`, `logic`, `always_ff`, `posedge`, `assign` with a Diagram
 
 This small module already contains most of the “core grammar” you’ll use later:

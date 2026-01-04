@@ -85,7 +85,7 @@ module top_core (
             demo_addr <= 16'h0000;
             demo_opcode <= 8'hEA;  // NOP
         end else begin
-            demo_counter <= demo_counter + 1;
+            demo_counter <= demo_counter + 1'b1;
 
             // Reset all write signals
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
@@ -93,7 +93,7 @@ module top_core (
             // State machine for testing registers
             if (demo_counter[24]) begin  // Slow state changes
                 demo_counter <= 25'b0;
-                demo_state   <= demo_state + 1;
+                demo_state   <= demo_state + 1'b1;
 
                 case (demo_state)
                     3'b000: begin  // Test A register

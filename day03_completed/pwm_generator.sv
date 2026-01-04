@@ -16,7 +16,7 @@ module pwm_generator (
         if (!rst_n) begin
             counter <= 8'b0;
         end else begin
-            counter <= counter + 1;
+            counter <= counter + 1'b1;
         end
     end
 

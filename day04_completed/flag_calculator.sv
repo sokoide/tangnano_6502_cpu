@@ -51,7 +51,7 @@ module flag_calculator (
             flag_v = (operand_a[7] != operand_b[7]) && (operand_a[7] != result[7]);
         end else begin
             // For addition: sign(A) == sign(B) AND sign(A) != sign(result)
-            // (e.g., 127 + 1 = -128 -> Overflow)
+            // (e.g., 127 + 1'b1 = -128 -> Overflow)
             // 加算の場合: AとBの符号が同じで、かつAと結果の符号が異なる場合に発生。
             flag_v = (operand_a[7] == operand_b[7]) && (operand_a[7] != result[7]);
         end

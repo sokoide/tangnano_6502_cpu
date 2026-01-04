@@ -16,7 +16,7 @@ module top (
     // Sequential logic: updates on the rising edge of the clock
     always_ff @(posedge clk) begin
         // The counter increments by 1 every clock cycle
-        counter <= counter + 1;
+        counter <= counter + 1'b1;
     end
 
     // Combinational logic: continuous assignment

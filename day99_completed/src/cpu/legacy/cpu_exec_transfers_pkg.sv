@@ -57,7 +57,7 @@ package cpu_exec_transfers_pkg;
         endcase
 
         if (handled) begin
-            // Equivalent of fetch_opcode(1).
+            // Equivalent of fetch_opcode(1'b1).
             pc  <= pc_plus1;
             adb <= pc_plus1[14:0] & RAMW[14:0];
             state = FETCH_REQ;

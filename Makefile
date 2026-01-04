@@ -3,23 +3,29 @@ DAYS := $(sort $(wildcard day*_completed))
 # SVFILES = \( -name '*.sv' -o -name '*.svh' \)
 SVFILES = \( -name '*.sv' -o -name '*.svh' \)
 
-.PHONY: all clean help test format build
+.PHONY: all clean help test sim format build
 
 all: build
 
 build:
 	@echo "Building all projects (BOARD=$(BOARD))"
 	@for day in $(DAYS); do \
+		echo "************************************************"; \
 		echo "* Building $$day (BOARD=$(BOARD))"; \
+		echo "************************************************"; \
 		$(MAKE) -C $$day BOARD=$(BOARD); \
 	done
 
-test:
+sim:
 	@echo "Running simulation for all projects (BOARD=$(BOARD))"
 	@for day in $(DAYS); do \
+		echo "************************************************"; \
 		echo "* Running sim for $$day (BOARD=$(BOARD))"; \
+		echo "************************************************"; \
 		$(MAKE) -C $$day BOARD=$(BOARD) sim; \
 	done
+
+test: sim
 
 format:
 	@echo "Formatting all projects"
@@ -30,7 +36,9 @@ format:
 clean:
 	@echo "Cleaning all projects"
 	@for day in $(DAYS); do \
+		echo "************************************************"; \
 		echo "* Cleaning $$day"; \
+		echo "************************************************"; \
 		$(MAKE) -C $$day clean; \
 	done
 

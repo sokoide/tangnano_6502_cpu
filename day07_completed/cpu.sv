@@ -40,43 +40,43 @@ module cpu (
                 STATE_FETCH_OPCODE: begin
                     case (data_in)
                         OP_LDA_IMM: begin
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPERAND;
                         end
                         // Day 07 instructions (1-byte instructions)
                         OP_TAX: begin
                             x     <= a;
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TAY: begin
                             y     <= a;
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TXA: begin
                             a     <= x;
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_TYA: begin
                             a     <= y;
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_INX: begin
-                            x     <= x + 1;
-                            pc    <= pc + 1;
+                            x     <= x + 1'b1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         OP_INY: begin
-                            y     <= y + 1;
-                            pc    <= pc + 1;
+                            y     <= y + 1'b1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                         default: begin
                             // Default behavior for 1-byte instructions (e.g. NOP)
-                            pc    <= pc + 1;
+                            pc    <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end
                     endcase
@@ -85,7 +85,7 @@ module cpu (
                 STATE_FETCH_OPERAND: begin
                     // Load the immediate value into Accumulator
                     a     <= data_in;
-                    pc    <= pc + 1;
+                    pc    <= pc + 1'b1;
                     state <= STATE_FETCH_OPCODE;
                 end
 

@@ -2,7 +2,7 @@
 // 
 // This module provides a clean abstraction layer over Gowin IP cores for:
 // - 32KB SDPB RAM for CPU main memory
-// - 1KB SDPB VRAM for video text display
+// - 1'b1KB SDPB VRAM for video text display
 //
 // The module hides the complexity of dual-port memory interfaces and provides
 // consistent naming conventions for both memory types.

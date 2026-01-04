@@ -159,14 +159,14 @@ module top_core (
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b0;
             demo_opcode <= 8'hEA;  // NOP (No Operation)
         end else begin
-            demo_counter <= demo_counter + 1;
+            demo_counter <= demo_counter + 1'b1;
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
 
             if (demo_counter[24]) begin
-                // Transition to the next test state periodically.
-                // 定期的に次のテストステートへ遷移します。
+                // Transition to the next demo state periodically.
+                // 定期的に次のデモステートへ遷移します。
                 demo_counter <= 25'b0;
-                demo_state   <= demo_state + 1;
+                demo_state   <= demo_state + 1'b1;
 
                 case (demo_state)
                     // Write 0x55 to A (LDA Immediate)

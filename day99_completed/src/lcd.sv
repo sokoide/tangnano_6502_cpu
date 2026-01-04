@@ -3,7 +3,7 @@
 // This module generates the timing and pixel data for a 480x272 RGB LCD display.
 // It implements a text-based display system with the following features:
 // - 60 columns × 17 rows character display
-// - 16×8 pixel characters from font ROM
+// - 1'b16×8 pixel characters from font ROM
 // - Dual clock domain operation (LCD pixel clock and memory clock)
 // - Hardware-accelerated character rendering pipeline
 //
@@ -86,7 +86,7 @@ module lcd (
         y_full = (V_PixelCount - V_BackPorch) & 16'hFFFF;
         x = x_full[15:0];
         y = y_full[15:0];
-        active_area = (-1 <= x && x < H_PixelValid + CHAR_WIDTH - 1 && 0 <= y && y < V_PixelValid);
+        active_area = (-1 <= x && x < H_PixelValid + CHAR_WIDTH - 1'b1 && 0 <= y && y < V_PixelValid);
 
     end
 
