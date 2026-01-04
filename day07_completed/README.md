@@ -49,6 +49,38 @@ graph TD
 
 _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you might implement them in a single cycle._
 
+> [!TIP]
+> **Column: Opcodes**
+>
+> In Day 06 we used `LDA` as `0xA9`, and in Day 07 we define `TAX` as `0xAA`, etc.
+> These are standard 6502 opcodes listed in references like the
+> [6502 Instruction Set](https://www.masswerk.at/6502/6502_instruction_set.html).
+> You can hand-assemble them, but longer programs get tedious.
+> In that case, you can assemble with `cc65` like this:
+>
+> ```bash
+> cat > hoge.s << 'END'
+>    .org $0200
+>    LDA #$42
+>    TAX
+> END
+> ```
+>
+> Then you can generate a listing and see that `LDA #$42` becomes `0xA9 0x42`:
+>
+> ```bash
+> ca65 -l hoge.lst hoge.s
+>
+> cat hoge.lst
+>
+> 000000r 1                   .org $0200
+> 000200  1  A9 42            LDA #$42
+> 000202  1  AA               TAX
+> 000202  1
+> ```
+>
+> The [day99_completed examples](../day99_completed/examples/Makefile) use this flow to assemble 6502 code into FPGA-ready binaries.
+
 ## 🛠️ Implementation Steps
 
 1. **Declare Registers**:
