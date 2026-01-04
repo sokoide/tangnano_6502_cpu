@@ -207,7 +207,7 @@ The bottom of `top_core.sv` includes logic with names like `demo_counter` and `d
 
 3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `demo_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
 
-In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware.
+In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware. The `demo_` prefix explicitly indicates this is for educational visualization, not production testing.
 
 ### Step 3: Verification
 
