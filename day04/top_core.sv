@@ -1,9 +1,9 @@
 // Day 04: System Core (LCD + CPU Registers) - Skeleton
 //
-// 学習目標:
-// 1. LCDレンダリングパイプラインの統合
-// 2. CPUレジスタセットの実装と検証
-// 3. 命令デコーダによる命令の分類
+// Learning Goals: / 学習目標:
+// 1. Integration of LCD rendering pipeline / LCDレンダリングパイプラインの統合
+// 2. Implementation and verification of CPU register set / CPUレジスタセットの実装と検証
+// 3. Instruction classification by instruction decoder / 命令デコーダによる命令の分類
 
 module top_core (
     input logic       rst_n,
@@ -27,34 +27,46 @@ module top_core (
     // -------------------------------------------------------------------------
     // STEP 1: LCD Demo Instance / LCDデモ・モジュールのインスタンス化
     // -------------------------------------------------------------------------
+    // TODO: Instantiate the lcd_demo module for LCD display as "u_demo".
     // TODO: 液晶表示用の lcd_demo モジュールを "u_demo" という名前でインスタンス化してください。
+    // Input XTAL_IN (27MHz) and connect various LCD signals to outputs.
     // XTAL_IN (27MHz) を入力し、各種LCD信号を出力に接続します。
+    // This enables the display function on the actual hardware.
     // これにより、実機での表示機能が有効になります。
 
 
     // -------------------------------------------------------------------------
     // STEP 2: CPU Register Set / CPUレジスタセットの統合
     // -------------------------------------------------------------------------
+    // TODO: Instantiate the CPU register set (cpu_registers) as "registers".
     // TODO: CPUレジスタセット (cpu_registers) を "registers" という名前でインスタンス化してください。
+    // Use LCD_CLK for the clock and connect the reset signal.
     // クロックには LCD_CLK を使用し、リセット信号を接続します。
+    // Connect the test sequence control signals (a_write, data_in, etc.) to each port.
     // テストシーケンス制御信号 (a_write, data_in等) を各ポートに接続してください。
 
 
     // -------------------------------------------------------------------------
     // STEP 3: Instruction Decoder / 命令デコーダ
     // -------------------------------------------------------------------------
+    // TODO: Instantiate the simple decoder (simple_decoder) as "decoder".
     // TODO: 簡易デコーダ (simple_decoder) を "decoder" という名前でインスタンス化してください。
+    // Input test_opcode and connect the outputs to LED output signals like led_load.
     // test_opcode を入力し、出力を led_load 等のLED出力信号に接続します。
 
 
     // -------------------------------------------------------------------------
     // STEP 4: Flag Calculator / フラグ計算
     // -------------------------------------------------------------------------
+    // TODO: Instantiate the flag calculation module (flag_calculator) as "u_flags".
     // TODO: フラグ計算モジュール (flag_calculator) を "u_flags" という名前でインスタンス化してください。
+    // Connect the operation result (test_data, etc.) and verify that the flags change correctly.
     // 演算結果 (test_data等) を接続し、フラグが正しく変化することを確認します。
+    // (Note: The goal in Day 04 is to correctly connect the modules)
     // (注: Day 04ではモジュールを正しく接続できることが目標です)
 
 
+    // --- Test Sequence Control (Implemented below, but please understand the content) ---
     // --- テストシーケンス制御 (以下は実装済みですが、内容を理解してください) ---
     logic [ 7:0] test_opcode;
     logic [15:0] reg_pc;

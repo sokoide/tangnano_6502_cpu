@@ -1,9 +1,9 @@
 // Day 14: Control Flow & Basic Memory (Branch Instructions) - Skeleton
 //
-// 学習目標:
-// 1. 相対アドレッシング (Relative Addressing) の実装
-// 2. 符号付き 8 ビットオフセットの扱い ($signed)
-// 3. フラグによる条件分岐ロジック
+// Learning Goals: / 学習目標:
+// 1. Implementation of Relative Addressing / 相対アドレッシング (Relative Addressing) の実装
+// 2. Handling of signed 8-bit offset ($signed) / 符号付き 8 ビットオフセットの扱い ($signed)
+// 3. Conditional branch logic using flags / フラグによる条件分岐ロジック
 
 `include "include/opcodes.svh"
 
@@ -36,13 +36,19 @@ module cpu (
     logic [7:0] current_opcode;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of branch instructions
     // TODO: 分岐命令の実装
     // -------------------------------------------------------------------------
+    // Please implement BNE (0xD0). (Branch if the Zero flag is 0)
     // BNE (0xD0) を実装してください。 (Zero フラグが 0 の時に分岐)
     //
+    // 1. In STATE_FETCH_OPERAND, obtain the 8-bit relative offset.
     // 1. STATE_FETCH_OPERAND で 8 ビットの相対オフセットを取得。
+    // 2. If the condition is met: pc <= (pc + 1) + offset
     // 2. 条件が成立する場合： pc <= (pc + 1) + offset
+    // 3. If the condition is not met: pc <= pc + 1
     // 3. 条件が成立しない場合： pc <= pc + 1
+    // * The offset must be treated as signed ($signed(data_in)).
     // ※ オフセットは符号付きとして扱う必要があります ($signed(data_in))。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -67,7 +73,7 @@ module cpu (
                     state <= STATE_FETCH_OPERAND;
                 end
                 STATE_FETCH_OPERAND: begin
-                    // TODO: 分岐ロジック
+                    // TODO: Branch logic / TODO: 分岐ロジック
                     state <= STATE_FETCH_OPCODE;
                 end
             endcase

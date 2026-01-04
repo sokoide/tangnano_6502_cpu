@@ -1,9 +1,9 @@
 // Day 11: Zero Page Addressing & RAM - Skeleton
 //
-// 学習目標:
-// 1. ゼロページ・アドレッシングの実装
-// 2. RAM (Random Access Memory) への書き込みロジック (STA)
-// 3. メモリマップド I/O の基礎
+// Learning Goals: / 学習目標:
+// 1. Implementation of zero page addressing / ゼロページ・アドレッシングの実装
+// 2. Write logic to RAM (Random Access Memory) (STA) / RAM (Random Access Memory) への書き込みロジック (STA)
+// 3. Basics of memory-mapped I/O / メモリマップド I/O の基礎
 
 `include "include/opcodes.svh"
 
@@ -36,13 +36,18 @@ module cpu (
     logic [7:0] current_opcode;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of zero page addressing and STA instruction
     // TODO: ゼロページ・アドレッシングと STA 命令の実装
     // -------------------------------------------------------------------------
+    // Please implement LDA zp (0xA5) and STA zp (0x85).
     // LDA zp (0xA5) および STA zp (0x85) を実装してください。
     //
+    // 1. In STATE_FETCH_OPERAND, obtain the zero page address (lower 8 bits).
     // 1. STATE_FETCH_OPERAND で、ゼロページのアドレス（下位8ビット）を取得します。
-    // 2. STATE_EXECUTE で：
+    // 2. In STATE_EXECUTE: / 2. STATE_EXECUTE で：
+    //    - For LDA: Output the obtained address to address_bus and store data_in in A.
     //    - LDA の場合：address_bus に取得したアドレスを出力し、data_in を a に格納。
+    //    - For STA: Output the obtained address to address_bus, output A to data_out, and set write_en to 1.
     //    - STA の場合：address_bus に取得したアドレスを出力し、data_out に a を出力、write_en を 1 に。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -79,7 +84,7 @@ module cpu (
         end
     end
 
-    assign address_bus = pc;  // TODO: ステートに応じて切り替え
+    assign address_bus = pc;  // TODO: Switch according to state / TODO: ステートに応じて切り替え
     assign debug_pc = pc;
     assign debug_a = a;
     assign debug_x = x;

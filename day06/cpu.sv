@@ -1,9 +1,9 @@
 // Day 06: Data Movement (LDA Immediate) - Skeleton
 //
-// 学習目標:
-// 1. 命令フェッチ (Fetch) とデコード (Decode)
-// 2. A レジスタの実装
-// 3. 即値アドレッシング (Immediate Addressing)
+// Learning Goals: / 学習目標:
+// 1. Instruction Fetch and Decode / 命令フェッチ (Fetch) とデコード (Decode)
+// 2. Implementation of A register / A レジスタの実装
+// 3. Immediate Addressing / 即値アドレッシング (Immediate Addressing)
 
 module cpu (
     input  logic        clk,
@@ -26,21 +26,28 @@ module cpu (
     state_t state;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of A register and LDA instruction
     // TODO: A レジスタと LDA 命令の実装
     // -------------------------------------------------------------------------
-    // 1. リセット時:
+    // 1. At reset: / リセット時:
     //    PC = 0x8000, A = 0x00, state = S_FETCH
     //
     // 2. S_FETCH:
+    //    Read the instruction from memory (data_in) and store it in IR.
     //    メモリから命令を読み込み (data_in)、IR に格納します。
+    //    Increment PC by 1 and transition to state = S_DECODE.
     //    PC を 1 増加させ、state = S_DECODE に遷移します。
     //
     // 3. S_DECODE:
+    //    Determine if it is LDA Immediate (0xA9).
     //    LDA Immediate (0xA9) かどうかを判定します。
+    //    Transition to state = S_EXECUTE to read the immediate value (next byte).
     //    即値（次のバイト）を読み込むため、state = S_EXECUTE に遷移します。
     //
-    // 4. S_EXECUTE (LDAの場合):
+    // 4. S_EXECUTE (for LDA): / 4. S_EXECUTE (LDAの場合):
+    //    Store the value of data_in in the A register.
     //    data_in の値を A レジスタに格納します。
+    //    Increment PC by 1 and return to state = S_FETCH.
     //    PC を 1 増加させ、state = S_FETCH に戻ります。
 
     always_ff @(posedge clk or negedge rst_n) begin

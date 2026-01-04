@@ -1,9 +1,9 @@
 // Day 15: Control Flow & Basic Memory (Memory Map Integration) - Skeleton
 //
-// 学習目標:
-// 1. メモリマップド I/O の理解
-// 2. ROM (プログラム) と RAM (データ) の共存
-// 3. 複雑なステートマシンの整理
+// Learning Goals: / 学習目標:
+// 1. Understanding memory-mapped I/O / メモリマップド I/O の理解
+// 2. Coexistence of ROM (program) and RAM (data) / ROM (プログラム) と RAM (データ) の共存
+// 3. Organizing complex state machines / 複雑なステートマシンの整理
 
 `include "include/opcodes.svh"
 
@@ -39,8 +39,11 @@ module cpu (
     logic [15:0] temp_addr;
 
     // -------------------------------------------------------------------------
+    // TODO: Final adjustment of instructions based on the memory map
     // TODO: メモリマップに基づく命令の最終調整
     // -------------------------------------------------------------------------
+    // Integrate all the following instructions that you have implemented so far 
+    // so that they all work correctly:
     // これまでに実装した以下の命令がすべて正しく動作するように統合してください：
     // - LDA (imm, zp, abs), STA (zp, abs)
     // - LDX/LDY (imm, zp), STX/STY (zp)

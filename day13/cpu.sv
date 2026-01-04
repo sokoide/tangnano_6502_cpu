@@ -1,9 +1,9 @@
 // Day 13: Control Flow & Basic Memory (JMP Instruction) - Skeleton
 //
-// 学習目標:
-// 1. JMP 命令の実装
-// 2. プログラムカウンタ (PC) の不連続な更新
-// 3. 無限ループの作成
+// Learning Goals: / 学習目標:
+// 1. Implementation of JMP instruction / JMP 命令の実装
+// 2. Discontinuous update of Program Counter (PC) / プログラムカウンタ (PC) の不連続な更新
+// 3. Creation of infinite loops / 無限ループの作成
 
 `include "include/opcodes.svh"
 
@@ -38,12 +38,17 @@ module cpu (
     logic [15:0] target_addr;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of JMP instruction
     // TODO: JMP 命令の実装
     // -------------------------------------------------------------------------
+    // Please implement JMP abs (0x4C).
     // JMP abs (0x4C) を実装してください。
     //
+    // 1. Obtain the jump destination address in STATE_FETCH_LOW / HIGH.
     // 1. STATE_FETCH_LOW / HIGH で飛び先アドレスを取得。
+    // 2. Update PC to that address in STATE_EXECUTE.
     // 2. STATE_EXECUTE で pc をそのアドレスに更新。
+    // * JMP does not increment PC, but replaces it completely.
     // ※ JMP は PC をインクリメントするのではなく、完全に置き換えます。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -74,10 +79,12 @@ module cpu (
                 end
                 STATE_FETCH_HIGH: begin
                     target_addr[15:8] <= data_in;
+                    // For JMP, PC can be updated here
                     // JMP の場合はここで PC を更新しても良い
                     state <= STATE_EXECUTE;
                 end
                 STATE_EXECUTE: begin
+                    // TODO: JMP logic
                     // TODO: JMP ロジック
                     state <= STATE_FETCH_OPCODE;
                 end

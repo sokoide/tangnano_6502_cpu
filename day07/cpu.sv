@@ -1,9 +1,9 @@
 // Day 07: Data Movement (Register Transfers) - Skeleton
 //
-// 学習目標:
-// 1. レジスタ間転送命令 (TAX, TAY, TXA, TYA)
-// 2. インデックスレジスタ (X, Y) の実装
-// 3. インクリメント命令 (INX, INY)
+// Learning Goals: / 学習目標:
+// 1. Inter-register transfer instructions (TAX, TAY, TXA, TYA) / レジスタ間転送命令 (TAX, TAY, TXA, TYA)
+// 2. Implementation of index registers (X, Y) / インデックスレジスタ (X, Y) の実装
+// 3. Increment instructions (INX, INY) / インクリメント命令 (INX, INY)
 
 `include "include/opcodes.svh"
 
@@ -29,16 +29,20 @@ module cpu (
     state_t state;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of inter-register transfer instructions and index registers
     // TODO: レジスタ間転送命令とインデックスレジスタの実装
     // -------------------------------------------------------------------------
+    // Add the following instructions inside the case statement:
     // 以下の命令を case 文の中に追加してください：
-    // - TAX (0xAA): a の値を x にコピー
-    // - TAY (0xA8): a の値を y にコピー
-    // - TXA (0x8A): x の値を a にコピー
-    // - TYA (0x98): y の値を a にコピー
-    // - INX (0xE8): x を +1
-    // - INY (0xC8): y を +1
+    // - TAX (0xAA): Copy the value of A to X / a の値を x にコピー
+    // - TAY (0xA8): Copy the value of A to Y / a の値を y にコピー
+    // - TXA (0x8A): Copy the value of X to A / x の値を a にコピー
+    // - TYA (0x98): Copy the value of Y to A / y の値を a にコピー
+    // - INX (0xE8): X = X + 1 / x を +1
+    // - INY (0xC8): Y = Y + 1 / y を +1
     //
+    // Since these are all 1-byte instructions, increment PC by 1 after execution,
+    // and the state remains (or returns to) STATE_FETCH_OPCODE.
     // すべて 1 バイト命令なので、実行後に pc を +1 し、
     // state は STATE_FETCH_OPCODE のまま（または戻る）になります。
 
@@ -57,6 +61,7 @@ module cpu (
                             pc    <= pc + 1;
                             state <= STATE_FETCH_OPERAND;
                         end
+                        // TODO: Add TAX, TAY, TXA, TYA, INX, INY here
                         // TODO: ここに TAX, TAY, TXA, TYA, INX, INY を追加
 
                         default: begin

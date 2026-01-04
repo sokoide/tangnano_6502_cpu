@@ -1,9 +1,9 @@
 // Day 17: Stack Operations (JSR & RTS) - Skeleton
 //
-// 学習目標:
-// 1. サブルーチン (Subroutine) の概念
-// 2. リターンアドレスの退避と復元
-// 3. 複雑なステート遷移の制御
+// Learning Goals: / 学習目標:
+// 1. Concept of subroutines / サブルーチン (Subroutine) の概念
+// 2. Saving and restoring the return address / リターンアドレスの退避と復元
+// 3. Control of complex state transitions / 複雑なステート遷移の制御
 
 `include "include/opcodes.svh"
 
@@ -42,15 +42,16 @@ module cpu (
     logic [15:0] temp_addr;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of JSR (0x20) and RTS (0x60) instructions
     // TODO: JSR (0x20) および RTS (0x60) 命令の実装
     // -------------------------------------------------------------------------
     // 1. JSR:
-    //    - ターゲットアドレスを取得。
-    //    - 現在の PC（戻り先アドレス）をスタックにプッシュ。
-    //    - PC をターゲットアドレスに更新。
+    //    - Obtain target address. / ターゲットアドレスを取得。
+    //    - Push the current PC (return address) onto the stack. / 現在の PC（戻り先アドレス）をスタックにプッシュ。
+    //    - Update PC to the target address. / PC をターゲットアドレスに更新。
     // 2. RTS:
-    //    - スタックからリターンアドレスをプル。
-    //    - PC をそのアドレスに更新。
+    //    - Pull the return address from the stack. / スタックからリターンアドレスをプル。
+    //    - Update PC to that address. / PC をそのアドレスに更新。
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

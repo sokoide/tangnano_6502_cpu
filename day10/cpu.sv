@@ -1,9 +1,9 @@
 // Day 10: Arithmetic & Flags (SBC & Inverted Borrow) - Skeleton
 //
-// 学習目標:
-// 1. SBC 命令の実装
-// 2. 6502 の「Inverted Borrow (反転したボロー)」の概念
-// 3. 減算時のキャリーフラグの扱い
+// Learning Goals: / 学習目標:
+// 1. Implementation of SBC instruction / SBC 命令の実装
+// 2. Concept of "Inverted Borrow" in 6502 / 6502 の「Inverted Borrow (反転したボロー)」の概念
+// 3. Handling of the carry flag during subtraction / 減算時のキャリーフラグの扱い
 
 `include "include/opcodes.svh"
 
@@ -32,10 +32,14 @@ module cpu (
     logic [7:0] current_opcode;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of SBC instruction
     // TODO: SBC 命令の実装
     // -------------------------------------------------------------------------
+    // Please implement SBC Immediate (0xE9).
     // SBC Immediate (0xE9) を実装してください。
+    // SBC in 6502 is A - operand - (1 - C).
     // 6502のSBCは A - operand - (1 - C) です。
+    // Hint: It can be calculated as A + (~operand) + C.
     // ヒント: A + (~operand) + C として計算できます。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -72,9 +76,10 @@ module cpu (
                 STATE_FETCH_OPERAND: begin
                     case (current_opcode)
                         OP_SBC_IMM: begin
+                            // TODO: SBC logic
                             // TODO: SBC ロジック
                         end
-                        // ... 他の命令
+                        // ... Other instructions / ... 他の命令
                     endcase
                     pc <= pc + 1;
                     state <= STATE_FETCH_OPCODE;

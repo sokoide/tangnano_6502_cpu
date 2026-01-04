@@ -1,9 +1,9 @@
 // Day 12: Control Flow & Basic Memory (Absolute Addressing) - Skeleton
 //
-// 学習目標:
-// 1. アブソリュート・アドレッシング (Absolute Addressing) の実装
-// 2. 3 バイト命令のフェッチフロー
-// 3. リトルエンディアン (Little Endian) の扱い
+// Learning Goals: / 学習目標:
+// 1. Implementation of Absolute Addressing / アブソリュート・アドレッシング (Absolute Addressing) の実装
+// 2. Fetch flow for 3-byte instructions / 3 バイト命令のフェッチフロー
+// 3. Handling of Little Endian / リトルエンディアン (Little Endian) の扱い
 
 `include "include/opcodes.svh"
 
@@ -29,8 +29,8 @@ module cpu (
 
     typedef enum logic [2:0] {
         STATE_FETCH_OPCODE,
-        STATE_FETCH_LOW,  // アドレス下位 8 ビットを取得
-        STATE_FETCH_HIGH,  // アドレス上位 8 ビットを取得
+        STATE_FETCH_LOW,  // Fetch lower 8 bits of the address / アドレス下位 8 ビットを取得
+        STATE_FETCH_HIGH,  // Fetch upper 8 bits of the address / アドレス上位 8 ビットを取得
         STATE_EXECUTE
     } state_t;
     state_t state;
@@ -38,12 +38,17 @@ module cpu (
     logic [15:0] target_addr;
 
     // -------------------------------------------------------------------------
+    // TODO: Implementation of Absolute Addressing
     // TODO: アブソリュート・アドレッシングの実装
     // -------------------------------------------------------------------------
+    // Please implement LDA abs (0xAD) and STA abs (0x8D).
     // LDA abs (0xAD) および STA abs (0x8D) を実装してください。
     //
+    // 1. In STATE_FETCH_LOW, store the lower 8 bits of the address in target_addr[7:0].
     // 1. STATE_FETCH_LOW でアドレスの下位 8 ビットを target_addr[7:0] に格納。
+    // 2. In STATE_FETCH_HIGH, store the upper 8 bits of the address in target_addr[15:8].
     // 2. STATE_FETCH_HIGH でアドレスの上位 8 ビットを target_addr[15:8] に格納。
+    // 3. In STATE_EXECUTE, execute memory access (read/write).
     // 3. STATE_EXECUTE でメモリへのアクセス（読み書き）を実行。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -68,24 +73,24 @@ module cpu (
                     state <= STATE_FETCH_LOW;
                 end
                 STATE_FETCH_LOW: begin
-                    // TODO: 下位バイト取得
+                    // TODO: Obtain lower byte / TODO: 下位バイト取得
                     pc <= pc + 1;
                     state <= STATE_FETCH_HIGH;
                 end
                 STATE_FETCH_HIGH: begin
-                    // TODO: 上位バイト取得
+                    // TODO: Obtain upper byte / TODO: 上位バイト取得
                     pc <= pc + 1;
                     state <= STATE_EXECUTE;
                 end
                 STATE_EXECUTE: begin
-                    // TODO: アクセス実行
+                    // TODO: Execute access / TODO: アクセス実行
                     state <= STATE_FETCH_OPCODE;
                 end
             endcase
         end
     end
 
-    assign address_bus = pc;  // TODO: 切り替え
+    assign address_bus = pc;  // TODO: Switch / TODO: 切り替え
     assign debug_pc = pc;
     assign debug_a = a;
     assign debug_x = x;

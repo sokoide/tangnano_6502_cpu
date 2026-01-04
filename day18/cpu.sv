@@ -1,9 +1,9 @@
 // Day 18: Stack Operations & Refinement (System Integration) - Skeleton
 //
-// 学習目標:
-// 1. 全命令の統合と検証
-// 2. 実機での複雑なプログラムの実行
-// 3. 次のステップ（割り込み、周辺機器）への準備
+// Learning Goals: / 学習目標:
+// 1. Integration and verification of all instructions / 全命令の統合と検証
+// 2. Execution of complex programs on actual hardware / 実機での複雑なプログラムの実行
+// 3. Preparation for next steps (interrupts, peripherals) / 次のステップ（割り込み、周辺機器）への準備
 
 `include "include/opcodes.svh"
 
@@ -31,9 +31,12 @@ module cpu (
     logic n, v, z, c;
 
     // -------------------------------------------------------------------------
+    // TODO: Final integration of the 6502 CPU
     // TODO: 6502 CPU の最終統合
     // -------------------------------------------------------------------------
+    // Integrate all instructions and functions learned so far to complete the entire system.
     // これまでに学んだすべての命令と機能を統合し、システム全体を完成させてください。
+    // Day 18 also includes support for custom instructions (WVS, CVR, IFO).
     // Day 18 では、独自命令 (WVS, CVR, IFO) のサポートも含まれます。
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -51,6 +54,7 @@ module cpu (
             vram_clear <= 1'b0;
             show_info <= 1'b0;
         end else if (pc_enable) begin
+            // Integrate state machine and instruction execution logic here
             // ここにステートマシンと命令実行ロジックを統合
         end
     end
