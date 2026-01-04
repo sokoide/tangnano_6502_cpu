@@ -98,47 +98,47 @@ The roadmap is divided into four main phases.
 
 Setting up the environment and building the necessary debug tools.
 
-|    Day     | Topic                 | What You'll Learn                                       |
-| :--------: | :-------------------- | :------------------------------------------------------ |
-| **Day 01** | **Blinky LED**        | Environment setup and FPGA programming.                 |
-| **Day 02** | **4-bit ALU**         | Combinational logic and basic logical operations.       |
-| **Day 03** | **Traffic Light FSM** | Sequential logic and Finite State Machines.             |
-| **Day 04** | **Debug Foundation**  | LCD display circuit (BSRAM/pROM).                       |
+| Day | Topic | What You'll Learn |
+| :---: | :--- | :--- |
+| [**Day 01**](./day01/README.md) | **Blinky LED** | Environment setup and FPGA programming. |
+| [**Day 02**](./day02/README.md) | **4-bit ALU** | Combinational logic and basic logical operations. |
+| [**Day 03**](./day03/README.md) | **Traffic Light FSM** | Sequential logic and Finite State Machines. |
+| [**Day 04**](./day04/README.md) | **Debug Foundation** | LCD display circuit (BSRAM/pROM). |
 
 ### Phase 2: Core CPU Implementation (Day 05-10)
 
 Implementing core CPU functionality and visualizing internal state.
 
-|    Day     | Topic                   | Instructions (Examples)                   |
-| :--------: | :---------------------- | :---------------------------------------- |
-| **Day 05** | **CPU Skeleton**        | `NOP` (Program Counter only).             |
-| **Day 06** | **Memory Access**       | `LDA #imm` (Immediate load).              |
-| **Day 07** | **Reg Transfers**       | `TAX`, `TAY`, `INX`, `INY`.               |
-| **Day 08** | **Arithmetic (ALU)**    | `ADC`, `SBC` (NVZC Flag calculations).    |
-| **Day 09** | **Branching**           | `BNE`, `BEQ`, `BPL`, `BMI`.               |
-| **Day 10** | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT`. |
+| Day | Topic | Instructions (Examples) |
+| :---: | :--- | :--- |
+| [**Day 05**](./day05/README.md) | **CPU Skeleton** | `NOP` (Program Counter only). |
+| [**Day 06**](./day06/README.md) | **Memory Access** | `LDA #imm` (Immediate load). |
+| [**Day 07**](./day07/README.md) | **Reg Transfers** | `TAX`, `TAY`, `INX`, `INY`. |
+| [**Day 08**](./day08/README.md) | **Arithmetic (ALU)** | `ADC`, `SBC` (NVZC Flag calculations). |
+| [**Day 09**](./day09/README.md) | **Branching** | `BNE`, `BEQ`, `BPL`, `BMI`. |
+| [**Day 10**](./day10/README.md) | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT`. |
 
 ### Phase 3: Addressing Modes & Data Processing (Day 11-15)
 
 Strengthening memory operations and complex processing.
 
-|    Day     | Topic                 | What You'll Learn                           |
-| :--------: | :-------------------- | :------------------------------------------ |
-| **Day 11** | **Zero Page**         | Zero Page addressing (`LDA $00`) and RAM.   |
-| **Day 12** | **Absolute**          | Absolute addressing (`LDA $1234`).          |
-| **Day 13** | **Logic Ops**         | `AND`, `ORA`, `EOR`, `BIT` (Bitwise logic). |
-| **Day 14** | **Shift & Rotate**    | `ASL`, `LSR`, `ROL`, `ROR`.                 |
-| **Day 15** | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `INC`, `DEC`.          |
+| Day | Topic | What You'll Learn |
+| :---: | :--- | :--- |
+| [**Day 11**](./day11/README.md) | **Zero Page** | Zero Page addressing (`LDA $00`) and RAM. |
+| [**Day 12**](./day12/README.md) | **Absolute** | Absolute addressing (`LDA $1234`). |
+| [**Day 13**](./day13/README.md) | **Logic Ops** | `AND`, `ORA`, `EOR`, `BIT` (Bitwise logic). |
+| [**Day 14**](./day14/README.md) | **Shift & Rotate** | `ASL`, `LSR`, `ROL`, `ROR`. |
+| [**Day 15**](./day15/README.md) | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `INC`, `DEC`. |
 
 ### Phase 4: Advanced Addressing & Custom Extension (Day 16-18)
 
 Complex addressing modes and hardware-native custom instructions.
 
-|    Day     | Topic              | What You'll Learn                                            |
-| :--------: | :----------------- | :----------------------------------------------------------- |
-| **Day 16** | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                   |
-| **Day 17** | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).   |
-| **Day 18** | **Custom Opcodes** | `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info). |
+| Day | Topic | What You'll Learn |
+| :---: | :--- | :--- |
+| [**Day 16**](./day16/README.md) | **Indexed** | Indexed addressing (`LDA $1234,X` / `,Y`). |
+| [**Day 17**](./day17/README.md) | **Indirect** | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`). |
+| [**Day 18**](./day18/README.md) | **Custom Opcodes** | `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info). |
 
 ### 🏁 Final Goal (Day 99)
 
