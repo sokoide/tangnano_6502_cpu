@@ -272,6 +272,29 @@ stateDiagram-v2
     HALT --> HALT : Stay halted
 ```
 
+### Boot Process (Loading Program from ROM to RAM)
+
+Similar to the Day 10 design, this system executes programs from the RAM implemented with Gowin BSRAM (`ram.sv`). At startup (immediately after reset), the system employs a mechanism to copy the program from a ROM-like data array to the RAM.
+
+In Day 99, this boot loader functionality is integrated into the **CPU's main FSM (State Machine)**.
+
+1. **Program Data**:
+    - Defined as a SystemVerilog array (byte sequence) named `boot_program` in `include/boot_program.sv`.
+    - This is automatically generated from the assembly output (HEX file) by the `hex_fpga` tool.
+
+2. **Data Passing**:
+    - `top_core.sv` includes `boot_program.sv` and passes it to the `cpu` module's input ports `boot_program` and `boot_program_length`.
+
+3. **Copy Process (FSM)**:
+    - The FSM in `src/cpu/cpu_fsm_next_pkg.sv` has an `INIT_RAM` state.
+    - After reset release, the FSM transitions from `INIT` to `INIT_RAM`.
+    - In this state, it reads the content of the `boot_program` array byte by byte and writes it to RAM starting at address `0x0200` (program start location) (`cea=1`, `din=boot_byte`).
+
+4. **Execution Start**:
+    - Once all bytes are copied, the FSM transitions to the `FETCH_REQ` state and begins normal instruction fetching from Program Counter (PC) `0x0200`.
+
+By this method, dedicated boot loader circuitry (external modules) is eliminated, keeping the logic contained within the CPU control.
+
 ### Instruction Implementation Examples
 
 **Load Immediate (LDA #$41):**
