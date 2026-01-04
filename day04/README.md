@@ -9,7 +9,7 @@
 
 Until now, we have verified operations using only LEDs—providing just "one bit" of information. However, as we build a complex CPU, LEDs are no longer sufficient.
 
-In Day 04, we will build an **"LCD Debug Dashboard"** to powerfully support our CPU development. The goal today is to create an environment where you can see the CPU's internal state—which instruction it's executing and what the register values are—in real-time.
+In Day 04, we will build an **"LCD Debug Dashboard"** to support our CPU development. The goal today is to create the environment that will let us see CPU internals (like instructions and registers) in real-time once the CPU is brought up.
 
 ## 🎯 Learning Objectives
 

@@ -7,7 +7,7 @@
 
 ## 📜 Overview
 
-In Day 06, we will breathe more life into our CPU by implementing its first data-handling instruction: **`LDA #imm`** (Load Accumulator with Immediate value). This involves adding the **Accumulator (A register)**, one of the most important registers in the 6502.
+In Day 06, we will breathe more life into our CPU by implementing its first data-handling instruction: **`LDA #imm`** (Load Accumulator with Immediate value). This involves actively using the **Accumulator (A register)** introduced in Day 05.
 
 We will also implement the logic to fetch an 8-bit _operand_ that follows the instruction code in memory.
 
@@ -111,7 +111,7 @@ When this is executed, the A register will contain the value `0x42`.
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day06/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+Starting from Day 05, **each day provides a complete testbench** (for Day 06, see `day06/sim/`). Use it to verify the correctness of your implementation.
 
 - **Test Program**: Create a simple ROM containing `A9 42` (LDA #$42).
 - **Simulation**: Run `make sim`. Success is achieved if the `A` register holds `0x42` after two clock cycles and the simulation outputs `PASS`.
