@@ -15,7 +15,7 @@ In Day 05, we will implement the **"Register Set"** for memory and the **"Progra
 
 ## 🧠 Memory Model Note
 
-Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 10.
+Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, including Zero Page/Stack/Program RAM, is not used until Day 10.
 
 ## 🎯 Learning Objectives
 
