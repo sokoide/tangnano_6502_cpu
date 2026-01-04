@@ -21,9 +21,9 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement X and Y Registers**: Add two general-purpose 8-bit index registers.
+- **Utilize X and Y Registers**: Prepare to use the general-purpose index registers implemented in Day 05.
 - **Implement Transfer Instructions**: Implement `TAX`, `TAY`, `TXA`, and `TYA`.
-- **Implement Increment/Decrement**: Implement `INX` and `INY`.
+- **Implement Increment Instructions**: Implement `INX` and `INY`.
 - **Expand Decoder**: Master handling 1-byte instructions (no operands).
 - **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
@@ -98,4 +98,4 @@ Starting from Day 05, **the testbench (`day07/sim/`) is provided in a complete s
 
 ## 🎯 Next Step
 
-In Day 08, we will implement the heart of the CPU: the **ALU (Arithmetic Logic Unit)**, introducing addition, subtraction, and status flags (N, V, Z, C).
+In Day 08, we will significantly strengthen the CPU's computational power by integrating the **ALU (Arithmetic Logic Unit)** for full addition/subtraction and the **Processor Status (P) register** to bundle our status flags.

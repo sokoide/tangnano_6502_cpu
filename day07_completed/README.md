@@ -13,10 +13,10 @@ These registers are essential for many addressing modes and are often used as lo
 
 ## 🎯 Learning Objectives
 
-- **Implement X and Y Registers**: Add two 8-bit general-purpose registers to the CPU.
-- **Register Transfer Instructions**: Implement `TAX` (Transfer A to X) and `TAY` (Transfer A to Y).
-- **Increment/Decrement Instructions**: Implement `INX` (Increment X) and `INY` (Increment Y).
-- **Decoder Expansion**: Master handling single-byte instructions with no operands.
+- **Utilize X and Y Registers**: Put the general-purpose index registers implemented in Day 05 into practical use.
+- **Implement Transfer Instructions**: Implement `TAX`, `TAY`, `TXA`, and `TYA`.
+- **Implement Increment Instructions**: Implement `INX` and `INY`.
+- **Expand Decoder**: Master handling single-byte instructions with no operands.
 
 ## 🏗️ Instructions to Implement
 
@@ -79,4 +79,4 @@ The X and Y registers shine when implementing **indexed addressing modes** (e.g.
 
 ## 🎯 Next Step
 
-In Day 08, we will implement the heart of the CPU: the **ALU (Arithmetic Logic Unit)**, introducing addition, subtraction, and status flags (N, V, Z, C).
+In Day 08, we will significantly strengthen the CPU's computational power by integrating the **ALU (Arithmetic Logic Unit)** for full addition/subtraction and the **Processor Status (P) register** to bundle our status flags.

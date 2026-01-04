@@ -7,9 +7,9 @@
 
 ## 📜 Overview
 
-Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power. We will also implement the **Processor Status (P) register**, also known as the flag register.
+Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which bundles the individual status flags we began implementing in Day 06.
 
-This allows the CPU to perform addition (`ADC`) and subtraction (`SBC`) and observe how the results affect the status flags (N, V, Z, C). This is a major leap towards making logical decisions in programs.
+This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
 
 ## 🔙 Review: Day 07
 
@@ -21,11 +21,10 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement ALU**: Create combinational logic for 8-bit addition and subtraction.
-- **Implement Status Register (P)**: Add logic to hold N, V, Z, and C flags.
-- **Implement `ADC` / `SBC`**: Learn how arithmetic works with carry/borrow.
-- **Flag Update Logic**: Calculate flags (Negative, Overflow, Zero, Carry) from results.
-- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
+- **Integrate ALU**: Fully support 8-bit addition and subtraction.
+- **Integrate Status Register (P)**: Connect the flag calculation logic from Day 06 to the P register.
+- **Complete `ADC` / `SBC`**: Implement accurate arithmetic that accounts for carry/borrow.
+- **Observe Flag Changes**: Confirm on the LCD that the P register content (Negative, Overflow, Zero, Carry) changes correctly based on operation results.
 
 ## 🏗️ Status Flags
 

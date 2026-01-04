@@ -3,13 +3,17 @@
 ---
 
 🌐 Available languages:
-[English](./README.md) | [日本語](./日本語/README_ja.md)
+[English](./README.md) | [日本語](./README_ja.md)
 
 ## 📜 Overview
 
 On Day 06, we gave our CPU its first "intelligence" by implementing the **`LDA #imm`** (Load Accumulator with Immediate value) instruction. This involved building an **Instruction Decoder** and **Flag Calculator** to finally put the **Accumulator (A register)** prepared on Day 05 into practical use.
 
 Today, the CPU evolved from simply "stepping forward" to "manipulating data according to instructions."
+
+## 💡 Stepping Up: From Day 05 to Day 06
+
+In Day 05, the CPU learned its minimum movement: "just take one step (PC+1)." In Day 06, we finally tackled the core function of a CPU: "understanding instructions and moving data."
 
 ## 🎯 Learning Objectives
 

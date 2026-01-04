@@ -9,9 +9,7 @@
 
 In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the "eyes" to project the internal state, it is finally time to start building the "body (CPU)" to be displayed on that screen.
 
-Implementation of the CPU has begun! The goal of Day 05 was to
-
- implement the most fundamental elements of a CPU: the **Register Set** and the **Program Counter (PC)**, and to execute the **`NOP`** (No Operation) instruction.
+The goal of Day 05 is to implement the most fundamental elements of a CPU: the **Register Set** and the **Program Counter (PC)**, and to execute the **`NOP`** (No Operation) instruction.
 
 We connected the CPU's internal state to the LCD display circuit built on Day 04 to visually verify that the PC increments with every clock cycle.
 
