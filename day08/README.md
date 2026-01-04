@@ -13,7 +13,7 @@ This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`)
 
 ## 🧠 Memory Model Note
 
-Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
 
 ## 🔙 Review: Day 07
 

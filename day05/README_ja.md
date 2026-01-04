@@ -15,7 +15,7 @@ Day 05 では、CPU が情報を記憶するための **「レジスタセット
 
 ## 🧠 メモリ構成の注意
 
-Day 04〜10 はプログラム命令を `rom.sv` から供給します（簡易ROM）。RAM はデータ用で、プログラムを RAM に置く構成は Day 11 以降です。
+Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易ROM）。RAM はデータ用で、プログラムを RAM に置く構成は Day 11 以降です。
 
 ## 🎯 学習目標
 
@@ -47,11 +47,13 @@ CPU が「歩く」ために必要なのは、今どこにいるかを記録し�
 
 ```mermaid
 graph LR
-    CLK[Clock] --> PC[Program Counter<br/>16-bit Register]
-    PC_EN[pc_enable] --> PC
-    PC -->|"PC <= PC + 1"| PC
-    PC --> ADDR[Address Bus]
-    PC --> DISP[LCD Debug Display]
+    subgraph CPU
+        PC[Program Counter]
+        REGS[Registers: A, X, Y, SP, P]
+    end
+    CPU -- Address (PC) --> ROM
+    ROM -- Data --> CPU
+    CPU -- Debug (PC, Registers) --> LCD
 ```
 
 ## 🛠️ 実習の手順

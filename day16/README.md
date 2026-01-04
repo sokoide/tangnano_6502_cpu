@@ -13,7 +13,7 @@ In this mode, the CPU accesses an address calculated by adding the value of the 
 
 ## 🧠 Memory Model Note
 
-From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
 
 ## 🎯 Learning Objectives
 
@@ -60,14 +60,19 @@ Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$AA
-    PHA        ; Push 0xAA onto stack
-    LDA #$00
-    PLA        ; Pull from stack (A = 0xAA)
+    ; Load array contents into A sequentially
+    LDX #$00
+    LOOP:
+    LDA DATA,X ; Load from address DATA + X
+    INX
+    CPX #$03
+    BNE LOOP
+    HLT
+    DATA: .byte $11, $22, $33
     ```
 
-- **Simulation**: Run `make sim` and verify that data is correctly saved and restored via stack operations (Push/Pull), and the simulation outputs `PASS`.
-- **FPGA**: Confirm on the LCD that the stack pointer (S) and A register values change as expected.
+- **Simulation**: Run `make sim` and verify that the array data is correctly loaded via indexed addressing and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the A register changes to `$11`, `$22`, and `$33`, and finally exits the loop.
 
 ## 🎯 Next Step
 

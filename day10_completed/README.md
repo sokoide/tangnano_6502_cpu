@@ -13,7 +13,7 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 
 ## 🧠 Memory Model Note
 
-Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`). A small boot copy loads the `rom.sv` program into RAM before execution.
 
 ## 🎯 Learning Objectives
 

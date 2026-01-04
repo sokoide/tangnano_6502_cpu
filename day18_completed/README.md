@@ -13,7 +13,7 @@ This allows the program to halt the CPU, control VRAM writing, and perform other
 
 ## 🧠 Memory Model Note
 
-From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
 
 ## 🎯 Learning Objectives
 

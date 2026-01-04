@@ -13,7 +13,7 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 
 ## 🧠 Memory Model Note
 
-Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`). A small boot copy loads the `rom.sv` program into RAM before execution.
 
 ## 🔙 Review: Day 09
 
@@ -79,15 +79,19 @@ Starting from Day 05, **the testbench (`day10/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    SEC        ; C = 1
-    LDA #$0A
-    SBC #$05   ; A = 5, C = 1 (no borrow)
-    CLC        ; C = 0
-    SBC #$01   ; A = 3, C = 1
+    LDA #$AA
+    PHA        ; Push to stack
+    LDA #$00   ; Overwrite A
+    PLA        ; Restore from stack (A should be $AA)
+    JSR SUB    ; Call subroutine
+    HLT        ; Should return here
+    SUB:
+      INX
+      RTS
     ```
 
-- **Simulation**: Run `make sim` and verify that the SBC results and carry (borrow) flags behave as expected and the simulation outputs `PASS`.
-- **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
+- **Simulation**: Run `make sim` and verify that the stack and subroutine instructions behave as expected and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the Accumulator value is correctly restored and the CPU returns from the subroutine (PC moves to the correct next instruction).
 
 ## 🏁 Phase 2 Complete
 

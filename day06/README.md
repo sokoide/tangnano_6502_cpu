@@ -13,7 +13,7 @@ We will also implement the logic to fetch an 8-bit _operand_ that follows the in
 
 ## 🧠 Memory Model Note
 
-Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
 
 ## 🔙 Review: Day 05
 
@@ -33,6 +33,27 @@ Before proceeding, make sure you understand:
 ## 💡 Stepping Up: From Day 05 to Day 06
 
 In Day 05, the CPU learned its minimum movement: "just take one step (PC+1)." In Day 06, we finally tackle the core function of a CPU: "understanding instructions and moving data."
+
+## 🏗️ Architecture
+
+The decoder and flag calculation logic are now integrated into the CPU.
+
+```mermaid
+graph TD
+    subgraph CPU
+        PC[Program Counter]
+        DEC[Instruction Decoder]
+        REGS[Registers]
+        ALU[ALU / Flag Calc]
+
+        PC --> MEM[Memory/ROM]
+        MEM -->|Opcode| DEC
+        DEC -->|Control| REGS
+        MEM -->|Data| REGS
+        REGS --> ALU
+        ALU -->|N, Z, C, V| REGS
+    end
+```
 
 ## 🛠️ Implementation Steps
 

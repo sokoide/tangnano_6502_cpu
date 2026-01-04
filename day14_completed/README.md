@@ -13,7 +13,7 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🧠 Memory Model Note
 
-From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
 
 ## 🎯 Learning Objectives
 

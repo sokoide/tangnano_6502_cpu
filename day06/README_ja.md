@@ -13,7 +13,7 @@ Day 06 では、CPU に最初のデータ操作命令である **`LDA #imm`** (L
 
 ## 🧠 メモリ構成の注意
 
-Day 04〜10 はプログラム命令を `rom.sv` から供給します（簡易ROM）。RAM はデータ用で、プログラムを RAM に置く構成は Day 11 以降です。
+Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易ROM）。RAM はデータ用で、プログラムを RAM に置く構成は Day 11 以降です。
 
 ## 🔙 復習: Day 05
 
@@ -33,6 +33,27 @@ Day 04〜10 はプログラム命令を `rom.sv` から供給します（簡易R
 ## 💡 Day 05 から Day 06 へのステップアップ
 
 Day 05 では、CPU が「ただ一歩進む (PC+1)」という最小の動きを習得しました。Day 06 では、ついに「命令を理解し、データを動かす」という CPU 本来の機能に取り組みます。
+
+## 🏗️ アーキテクチャ
+
+デコーダとフラグ計算ロジックが CPU 内に組み込まれました。
+
+```mermaid
+graph TD
+    subgraph CPU
+        PC[Program Counter]
+        DEC[Instruction Decoder]
+        REGS[Registers]
+        ALU[ALU / Flag Calc]
+
+        PC --> MEM[Memory/ROM]
+        MEM -->|Opcode| DEC
+        DEC -->|Control| REGS
+        MEM -->|Data| REGS
+        REGS --> ALU
+        ALU -->|N, Z, C, V| REGS
+    end
+```
 
 ## 🛠️ 実習の手順
 

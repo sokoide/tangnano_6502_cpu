@@ -13,7 +13,7 @@ These instructions are frequently used for fast multiplication by 2 (`ASL`), div
 
 ## 🧠 Memory Model Note
 
-From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
 
 ## 🎯 Learning Objectives
 
@@ -81,15 +81,14 @@ Starting from Day 05, **the testbench (`day14/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDX #$05
-
-loop:
-    DEX
-    BNE loop   ; Repeat until X is 0
-    BRK
+    LDA #$01
+    ASL A      ; A = $02, C=0
+    ASL A      ; A = $04, C=0
+    LDA #$80
+    ASL A      ; A = $00, C=1, Z=1
     ```
 
-- **Simulation**: Run `make sim` and verify that conditional branching works correctly based on flags and the simulation outputs `PASS`.
+- **Simulation**: Run `make sim` and verify that the shift and rotate instructions work correctly and the simulation outputs `PASS`.
 - **FPGA**: Observe the loop execution and final stop at a specific address on the LCD.
 
 ## 🎯 Next Step

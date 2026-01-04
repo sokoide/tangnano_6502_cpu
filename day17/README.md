@@ -20,7 +20,7 @@ This is the hardware implementation of "pointers" in languages like C, and it is
 
 ## 🧠 Memory Model Note
 
-From Day 11 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
 
 ## 🎯 Learning Objectives
 
@@ -74,16 +74,17 @@ Starting from Day 05, **the testbench (`day17/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    JSR sub    ; Jump to Subroutine
-    HLT
+    LDA #$20
+    STA $10    ; Put $20 into address $0010
+    LDA #$80
+    STA $11    ; Put $80 into address $0011 -> Pointer $8020 complete
 
-sub:
-    LDA #$42
-    RTS        ; Return from Subroutine
+    LDY #$01
+    LDA ($10),Y ; Load from address $8020 + 1 = $8021
     ```
 
-- **Simulation**: Run `make sim` and verify that the subroutine call and return work correctly and the simulation outputs `PASS`.
-- **FPGA**: Observe the PC jumping to the subroutine and returning correctly on the LCD.
+- **Simulation**: Run `make sim` and verify that the data at the target address is correctly loaded via indirect addressing and the simulation outputs `PASS`.
+- **FPGA**: Confirm on the LCD that the final data pointed to by the pointer is loaded correctly.
 
 ## 🎯 Next Step
 

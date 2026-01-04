@@ -15,7 +15,7 @@ In Day 05, we will implement the **"Register Set"** for memory and the **"Progra
 
 ## 🧠 Memory Model Note
 
-Day 04–10 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
 
 ## 🎯 Learning Objectives
 
@@ -47,11 +47,13 @@ To "walk," the CPU needs a counter to keep track of its current location and dec
 
 ```mermaid
 graph LR
-    CLK[Clock] --> PC[Program Counter<br/>16-bit Register]
-    PC_EN[pc_enable] --> PC
-    PC -->|"PC <= PC + 1"| PC
-    PC --> ADDR[Address Bus]
-    PC --> DISP[LCD Debug Display]
+    subgraph CPU
+        PC[Program Counter]
+        REGS[Registers: A, X, Y, SP, P]
+    end
+    CPU -- Address (PC) --> ROM
+    ROM -- Data --> CPU
+    CPU -- Debug (PC, Registers) --> LCD
 ```
 
 ## 🛠️ Implementation Steps
