@@ -110,20 +110,15 @@ module lcd_demo (
 
     logic [15:0] rom_addr;
 
-    // Boot init: copy ROM program into RAM so CPU runs from BSRAM.
-    localparam int BOOT_LEN = 256;
-    logic [$clog2(BOOT_LEN)-1:0] boot_index;
-    logic                        boot_done;
-    logic [                15:0] boot_addr;
-    logic                        boot_active;
-    logic                        cpu_rst_n;
-    logic [                14:0] ram_addr;
-    logic [                 7:0] ram_din;
-    logic                        ram_we;
+    // Boot loader: copy ROM program into RAM so CPU runs from BSRAM.
+    logic        cpu_rst_n;
+    logic [14:0] ram_addr;
+    logic [ 7:0] ram_din;
+    logic        ram_we;
 
     // Slow down PC increment for visual debugging (if on FPGA)
-    logic [                23:0] counter;
-    logic                        pc_enable;
+    logic [23:0] counter;
+    logic        pc_enable;
 
 `ifdef VERILATOR
     assign pc_enable = 1'b1;  // Run full speed in simulation
@@ -173,27 +168,19 @@ module lcd_demo (
         .dout(ram_data_out)
     );
 
-    assign boot_addr = 16'h0200 + boot_index;
-    assign boot_active = !boot_done;
-    assign cpu_rst_n = rst_n && boot_done;
-    assign rom_addr = boot_active ? boot_addr : cpu_address_bus;
-    assign ram_addr = boot_active ? boot_addr[14:0] : cpu_address_bus[14:0];
-    assign ram_din = boot_active ? rom_data_out : cpu_data_out;
-    assign ram_we = boot_active ? 1'b1 : (cpu_write_en && (!cpu_address_bus[15]));
-
-    always_ff @(posedge cpu_clk or negedge rst_n) begin
-        if (!rst_n) begin
-            boot_index <= 4'd0;
-            boot_done  <= 1'b0;
-        end else if (!boot_done) begin
-            if (boot_index == (BOOT_LEN - 1)) begin
-                boot_done <= 1'b1;
-            end else begin
-                boot_index <= boot_index + 1'b1;
-            end
-        end
-    end
-
+    boot_loader u_boot (
+        .clk(cpu_clk),
+        .rst_n(rst_n),
+        .cpu_address_bus(cpu_address_bus),
+        .cpu_data_out(cpu_data_out),
+        .cpu_write_en(cpu_write_en),
+        .rom_data_out(rom_data_out),
+        .cpu_rst_n(cpu_rst_n),
+        .rom_addr(rom_addr),
+        .ram_addr(ram_addr),
+        .ram_din(ram_din),
+        .ram_we(ram_we)
+    );
 
     always_comb begin
         if (!cpu_address_bus[15]) begin

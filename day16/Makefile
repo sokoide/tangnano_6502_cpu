@@ -12,7 +12,7 @@ PRG  := $(BASE)/Programmer/bin/programmer_cli
 $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
-COMMON_SRCS = lcd_demo.sv rom.sv ram.sv cpu.sv \
+COMMON_SRCS = lcd_demo.sv boot_loader.sv rom.sv ram.sv cpu.sv \
 	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
 
 ifeq ($(BOARD),20k)
@@ -74,7 +74,7 @@ sim-build: tools-check-sim
 		-o V$(SIM_TOP) \
 		sim/Gowin_rPLL9_stub.sv \
 		sim/gowin_rpll40_stub.sv \
-	lcd/tb_tft.sv top_9k.sv lcd_demo.sv rom.sv ram.sv \
+	lcd/tb_tft.sv top_9k.sv lcd_demo.sv boot_loader.sv rom.sv ram.sv \
 	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
 
 sim-cpu-build: tools-check-sim

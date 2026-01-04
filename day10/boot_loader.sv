@@ -16,12 +16,16 @@ module boot_loader (
     output logic        ram_we
 );
     localparam int BOOT_LEN = 256;
-    logic [$clog2(BOOT_LEN)-1:0] boot_index;
-    logic                        boot_done;
-    logic [                15:0] boot_addr;
-    logic                        boot_active;
+    localparam int BOOT_INDEX_W = $clog2(BOOT_LEN);
+    localparam logic [BOOT_INDEX_W-1:0] BOOT_MAX = BOOT_LEN - 1;
+    logic [BOOT_INDEX_W-1:0] boot_index;
+    logic                    boot_done;
+    logic [            15:0] boot_addr;
+    logic [            15:0] boot_index_ext;
+    logic                    boot_active;
 
-    assign boot_addr = 16'h0200 + boot_index;
+    assign boot_index_ext = {{(16 - BOOT_INDEX_W) {1'b0}}, boot_index};
+    assign boot_addr = 16'h0200 + boot_index_ext;
     assign boot_active = !boot_done;
     assign cpu_rst_n = rst_n && boot_done;
     assign rom_addr = boot_active ? boot_addr : cpu_address_bus;
@@ -31,10 +35,10 @@ module boot_loader (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            boot_index <= {($clog2(BOOT_LEN)) {1'b0}};
+            boot_index <= {BOOT_INDEX_W{1'b0}};
             boot_done  <= 1'b0;
         end else if (!boot_done) begin
-            if (boot_index == (BOOT_LEN - 1)) begin
+            if (boot_index == BOOT_MAX) begin
                 boot_done <= 1'b1;
             end else begin
                 boot_index <= boot_index + 1'b1;

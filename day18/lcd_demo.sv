@@ -110,19 +110,16 @@ module lcd_demo (
 
     logic [15:0] rom_addr;
 
-    // Boot init: copy ROM program into RAM so CPU runs from BSRAM.
-    localparam int BOOT_LEN = 256;
-    logic [$clog2(BOOT_LEN)-1:0] boot_index;
-    logic                        boot_done;
-    logic [                15:0] boot_addr;
-    logic                        boot_active;
-    logic                        cpu_rst_n;
-    logic [                14:0] ram_addr;
-    logic [                 7:0] ram_din;
-    logic                        ram_we;
+    // Boot loader: copy ROM program into RAM so CPU runs from BSRAM.
+    logic        cpu_rst_n;
+    logic [14:0] ram_addr_boot;
+    logic [14:0] ram_addr_final;
+    logic [ 7:0] ram_din;
+    logic        ram_we;
+    logic        boot_active;
 
     // Run CPU at full speed (synchronization is handled by WVS instruction)
-    logic                        pc_enable;
+    logic        pc_enable;
     assign pc_enable = 1'b1;
 
     logic cpu_vram_clear;
@@ -604,15 +601,15 @@ module lcd_demo (
         end
     end
 
-    logic [15:0] ram_addr_final;
-    assign ram_addr_final = boot_active ? boot_addr :
-        (debug_state == S_WRITE_MEM_LOOP) ? debug_addr : cpu_address_bus;
-    assign ram_addr = ram_addr_final[14:0];
+    assign boot_active = rst_n && !cpu_rst_n;
+    assign ram_addr_final = (debug_state == S_WRITE_MEM_LOOP && !boot_active)
+        ? debug_addr[14:0]
+        : ram_addr_boot;
 
     // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
-        .addr(ram_addr),
+        .addr(ram_addr_final),
         .write_en(ram_we),
         .din(ram_din),
         .dout(ram_data_out)
@@ -623,25 +620,19 @@ module lcd_demo (
         .data(rom_data_out)
     );
 
-    assign boot_addr = 16'h0200 + boot_index;
-    assign boot_active = !boot_done;
-    assign cpu_rst_n = rst_n && boot_done;
-    assign rom_addr = boot_active ? boot_addr : cpu_address_bus;
-    assign ram_din = boot_active ? rom_data_out : cpu_data_out;
-    assign ram_we = boot_active ? 1'b1 : (cpu_write_en && (!cpu_address_bus[15]));
-
-    always_ff @(posedge cpu_clk or negedge rst_n) begin
-        if (!rst_n) begin
-            boot_index <= 4'd0;
-            boot_done  <= 1'b0;
-        end else if (!boot_done) begin
-            if (boot_index == (BOOT_LEN - 1)) begin
-                boot_done <= 1'b1;
-            end else begin
-                boot_index <= boot_index + 1'b1;
-            end
-        end
-    end
+    boot_loader u_boot (
+        .clk(cpu_clk),
+        .rst_n(rst_n),
+        .cpu_address_bus(cpu_address_bus),
+        .cpu_data_out(cpu_data_out),
+        .cpu_write_en(cpu_write_en),
+        .rom_data_out(rom_data_out),
+        .cpu_rst_n(cpu_rst_n),
+        .rom_addr(rom_addr),
+        .ram_addr(ram_addr_boot),
+        .ram_din(ram_din),
+        .ram_we(ram_we)
+    );
 
 
     always_comb begin
