@@ -147,21 +147,21 @@ module lcd_demo (
 
     // Memory (ROM)
     rom u_rom (
-        .addr(cpu_address_bus),
+        .addr(font_addr),
         .data(rom_data_out)
     );
 
-    // Memory (RAM for ZP and Stack: $0000-$01FF)
+    // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
-        .addr(cpu_address_bus[8:0]),
-        .write_en(cpu_write_en && (cpu_address_bus[15:9] == 7'b0000000)),  // $0000-$01FF
+        .addr(font_addr),
+        .write_en(cpu_write_en && (!cpu_address_bus[15])),
         .din(cpu_data_out),
         .dout(ram_data_out)
     );
 
     always_comb begin
-        if (cpu_address_bus[15:9] == 7'b0000000) begin
+        if (!cpu_address_bus[15]) begin
             cpu_data_in = ram_data_out;
         end else begin
             cpu_data_in = rom_data_out;

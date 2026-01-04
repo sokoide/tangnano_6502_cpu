@@ -6,8 +6,8 @@ module rom (
 
     always_comb begin
         case (addr)
-            16'h8000: data = 8'hA9;  // LDA #imm
-            16'h8001: data = 8'h42;  // literal $42
+            16'h0200: data = 8'hA9;  // LDA #imm
+            16'h0201: data = 8'h42;  // literal $42
             default:  data = 8'hEA;  // NOP
         endcase
     end

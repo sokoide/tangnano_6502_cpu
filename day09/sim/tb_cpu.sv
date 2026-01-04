@@ -46,12 +46,12 @@ module tb_cpu;
         // $8003: BNE $FD (-3 relative, back to $8002)
         // $8005: HLT
 
-        mem[16'h8000] = 8'hA2;  // LDX imm
-        mem[16'h8001] = 8'h02;
-        mem[16'h8002] = 8'hCA;  // DEX (assuming OP_DEX=CA)
-        mem[16'h8003] = 8'hD0;  // BNE
-        mem[16'h8004] = 8'hFD;  // -3 in two's complement
-        mem[16'h8005] = 8'hEF;  // HLT
+        mem[16'h0200] = 8'hA2;  // LDX imm
+        mem[16'h0201] = 8'h02;
+        mem[16'h0202] = 8'hCA;  // DEX (assuming OP_DEX=CA)
+        mem[16'h0203] = 8'hD0;  // BNE
+        mem[16'h0204] = 8'hFD;  // -3 in two's complement
+        mem[16'h0205] = 8'hEF;  // HLT
 
         clk = 0;
         rst_n = 0;
@@ -79,7 +79,7 @@ module tb_cpu;
         // 3. Branch 1: BNE target ($8002)
         repeat (2) @(posedge clk);
         #5;  // Fetch BNE, Execute Branch
-        if (debug_pc !== 16'h8002) begin
+        if (debug_pc !== 16'h0202) begin
             $display("FAIL: PC should branch back to 0x8002, got 0x%h", debug_pc);
             error_count++;
         end else $display("PASS: First branch taken");
@@ -95,7 +95,7 @@ module tb_cpu;
         // 5. Branch 2: BNE fall-through ($8005)
         repeat (2) @(posedge clk);
         #5;
-        if (debug_pc !== 16'h8005) begin
+        if (debug_pc !== 16'h0205) begin
             $display("FAIL: PC should fall through to 0x8005, got 0x%h", debug_pc);
             error_count++;
         end else $display("PASS: Loop exit correct");

@@ -56,7 +56,7 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc               <= 16'h8000;
+            pc               <= 16'h0200;
             a                <= 8'h00;
             x                <= 8'h00;
             y                <= 8'h00;
@@ -71,7 +71,7 @@ module cpu (
             vram_clear       <= 1'b0;
             show_info        <= 1'b0;
             data_out         <= 8'h00;
-            address_bus      <= 16'h8000;
+            address_bus      <= 16'h0200;
             vsync_wait_count <= 8'h00;
             vsync_prev       <= 1'b0;
         end else if (pc_enable) begin

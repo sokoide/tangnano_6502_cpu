@@ -27,8 +27,8 @@ The **Memory Map** defines how the CPU's address space is connected to various m
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7FFF` | Free RAM | General-purpose RAM for user programs |
-| `0x8000 - 0xDFFF` | Program ROM | Area storing the program code |
+| `0x0200 - 0x7BFF` | Free RAM | General-purpose RAM for user programs |
+| `0x0200 - 0x7BFF` | Program ROM | Area storing the program code |
 | `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
 | `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or expansion |
 

@@ -52,17 +52,17 @@ module tb_cpu;
         // $8005: LDA #$00
         // $8007: LDA $1234 (Absolute)
         // $800A: HLT
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'h55;
-        mem[16'h8002] = 8'h8D;  // STA abs
-        mem[16'h8003] = 8'h34;  // low
-        mem[16'h8004] = 8'h12;  // high
-        mem[16'h8005] = 8'hA9;
-        mem[16'h8006] = 8'h00;
-        mem[16'h8007] = 8'hAD;  // LDA abs
-        mem[16'h8008] = 8'h34;
-        mem[16'h8009] = 8'h12;
-        mem[16'h800A] = 8'hEF;
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h55;
+        mem[16'h0202] = 8'h8D;  // STA abs
+        mem[16'h0203] = 8'h34;  // low
+        mem[16'h0204] = 8'h12;  // high
+        mem[16'h0205] = 8'hA9;
+        mem[16'h0206] = 8'h00;
+        mem[16'h0207] = 8'hAD;  // LDA abs
+        mem[16'h0208] = 8'h34;
+        mem[16'h0209] = 8'h12;
+        mem[16'h020A] = 8'hEF;
 
         clk = 0;
         rst_n = 0;

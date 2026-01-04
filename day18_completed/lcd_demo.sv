@@ -597,11 +597,11 @@ module lcd_demo (
     logic [15:0] ram_addr_final;
     assign ram_addr_final = (debug_state == S_WRITE_MEM_LOOP) ? debug_addr : cpu_address_bus;
 
-    // Memory (RAM)
+    // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
-        .addr(ram_addr_final[9:0]),
-        .write_en(cpu_write_en && (cpu_address_bus[15:10] == 6'b000000)),
+        .addr(ram_addr_final[14:0]),
+        .write_en(cpu_write_en && (!cpu_address_bus[15])),
         .din(cpu_data_out),
         .dout(ram_data_out)
     );
@@ -612,10 +612,12 @@ module lcd_demo (
     );
 
     always_comb begin
-        if (cpu_address_bus[15:10] == 6'b000000) begin
-            cpu_data_in = ram_data_out;
+        if (cpu_address_bus >= 16'h0200 && cpu_address_bus <= 16'h7BFF) begin
+            cpu_data_in = rom_data_out;  // Program range (ROM for now)
+        end else if (!cpu_address_bus[15]) begin
+            cpu_data_in = ram_data_out;  // ZP, Stack, Shadow VRAM
         end else begin
-            cpu_data_in = rom_data_out;
+            cpu_data_in = 8'h00;
         end
     end
 

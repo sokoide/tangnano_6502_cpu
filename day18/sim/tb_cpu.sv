@@ -55,18 +55,18 @@ module tb_cpu;
         // Test program: Final showdown
         // LDA #$10, STA $20, JSR sub, HLT
         // sub: INC $20, RTS
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'h10;
-        mem[16'h8002] = 8'h85;
-        mem[16'h8003] = 8'h20;
-        mem[16'h8004] = 8'h20;
-        mem[16'h8005] = 8'h08;
-        mem[16'h8006] = 8'h80;
-        mem[16'h8007] = 8'hEF;  // HLT
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h10;
+        mem[16'h0202] = 8'h85;
+        mem[16'h0203] = 8'h20;
+        mem[16'h0204] = 8'h20;
+        mem[16'h0205] = 8'h08;
+        mem[16'h0206] = 8'h80;
+        mem[16'h0207] = 8'hEF;  // HLT
 
-        mem[16'h8008] = 8'hE6;
-        mem[16'h8009] = 8'h20;  // INC $20
-        mem[16'h800A] = 8'h60;  // RTS
+        mem[16'h0208] = 8'hE6;
+        mem[16'h0209] = 8'h20;  // INC $20
+        mem[16'h020A] = 8'h60;  // RTS
 
         clk = 0;
         rst_n = 0;

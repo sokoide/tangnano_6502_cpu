@@ -35,7 +35,7 @@ module cpu_registers (
     //    Initialize each register. / 各レジスタを初期化します。
     //    A, X, Y = 8'h00
     //    SP (Stack Pointer) = 8'hFF (top of stack) / SP (Stack Pointer) = 8'hFF (スタックの最上位)
-    //    PC (Program Counter) = 16'h8000 (program start address) / PC (Program Counter) = 16'h8000 (プログラム開始アドレス)
+    //    PC (Program Counter) = 16'h0200 (program start address) / PC (Program Counter) = 16'h0200 (プログラム開始アドレス)
     //    P (Processor Status) = 8'h34 (Break=0, Unused=1, IRQ=1)
     //
     // 2. Normal operation (at rising edge of clk): / 通常時の動作 (clk 立ち上がり時):

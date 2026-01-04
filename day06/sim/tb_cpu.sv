@@ -35,11 +35,11 @@ module tb_cpu;
 
         // Initialize memory with test program
         // LDA #$42, NOP, LDA #$55
-        mem[16'h8000] = 8'hA9;  // LDA imm
-        mem[16'h8001] = 8'h42;  // operand
-        mem[16'h8002] = 8'hEA;  // NOP
-        mem[16'h8003] = 8'hA9;  // LDA imm
-        mem[16'h8004] = 8'h55;  // operand
+        mem[16'h0200] = 8'hA9;  // LDA imm
+        mem[16'h0201] = 8'h42;  // operand
+        mem[16'h0202] = 8'hEA;  // NOP
+        mem[16'h0203] = 8'hA9;  // LDA imm
+        mem[16'h0204] = 8'h55;  // operand
 
         // Initialize signals
         clk = 0;

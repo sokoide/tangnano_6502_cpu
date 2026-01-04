@@ -20,7 +20,7 @@ module cpu (
     // TODO: プログラムカウンタ (PC) を順序回路 (always_ff) で実装してください。
     // -------------------------------------------------------------------------
     // 1. Operation during reset (rst_n == 0): / リセット時の動作 (rst_n == 0):
-    //    Initialize PC to 16'h8000. / PC を 16'h8000 に初期化してください。
+    //    Initialize PC to 16'h0200. / PC を 16'h0200 に初期化してください。
     //    (The original start address of 6502 is 0xFFFC, but this project uses 0x8000)
     //    (6502の本来の開始アドレスは 0xFFFC ですが、本プロジェクトでは 0x8000 を使用します)
     //
@@ -34,7 +34,7 @@ module cpu (
     // デフォルトの実装（TODO: 以下のブロックを自分で書き換えてください）
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc <= 16'h8000;
+            pc <= 16'h0200;
         end else begin
             // Describe PC update logic here
             // ここに PC 更新ロジックを記述

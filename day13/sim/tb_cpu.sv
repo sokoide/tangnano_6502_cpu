@@ -46,13 +46,13 @@ module tb_cpu;
         // $8002: JMP $8006
         // $8005: LDA #$02 (Should be skipped)
         // $8006: HLT
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'h01;
-        mem[16'h8002] = 8'h4C;  // JMP abs
-        mem[16'h8003] = 8'h06;  // low
-        mem[16'h8004] = 8'h80;  // high
-        mem[16'h8005] = 8'hA9;  // LDA #$02 (skipped)
-        mem[16'h8006] = 8'hEF;  // HLT
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h01;
+        mem[16'h0202] = 8'h4C;  // JMP abs
+        mem[16'h0203] = 8'h06;  // low
+        mem[16'h0204] = 8'h80;  // high
+        mem[16'h0205] = 8'hA9;  // LDA #$02 (skipped)
+        mem[16'h0206] = 8'hEF;  // HLT
 
         clk = 0;
         rst_n = 0;
@@ -72,7 +72,7 @@ module tb_cpu;
         // 2. JMP $8006 (Fetch Op, Fetch Low, Fetch High, Execute)
         repeat (4) @(posedge clk);
         #5;
-        if (debug_pc !== 16'h8006) begin
+        if (debug_pc !== 16'h0206) begin
             $display("FAIL: JMP failed, PC=%h", debug_pc);
             error_count++;
         end else $display("PASS: JMP correctly updated PC to 0x8006");

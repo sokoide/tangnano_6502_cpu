@@ -38,14 +38,14 @@ module tb_cpu;
 
         // Test program:
         // LDA #$42, TAX, INX, TAY, INY, TXA, TYA
-        mem[16'h8000] = 8'hA9;  // LDA imm
-        mem[16'h8001] = 8'h42;
-        mem[16'h8002] = 8'hAA;  // TAX
-        mem[16'h8003] = 8'hE8;  // INX
-        mem[16'h8004] = 8'hA8;  // TAY
-        mem[16'h8005] = 8'hC8;  // INY
-        mem[16'h8006] = 8'h8A;  // TXA
-        mem[16'h8007] = 8'h98;  // TYA
+        mem[16'h0200] = 8'hA9;  // LDA imm
+        mem[16'h0201] = 8'h42;
+        mem[16'h0202] = 8'hAA;  // TAX
+        mem[16'h0203] = 8'hE8;  // INX
+        mem[16'h0204] = 8'hA8;  // TAY
+        mem[16'h0205] = 8'hC8;  // INY
+        mem[16'h0206] = 8'h8A;  // TXA
+        mem[16'h0207] = 8'h98;  // TYA
 
         clk = 0;
         rst_n = 0;

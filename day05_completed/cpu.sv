@@ -15,7 +15,7 @@ module cpu (
     // Program Counter
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc <= 16'h8000;
+            pc <= 16'h0200;
         end else if (pc_enable) begin
             // For now, just increment PC on every cycle
             pc <= pc + 1'b1;

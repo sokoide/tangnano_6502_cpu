@@ -45,7 +45,7 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc             <= 16'h8000;
+            pc             <= 16'h0200;
             a              <= 8'h00;
             x              <= 8'h00;
             y              <= 8'h00;
@@ -58,7 +58,7 @@ module cpu (
             current_opcode <= 8'h00;
             write_en       <= 1'b0;
             data_out       <= 8'h00;
-            address_bus    <= 16'h8000;
+            address_bus    <= 16'h0200;
         end else if (pc_enable) begin
             write_en <= 1'b0;
             case (state)

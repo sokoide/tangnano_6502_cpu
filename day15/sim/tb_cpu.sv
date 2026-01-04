@@ -49,13 +49,13 @@ module tb_cpu;
         // Memory setup: Combined test
         // 1. LDA #$10, STA $20 (ZP), ADC #$05 -> A=15, [0x20]=10
         // 2. LDX #$02, DEX, BNE loop
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'h10;  // LDA #$10
-        mem[16'h8002] = 8'h85;
-        mem[16'h8003] = 8'h20;  // STA $20
-        mem[16'h8004] = 8'h69;
-        mem[16'h8005] = 8'h05;  // ADC #$05
-        mem[16'h8006] = 8'hEF;  // HLT
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h10;  // LDA #$10
+        mem[16'h0202] = 8'h85;
+        mem[16'h0203] = 8'h20;  // STA $20
+        mem[16'h0204] = 8'h69;
+        mem[16'h0205] = 8'h05;  // ADC #$05
+        mem[16'h0206] = 8'hEF;  // HLT
 
         clk = 0;
         rst_n = 0;

@@ -39,10 +39,10 @@ module tb_cpu;
         // $8000 = $A5, $10 (LDA $10)
         // $8002 = $A9, $55 (LDA #$55)
         mem[16'h0010] = 8'h42;
-        mem[16'h8000] = 8'hA5;  // LDA ZP
-        mem[16'h8001] = 8'h10;  // address
-        mem[16'h8002] = 8'hA9;  // LDA imm
-        mem[16'h8003] = 8'h55;
+        mem[16'h0200] = 8'hA5;  // LDA ZP
+        mem[16'h0201] = 8'h10;  // address
+        mem[16'h0202] = 8'hA9;  // LDA imm
+        mem[16'h0203] = 8'h55;
 
         clk = 0;
         rst_n = 0;

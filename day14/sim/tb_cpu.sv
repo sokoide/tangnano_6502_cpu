@@ -50,12 +50,12 @@ module tb_cpu;
         // $8002: DEX (X=1)
         // $8003: BNE $FD (Branch back to $8002)
         // $8005: HLT
-        mem[16'h8000] = 8'hA2;
-        mem[16'h8001] = 8'h02;
-        mem[16'h8002] = 8'hCA;  // DEX
-        mem[16'h8003] = 8'hD0;  // BNE
-        mem[16'h8004] = 8'hFD;  // -3
-        mem[16'h8005] = 8'hEF;
+        mem[16'h0200] = 8'hA2;
+        mem[16'h0201] = 8'h02;
+        mem[16'h0202] = 8'hCA;  // DEX
+        mem[16'h0203] = 8'hD0;  // BNE
+        mem[16'h0204] = 8'hFD;  // -3
+        mem[16'h0205] = 8'hEF;
 
         clk = 0;
         rst_n = 0;
@@ -77,7 +77,7 @@ module tb_cpu;
         #5;  // DEX
         repeat (2) @(posedge clk);
         #5;  // BNE (Fetch, Branch)
-        if (debug_pc !== 16'h8002) begin
+        if (debug_pc !== 16'h0202) begin
             $display("FAIL: Branch back failed, PC=%h", debug_pc);
             error_count++;
         end else $display("PASS: First branch taken (X=1)");
@@ -87,7 +87,7 @@ module tb_cpu;
         #5;  // DEX
         repeat (2) @(posedge clk);
         #5;  // BNE (Fetch, Fall through)
-        if (debug_pc !== 16'h8005) begin
+        if (debug_pc !== 16'h0205) begin
             $display("FAIL: Fall through failed, PC=%h", debug_pc);
             error_count++;
         end else $display("PASS: Loop exit correct (X=0)");

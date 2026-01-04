@@ -45,7 +45,7 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc <= 16'h8000;
+            pc <= 16'h0200;
             a <= 8'h00;
             state <= S_FETCH_OPCODE;
         end else if (pc_enable) begin

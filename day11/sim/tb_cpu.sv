@@ -52,15 +52,15 @@ module tb_cpu;
         // $8004: LDA #$00
         // $8006: LDA $10 (Zero Page)
         // $8008: HLT
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'h42;
-        mem[16'h8002] = 8'h85;  // STA ZP
-        mem[16'h8003] = 8'h10;
-        mem[16'h8004] = 8'hA9;
-        mem[16'h8005] = 8'h00;
-        mem[16'h8006] = 8'hA5;  // LDA ZP
-        mem[16'h8007] = 8'h10;
-        mem[16'h8008] = 8'hEF;
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h42;
+        mem[16'h0202] = 8'h85;  // STA ZP
+        mem[16'h0203] = 8'h10;
+        mem[16'h0204] = 8'hA9;
+        mem[16'h0205] = 8'h00;
+        mem[16'h0206] = 8'hA5;  // LDA ZP
+        mem[16'h0207] = 8'h10;
+        mem[16'h0208] = 8'hEF;
 
         clk = 0;
         rst_n = 0;

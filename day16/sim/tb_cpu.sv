@@ -52,13 +52,13 @@ module tb_cpu;
         // $8003: LDA #$00
         // $8005: PLA (Pull A from Stack)
         // $8006: HLT
-        mem[16'h8000] = 8'hA9;
-        mem[16'h8001] = 8'hAA;
-        mem[16'h8002] = 8'h48;  // PHA
-        mem[16'h8003] = 8'hA9;
-        mem[16'h8004] = 8'h00;
-        mem[16'h8005] = 8'h68;  // PLA
-        mem[16'h8006] = 8'hEF;
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'hAA;
+        mem[16'h0202] = 8'h48;  // PHA
+        mem[16'h0203] = 8'hA9;
+        mem[16'h0204] = 8'h00;
+        mem[16'h0205] = 8'h68;  // PLA
+        mem[16'h0206] = 8'hEF;
 
         clk = 0;
         rst_n = 0;

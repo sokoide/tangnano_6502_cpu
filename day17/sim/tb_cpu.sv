@@ -51,14 +51,14 @@ module tb_cpu;
         // $8003: HLT
         // $8005: sub: LDA #$42
         // $8007: RTS
-        mem[16'h8000] = 8'h20;  // JSR
-        mem[16'h8001] = 8'h05;  // sub low
-        mem[16'h8002] = 8'h80;  // sub high
-        mem[16'h8003] = 8'hEF;  // HLT
+        mem[16'h0200] = 8'h20;  // JSR
+        mem[16'h0201] = 8'h05;  // sub low
+        mem[16'h0202] = 8'h80;  // sub high
+        mem[16'h0203] = 8'hEF;  // HLT
 
-        mem[16'h8005] = 8'hA9;  // LDA imm
-        mem[16'h8006] = 8'h42;
-        mem[16'h8007] = 8'h60;  // RTS
+        mem[16'h0205] = 8'hA9;  // LDA imm
+        mem[16'h0206] = 8'h42;
+        mem[16'h0207] = 8'h60;  // RTS
 
         clk = 0;
         rst_n = 0;
@@ -70,7 +70,7 @@ module tb_cpu;
         // 1. JSR sub
         repeat (6) @(posedge clk);
         #5;  // JSR takes 6 cycles
-        if (debug_pc !== 16'h8005) begin
+        if (debug_pc !== 16'h0205) begin
             $display("FAIL: JSR failed to jump, PC=%h", debug_pc);
             error_count++;
         end else $display("PASS: JSR jumped to 0x8005");
@@ -86,7 +86,7 @@ module tb_cpu;
         // 3. RTS
         repeat (6) @(posedge clk);
         #5;  // RTS takes 6 cycles
-        if (debug_pc !== 16'h8003) begin
+        if (debug_pc !== 16'h0203) begin
             $display("FAIL: RTS failed to return, PC=%h", debug_pc);
             error_count++;
         end else $display("PASS: RTS returned to 0x8003");

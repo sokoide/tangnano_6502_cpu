@@ -594,22 +594,22 @@ module lcd_demo (
     logic [15:0] ram_addr_final;
     assign ram_addr_final = (debug_state == S_WRITE_MEM_LOOP) ? debug_addr : cpu_address_bus;
 
-    // Memory (RAM)
+    // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
-        .addr(ram_addr_final[9:0]),
-        .write_en(cpu_write_en && (cpu_address_bus[15:10] == 6'b000000)),
+        .addr(font_addr),
+        .write_en(cpu_write_en && (!cpu_address_bus[15])),
         .din(cpu_data_out),
         .dout(ram_data_out)
     );
 
     rom u_rom (
-        .addr(cpu_address_bus),
+        .addr(font_addr),
         .data(rom_data_out)
     );
 
     always_comb begin
-        if (cpu_address_bus[15:10] == 6'b000000) begin
+        if (!cpu_address_bus[15]) begin
             cpu_data_in = ram_data_out;
         end else begin
             cpu_data_in = rom_data_out;

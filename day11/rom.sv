@@ -6,16 +6,16 @@ module rom (
 
     always_comb begin
         case (addr)
-            16'h8000: data = 8'hA9;  // LDA #$42
-            16'h8001: data = 8'h42;
-            16'h8002: data = 8'h85;  // STA $10
-            16'h8003: data = 8'h10;
-            16'h8004: data = 8'hA9;  // LDA #$00
-            16'h8005: data = 8'h00;
-            16'h8006: data = 8'hA5;  // LDA $10
-            16'h8007: data = 8'h10;
-            16'h8008: data = 8'hEF;  // HLT (End of program)
-            16'h8009: data = 8'hEF;  // Padding (HLT)
+            16'h0200: data = 8'hA9;  // LDA #$42
+            16'h0201: data = 8'h42;
+            16'h0202: data = 8'h85;  // STA $10
+            16'h0203: data = 8'h10;
+            16'h0204: data = 8'hA9;  // LDA #$00
+            16'h0205: data = 8'h00;
+            16'h0206: data = 8'hA5;  // LDA $10
+            16'h0207: data = 8'h10;
+            16'h0208: data = 8'hEF;  // HLT (End of program)
+            16'h0209: data = 8'hEF;  // Padding (HLT)
             default:  data = 8'hEA;  // NOP
         endcase
     end

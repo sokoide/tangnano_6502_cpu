@@ -68,12 +68,13 @@ VRAM として使用します。一方のポートで LCD が読み出しを行�
 
 | アドレス範囲 | 用途 | 説明 |
 | :--- | :--- | :--- |
-| `0x0000 - 0x00FF` | Zero Page | 高速アクセス可能な 256 バイトのメモリ領域 |
-| `0x0100 - 0x01FF` | Stack | スタックポインタ (SP) が使用するスタック領域 |
-| `0x0200 - 0x7FFF` | Free RAM | ユーザープログラムやデータに使用可能な汎用 RAM |
-| `0x8000 - 0xDFFF` | Program ROM | CPU が実行するプログラムコードを格納する領域 |
-| `0xE000 - 0xE3FF` | Text VRAM | LCD 表示用文字コード (ASCII) を保持する領域 (1KB) |
-| `0xE400 - 0xFFFF` | I/O / Reserved | 入出力デバイスや将来の拡張用の予約領域 |
+| `0x0000 - 0x00FF` | Zero Page | 高速 8bit アドレッシング, 256B |
+| `0x0100 - 0x01FF` | Stack | ハードウェアスタック操作, 256B |
+| `0x0200 - 0x7BFF` | Program RAM | メインメモリ (プログラム/データ), 30.5KB |
+| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU 読み取り用 VRAM (シャドウ領域), 1KB |
+| `0x8000 - 0xDFFF` | (Unmapped) | 将来の拡張用 |
+| `0xE000 - 0xE3FF` | Text VRAM | LCD 表示用文字コード (ASCII), 1KB |
+| `0xE400 - 0xFFFF` | (Unmapped) | 将来の拡張用 |
 
 ### VRAM の画面レイアウト
 

@@ -18,6 +18,8 @@
         <File path="gowin_rpll40_20k/gowin_rpll40.v" type="file.verilog" enable="1"/>
         <File path="gowin_prom/gowin_prom_font.v" type="file.verilog" enable="1"/>
         <File path="gowin_sdpb/gowin_sdpb_vram.v" type="file.verilog" enable="1"/>
+        <File path="gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
+        <File path="gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
         <File path="include/consts.svh" type="file.verilog" enable="1"/>
         <File path="tang_nano_20k.cst" type="file.cst" enable="1"/>
     </FileList>
