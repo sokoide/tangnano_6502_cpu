@@ -1,3 +1,5 @@
+/* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off UNUSEDSIGNAL */
 // Day 03 Completed: SystemVerilog Sequential Circuits
 // Integrated test module for sequential circuits
 

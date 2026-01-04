@@ -15,7 +15,9 @@ module flag_calculator (
     output logic flag_v   // Overflow / オーバーフロー (溢れ)
 );
 
+    /* verilator lint_off UNUSEDSIGNAL */
     logic [8:0] temp_result;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     always_comb begin
         // 9-bit calculation to capture the carry out bit.

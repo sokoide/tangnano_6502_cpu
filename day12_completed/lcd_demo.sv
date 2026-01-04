@@ -1,3 +1,6 @@
+/* verilator lint_off WIDTHTRUNC */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off UNUSEDSIGNAL */
 // LCD demo repurposed from Day 09 so that Day 04 introduces the display early.
 `include "include/consts.svh"
 module lcd_demo (
@@ -16,7 +19,7 @@ module lcd_demo (
     logic [ 7:0] font_data;
     /* verilator lint_off UNUSEDSIGNAL */
     logic        vsync;
-    /* verilator lint_on UNUSEDSIGNAL */
+    
     logic        vram_cea;
     logic [ 9:0] vram_ada;
     logic [ 7:0] vram_din;

@@ -1,8 +1,10 @@
 `include "include/consts.svh"
 
 module vram (
+    /* verilator lint_off UNUSEDSIGNAL */
     input  logic       clk,
     input  logic       rst_n,
+    /* verilator lint_on UNUSEDSIGNAL */
     input  logic [9:0] addr,
     output logic [7:0] data
 );

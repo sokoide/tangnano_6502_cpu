@@ -1,3 +1,7 @@
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+/* verilator lint_off CASEINCOMPLETE */
+/* verilator lint_off UNUSEDSIGNAL */
 module cpu (
     input  logic        clk,
     input  logic        rst_n,        // Active-low reset

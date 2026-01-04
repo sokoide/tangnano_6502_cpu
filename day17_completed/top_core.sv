@@ -1,3 +1,5 @@
+/* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off UNUSEDSIGNAL */
 // Day 04 Completed: 6502 CPU Architecture Overview
 // Test module for register set and basic instruction decoding
 

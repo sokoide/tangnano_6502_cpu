@@ -1,5 +1,7 @@
 module font_rom (
+    /* verilator lint_off UNUSEDSIGNAL */
     input logic clk,
+    /* verilator lint_on UNUSEDSIGNAL */
     input logic [11:0] addr,
     output logic [7:0] data
 );

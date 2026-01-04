@@ -1,3 +1,7 @@
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+/* verilator lint_off CASEINCOMPLETE */
+/* verilator lint_off UNUSEDSIGNAL */
 // day15_completed/cpu.sv
 `include "include/opcodes.svh"
 
@@ -240,16 +244,6 @@ module cpu (
                             z <= (data_in == 8'h00);
                             n <= data_in[7];
                         end
-                        OP_LDX_IMM: begin
-                            x <= data_in;
-                            z <= (data_in == 8'h00);
-                            n <= data_in[7];
-                        end
-                        OP_LDY_IMM: begin
-                            y <= data_in;
-                            z <= (data_in == 8'h00);
-                            n <= data_in[7];
-                        end
                         OP_ADC_IMM: begin
                             logic [8:0] sum;
                             sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c};
@@ -341,7 +335,7 @@ module cpu (
                     endcase
 
                     case (current_opcode)
-                        OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_LDX_IMM, OP_LDY_IMM,
+                        OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM,
                         OP_ADC_IMM, OP_SBC_IMM, OP_AND_IMM, OP_ORA_IMM, OP_EOR_IMM,
                         OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM, OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
                             if (current_opcode != OP_BNE && current_opcode != OP_BEQ &&

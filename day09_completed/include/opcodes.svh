@@ -1,3 +1,4 @@
+/* verilator lint_off UNUSEDPARAM */
 // opcodes.svh
 `ifndef OPCODES_SVH
 `define OPCODES_SVH

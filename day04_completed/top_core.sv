@@ -1,3 +1,5 @@
+/* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off UNUSEDSIGNAL */
 // Day 04 Completed: System Core (LCD + CPU Registers)
 //
 // This module integrates the foundational blocks of our 6502-based FPGA system:
@@ -56,8 +58,10 @@ module top_core (
     // CPUレジスタ(A, X, Y, PC, SP, P)は6502の内部状態を保持します。
 
     logic [ 7:0] test_opcode;
+    /* verilator lint_off UNUSEDSIGNAL */
     logic [15:0] reg_pc;
     logic [7:0] reg_a, reg_x, reg_y, reg_sp, reg_p;
+    
     logic a_write, x_write, y_write, sp_write, pc_write, p_write;
     logic [ 7:0] test_data;
     logic [15:0] test_addr;
@@ -91,6 +95,7 @@ module top_core (
     // 現在の'test_opcode'をデコードし、命令のカテゴリに応じてLEDを駆動します。
     // これにより、デコーダが現在実行(またはテスト)されている命令を正しく
     // 識別していることを視覚的に確認できます。
+    /* verilator lint_off PINCONNECTEMPTY */
     simple_decoder decoder (
         .opcode       (test_opcode),
         .is_load      (led_load),        // LDA, LDX, LDY
@@ -106,6 +111,7 @@ module top_core (
         .is_stack     (),
         .is_nop       ()
     );
+    
 
     // -------------------------------------------------------------------------
     // 4. Flag Calculator / フラグ計算
@@ -115,7 +121,9 @@ module top_core (
     // In Day 04, we just check its existence.
     // Day 04では、存在確認とインスタンス化のみを行います。
     logic [7:0] dummy_res;
+    /* verilator lint_off UNUSEDSIGNAL */
     logic dummy_c_in, dummy_c_out, dummy_v_out, dummy_z_out, dummy_n_out;
+    
     assign dummy_res  = test_data;
     assign dummy_c_in = 1'b0;
 

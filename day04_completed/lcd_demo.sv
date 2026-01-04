@@ -1,3 +1,6 @@
+/* verilator lint_off WIDTHTRUNC */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off UNUSEDSIGNAL */
 // Day 04 Completed: LCD Display & Rendering Pipeline / LCDディスプレイとレンダリングパイプライン
 // This module integrates the PLL, VRAM, and Font ROM to drive the TFT panel.
 // このモジュールはPLL、VRAM、フォントROMを統合してTFTパネルを駆動します。
@@ -36,7 +39,7 @@ module lcd_demo (
     logic [7:0] font_data;  // 1-byte pixel pattern / 1バイトのピクセルパターン
     /* verilator lint_off UNUSEDSIGNAL */
     logic vsync;
-    /* verilator lint_on UNUSEDSIGNAL */
+    
 
 `ifdef VERILATOR
     // Simulation path: keep everything in the PixelClk domain with simple models.

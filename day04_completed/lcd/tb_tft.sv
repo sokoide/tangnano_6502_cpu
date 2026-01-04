@@ -10,6 +10,10 @@ module tb_tft;
     logic [5:0] LCD_G;
     logic [4:0] LCD_B;
 
+    /* verilator lint_off UNUSEDSIGNAL */
+    logic [5:0] led;
+    /* verilator lint_on UNUSEDSIGNAL */
+
     top dut (
         .ResetButton(ResetButton),
         .XTAL_IN(XTAL_IN),
@@ -17,7 +21,8 @@ module tb_tft;
         .LCD_DEN(LCD_DEN),
         .LCD_R(LCD_R),
         .LCD_G(LCD_G),
-        .LCD_B(LCD_B)
+        .LCD_B(LCD_B),
+        .led(led)
     );
 
     // 27MHz clock
