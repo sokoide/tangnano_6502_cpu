@@ -33,6 +33,45 @@ module ram (
     input  logic [7:0] v_din      // VRAM write data
 );
 
+`ifdef VERILATOR
+    // Simulation model: simple dual-port RAMs.
+    logic [7:0] ram_mem[0:32767];
+    logic [7:0] vram_mem[0:1023];
+
+    integer i;
+    initial begin
+        for (i = 0; i < 32768; i = i + 1) begin
+            ram_mem[i] = 8'h00;
+        end
+        for (i = 0; i < 1024; i = i + 1) begin
+            vram_mem[i] = 8'h00;
+        end
+        dout   = 8'h00;
+        v_dout = 8'h00;
+    end
+
+    always_ff @(posedge MEMORY_CLK) begin
+        if (!reseta && cea) begin
+            ram_mem[ada] <= din;
+        end
+        if (!v_reseta && v_cea) begin
+            vram_mem[v_ada] <= v_din;
+        end
+    end
+
+    always_ff @(posedge MEMORY_CLK) begin
+        if (resetb) begin
+            dout <= 8'h00;
+        end else if (ceb && oce) begin
+            dout <= ram_mem[adb];
+        end
+        if (v_resetb) begin
+            v_dout <= 8'h00;
+        end else if (v_ceb && v_oce) begin
+            v_dout <= vram_mem[v_adb];
+        end
+    end
+`else
     // RAM 32KB, address 32768, data width 8, bypass
 
     Gowin_SDPB ram_inst (
@@ -64,5 +103,6 @@ module ram (
         .din(v_din),  //input [7:0] din, written data
         .adb(v_adb)  //input [9:0] adb, for read
     );
+`endif
 
 endmodule

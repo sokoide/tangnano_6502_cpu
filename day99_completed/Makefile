@@ -144,7 +144,7 @@ SIM_SRCS := \
 	sim/GSR.sv \
 	sim/gowin_rpll9_stub.sv sim/gowin_rpll40_stub.sv \
 	sim/gowin_prom_font_stub.sv \
-	sim/Gowin_SDPB.sv sim/gowin_sdpb_vram_stub.sv
+	sim/gowin_sdpb_vram_stub.sv
 
 sim-build: tools-check-sim
 	@echo "[sim] Building with Verilator (VRAM smoke test)..."
@@ -163,8 +163,7 @@ test: sim
 SIM_RAM_TOP ?= tb_top
 SIM_RAM_SRCS := \
 	src/tb_top_core.sv \
-	sim/GSR.sv \
-	sim/Gowin_SDPB.sv
+	sim/GSR.sv
 
 sim-ram-build: tools-check-sim
 	@echo "[sim] Building with Verilator (SDPB smoke test)..."
