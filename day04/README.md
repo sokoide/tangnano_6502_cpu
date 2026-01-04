@@ -164,6 +164,14 @@ graph LR
 
 Implement decoding logic using a `case` statement to translate 8-bit opcodes into category flags like `is_load`. This allows the CPU to identify the type of instruction to execute.
 
+#### 6502 Instruction Example: `0xA9` (LDA Immediate)
+
+6502 instructions consist of 1 to 3 bytes:
+- **1st Byte**: **Opcode** (The type of instruction. e.g., `0xA9` is "Load Accumulator")
+- **2nd & 3rd Bytes**: **Operand** (Data or address)
+
+For example, if the program contains `A9 55`, the CPU interprets this as "Load the value `0x55` into Accumulator A (the primary register for arithmetic and logical operations)". The role of the decoder is to set the `is_load` flag the moment it reads `0xA9`, signaling to the entire CPU that a "Load" operation is about to take place.
+
 ### Step 2: System Integration (`top_core.sv`)
 
 Integrate the components into `top_core.sv`.
@@ -187,6 +195,24 @@ graph TD
     - Instantiate `lcd_demo` to enable screen output.
     - Instantiate `cpu_registers` and `simple_decoder`, connecting them to the test signals.
     - Connect decoder outputs to the board LEDs (`led_load`, etc.) for verification.
+
+#### Role of the Test Circuit (Test Sequence Controller)
+
+The bottom of `top_core.sv` includes logic with names like `test_counter` and `test_state`. There are specific reasons why this code, which runs on the actual FPGA, is labeled as `test`:
+
+
+
+1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This test circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
+
+2. **Human-Readable Speed**: A real CPU runs at several MHz, far too fast for the human eye to track LED blinks or LCD updates. This circuit purposefully switches states every ~1.8 seconds, making it possible to visually verify the operation.
+
+3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `test_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
+
+
+
+In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware.
+
+
 
 ### Step 3: Verification
 
