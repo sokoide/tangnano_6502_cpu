@@ -46,12 +46,12 @@ LCD 画面（480x272 ピクセル）を 8x16 ピクセルの文字単位で区�
 ```mermaid
 graph TD
     CPU[CPU/回路] -->|1. 文字コードを書く| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
-    
+
     subgraph "LCD Controller (lcd.sv)"
         VRAM -->|2. 読み出し| Code[ASCII Code]
         Coord[Pixel X, Y Counter] -->|3. 座標からアドレス計算| VRAM
         Code -->|4. 文字と行を指定| FontROM[Font ROM<br/>ビットマップデータ]
-        Coord -->|5. 現在の走査線行 (0-15)| FontROM
+        Coord -->|"5. 現在の走査線行 (0-15)"| FontROM
         FontROM -->|6. 8px分のドットパターン| Serial[Serializer]
         Serial -->|7. 1pxずつRGB信号として出力| Panel[LCD Panel]
     end

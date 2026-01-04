@@ -46,12 +46,12 @@ For example, writing `8'h41` ('A') to `0xE000` displays 'A' in the top-left corn
 ```mermaid
 graph TD
     CPU[CPU/Logic] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
-    
+
     subgraph "LCD Controller (lcd.sv)"
         VRAM -->|2. Read| Code[ASCII Code]
         Coord[Pixel X, Y Counter] -->|3. Calc address from coords| VRAM
         Code -->|4. Index Font and Row| FontROM[Font ROM<br/>Bitmap Data]
-        Coord -->|5. Current scanline row (0-15)| FontROM
+        Coord -->|"5. Current scanline row (0-15)"| FontROM
         FontROM -->|6. 8px dot pattern| Serial[Serializer]
         Serial -->|7. Output RGB pixel-by-pixel| Panel[LCD Panel]
     end
