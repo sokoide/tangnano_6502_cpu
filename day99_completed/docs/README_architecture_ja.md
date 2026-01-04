@@ -73,6 +73,8 @@ graph TB
 
 ### 開発環境セットアップ
 
+コマンドは `day99_completed/` で実行します:
+
 ```bash
 # 1. ビルド（Tang Nano 9K がデフォルト）
 make                    # 基本ビルド

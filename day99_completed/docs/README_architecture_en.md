@@ -78,6 +78,8 @@ graph TB
 
 ### Development Environment Setup
 
+Run these commands from `day99_completed/`:
+
 ```bash
 # 1. Build (Tang Nano 9K default)
 make                    # Basic build
