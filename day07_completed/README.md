@@ -56,7 +56,7 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 > These are standard 6502 opcodes listed in references like the
 > [6502 Instruction Set](https://www.masswerk.at/6502/6502_instruction_set.html).
 > You can hand-assemble them, but longer programs get tedious.
-> In that case, you can assemble with `cc65` like this:
+> In that case, you can assemble with `ca65` like this:
 >
 > ```bash
 > cat > hoge.s << 'END'
