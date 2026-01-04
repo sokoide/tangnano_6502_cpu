@@ -14,6 +14,7 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 ## 🧠 Memory Model Note
 
 From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`). A small boot copy loads the `rom.sv` program into RAM before execution.
+This happens in `day10/lcd_demo.sv` under the boot loader section: `boot_index` iterates over `0x0200 + boot_index`, `rom_addr` selects ROM during boot, and `ram_we/ram_din` write the ROM bytes into RAM before releasing `cpu_rst_n`.
 
 ## 🔙 Review: Day 09
 

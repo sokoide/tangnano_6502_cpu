@@ -11,7 +11,7 @@ In Day 04, we established a critical foundation for CPU development: **A Window 
 
 ## 🧠 Memory Model Note
 
-Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 11.
+Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM is still used for data; the RAM-backed program flow starts in Day 10.
 
 ## 🎯 Learning Objectives
 
@@ -42,15 +42,9 @@ graph TD
 2. **Timing Generator**: Create HSYNC/VSYNC/DEN signals in `lcd.sv`.
 3. **Rendering**: Wire `vram.sv` and `font_rom.sv` in `lcd_demo.sv`.
 
-### Part 2: Integrating the Demo Circuit (Demo Sequence Controller)
+### Part 2: LCD-Only Integration
 
-The bottom of `top_core.sv` includes logic with names like `demo_counter` and `demo_state`. These components serve essential roles in providing the "visualization" features of this educational board:
-
-1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This demo circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
-2. **Human-Readable Speed**: A real CPU runs at several MHz, far too fast for the human eye to track LED blinks or LCD updates. This circuit purposefully switches states every ~1.8 seconds, making it possible to visually verify the operation.
-3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `demo_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
-
-In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware.
+This completed Day 04 focuses on the LCD visualization pipeline only. CPU register/decoder demo logic is introduced in later days.
 
 ## 💡 Technical Insight: Using BSRAM (SDPB) & pROM
 
