@@ -21,44 +21,24 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Implement Accumulator (A)**: Add an 8-bit register that serves as the primary for arithmetic and logic operations.
-- **Structure Architecture**: Define instructions in `opcodes.svh` and separate memory into `rom.sv`.
-- **Fetch and Decode**: Introduce a state machine to manage multi-cycle instruction execution.
-- **Implement `LDA #imm` and `NOP`**: Build basic instructions using the new structure.
-- **LCD Visualization**: Display the A register value along with the PC.
-- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
+- Implement the **Instruction Decoder (simple_decoder.sv)** to classify opcodes into categories.
+- Implement the **Flag Calculator (flag_calculator.sv)** to derive status from operation results.
+- Implement the **LDA (Load Accumulator) instruction** to automate data movement from memory (immediate) to registers.
+- Understand the basic cycle of **Instruction Fetch** and **Decode**.
 
-## 🏗️ Architecture
+## 💡 Stepping Up: From Day 05 to Day 06
 
-We add the A register and a simple state machine to manage the multi-cycle instruction fetch.
-
-```mermaid
-graph LR
-    subgraph CPU
-        PC[Program Counter]
-        A_REG[A Register]
-        DECODER[Instruction Decoder]
-
-        PC -- Address --> ROM
-        ROM -- Instruction --> DECODER
-        DECODER -- Controls --> A_REG
-        ROM -- Operand --> A_REG
-    end
-    CPU -- Debug Info (A) --> LCD
-```
+In Day 05, the CPU learned its minimum movement: "just take one step (PC+1)." In Day 06, we finally tackle the core function of a CPU: "understanding instructions and moving data."
 
 ## 🛠️ Implementation Steps
 
-1. **Define Opcodes**:
-    - Create `include/opcodes.svh` and define `OP_LDA_IMM = 8'hA9` and `OP_NOP = 8'hEA`.
-    - This improves code readability as we add more instructions.
-2. **Separate Memory (ROM)**:
-    - Create `rom.sv` to handle instruction storage, separating it from CPU logic.
-3. **Implement CPU State Machine**:
-    - Introduce states like `STATE_FETCH_OPCODE` and `STATE_FETCH_OPERAND` in `cpu.sv`.
-    - Fetch `data_in` from the new ROM module.
-4. **Update LCD Display**:
-    - Add `debug_a` output and update the display logic to show `PC: XXXX A: XX`.
+1. **Implement `simple_decoder.sv`**:
+    - Use a `case` statement to identify instruction categories (e.g., `is_load`) from opcodes (e.g., `0xA9`).
+2. **Implement `flag_calculator.sv`**:
+    - Describe the logic to calculate N, Z, C, and V flags based on results.
+3. **Extend `cpu.sv`**:
+    - Integrate the decoder and flag calculator into the CPU.
+    - Extend the state machine to execute the `LDA Immediate` instruction.
 
 ## 📘 Fundamentals: Machine Code & Mnemonics
 

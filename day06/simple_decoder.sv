@@ -33,7 +33,7 @@ module simple_decoder (
     //
     // It's not necessary to cover all instructions, but let's implement those mainly used 
     // in the Day 04 test sequence.
-    // 全ての命令を網羅する必要はありませんが、Day 04のデモシーケンスで
+    // 全ての命令を網羅する必要はありませんが、Day 04のテストシーケンスで
     // 使用されている命令を中心に実装してみましょう。
     // Refer to README_ja.md for detailed tables.
     // 詳細な表は README_ja.md を参照してください。

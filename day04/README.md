@@ -1,4 +1,4 @@
-# Day 04: Foundation (LCD Display & Register Set)
+# Day 04: Visual Foundation (LCD Display & Memory Map)
 
 ---
 
@@ -7,240 +7,79 @@
 
 ## 📜 Overview
 
-Up until Day 03, we learned about combinational circuits and basic sequential circuits. In Day 04, we will begin combining these elements to build the primary components of a CPU.
+Until now, we have verified operations using only LEDs—providing just "one bit" of information. However, as we build a complex CPU, LEDs are no longer sufficient.
 
-Today's goal is to integrate the **register set** that holds the internal state of the 6502 CPU and the **LCD display pipeline** for visualizing information.
-
-## 🔙 Review: Day 03
-
-Before proceeding, make sure you understand:
-
-- **Sequential Logic (`always_ff`)**: Logic that updates values in synchronization with the rising edge of a clock
-- **Clock Synchronization**: Handling asynchronous resets (`negedge rst_n`) and setting initial values
-- **Counters and PWM**: Applications that count states and control signals at specific timings
+In Day 04, we will build an **"LCD Debug Dashboard"** to powerfully support our CPU development. The goal today is to create an environment where you can see the CPU's internal state—which instruction it's executing and what the register values are—in real-time.
 
 ## 🎯 Learning Objectives
 
-- **LCD Pipeline**: Complete the data flow from VRAM (**BSRAM/SDPB**) through Font ROM (**pROM**) to the LCD panel.
-- **6502 Register Set**: Implement A, X, Y, SP, PC, and Status (P) registers in hardware.
-- **Instruction Decoding**: Build a decoder to classify 8-bit opcodes into instruction categories (Load, Store, Branch, etc.).
-- **System Integration**: Understand the separation between board wrappers (`top_9k.sv`/`top_20k.sv`) and the logic core (`top_core.sv`).
+- **LCD Pipeline**: Complete the flow from VRAM through Font ROM to the LCD panel.
+- **Memory Map**: Understand the layout of the 6502 address space.
+- **VRAM Operation**: Learn how writing character codes to specific memory locations corresponds to screen positions.
 
 ## 💡 Memory Map and VRAM
 
-When the CPU reads or writes data, the **Memory Map** defines which addresses are connected to which components (memory or peripherals). The memory map for the 6502 system we are building is as follows:
+The **Memory Map** defines how the CPU's address space is connected to various memory blocks and peripherals. The memory map for our 6502 system is as follows:
 
-### 6502 System Memory Map used in this Training
+### 6502 System Memory Map (used in this Training)
 
 | Address Range | Purpose | Description |
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7FFF` | Free RAM | General-purpose RAM for user programs and data |
-| `0x8000 - 0xDFFF` | Program ROM | Area storing the program code executed by the CPU |
-| `0xE000 - 0xE3FF` | Text VRAM | Area holding character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or future expansion |
-
-- **Program ROM (0x8000〜)**: The area where the program executed by the CPU is stored.
-- **Text VRAM (0xE000〜)**: A dedicated memory area for writing character codes to be displayed on the screen.
+| `0x0200 - 0x7FFF` | Free RAM | General-purpose RAM for user programs |
+| `0x8000 - 0xDFFF` | Program ROM | Area storing the program code |
+| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
+| `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or expansion |
 
 ### VRAM to LCD Mapping
 
-The LCD screen is 480x272 pixels. Dividing this by 8x16 pixel character units allows for a display of 60 columns × 17 rows (1020 characters total).
+The LCD screen (480x272 pixels) is divided into 8x16 pixel character units, allowing for a display of **60 columns × 17 rows**. Each ASCII code in VRAM maps to a specific coordinate.
 
-Each **ASCII character code** written to an address in VRAM corresponds to a specific coordinate on the LCD.
+**Display Address Formula:**
+`VRAM Address = 0xE000 + (Row * 60) + Column`
 
-**Address Calculation:**
-`Display Address = 0xE000 + (Row Number * 60) + Column Number`
-
-```mermaid
-graph TD
-    subgraph "LCD Screen (60 cols x 17 rows)"
-        TL["(0,0)<br/>Addr: 0xE000"] --- TR["(59,0)<br/>Addr: 0xE03B"]
-        TL --- BL["(0,16)<br/>Addr: 0xE3C0"]
-        TR --- BR["(59,16)<br/>Addr: 0xE3FB"]
-    end
-```
-
-For example, writing `8'h41` (character 'A') to address `0xE000` will display 'A' in the top-left corner of the screen.
+For example, writing `8'h41` ('A') to `0xE000` displays 'A' in the top-left corner.
 
 ### Character Rendering Pipeline
 
-The flow from when the CPU writes a character code to VRAM until it is actually displayed as pixels on the LCD panel is as follows:
-
 ```mermaid
 graph TD
-    CPU[CPU] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
-
+    CPU[CPU/Logic] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
+    
     subgraph "LCD Controller (lcd.sv)"
         VRAM -->|2. Read| Code[ASCII Code]
         Coord[Pixel X, Y Counter] -->|3. Calc address from coords| VRAM
         Code -->|4. Index Font and Row| FontROM[Font ROM<br/>Bitmap Data]
-        Coord -->|"5. Current scanline row (0-15)"| FontROM
+        Coord -->|5. Current scanline row (0-15)| FontROM
         FontROM -->|6. 8px dot pattern| Serial[Serializer]
         Serial -->|7. Output RGB pixel-by-pixel| Panel[LCD Panel]
     end
 ```
 
-1. **VRAM**: Holds character codes ("what" character to display at "which" position).
-2. **Font ROM**: Holds bitmap (dot) information ("what" an 'A' looks like).
-3. **LCD Controller**: Scans the screen at high speed, pulling data from VRAM and Font ROM to determine the color of the pixel to be displayed at any given moment.
-
 ## 🛠️ Implementation Steps
 
-Follow these steps for Day 04. Refer to the `TODO` comments in each file.
+1. **Integrate `lcd_demo.sv`**:
+    - Instantiate `lcd_demo` in `top_core.sv` to enable video output on the actual LCD.
+2. **Display Demo Text**:
+    - VRAM is pre-filled with text like "VRAM TEXT" on boot. Verify that this appears correctly on the screen.
 
-### Step 1: Implement Core Logic
+## 💡 Design Tip: The Importance of Visualization
 
-First, complete the registers that hold the CPU state and the logic for calculating status flags.
-
-1. **`cpu_registers.sv`**:
-
-```mermaid
-graph TD
-    subgraph "CPU Registers (cpu_registers.sv)"
-        subgraph "Inputs"
-            DI[data_in 8-bit]
-            AI[addr_in 16-bit]
-            WE[Write Enables: a_write, x_write, etc.]
-        end
-
-        subgraph "Register File (always_ff)"
-            A[Accumulator A]
-            X[Index Register X]
-            Y[Index Register Y]
-            SP[Stack Pointer]
-            PC[Program Counter]
-            P[Status Register]
-        end
-
-        DI --> A & X & Y & SP & P
-        AI --> PC
-        WE -.-> A & X & Y & SP & PC & P
-
-        subgraph "Outputs"
-            A --> reg_a
-            X --> reg_x
-            Y --> reg_y
-            SP --> reg_sp
-            PC --> reg_pc
-            P --> reg_p
-        end
-    end
-```
-
-Implement an `always_ff` block to manage the 6502 register set (A, X, Y, SP, PC, P). Define the reset state (e.g., PC=0x0200, SP=0xFF) and update logic triggered by write-enable signals (`a_write`, etc.).
-2. **`flag_calculator.sv`**:
-
-```mermaid
-graph TD
-    subgraph "Flag Calculator (flag_calculator.sv)"
-        Res[result 8-bit]
-        Ops[operand_a, b]
-        CarryIn[carry_in]
-
-        Res --> N[Flag N: Negative bit 7]
-        Res --> Z[Flag Z: Zero if result == 0]
-
-        Ops & CarryIn --> Adder[Adder/Subtractor Logic]
-        Adder --> C[Flag C: Carry out]
-        Adder --> V[Flag V: Overflow bit]
-    end
-```
-
-Implement combinational logic to derive status flags (N, Z, C, V) from the operation result. Ensure the Carry (C) and Overflow (V) flags are calculated correctly based on arithmetic rules.
-3. **`simple_decoder.sv`**:
-
-```mermaid
-graph LR
-    subgraph "Instruction Decoder (simple_decoder.sv)"
-        Op[opcode 8-bit] --> Case{case opcode}
-        Case -- "0xA9, 0xA2, ..." --> Load[is_load = 1]
-        Case -- "0x85, 0x86, ..." --> Store[is_store = 1]
-        Case -- "0x69, 0xE9, ..." --> Arith[is_arithmetic = 1]
-        Case -- "others" --> NOP[is_nop = 1]
-    end
-```
-
-Implement decoding logic using a `case` statement to translate 8-bit opcodes into category flags like `is_load`. This allows the CPU to identify the type of instruction to execute.
-
-#### 6502 Instruction Example: `0xA9` (LDA Immediate)
-
-6502 instructions consist of 1 to 3 bytes:
-
-- **1st Byte**: **Opcode** (The type of instruction. e.g., `0xA9` is "Load Accumulator")
-- **2nd & 3rd Bytes**: **Operand** (Data or address)
-
-For example, if the program contains `A9 55`, the CPU interprets this as "Load the value `0x55` into Accumulator A (the primary register for arithmetic and logical operations)". The role of the decoder is to set the `is_load` flag the moment it reads `0xA9`, signaling to the entire CPU that a "Load" operation is about to take place.
-
-### Step 2: System Integration (`top_core.sv`)
-
-Integrate the components into `top_core.sv`.
-
-```mermaid
-graph TD
-    subgraph "Top Core (top_core.sv)"
-        DemoCtrl[Demo Sequence Controller]
-
-        DemoCtrl -->|opcode| Decoder[simple_decoder]
-        DemoCtrl -->|data/addr, write| Regs[cpu_registers]
-        DemoCtrl -->|result, operands| Flags[flag_calculator]
-
-        Decoder -->|is_load, etc.| LEDs[Debug LEDs]
-        Regs -->|reg_a, pc, etc.| LCD[LCD Demo / Debug Display]
-        Flags -->|N, Z, C, V| Regs
-    end
-```
-
-1. **`top_core.sv`**:
-    - Instantiate `lcd_demo` to enable screen output.
-    - Instantiate `cpu_registers` and `simple_decoder`, connecting them to the demo signals.
-    - Connect decoder outputs to the board LEDs (`led_load`, etc.) for verification.
-
-#### Role of the Demo Circuit (Demo Sequence Controller)
-
-The bottom of `top_core.sv` includes logic with names like `demo_counter` and `demo_state`. These components serve essential roles in providing the "visualization" features of this educational board:
-
-1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This demo circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
-
-2. **Human-Readable Speed**: A real CPU runs at several MHz, far too fast for the human eye to track LED blinks or LCD updates. This circuit purposefully switches states every ~1.8 seconds, making it possible to visually verify the operation.
-
-3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `demo_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
-
-In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware. The `demo_` prefix explicitly indicates this is for educational visualization, not production testing.
-
-### Step 3: Verification
-
-Verify your implementation using simulation and the actual board.
-
-1. **Simulation**:
-    - Run `make sim` and ensure that LCD signals (DEN) are output correctly and the simulation results in `PASS`.
-2. **Hardware Verification**:
-    - Run `make download` (for Tang Nano 9K) and verify that the demo screen appears on the LCD and the LEDs blink in sequence.
-
-## 💡 Design Pattern: Wrapper and Core Separation
-
-This project strictly separates the **Logic Core (`top_core.sv`)** from **Board-Specific Wrappers (`top_9k.sv` / `top_20k.sv`)**.
-
-- **`top_core.sv` (System Core)**: Contains the 6502 logic and system integration common to any FPGA board.
-- **`top_9k.sv` / `top_20k.sv` (Board Wrapper)**: Handles board-specific pin definitions, reset button polarity, and LED signal inversions (Active-Low vs. Active-High).
-
-This separation improves portability and allows learners to focus on the hardware description (Core) rather than board-specific details. Other lessons follow this same structure.
+In hardware development, it is notoriously difficult to see what's happening inside the chip. By building this dashboard today, you will be able to visually confirm things like the Program Counter moving starting tomorrow.
 
 ## 📝 Exercises
 
-### Basic Tasks
+- [ ] Correcty instantiate `lcd_demo` in `top_core.sv` and ensure the simulation results in `PASS`.
+- [ ] Program the hardware and confirm that the demo text appears on the LCD.
+- [ ] (Advanced) Modify the initialization code in `lcd_demo.sv` to display your own name.
 
-- [ ] Complete `cpu_registers.sv` and verify PC is `0x0200` and SP is `0xFF` after reset.
-- [ ] Implement `flag_calculator.sv` so the Negative flag is set when the result is negative (bit 7 is 1).
-- [ ] Set `is_load` to 1 for LDA, LDX, and LDY instructions in `simple_decoder.sv`.
-- [ ] Instantiate all modules in `top_core.sv` and verify that LEDs blink in sequence on the actual board.
+## 📚 What I Learned Today
 
-### Advanced Tasks
+- [ ] Concepts of Memory Mapping.
+- [ ] Relationship between VRAM and screen coordinates.
+- [ ] Mechanics of character display (Font ROM).
 
-- [ ] Add your favorite 6502 opcodes to `simple_decoder.sv` and light up the corresponding LEDs.
-- [ ] Predict and verify the state of bit 7 (Negative flag) in the P register when writing `0x55` to the A register.
+## 🎯 Preview for Tomorrow
 
-## 📚 Technical Overview
-
-(Further details on memory mapping and pipeline architecture...)
+From Day 05, we finally start building the CPU itself. We will begin by implementing the **Register Set** for memory and the **Program Counter** to track execution flow.

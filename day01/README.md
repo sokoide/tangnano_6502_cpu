@@ -212,6 +212,7 @@ Format: `[Width]'[Base][Value]`
 - **Value**: The actual value in that base.
 
 **Examples:**
+
 - `1'b1`: A **1-bit** binary value of 1 (equivalent to an ON/OFF switch or a single signal wire).
 - `8'hFF`: An **8-bit** hex value of 255 (exactly 1 byte of data).
 - `16'd10`: A **16-bit** decimal value of 10 (the width of the 6502 address bus).

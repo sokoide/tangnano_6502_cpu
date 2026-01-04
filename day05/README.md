@@ -1,124 +1,76 @@
-# Day 05: CPU Skeleton & NOP Instruction
+# Day 05: The First Step of CPU (Registers & Program Counter)
 
 ---
 
-🌐 Available languages:
+🌐 Languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
 ## 📜 Overview
 
-It's time to start implementing the CPU! The goal of Day 05 is to implement the most fundamental component of a CPU: the **Program Counter (PC)**.
+In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the tools to visualize the internal state of the FPGA, it's finally time to dive into the design of the CPU itself.
 
-We will connect the CPU's PC value to the LCD display circuit created in Day 04 to visually verify that the PC increments with every clock cycle. This is the "Hello World" of CPU design.
-
-## 🔙 Review: Day 04
-
-Before proceeding, make sure you understand:
-
-- **6502 Register Set**: The role and structure of A, X, Y, PC, SP, and P
-- **Flag Calculation**: How the N, Z, C, and V flags are derived from arithmetic results
-- **LCD Rendering**: The pipeline that displays characters read from VRAM
+In Day 05, we will implement the **"Register Set"** for memory and the **"Program Counter (PC)"** to track the execution flow. These are the most fundamental building blocks for an autonomous CPU.
 
 ## 🎯 Learning Objectives
 
-- **Create CPU Module**: Create a basic `cpu.sv` file.
-- **Program Counter (PC)**: Implement the register that hold the address of the next memory location.
-- **Sequential Logic**: Understand how the PC updates on every clock edge.
-- **Visual Verification**: Display the PC on the LCD.
-- **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
+- Implement the **6502 Register Set (A, X, Y, SP, P)** as sequential logic.
+- Understand the role of the **Program Counter (PC)** and implement it as sequential logic.
+- Understand the essence of the **NOP (No Operation) instruction**: "Do nothing, but take one step forward."
+- Experience the minimum cycle of automatic execution where the CPU "moves to the next address."
+
+## 💡 Stepping Up: From Day 04 to Day 05
+
+While Day 04 was about building the "Display," Day 05 is about starting to build the "CPU" that will be projected on that screen.
+
+| Item | Day 04 (Visual Foundation) | Day 05 (Starting CPU Design) |
+| :--- | :--- | :--- |
+| **Main Deliverable** | LCD Rendering Pipeline (VRAM/Font) | **Register Set & PC** |
+| **On the Screen** | Fixed Demo Text | **Constantly Updating PC Value** |
+| **Learning Focus** | Memory Mapping vs. Display Coordinates | **State Holding & Updating via Sequential Logic** |
+| **Purpose** | Building a dashboard for efficiency | Building the "legs" for the CPU to walk on its own |
+
+### Why start with `NOP`?
+
+For software engineers, `NOP` (No Operation) might seem like a "useless instruction that does nothing." However, in hardware design, `NOP` is a crucial concept for verifying the smallest unit of automatic execution: **"Do nothing, but increment the Program Counter by one and move to the next instruction."**
+
+Before automating complex data movements or calculations, we first complete the basic "walk" where the CPU automatically points to the next address every time the clock ticks.
 
 ## 🏗️ Architecture
 
-The CPU is currently empty, but it is built around the Program Counter (PC), which is the basis for all operations.
+To "walk," the CPU needs a counter to keep track of its current location and decide where to go next.
 
 ```mermaid
-graph TD
-    subgraph "CPU (cpu.sv)"
-        subgraph "Internal Registers"
-            PC[Program Counter 16-bit]
-        end
-        
-        CLK[clk] --> PC
-        RST[rst_n] --> PC
-        EN[pc_enable] --> PC
-        
-        PC --> AB[address_bus 16-bit]
-        PC --> DPC[debug_pc 16-bit]
-    end
+graph LR
+    CLK[Clock] --> PC[Program Counter<br/>16-bit Register]
+    PC_EN[pc_enable] --> PC
+    PC -->|"PC <= PC + 1"| PC
+    PC --> ADDR[Address Bus]
+    PC --> DISP[LCD Debug Display]
 ```
 
 ## 🛠️ Implementation Steps
 
-### Step 1: Create CPU Module (`cpu.sv`)
+1. **Implement `cpu_registers.sv`**:
+    - Describe A, X, Y, SP, and P registers using `always_ff`.
+    - Set initial values during reset (SP=0xFF, P=0x34, etc.).
+2. **Implement `cpu.sv`**:
+    - Set the PC to the initial value `0x8000` during reset.
+    - When `pc_enable` is `1`, increment the PC by `1'b1` on the rising edge of the clock.
+3. **Connect in `top_core.sv`**:
+    - Instantiate the `cpu` and `cpu_registers` modules.
+    - Instead of yesterday's fixed text, connect the PC output of this new `cpu` to the LCD display.
+4. **Verify Operation**:
+    - Confirm on the LCD that the `PC` value automatically counts up at regular intervals: `8000`, `8001`, `8002`, and so on.
 
-Define the minimal CPU interface and write the logic for incrementing the PC.
+## 📝 Exercises
 
-```mermaid
-graph TD
-    Reset{rst_n == 0?} -- Yes --> P8000[PC = 0x8000]
-    Reset -- No --> Enable{pc_enable == 1?}
-    Enable -- Yes --> Inc[PC = PC + 1]
-    Enable -- No --> Hold[PC = PC]
-```
+### Basic Tasks
 
-1. **PC Initialization**: The 6502 normally starts at `0xFFFC`, but for simplicity, we use `0x8000` as the starting address.
-2. **PC Update**: On the rising edge of the clock, increment the PC by 1 when reset is released and `pc_enable` is high.
+- [ ] Complete `cpu_registers.sv` and ensure all registers have their specified initial values after reset.
+- [ ] Complete `cpu.sv` and verify in simulation that the PC counts up correctly.
+- [ ] Integrate both modules into `top_core.sv` and verify the PC value changes on the actual board.
 
-### Step 2: Integrate with LCD Demo (`lcd_demo.sv`)
+### Advanced Tasks
 
-Complete the "Debug Display Pipeline" to show the internal CPU state (`debug_pc`) on the LCD.
-
-```mermaid
-graph TD
-    subgraph "CPU"
-        PC[debug_pc]
-    end
-    
-    subgraph "LCD Demo (lcd_demo.sv)"
-        Writer[VRAM Writer State Machine]
-        VRAM[VRAM SDPB]
-        SD[LCD Panel]
-    end
-    
-    PC -->|Hex Conversion| Writer
-    Writer -->|'P', 'C', ':', 'X', 'X', 'X', 'X'| VRAM
-    VRAM -->|Text Rendering| SD
-```
-
-1. **Instantiation**: Instantiate the `cpu` module within `lcd_demo.sv`.
-2. **Writing Logic**: Update the state machine to convert the PC value to hexadecimal characters (0-F) and write them to a specific VRAM address (e.g., the corner of the screen).
-
-## 📘 Concept: What is a Program Counter?
-
-The **Program Counter (PC)** is a register that allows the CPU to remember **"where in memory to read next"**.
-
-```mermaid
-graph LR
-    Start([Reset]) --> Init[PC = 0x8000]
-    Init --> Fetch[Fetch: PC on Address Bus]
-    Fetch --> Execute[Execute: Increment PC]
-    Execute --> Fetch
-```
-
-Think of the PC as a **bookmark** in a book:
-
-1. **Fetch** the instruction at the bookmark's location.
-2. **Execute** what it says.
-3. **Move** the bookmark forward to the next line (address).
-
-In Day 05, we aren't reading from memory yet, but we will implement this basic "move the bookmark forward" behavior at the heart of the CPU and verify it visually.
-
-## 💡 Why start here?
-
-Implementing only the PC allows us to verify the entire toolchain—from SystemVerilog code to FPGA deployment and LCD display—before adding the complexity of instruction decoding.
-
-## 🧪 Verification
-
-Starting from Day 05, **the testbench (`day05/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
-
-- **Simulation**: Run `make sim`. Success is achieved if the `PC` increments (`8000` -> `8001` -> `8002` ...) and the simulation outputs `PASS`.
-- **FPGA**: If the PC value appears on the LCD and counts up, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock further in `lcd_demo.sv`).
-
-## 🎯 Preview for Tomorrow
-
-In Day 06, we will breathe more life into our CPU by implementing the **A register** and our first data instruction: **`LDA #imm`**. We will also introduce a **structured architecture** using opcode headers and separate memory modules to make the CPU more scalable.
+- [ ] Explain why the 6502's PC is 16 bits in terms of addressable memory capacity.
+- [ ] Change the clock division ratio used to generate `pc_enable` and observe how the count-up speed changes.

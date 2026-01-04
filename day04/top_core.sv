@@ -1,9 +1,8 @@
-// Day 04: System Core (LCD + CPU Registers) - Skeleton
+// Day 04: System Core (LCD & Visualization) - Skeleton
 //
 // Learning Goals: / 学習目標:
 // 1. Integration of LCD rendering pipeline / LCDレンダリングパイプラインの統合
-// 2. Implementation and verification of CPU register set / CPUレジスタセットの実装と検証
-// 3. Instruction classification by instruction decoder / 命令デコーダによる命令の分類
+// 2. Understanding VRAM and Memory Map / VRAMとメモリマップの理解
 
 module top_core (
     input logic       rst_n,
@@ -17,7 +16,7 @@ module top_core (
     output logic [5:0] LCD_G,
     output logic [4:0] LCD_B,
 
-    // Debug LEDs
+    // Debug LEDs (not used in Day 04 skeleton)
     output logic led_load,
     output logic led_store,
     output logic led_arithmetic,
@@ -35,112 +34,10 @@ module top_core (
     // これにより、実機での表示機能が有効になります。
 
 
-    // -------------------------------------------------------------------------
-    // STEP 2: CPU Register Set / CPUレジスタセットの統合
-    // -------------------------------------------------------------------------
-    // TODO: Instantiate the CPU register set (cpu_registers) as "registers".
-    // TODO: CPUレジスタセット (cpu_registers) を "registers" という名前でインスタンス化してください。
-    // Use LCD_CLK for the clock and connect the reset signal.
-    // クロックには LCD_CLK を使用し、リセット信号を接続します。
-    // Connect the test sequence control signals (a_write, data_in, etc.) to each port.
-    // デモシーケンス制御信号 (a_write, data_in等) を各ポートに接続してください。
-
-
-    // -------------------------------------------------------------------------
-    // STEP 3: Instruction Decoder / 命令デコーダ
-    // -------------------------------------------------------------------------
-    // TODO: Instantiate the simple decoder (simple_decoder) as "decoder".
-    // TODO: 簡易デコーダ (simple_decoder) を "decoder" という名前でインスタンス化してください。
-    // Input demo_opcode and connect the outputs to LED output signals like led_load.
-    // demo_opcode を入力し、出力を led_load 等のLED出力信号に接続します。
-
-
-    // -------------------------------------------------------------------------
-    // STEP 4: Flag Calculator / フラグ計算
-    // -------------------------------------------------------------------------
-    // TODO: Instantiate the flag calculation module (flag_calculator) as "u_flags".
-    // TODO: フラグ計算モジュール (flag_calculator) を "u_flags" という名前でインスタンス化してください。
-    // Connect the operation result (demo_data, etc.) and verify that the flags change correctly.
-    // 演算結果 (demo_data等) を接続し、フラグが正しく変化することを確認します。
-    // (Note: The goal in Day 04 is to correctly connect the modules)
-    // (注: Day 04ではモジュールを正しく接続できることが目標です)
-
-
-    // --- Demo Sequence Control (Implemented below, but please understand the content) ---
-    // --- デモシーケンス制御 (以下は実装済みですが、内容を理解してください) ---
-    logic [ 7:0] demo_opcode;
-    logic [15:0] reg_pc;
-    logic [7:0] reg_a, reg_x, reg_y, reg_sp, reg_p;
-    logic a_write, x_write, y_write, sp_write, pc_write, p_write;
-    logic [ 7:0] demo_data;
-    logic [15:0] demo_addr;
-
-    logic [24:0] demo_counter;
-    logic [ 2:0] demo_state;
-
-    always_ff @(posedge LCD_CLK or negedge rst_n) begin
-        if (!rst_n) begin
-            demo_counter <= 25'b0;
-            demo_state <= 3'b000;
-            {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b0;
-            demo_opcode <= 8'hEA;
-        end else begin
-            demo_counter <= demo_counter + 1;
-            {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
-
-            if (demo_counter[24]) begin
-                demo_counter <= 25'b0;
-                demo_state   <= demo_state + 1;
-
-                case (demo_state)
-                    3'b000: begin
-                        a_write <= 1'b1;
-                        demo_data <= 8'h55;
-                        demo_opcode <= 8'hA9;
-                    end  // LDA
-                    3'b001: begin
-                        x_write <= 1'b1;
-                        demo_data <= 8'hAA;
-                        demo_opcode <= 8'hA2;
-                    end  // LDX
-                    3'b010: begin
-                        y_write <= 1'b1;
-                        demo_data <= 8'h33;
-                        demo_opcode <= 8'hA0;
-                    end  // LDY
-                    3'b011: begin
-                        pc_write <= 1'b1;
-                        demo_addr <= 16'h1234;
-                        demo_opcode <= 8'h4C;
-                    end  // JMP
-                    3'b100: begin
-                        demo_opcode <= 8'h85;
-                    end  // STA
-                    3'b101: begin
-                        demo_opcode <= 8'h69;
-                    end  // ADC
-                    3'b110: begin
-                        demo_opcode <= 8'h10;
-                    end  // BPL
-                    3'b111: begin
-                        demo_opcode <= 8'hEA;
-                    end  // NOP
-                endcase
-            end
-
-            if (switches[3]) begin
-                case (switches[2:0])
-                    3'b000: demo_opcode <= 8'hA9;
-                    3'b001: demo_opcode <= 8'h85;
-                    3'b010: demo_opcode <= 8'h69;
-                    3'b011: demo_opcode <= 8'h10;
-                    3'b100: demo_opcode <= 8'hAA;
-                    3'b101: demo_opcode <= 8'h4C;
-                    3'b110: demo_opcode <= 8'hC9;
-                    3'b111: demo_opcode <= 8'hEA;
-                endcase
-            end
-        end
-    end
+    // For Day 04, we just keep the debug outputs inactive.
+    assign led_load = 1'b0;
+    assign led_store = 1'b0;
+    assign led_arithmetic = 1'b0;
+    assign led_branch = 1'b0;
 
 endmodule
