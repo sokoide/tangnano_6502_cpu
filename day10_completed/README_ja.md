@@ -14,6 +14,7 @@
 ## 🧠 メモリ構成の注意
 
 Day 10 以降はプログラムを Gowin BSRAM で実装した RAM (`ram.sv`) から実行します。`rom.sv` の内容は起動時に RAM へコピーされます。
+これは `day10_completed/boot_loader.sv` で行っており、`boot_index` で `0x0200 + boot_index` を走査し、ブート中は `rom_addr` で ROM を選択、`ram_we/ram_din` で RAM に書き込み、完了後に `cpu_rst_n` を解除します。
 
 ## 🎯 学習目標
 
