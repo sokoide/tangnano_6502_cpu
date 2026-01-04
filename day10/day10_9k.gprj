@@ -7,10 +7,9 @@
     <FileList>
         <File path="top_9k.sv" type="file.verilog" enable="1"/>
         <File path="lcd_demo.sv" type="file.verilog" enable="1"/>
-        <File path="cpu.sv" type="file.verilog" enable="1"/>
-        <File path="rom.sv" type="file.verilog" enable="1"/>
         <File path="ram.sv" type="file.verilog" enable="1"/>
-        <File path="include/opcodes.svh" type="file.verilog" enable="1"/>
+        <File path="cpu.sv" type="file.verilog" enable="1"/>
+        <File path="rom.sv" type="file.verilog" enable="1"/>        <File path="include/opcodes.svh" type="file.verilog" enable="1"/>
         <File path="lcd/lcd.sv" type="file.verilog" enable="1"/>
         <File path="lcd/vram.sv" type="file.verilog" enable="1"/>
         <File path="lcd/font_rom.sv" type="file.verilog" enable="1"/>

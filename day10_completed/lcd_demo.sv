@@ -113,19 +113,31 @@ module lcd_demo (
 
     assign pc_enable = (counter == 24'd0);
 
-    logic [7:0] cpu_debug_a;
-    logic [7:0] cpu_debug_x;
-    logic [7:0] cpu_debug_y;
-    logic [7:0] cpu_debug_p;
-    logic [7:0] cpu_debug_s;
-    logic [7:0] cpu_data_out;
-    logic       cpu_write_en;
-    logic [7:0] ram_data_out;
-    logic [7:0] rom_data_out;
+    logic [ 7:0] cpu_debug_a;
+    logic [ 7:0] cpu_debug_x;
+    logic [ 7:0] cpu_debug_y;
+    logic [ 7:0] cpu_debug_p;
+    logic [ 7:0] cpu_debug_s;
+    logic [ 7:0] cpu_data_out;
+    logic        cpu_write_en;
+    logic [ 7:0] ram_data_out;
+    logic [ 7:0] rom_data_out;
+    logic [15:0] rom_addr;
+
+    // Boot init: copy ROM program into RAM so CPU runs from BSRAM.
+    localparam int BOOT_LEN = 256;
+    logic [$clog2(BOOT_LEN)-1:0] boot_index;
+    logic                        boot_done;
+    logic [                15:0] boot_addr;
+    logic                        boot_active;
+    logic                        cpu_rst_n;
+    logic [                14:0] ram_addr;
+    logic [                 7:0] ram_din;
+    logic                        ram_we;
 
     cpu u_cpu (
         .clk(MEMORY_CLK),
-        .rst_n(rst_n),
+        .rst_n(cpu_rst_n),
         .pc_enable(pc_enable),
         .address_bus(cpu_address_bus),
         .data_in(cpu_data_in),
@@ -141,26 +153,45 @@ module lcd_demo (
 
     // Memory (ROM)
     rom u_rom (
-        .addr(cpu_address_bus),
+        .addr(rom_addr),
         .data(rom_data_out)
     );
 
     // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(MEMORY_CLK),
-        .addr(font_addr),
-        .write_en(cpu_write_en && (!cpu_address_bus[15])),
-        .din(cpu_data_out),
+        .addr(ram_addr),
+        .write_en(ram_we),
+        .din(ram_din),
         .dout(ram_data_out)
     );
 
+    assign boot_addr = 16'h0200 + boot_index;
+    assign boot_active = !boot_done;
+    assign cpu_rst_n = rst_n && boot_done;
+    assign rom_addr = boot_active ? boot_addr : cpu_address_bus;
+    assign ram_addr = boot_active ? boot_addr[14:0] : cpu_address_bus[14:0];
+    assign ram_din = boot_active ? rom_data_out : cpu_data_out;
+    assign ram_we = boot_active ? 1'b1 : (cpu_write_en && (!cpu_address_bus[15]));
+
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            boot_index <= {($clog2(BOOT_LEN)) {1'b0}};
+            boot_done  <= 1'b0;
+        end else if (!boot_done) begin
+            if (boot_index == (BOOT_LEN - 1)) begin
+                boot_done <= 1'b1;
+            end else begin
+                boot_index <= boot_index + 1'b1;
+            end
+        end
+    end
+
     always_comb begin
-        if (cpu_address_bus >= 16'h0200 && cpu_address_bus <= 16'h7BFF) begin
-            cpu_data_in = rom_data_out;  // Program range
-        end else if (!cpu_address_bus[15]) begin
-            cpu_data_in = ram_data_out;  // ZP, Stack, Shadow VRAM
+        if (!cpu_address_bus[15]) begin
+            cpu_data_in = ram_data_out;
         end else begin
-            cpu_data_in = 8'h00;
+            cpu_data_in = rom_data_out;
         end
     end
 

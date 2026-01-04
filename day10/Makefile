@@ -13,7 +13,7 @@ $(info BASE='$(BASE)')
 $(info GWSH='$(GWSH)')
 
 COMMON_SRCS = top_core.sv lcd_demo.sv cpu.sv rom.sv ram.sv \
-	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
+	lcd/lcd.sv lcd/vlcd/font_rom.sv include/consts.svh include/opcodes.svh
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
@@ -75,7 +75,7 @@ sim-build: tools-check-sim
 		sim/Gowin_rPLL9_stub.sv \
 		sim/gowin_rpll40_stub.sv \
 	lcd/tb_tft.sv top_9k.sv lcd_demo.sv rom.sv ram.sv \
-	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
+	lcd/lcd.sv lcd/vlcd/font_rom.sv include/consts.svh include/opcodes.svh
 
 sim-cpu-build: tools-check-sim
 	@echo "[sim] Building CPU logic simulation with Verilator..."
