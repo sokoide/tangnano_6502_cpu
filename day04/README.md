@@ -26,6 +26,66 @@ Before proceeding, make sure you understand:
 - **Instruction Decoding**: Build a decoder to classify 8-bit opcodes into instruction categories (Load, Store, Branch, etc.).
 - **System Integration**: Understand the separation between board wrappers (`top_9k.sv`/`top_20k.sv`) and the logic core (`top_core.sv`).
 
+## 💡 Memory Map and VRAM
+
+When the CPU reads or writes data, the **Memory Map** defines which addresses are connected to which components (memory or peripherals). The memory map for the 6502 system we are building is as follows:
+
+### 6502 System Memory Map used in this Training
+
+| Address Range | Purpose | Description |
+| :--- | :--- | :--- |
+| `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
+| `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
+| `0x0200 - 0x7FFF` | Free RAM | General-purpose RAM for user programs and data |
+| `0x8000 - 0xDFFF` | Program ROM | Area storing the program code executed by the CPU |
+| `0xE000 - 0xE3FF` | Text VRAM | Area holding character codes (ASCII) for LCD display (1KB) |
+| `0xE400 - 0xFFFF` | I/O / Reserved | Reserved for I/O devices or future expansion |
+
+- **Program ROM (0x8000〜)**: The area where the program executed by the CPU is stored.
+- **Text VRAM (0xE000〜)**: A dedicated memory area for writing character codes to be displayed on the screen.
+
+### VRAM to LCD Mapping
+
+The LCD screen is 480x272 pixels. Dividing this by 8x16 pixel character units allows for a display of 60 columns × 17 rows (1020 characters total).
+
+Each **ASCII character code** written to an address in VRAM corresponds to a specific coordinate on the LCD.
+
+**Address Calculation:**
+`Display Address = 0xE000 + (Row Number * 60) + Column Number`
+
+```mermaid
+graph TD
+    subgraph "LCD Screen (60 cols x 17 rows)"
+        TL["(0,0)<br/>Addr: 0xE000"] --- TR["(59,0)<br/>Addr: 0xE03B"]
+        TL --- BL["(0,16)<br/>Addr: 0xE3C0"]
+        TR --- BR["(59,16)<br/>Addr: 0xE3FB"]
+    end
+```
+
+For example, writing `8'h41` (character 'A') to address `0xE000` will display 'A' in the top-left corner of the screen.
+
+### Character Rendering Pipeline
+
+The flow from when the CPU writes a character code to VRAM until it is actually displayed as pixels on the LCD panel is as follows:
+
+```mermaid
+graph TD
+    CPU[CPU] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
+
+    subgraph "LCD Controller (lcd.sv)"
+        VRAM -->|2. Read| Code[ASCII Code]
+        Coord[Pixel X, Y Counter] -->|3. Calc address from coords| VRAM
+        Code -->|4. Index Font and Row| FontROM[Font ROM<br/>Bitmap Data]
+        Coord -->|"5. Current scanline row (0-15)"| FontROM
+        FontROM -->|6. 8px dot pattern| Serial[Serializer]
+        Serial -->|7. Output RGB pixel-by-pixel| Panel[LCD Panel]
+    end
+```
+
+1. **VRAM**: Holds character codes ("what" character to display at "which" position).
+2. **Font ROM**: Holds bitmap (dot) information ("what" an 'A' looks like).
+3. **LCD Controller**: Scans the screen at high speed, pulling data from VRAM and Font ROM to determine the color of the pixel to be displayed at any given moment.
+
 ## 🛠️ Implementation Steps
 
 Follow these steps for Day 04. Refer to the `TODO` comments in each file.
@@ -44,7 +104,7 @@ graph TD
             AI[addr_in 16-bit]
             WE[Write Enables: a_write, x_write, etc.]
         end
-        
+
         subgraph "Register File (always_ff)"
             A[Accumulator A]
             X[Index Register X]
@@ -53,11 +113,11 @@ graph TD
             PC[Program Counter]
             P[Status Register]
         end
-        
+
         DI --> A & X & Y & SP & P
         AI --> PC
         WE -.-> A & X & Y & SP & PC & P
-        
+
         subgraph "Outputs"
             A --> reg_a
             X --> reg_x
@@ -78,10 +138,10 @@ graph TD
         Res[result 8-bit]
         Ops[operand_a, b]
         CarryIn[carry_in]
-        
+
         Res --> N[Flag N: Negative bit 7]
         Res --> Z[Flag Z: Zero if result == 0]
-        
+
         Ops & CarryIn --> Adder[Adder/Subtractor Logic]
         Adder --> C[Flag C: Carry out]
         Adder --> V[Flag V: Overflow bit]
@@ -112,11 +172,11 @@ Integrate the components into `top_core.sv`.
 graph TD
     subgraph "Top Core (top_core.sv)"
         TestCtrl[Test Sequence Controller]
-        
+
         TestCtrl -->|opcode| Decoder[simple_decoder]
         TestCtrl -->|data/addr, write| Regs[cpu_registers]
         TestCtrl -->|result, operands| Flags[flag_calculator]
-        
+
         Decoder -->|is_load, etc.| LEDs[Debug LEDs]
         Regs -->|reg_a, pc, etc.| LCD[LCD Demo / Debug Display]
         Flags -->|N, Z, C, V| Regs
