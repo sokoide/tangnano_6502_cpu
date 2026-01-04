@@ -127,7 +127,7 @@ module lcd_demo (
 
     // Memory (ROM)
     rom u_rom (
-        .addr(font_addr),
+        .addr(cpu_address_bus),
         .data(cpu_data_in)
     );
 
