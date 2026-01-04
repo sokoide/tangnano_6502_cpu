@@ -103,7 +103,7 @@ Setting up the environment and building the necessary debug tools.
 | **Day 01** | **Blinky LED**        | Environment setup and FPGA programming.                 |
 | **Day 02** | **4-bit ALU**         | Combinational logic and basic logical operations.       |
 | **Day 03** | **Traffic Light FSM** | Sequential logic and Finite State Machines.             |
-| **Day 04** | **Debug Foundation**  | LCD display circuit (BSRAM/pROM) and base register set. |
+| **Day 04** | **Debug Foundation**  | LCD display circuit (BSRAM/pROM).                       |
 
 ### Phase 2: Core CPU Implementation (Day 05-10)
 

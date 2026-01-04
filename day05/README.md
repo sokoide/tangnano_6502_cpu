@@ -7,9 +7,11 @@
 
 ## 📜 Overview
 
-In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the tools to visualize the internal state of the FPGA, it's finally time to dive into the design of the CPU itself.
+In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the "eyes" to project the internal state, it is finally time to start building the "body (CPU)" to be displayed on that screen.
 
-In Day 05, we will implement the **"Register Set"** for memory and the **"Program Counter (PC)"** to track the execution flow. These are the most fundamental building blocks for an autonomous CPU.
+In Day 05, we will implement the **"Register Set"** for memory and the **"Program Counter (PC)"** to track the execution flow.
+
+ These are the most fundamental building blocks for an autonomous CPU.
 
 ## 🎯 Learning Objectives
 

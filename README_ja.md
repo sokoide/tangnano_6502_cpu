@@ -103,7 +103,7 @@ graph TD
 | **Day 01** | **L チカ**       | 開発環境の構築と FPGA への書き込み                    |
 | **Day 02** | **4-bit ALU**    | 組み合わせ回路の基本と論理演算                        |
 | **Day 03** | **信号機 FSM**   | 順序回路と状態遷移 (Finite State Machine)             |
-| **Day 04** | **デバッグ基盤** | LCD 表示回路（BSRAM/pROM 使用）とレジスタセットの基礎 |
+| **Day 04** | **デバッグ基盤** | LCD 表示回路（BSRAM/pROM 使用）の基礎                 |
 
 ### Phase 2: CPU の実装開始 (Day 05-10)
 

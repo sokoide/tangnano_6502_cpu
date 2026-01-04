@@ -1,60 +1,62 @@
-# Day 05: CPU Skeleton & NOP Instruction
+# Day 05: The First Step of CPU (Registers & Program Counter)
 
 ---
 
 🌐 Available languages:
-[English](./README.md) | [日本語](./README_ja.md)
+[English](./README.md) | [日本語](./日本語/README_ja.md)
 
 ## 📜 Overview
 
-It's time to start implementing the CPU! The goal of Day 05 is to implement the most fundamental component of a CPU, the **Program Counter (PC)**, and execute the **`NOP`** (No Operation) instruction.
+In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the "eyes" to project the internal state, it is finally time to start building the "body (CPU)" to be displayed on that screen.
 
-We will connect the CPU's PC value to the LCD display circuit created in Day 04 to visually verify that the PC increments with every clock cycle.
+Implementation of the CPU has begun! The goal of Day 05 was to
+
+ implement the most fundamental elements of a CPU: the **Register Set** and the **Program Counter (PC)**, and to execute the **`NOP`** (No Operation) instruction.
+
+We connected the CPU's internal state to the LCD display circuit built on Day 04 to visually verify that the PC increments with every clock cycle.
 
 ## 🎯 Learning Objectives
 
-- **Create CPU Module**: Create a new `cpu.sv` file accepting clock and reset inputs.
-- **Program Counter (PC)**: Implement the register that holds the address of the next instruction.
-- **Instruction Fetch**: Build the mechanism to read instruction codes from memory (ROM).
-- **NOP Instruction**: Decode opcode `0xEA` (NOP) and increment the PC.
+- **Implement 6502 Register Set**: Create `cpu_registers.sv` to hold the A, X, Y, SP, and P registers.
+- **Program Counter (PC)**: Implement a 16-bit register that holds the address of the next instruction.
+- **Automated Execution Cycle**: Build the basic cycle of incrementing the PC in preparation for fetching instructions from memory.
+- **Understand NOP**: Experience the minimum unit of automatic execution: "Do nothing, but take one step forward."
 
 ## 🏗️ Architecture
 
-The structure is very simple for now.
+We defined the "Memory" and "Location" of the CPU.
 
 ```mermaid
 graph LR
-    CLK --> CPU
-    RESET --> CPU
     subgraph CPU
         PC[Program Counter]
+        REGS[Registers: A, X, Y, SP, P]
     end
-    CPU -- PC Address --> ROM
-    ROM -- Data (0xEA) --> CPU
-    CPU -- Debug Info (PC) --> LCD
+    CPU -- Address (PC) --> ROM
+    ROM -- Data --> CPU
+    CPU -- Debug (PC, Registers) --> LCD
 ```
 
-## 🛠️ Implementation Steps
+## 🛠️ Implementation Summary
 
-1. **Create `cpu.sv`**:
-    - Inputs: `clk`, `reset`
-    - Outputs: `address_bus` (16bit), `data_in` (8bit, input), `debug_pc` (16bit, for LCD)
-2. **Implement PC**:
-    - Initialize to `0x8000` (or your preferred entry point) on reset.
-    - Logic: `PC <= PC + 1` on every clock cycle.
-3. **Integrate into Top Module**:
-    - Modify `lcd_demo.sv` to instantiate your `cpu`.
-    - Update the VRAM writing logic to display the `debug_pc` value in hexadecimal on the LCD.
+1. **Implement `cpu_registers.sv`**:
+    - Described a synchronous register file using `always_ff`.
+    - Set reset values: SP=0xFF, PC=0x8000, P=0x34.
+2. **Implement `cpu.sv`**:
+    - Wrote logic to increment the PC by `1'b1` synchronized with the `pc_enable` signal.
+3. **Integration in `top_core.sv`**:
+    - Instantiated and connected `cpu` and `cpu_registers`.
+    - Updated the LCD to display PC and register values.
 
-## 💡 Why NOP?
+## 💡 Technical Insight: Why NOP?
 
-`NOP` (No Operation) does nothing, but for the CPU, it involves the fundamental cycle of "Fetch Instruction -> Decode -> Increment PC". Once this works, the heart of your CPU has started beating.
+While `NOP` (No Operation) does nothing, for the CPU, it involves the fundamental cycle of "Fetch -> Decode -> Increment PC". Once this works, the "legs" of your CPU are ready to walk.
 
 ## 🧪 Verification
 
 - **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
-- **FPGA**: If the PC value appears on the LCD and counts up rapidly, you've succeeded (if it's too fast to read, try displaying the upper bits or dividing the clock).
+- **FPGA**: Verify that the PC value appears on the LCD and counts up automatically.
 
 ## 🎯 Preview for Tomorrow
 
-In Day 06, we will implement our first real instruction that manipulates data: `LDA #imm` (Load Accumulator with Immediate Value). This will involve adding the **A register** and handling instruction operands.
+On Day 06, we will implement the first real instruction that manipulates data: `LDA #imm`. We will focus on the **Instruction Decoder** to understand opcode meanings and the **Flag Calculator** to evaluate operation results.

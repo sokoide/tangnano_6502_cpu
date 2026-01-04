@@ -1,72 +1,69 @@
-# Day 06: Memory Access & LDA Instruction
+# Day 06: Understanding Instructions (LDA & Flags)
 
 ---
 
 🌐 Available languages:
-[English](./README.md) | [日本語](./README_ja.md)
+[English](./README.md) | [日本語](./日本語/README_ja.md)
 
 ## 📜 Overview
 
-In Day 06, we will breathe more life into our CPU by implementing its first data-handling instruction: **`LDA #imm`** (Load Accumulator with Immediate value). This involves adding the **Accumulator (A register)**, one of the most important registers in the 6502.
+On Day 06, we gave our CPU its first "intelligence" by implementing the **`LDA #imm`** (Load Accumulator with Immediate value) instruction. This involved building an **Instruction Decoder** and **Flag Calculator** to finally put the **Accumulator (A register)** prepared on Day 05 into practical use.
 
-We will also implement the logic to fetch an 8-bit _operand_ that follows the instruction code in memory.
+Today, the CPU evolved from simply "stepping forward" to "manipulating data according to instructions."
 
 ## 🎯 Learning Objectives
 
-- **Implement the Accumulator (A)**: Add the primary 8-bit register for arithmetic and logic operations.
-- **Architectural Structure**: Introduce `opcodes.svh` for symbolic instruction names and `rom.sv` for memory separation.
-- **Instruction Fetch & Decode**: Implement a state machine to fetch opcodes and operands independently.
-- **Handle `LDA #imm` & `NOP`**: Decode and execute basic instructions using the new structure.
-- **Visualize on LCD**: Display both `PC` and `A` register values.
+- **Implement Instruction Decoder**: Create `simple_decoder.sv` to classify 8-bit opcodes into categories.
+- **Integrate Flag Calculator**: Implement `flag_calculator.sv` to compute Zero (Z) and Negative (N) flags based on results.
+- **Introduce State Machines**: Manage the multi-cycle "Fetch → Decode → Execute" flow.
+- **Immediate Addressing**: Understand the mechanism of loading data that directly follows the opcode in memory.
 
 ## 🏗️ Architecture
 
-We add the A register and a simple state machine to manage the multi-cycle instruction fetch.
+The decoder and flag logic are now integrated within the CPU core.
 
 ```mermaid
-graph LR
+graph TD
     subgraph CPU
         PC[Program Counter]
-        A_REG[A Register]
-        DECODER[Instruction Decoder]
-
-        PC -- Address --> ROM
-        ROM -- Instruction --> DECODER
-        DECODER -- Controls --> A_REG
-        ROM -- Operand --> A_REG
+        DEC[Instruction Decoder]
+        REGS[Registers]
+        ALU[ALU / Flag Calc]
+        
+        PC --> MEM[Memory/ROM]
+        MEM -->|Opcode| DEC
+        DEC -->|Control| REGS
+        MEM -->|Data| REGS
+        REGS --> ALU
+        ALU -->|N, Z, C, V| REGS
     end
-    CPU -- Debug Info (A) --> LCD
 ```
 
-## 🛠️ Implementation Steps
+## 🛠️ Implementation Summary
 
-1. **Define Opcodes**:
-    - Create `include/opcodes.svh` and define `OP_LDA_IMM = 8'hA9` and `OP_NOP = 8'hEA`.
-    - This improves code readability as we add more instructions.
-2. **Separate Memory (ROM)**:
-    - Create `rom.sv` to handle instruction storage, separating it from CPU logic.
-3. **Implement CPU State Machine**:
-    - Introduce states like `STATE_FETCH_OPCODE` and `STATE_FETCH_OPERAND` in `cpu.sv`.
-    - Fetch `data_in` from the new ROM module.
-4. **Update LCD Display**:
-    - Add `debug_a` output and update the display logic to show `PC: XXXX A: XX`.
+1. **Implement `simple_decoder.sv`**:
+    - Used a `case` statement to recognize `0xA9` as `is_load`.
+2. **Implement `flag_calculator.sv`**:
+    - Described combinational logic where Z=1 if the result is 0, and N=1 if bit 7 is 1.
+3. **Extend `cpu.sv`**:
+    - Implemented a 2-state machine (`STATE_FETCH_OPCODE` and `STATE_FETCH_OPERAND`).
+    - Handled the `LDA #imm` instruction by incrementing PC by +2 and updating the Accumulator.
 
-## 💡 What is "Immediate Addressing"?
+## 💡 Technical Insight: What is "Immediate Addressing"?
 
-"Immediate" means the data the instruction needs is located _immediately_ after the instruction code in memory.
+"Immediate" means the data the instruction needs is located *immediately* after the instruction code in memory.
 
 Example in memory:
 
-- Address `0x8000`: `0xA9` (LDA #imm instruction)
-- Address `0x8001`: `0x42` (The value to load)
+- `0x8000`: `0xA9` (LDA instruction)
+- `0x8001`: `0x42` (The value to load)
 
-When this is executed, the A register will contain the value `0x42`.
+When the decoder finds `0xA9`, the CPU decides to read the value from `0x8001` in the next cycle and put it into the A register. This is the foundation of CPU execution.
 
 ## 🧪 Verification
 
-- **Test Program**: Create a simple ROM that contains `A9 42` (LDA #$42). You can add `EA` (NOP) instructions after it.
-- **Simulation**: Verify that after two clock cycles, the `A` register holds the value `0x42`.
-- **FPGA**: Check the LCD. It should display "A: 42" (or whatever value you chose). The PC should stop incrementing after fetching the operand, or continue if you have more instructions.
+- **Test Program**: Verified with a ROM containing `A9 42` (LDA #$42).
+- **FPGA**: Confirmed that "A: 42" appears on the LCD and that the Negative and Zero flags update correctly.
 
 ## 🎯 Preview for Tomorrow
 

@@ -23,7 +23,7 @@ Before proceeding, make sure you understand:
 
 - Implement the **Instruction Decoder (simple_decoder.sv)** to classify opcodes into categories.
 - Implement the **Flag Calculator (flag_calculator.sv)** to derive status from operation results.
-- Implement the **LDA (Load Accumulator) instruction** to automate data movement from memory (immediate) to registers.
+- Implement the **LDA (Load Accumulator) instruction** to enable loading data into the Accumulator (A) implemented in Day 05.
 - Understand the basic cycle of **Instruction Fetch** and **Decode**.
 
 ## 💡 Stepping Up: From Day 05 to Day 06
