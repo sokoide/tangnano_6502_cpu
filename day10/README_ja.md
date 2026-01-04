@@ -16,6 +16,20 @@
 Day 10 以降はプログラムを Gowin BSRAM で実装した RAM (`ram.sv`) から実行します。`rom.sv` の内容は起動時に RAM へコピーされます。
 これは `day10/boot_loader.sv` で行っており、`boot_index` で `0x0200 + boot_index` を走査し、ブート中は `rom_addr` で ROM を選択、`ram_we/ram_din` で RAM に書き込み、完了後に `cpu_rst_n` を解除します。
 
+Day 10 以降は Zero Page/Stack/Program RAM がすべて RAM になるため、CPU は `0x0000-0x7FFF` を読み書きできます。
+
+### 6502 システムのメモリマップ（この教材で使用）
+
+| アドレス範囲 | 用途 | 説明 |
+| :--- | :--- | :--- |
+| `0x0000 - 0x00FF` | Zero Page | 高速アクセス用の 256 バイト領域 |
+| `0x0100 - 0x01FF` | Stack | スタックポインタ (SP) が使う領域 |
+| `0x0200 - 0x7BFF` | Program RAM | プログラム/データの主記憶 (30.5KB) |
+| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU 読み取り用 VRAM (シャドウ領域), 1KB |
+| `0x8000 - 0xDFFF` | (未使用) | 将来拡張のために予約 |
+| `0xE000 - 0xE3FF` | Text VRAM | LCD 表示用文字コード (ASCII), 1KB |
+| `0xE400 - 0xFFFF` | (未使用) | I/O または拡張用に予約 |
+
 ## 🔙 復習: Day 09
 
 次に進む前に、以下を理解しているか確認してください:

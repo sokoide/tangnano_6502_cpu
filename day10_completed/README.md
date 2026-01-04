@@ -16,6 +16,20 @@ The stack allows the CPU to save its "return address" before jumping to a functi
 From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`). A small boot copy loads the `rom.sv` program into RAM before execution.
 This happens in `day10_completed/boot_loader.sv`: `boot_index` iterates over `0x0200 + boot_index`, `rom_addr` selects ROM during boot, and `ram_we/ram_din` write the ROM bytes into RAM before releasing `cpu_rst_n`.
 
+From Day 10 onward, Zero Page, Stack, and Program RAM are all RAM-backed, so the CPU can read and write across `0x0000-0x7FFF`.
+
+### 6502 System Memory Map (used in this Training)
+
+| Address Range | Purpose | Description |
+| :--- | :--- | :--- |
+| `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
+| `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
+| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
+| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
+| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
+| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
+| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
+
 ## 🎯 Learning Objectives
 
 - **The Stack Mechanism**: Understand Last-In, First-Out (LIFO) structures.
