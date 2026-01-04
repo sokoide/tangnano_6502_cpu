@@ -57,14 +57,14 @@ module top_core (
     // この段階では、簡略化のためLCD_CLK(約9MHz)をCPUクロックとして使用します。
     // CPUレジスタ(A, X, Y, PC, SP, P)は6502の内部状態を保持します。
 
-    logic [ 7:0] test_opcode;
+    logic [ 7:0] demo_opcode;
     /* verilator lint_off UNUSEDSIGNAL */
     logic [15:0] reg_pc;
     logic [7:0] reg_a, reg_x, reg_y, reg_sp, reg_p;
-    
+
     logic a_write, x_write, y_write, sp_write, pc_write, p_write;
-    logic [ 7:0] test_data;
-    logic [15:0] test_addr;
+    logic [ 7:0] demo_data;
+    logic [15:0] demo_addr;
 
     cpu_registers registers (
         .clk(LCD_CLK),
@@ -75,8 +75,8 @@ module top_core (
         .sp_write(sp_write),  // Enable write to SP / SPへの書き込み有効
         .pc_write(pc_write),  // Enable write to PC / PCへの書き込み有効
         .p_write(p_write),  // Enable write to P / Pレジスタへの書き込み有効
-        .data_in(test_data),  // 8-bit data input / 8ビットデータ入力
-        .addr_in(test_addr),  // 16-bit address input (for PC) / 16ビットアドレス入力(PC用)
+        .data_in(demo_data),  // 8-bit data input / 8ビットデータ入力
+        .addr_in(demo_addr),  // 16-bit address input (for PC) / 16ビットアドレス入力(PC用)
         .reg_a(reg_a),
         .reg_x(reg_x),
         .reg_y(reg_y),
@@ -88,16 +88,16 @@ module top_core (
     // -------------------------------------------------------------------------
     // 3. Instruction Decoder / 命令デコーダ
     // -------------------------------------------------------------------------
-    // Decodes the current 'test_opcode' and drives the LEDs based on category.
+    // Decodes the current 'demo_opcode' and drives the LEDs based on category.
     // This allows us to visually verify that the decoder correctly identifies
     // the current instruction being executed (or tested).
     //
-    // 現在の'test_opcode'をデコードし、命令のカテゴリに応じてLEDを駆動します。
+    // 現在の'demo_opcode'をデコードし、命令のカテゴリに応じてLEDを駆動します。
     // これにより、デコーダが現在実行(またはテスト)されている命令を正しく
     // 識別していることを視覚的に確認できます。
     /* verilator lint_off PINCONNECTEMPTY */
     simple_decoder decoder (
-        .opcode       (test_opcode),
+        .opcode       (demo_opcode),
         .is_load      (led_load),        // LDA, LDX, LDY
         .is_store     (led_store),       // STA, STX, STY
         .is_transfer  (),
@@ -111,7 +111,7 @@ module top_core (
         .is_stack     (),
         .is_nop       ()
     );
-    
+
 
     // -------------------------------------------------------------------------
     // 4. Flag Calculator / フラグ計算
@@ -123,14 +123,14 @@ module top_core (
     logic [7:0] dummy_res;
     /* verilator lint_off UNUSEDSIGNAL */
     logic dummy_c_in, dummy_c_out, dummy_v_out, dummy_z_out, dummy_n_out;
-    
-    assign dummy_res  = test_data;
+
+    assign dummy_res  = demo_data;
     assign dummy_c_in = 1'b0;
 
     flag_calculator u_flags (
         .result(dummy_res),
         .operand_a(reg_a),
-        .operand_b(test_data),
+        .operand_b(demo_data),
         .operation(1'b0),  // ADC
         .carry_in(dummy_c_in),
         .flag_n(dummy_n_out),
@@ -140,7 +140,7 @@ module top_core (
     );
 
     // -------------------------------------------------------------------------
-    // 5. Test Sequence Controller / テストシーケンス制御
+    // 5. Demo Sequence Controller / デモシーケンス制御
     // -------------------------------------------------------------------------
     // A simple state machine that rotates through several opcodes and
     // register writes every ~1.8 seconds (2^24 clock cycles) for observation.
@@ -149,65 +149,65 @@ module top_core (
     // 約1.8秒毎(2^24クロック)にオペコードとレジスタへの書き込みを切り替え、
     // 実機での動作確認を容易にするための簡易ステートマシンです。
     // これにより、高速なキャプチャ機器がなくてもLEDやLCDの変化を目視で確認できます。
-    logic [24:0] test_counter;
-    logic [ 2:0] test_state;
+    logic [24:0] demo_counter;
+    logic [ 2:0] demo_state;
 
     always_ff @(posedge LCD_CLK or negedge rst_n) begin
         if (!rst_n) begin
-            test_counter <= 25'b0;
-            test_state <= 3'b000;
+            demo_counter <= 25'b0;
+            demo_state <= 3'b000;
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b0;
-            test_opcode <= 8'hEA;  // NOP (No Operation)
+            demo_opcode <= 8'hEA;  // NOP (No Operation)
         end else begin
-            test_counter <= test_counter + 1;
+            demo_counter <= demo_counter + 1;
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
 
-            if (test_counter[24]) begin
+            if (demo_counter[24]) begin
                 // Transition to the next test state periodically.
                 // 定期的に次のテストステートへ遷移します。
-                test_counter <= 25'b0;
-                test_state   <= test_state + 1;
+                demo_counter <= 25'b0;
+                demo_state   <= demo_state + 1;
 
-                case (test_state)
+                case (demo_state)
                     // Write 0x55 to A (LDA Immediate)
                     3'b000: begin
                         a_write <= 1'b1;
-                        test_data <= 8'h55;
-                        test_opcode <= 8'hA9;
+                        demo_data <= 8'h55;
+                        demo_opcode <= 8'hA9;
                     end
                     // Write 0xAA to X (LDX Immediate)
                     3'b001: begin
                         x_write <= 1'b1;
-                        test_data <= 8'hAA;
-                        test_opcode <= 8'hA2;
+                        demo_data <= 8'hAA;
+                        demo_opcode <= 8'hA2;
                     end
                     // Write 0x33 to Y (LDY Immediate)
                     3'b010: begin
                         y_write <= 1'b1;
-                        test_data <= 8'h33;
-                        test_opcode <= 8'hA0;
+                        demo_data <= 8'h33;
+                        demo_opcode <= 8'hA0;
                     end
                     // Jump to 0x1234 (JMP Absolute)
                     3'b011: begin
                         pc_write <= 1'b1;
-                        test_addr <= 16'h1234;
-                        test_opcode <= 8'h4C;
+                        demo_addr <= 16'h1234;
+                        demo_opcode <= 8'h4C;
                     end
                     // STA (Store A) - Lit LED Store
                     3'b100: begin
-                        test_opcode <= 8'h85;
+                        demo_opcode <= 8'h85;
                     end
                     // ADC (Add with Carry) - Lit LED Arithmetic
                     3'b101: begin
-                        test_opcode <= 8'h69;
+                        demo_opcode <= 8'h69;
                     end
                     // BPL (Branch on Plus) - Lit LED Branch
                     3'b110: begin
-                        test_opcode <= 8'h10;
+                        demo_opcode <= 8'h10;
                     end
                     // NOP (No Operation)
                     3'b111: begin
-                        test_opcode <= 8'hEA;
+                        demo_opcode <= 8'hEA;
                     end
                 endcase
             end
@@ -217,14 +217,14 @@ module top_core (
             // switch[3]がONの場合、switch[2:0]に基づいてオペコードを強制指定します。
             if (switches[3]) begin
                 case (switches[2:0])
-                    3'b000: test_opcode <= 8'hA9;  // LDA
-                    3'b001: test_opcode <= 8'h85;  // STA
-                    3'b010: test_opcode <= 8'h69;  // ADC
-                    3'b011: test_opcode <= 8'h10;  // BPL
-                    3'b100: test_opcode <= 8'hAA;  // TAX
-                    3'b101: test_opcode <= 8'h4C;  // JMP
-                    3'b110: test_opcode <= 8'hC9;  // CMP
-                    3'b111: test_opcode <= 8'hEA;  // NOP
+                    3'b000: demo_opcode <= 8'hA9;  // LDA
+                    3'b001: demo_opcode <= 8'h85;  // STA
+                    3'b010: demo_opcode <= 8'h69;  // ADC
+                    3'b011: demo_opcode <= 8'h10;  // BPL
+                    3'b100: demo_opcode <= 8'hAA;  // TAX
+                    3'b101: demo_opcode <= 8'h4C;  // JMP
+                    3'b110: demo_opcode <= 8'hC9;  // CMP
+                    3'b111: demo_opcode <= 8'hEA;  // NOP
                 endcase
             end
         end

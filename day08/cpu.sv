@@ -22,7 +22,7 @@ module cpu (
 
     typedef enum logic [2:0] {
         S_FETCH_OPCODE,
-        S_FETCH_ADDR,      // Fetch zero page address / ゼロページアドレスを取得
+        S_FETCH_ADDR,  // Fetch zero page address / ゼロページアドレスを取得
         S_READ_MEM,        // Read data from that address / そのアドレスからデータを読み出す
         S_EXECUTE_LDA_IMM
     } state_t;

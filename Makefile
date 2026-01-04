@@ -23,8 +23,8 @@ test:
 
 format:
 	@echo "Formatting all projects"
-	npx markdownlint "**/*.md" --fix
-	find . $(SVFILES) -print0 | xargs -0 verible-verilog-format --inplace --indentation_spaces=4 --column_limit=100
+	npx markdownlint "**/*.md" --ignore "conductor/**" --fix
+	find . $(SVFILES) -not -path "./conductor/*" -print0 | xargs -0 verible-verilog-format --inplace --indentation_spaces=4 --column_limit=100
 
 
 clean:

@@ -25,20 +25,20 @@ module top_core (
 );
 
     // Internal signals
-    logic [ 7:0] test_opcode;
+    logic [ 7:0] demo_opcode;
     logic [15:0] reg_pc;
     logic [7:0] reg_a, reg_x, reg_y, reg_sp, reg_p;
 
     // Test sequence counter
-    logic [24:0] test_counter;
-    logic [ 2:0] test_state;
+    logic [24:0] demo_counter;
+    logic [ 2:0] demo_state;
 
     // Register control signals
     logic a_write, x_write, y_write, sp_write, pc_write, p_write;
 
     // Test data
-    logic [ 7:0] test_data;
-    logic [15:0] test_addr;
+    logic [ 7:0] demo_data;
+    logic [15:0] demo_addr;
 
     // 6502 Register Set
     cpu registers (
@@ -55,7 +55,7 @@ module top_core (
 
     // Simple instruction decoder
     simple_decoder decoder (
-        .opcode       (test_opcode),
+        .opcode       (demo_opcode),
         .is_load      (led_load),
         .is_store     (led_store),
         .is_transfer  (),                // Not used in this demo
@@ -73,67 +73,67 @@ module top_core (
     // Test sequence controller
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            test_counter <= 25'b0;
-            test_state <= 3'b000;
+            demo_counter <= 25'b0;
+            demo_state <= 3'b000;
             a_write <= 1'b0;
             x_write <= 1'b0;
             y_write <= 1'b0;
             sp_write <= 1'b0;
             pc_write <= 1'b0;
             p_write <= 1'b0;
-            test_data <= 8'h00;
-            test_addr <= 16'h0000;
-            test_opcode <= 8'hEA;  // NOP
+            demo_data <= 8'h00;
+            demo_addr <= 16'h0000;
+            demo_opcode <= 8'hEA;  // NOP
         end else begin
-            test_counter <= test_counter + 1;
+            demo_counter <= demo_counter + 1;
 
             // Reset all write signals
             {a_write, x_write, y_write, sp_write, pc_write, p_write} <= 6'b000000;
 
             // State machine for testing registers
-            if (test_counter[24]) begin  // Slow state changes
-                test_counter <= 25'b0;
-                test_state   <= test_state + 1;
+            if (demo_counter[24]) begin  // Slow state changes
+                demo_counter <= 25'b0;
+                demo_state   <= demo_state + 1;
 
-                case (test_state)
+                case (demo_state)
                     3'b000: begin  // Test A register
                         a_write <= 1'b1;
-                        test_data <= 8'h55;
-                        test_opcode <= 8'hA9;  // LDA immediate
+                        demo_data <= 8'h55;
+                        demo_opcode <= 8'hA9;  // LDA immediate
                     end
 
                     3'b001: begin  // Test X register
                         x_write <= 1'b1;
-                        test_data <= 8'hAA;
-                        test_opcode <= 8'hA2;  // LDX immediate
+                        demo_data <= 8'hAA;
+                        demo_opcode <= 8'hA2;  // LDX immediate
                     end
 
                     3'b010: begin  // Test Y register
                         y_write <= 1'b1;
-                        test_data <= 8'h33;
-                        test_opcode <= 8'hA0;  // LDY immediate
+                        demo_data <= 8'h33;
+                        demo_opcode <= 8'hA0;  // LDY immediate
                     end
 
                     3'b011: begin  // Test PC
                         pc_write <= 1'b1;
-                        test_addr <= 16'h1234;
-                        test_opcode <= 8'h4C;  // JMP absolute
+                        demo_addr <= 16'h1234;
+                        demo_opcode <= 8'h4C;  // JMP absolute
                     end
 
                     3'b100: begin  // Test store instruction
-                        test_opcode <= 8'h85;  // STA zero page
+                        demo_opcode <= 8'h85;  // STA zero page
                     end
 
                     3'b101: begin  // Test arithmetic instruction
-                        test_opcode <= 8'h69;  // ADC immediate
+                        demo_opcode <= 8'h69;  // ADC immediate
                     end
 
                     3'b110: begin  // Test branch instruction
-                        test_opcode <= 8'h10;  // BPL
+                        demo_opcode <= 8'h10;  // BPL
                     end
 
                     3'b111: begin  // Reset to beginning
-                        test_opcode <= 8'hEA;  // NOP
+                        demo_opcode <= 8'hEA;  // NOP
                     end
                 endcase
             end
@@ -141,14 +141,14 @@ module top_core (
             // Switch-controlled opcodes for manual testing
             if (switches[3]) begin
                 case (switches[2:0])
-                    3'b000: test_opcode <= 8'hA9;  // LDA immediate
-                    3'b001: test_opcode <= 8'h85;  // STA zero page
-                    3'b010: test_opcode <= 8'h69;  // ADC immediate
-                    3'b011: test_opcode <= 8'h10;  // BPL
-                    3'b100: test_opcode <= 8'hAA;  // TAX
-                    3'b101: test_opcode <= 8'h4C;  // JMP absolute
-                    3'b110: test_opcode <= 8'hC9;  // CMP immediate
-                    3'b111: test_opcode <= 8'hEA;  // NOP
+                    3'b000: demo_opcode <= 8'hA9;  // LDA immediate
+                    3'b001: demo_opcode <= 8'h85;  // STA zero page
+                    3'b010: demo_opcode <= 8'h69;  // ADC immediate
+                    3'b011: demo_opcode <= 8'h10;  // BPL
+                    3'b100: demo_opcode <= 8'hAA;  // TAX
+                    3'b101: demo_opcode <= 8'h4C;  // JMP absolute
+                    3'b110: demo_opcode <= 8'hC9;  // CMP immediate
+                    3'b111: demo_opcode <= 8'hEA;  // NOP
                 endcase
             end
         end

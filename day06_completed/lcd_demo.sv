@@ -19,7 +19,7 @@ module lcd_demo (
     logic [7:0] font_data;
     /* verilator lint_off UNUSEDSIGNAL */
     logic vsync;
-    
+
 
 `ifdef VERILATOR
     // Simulation path: keep everything in the PixelClk domain with simple models.

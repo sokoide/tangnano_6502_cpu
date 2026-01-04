@@ -123,7 +123,7 @@ cpu dut (
             for (i = 0; i < length; i++) begin
                 // This would need to be implemented based on how boot_program is loaded
                 // For now, we'll modify the included boot_program
-                // program[i] = test_data[i]; // Implementation placeholder
+                // program[i] = demo_data[i]; // Implementation placeholder
             end
         end
     endtask

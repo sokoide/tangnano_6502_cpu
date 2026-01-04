@@ -167,6 +167,7 @@ Implement decoding logic using a `case` statement to translate 8-bit opcodes int
 #### 6502 Instruction Example: `0xA9` (LDA Immediate)
 
 6502 instructions consist of 1 to 3 bytes:
+
 - **1st Byte**: **Opcode** (The type of instruction. e.g., `0xA9` is "Load Accumulator")
 - **2nd & 3rd Bytes**: **Operand** (Data or address)
 
@@ -179,11 +180,11 @@ Integrate the components into `top_core.sv`.
 ```mermaid
 graph TD
     subgraph "Top Core (top_core.sv)"
-        TestCtrl[Test Sequence Controller]
+        DemoCtrl[Demo Sequence Controller]
 
-        TestCtrl -->|opcode| Decoder[simple_decoder]
-        TestCtrl -->|data/addr, write| Regs[cpu_registers]
-        TestCtrl -->|result, operands| Flags[flag_calculator]
+        DemoCtrl -->|opcode| Decoder[simple_decoder]
+        DemoCtrl -->|data/addr, write| Regs[cpu_registers]
+        DemoCtrl -->|result, operands| Flags[flag_calculator]
 
         Decoder -->|is_load, etc.| LEDs[Debug LEDs]
         Regs -->|reg_a, pc, etc.| LCD[LCD Demo / Debug Display]
@@ -193,26 +194,20 @@ graph TD
 
 1. **`top_core.sv`**:
     - Instantiate `lcd_demo` to enable screen output.
-    - Instantiate `cpu_registers` and `simple_decoder`, connecting them to the test signals.
+    - Instantiate `cpu_registers` and `simple_decoder`, connecting them to the demo signals.
     - Connect decoder outputs to the board LEDs (`led_load`, etc.) for verification.
 
-#### Role of the Test Circuit (Test Sequence Controller)
+#### Role of the Demo Circuit (Demo Sequence Controller)
 
-The bottom of `top_core.sv` includes logic with names like `test_counter` and `test_state`. There are specific reasons why this code, which runs on the actual FPGA, is labeled as `test`:
+The bottom of `top_core.sv` includes logic with names like `demo_counter` and `demo_state`. These components serve essential roles in providing the "visualization" features of this educational board:
 
-
-
-1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This test circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
+1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This demo circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
 
 2. **Human-Readable Speed**: A real CPU runs at several MHz, far too fast for the human eye to track LED blinks or LCD updates. This circuit purposefully switches states every ~1.8 seconds, making it possible to visually verify the operation.
 
-3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `test_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
-
-
+3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `demo_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
 
 In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware.
-
-
 
 ### Step 3: Verification
 
