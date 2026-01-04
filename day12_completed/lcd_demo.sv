@@ -114,19 +114,19 @@ module lcd_demo (
     logic [15:0] rom_addr;
 
     // Boot init: copy ROM program into RAM so CPU runs from BSRAM.
-    localparam int BOOT_LEN = 10;
-    logic [ 3:0] boot_index;
-    logic        boot_done;
-    logic [15:0] boot_addr;
-    logic        boot_active;
-    logic        cpu_rst_n;
-    logic [14:0] ram_addr;
-    logic [ 7:0] ram_din;
-    logic        ram_we;
+    localparam int BOOT_LEN = 256;
+    logic [$clog2(BOOT_LEN)-1:0] boot_index;
+    logic                        boot_done;
+    logic [                15:0] boot_addr;
+    logic                        boot_active;
+    logic                        cpu_rst_n;
+    logic [                14:0] ram_addr;
+    logic [                 7:0] ram_din;
+    logic                        ram_we;
 
     // Slow down PC increment for visual debugging (if on FPGA)
-    logic [23:0] counter;
-    logic        pc_enable;
+    logic [                23:0] counter;
+    logic                        pc_enable;
 
 `ifdef VERILATOR
     assign pc_enable = 1;  // Run full speed in simulation
