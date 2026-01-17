@@ -27,21 +27,12 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 
 **Linux (Ubuntu/Debian):**
 
-- To install prerequisites via `apt`:
-
 ```bash
 sudo apt update
 sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
 sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
-```
-
-- Or, use the Linux version of `homebrew`:
-
-```bash
-brew update
-brew install srecord cc65 golang gtkwave verilator openssl@3
 ```
 
 **GoWin EDA:**

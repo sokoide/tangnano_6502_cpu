@@ -11,15 +11,14 @@
 
 **macOS:**
 
-- Install
+- インストール
 
 ```bash
 brew update
 brew install srecord cc65 golang gtkwave verilator openssl@3
 ```
 
-- If you already have homebrew, make sure if it's aarch64 version for Apple Silicon, or intel version for Intel CPU
-- If there is a mismatch, reinstall your homebrew
+- すでに homebrew がインストールされている場合、Apple Silicon / Intel version を確認し、あなたの Mac の CPU とミスマッチがあったら homebrew を再インストールしてください
 
 ```bash
 ❯ brew --prefix
@@ -29,21 +28,12 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 
 **Linux (Ubuntu/Debian):**
 
-- To install prereqs by `apt`
-
 ```bash
 sudo apt update
 sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
 sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
-```
-
-- Or, use Linux version of `homebrew`
-
-```bash
-brew update
-brew install srecord cc65 golang gtkwave verilator openssl@3
 ```
 
 **GoWin EDA:**
