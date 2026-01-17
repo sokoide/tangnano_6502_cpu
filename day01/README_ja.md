@@ -181,6 +181,7 @@ make BOARD=9k download   # または BOARD=20k
 
 `top.sv` ファイルを作成し、以下のコードを記述:
 
+```systemverilog
 // Day 01: LED Blink Example (Tang Nano 20K)
 // This module demonstrates a basic clock divider to blink an LED.
 
@@ -189,10 +190,10 @@ module top (
     output logic led   // Output signal connected to an on-board LED
 );
 
-    // 25-bit counter. 
+    // 25-bit counter.
     // A 27MHz clock ticks 27,000,000 times per second.
     // 2^25 is approximately 33,554,432.
-    // By using the 25th bit (MSB), the LED will toggle roughly every 1.24 seconds 
+    // By using the 25th bit (MSB), the LED will toggle roughly every 1.24 seconds
     // (33.5M / 27M), resulting in a visible blink.
     logic [24:0] counter;
 
@@ -208,7 +209,6 @@ module top (
     assign led = counter[24];
 
 endmodule
-
 ```
 
 ### 数値リテラルの書き方 (ビット幅の重要性)
