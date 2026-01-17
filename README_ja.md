@@ -80,7 +80,7 @@ graph TD
 
 ソフトウェアからハードウェアへの移行には、考え方の転換が必要です。そのギャップを埋めるためのガイドを用意しました：
 
-- **[SystemVerilog チートシート](./docs/SYSTEMVERILOG_CHEATSHEET_ja.md)**: 「if 文はどう書く？」「`<=` と `=` は何が違う？」といった疑問に答えます。
+- **[SystemVerilog チートシート](./docs/SYSTEMVERILOG_CHEATSHEET_ja.md)**:「if 文はどう書く？」「`<=` と `=` は何が違う？」といった疑問に答えます。
 - **[よくある落とし穴](./docs/COMMON_PITFALLS_ja.md)**: 代入演算子の使い分け、チャタリング、不定値など、初心者が必ずと言っていいほどハマる罠を解説します。
 - **[デバッグガイド](./docs/DEBUGGING_GUIDE_ja.md)**: 波形の読み方や、並列に動くロジックのデバッグ方法を解説します。
 - **[用語集](./docs/GLOSSARY_ja.md)**: LUT, FF, ラッチ, PLL... これらの用語の意味を解説します。

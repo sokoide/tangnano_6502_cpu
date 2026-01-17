@@ -13,7 +13,7 @@ Day 04 では、CPU 開発を強力にサポートする **「デバッグ・ダ
 
 ## 🧠 メモリ構成の注意
 
-Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易ROM）。Zero Page/Stack/Program RAM を含むRAM は Day 10 まで使用しません。
+Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易 ROM）。Zero Page/Stack/Program RAM を含む RAM は Day 10 まで使用しません。
 
 ## 🎯 学習目標
 

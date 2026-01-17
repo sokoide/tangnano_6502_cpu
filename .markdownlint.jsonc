@@ -1,0 +1,12 @@
+{
+  // MD013/line-length: 行の長さの制限を無効化（URLやテーブルなどで長くなるため）
+  "MD013": false,
+  // MD024/no-duplicate-heading: 同一内容の見出しを許可（複数の章で同じ見出しを使う場合があるため）
+  "MD024": false,
+  // MD033/no-inline-html: インラインHTMLを許可（<img>のサイズ指定や<details>などで使用するため）
+  "MD033": false,
+  // MD036/no-emphasis-as-heading: 強調文の見出し利用を許可
+  "MD036": false,
+  // MD041/first-line-heading: ファイルの1行目を見出しに限定しない（バナーやメタデータが先行する場合があるため）
+  "MD041": false
+}

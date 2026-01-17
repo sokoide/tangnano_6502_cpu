@@ -13,7 +13,7 @@ CPU が一直線に命令を実行するだけでは、複雑なプログラム�
 
 ## 🧠 メモリ構成の注意
 
-Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易ROM）。Zero Page/Stack/Program RAM を含むRAM は Day 10 まで使用しません。
+Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易 ROM）。Zero Page/Stack/Program RAM を含む RAM は Day 10 まで使用しません。
 
 ## 🎯 学習目標
 

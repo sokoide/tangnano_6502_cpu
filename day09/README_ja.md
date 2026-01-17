@@ -13,7 +13,7 @@ CPU が一直線に命令を実行するだけでは、複雑なプログラム�
 
 ## 🧠 メモリ構成の注意
 
-Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易ROM）。Zero Page/Stack/Program RAM を含むRAM は Day 10 まで使用しません。
+Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易 ROM）。Zero Page/Stack/Program RAM を含む RAM は Day 10 まで使用しません。
 
 ## 🔙 復習: Day 08
 
@@ -68,7 +68,7 @@ Day 05 以降、**テストベンチ (`day09/sim/`) は完成した状態で提�
 
 loop:
     DEX
-    BNE loop   ; X が 0 になるまで繰り返す (5回)
+    BNE loop   ; X が 0 になるまで繰り返す (5 回)
     ```
 
 - **シミュレーション**: `make sim` を実行し、分岐が正しく行われてループが 5 回実行され、最終的に `PASS` と表示されることを確認します。

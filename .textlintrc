@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "preset-ja-spacing": {
+      "ja-space-between-half-and-full-width": {
+        "space": "always"
+      },
+      // 半角括弧の周りのスペースを削除しない（英語の文脈を守るため）
+      "ja-no-space-around-parentheses": false,
+      // リンクの周りのスペースを強制的に削除しない
+      "ja-no-space-around-link": false,
+      // インラインコードの周りのスペースを制御しない
+      "ja-space-around-code": false
+    }
+  }
+}

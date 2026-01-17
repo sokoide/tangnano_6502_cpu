@@ -1,13 +1,13 @@
 # Day 03 Completed: SystemVerilog Sequential Circuits
 
-SystemVerilogの順序回路設計の完成版プロジェクトです。
+SystemVerilog の順序回路設計の完成版プロジェクトです。
 
 ## ファイル構成
 
-- `counter_8bit.sv` - 8bitアップカウンタ
-- `pwm_generator.sv` - PWM信号生成器
+- `counter_8bit.sv` - 8bit アップカウンタ
+- `pwm_generator.sv` - PWM 信号生成器
 - `traffic_light.sv` - 交通信号制御器（状態機械）
-- `shift_register.sv` - 8bitシフトレジスタ
+- `shift_register.sv` - 8bit シフトレジスタ
 - `clock_divider.sv` - 可変分周器
 - `top.sv` - 統合テストモジュール
 - `tb_traffic_light.sv` - 交通信号テストベンチ
@@ -23,19 +23,19 @@ SystemVerilogの順序回路設計の完成版プロジェクトです。
 
 ### 2. PWM生成器
 
-- 8bitデューティサイクル制御（0-255）
+- 8bit デューティサイクル制御（0-255）
 - 連続カウンタによる生成
 - 可変パルス幅出力
 
 ### 3. 交通信号制御器
 
-- 3状態のFSM（赤→緑→黄→赤）
+- 3 状態の FSM（赤→緑→黄→赤）
 - タイマーベースの自動遷移
 - 実時間での動作確認可能
 
 ### 4. シフトレジスタ
 
-- 8bit左シフトレジスタ
+- 8bit 左シフトレジスタ
 - パラレルロード機能
 - シリアル入出力対応
 
@@ -55,9 +55,9 @@ make test
 
 #### シミュレータについて
 
-- シミュレータ: Verilator（macOS/Linux/Windowsで動作）。
+- シミュレータ: Verilator（macOS/Linux/Windows で動作）。
 - 出力: `tb_traffic_light.sv` を実行し、波形 `tb_traffic_light.vcd` を生成します（`gtkwave tb_traffic_light.vcd` で確認）。
-- 前提: `verilator` が `PATH` にあること（macOS例: `brew install verilator`）。
+- 前提: `verilator` が `PATH` にあること（macOS 例: `brew install verilator`）。
 
 ### FPGAビルド & ダウンロード
 
@@ -88,9 +88,9 @@ gtkwave tb_traffic_light.vcd
 
 ### 出力
 
-- `count_out[7:0]`: カウンタ値（LEDまたは7セグメント表示）
-- `pwm_out`: PWM信号出力
-- `red_led`, `yellow_led`, `green_led`: 交通信号LED
+- `count_out[7:0]`: カウンタ値（LED または 7 セグメント表示）
+- `pwm_out`: PWM 信号出力
+- `red_led`, `yellow_led`, `green_led`: 交通信号 LED
 - `shift_serial_out`: シフトレジスタ出力
 - `div_clk_out`: 分周クロック出力
 
@@ -111,7 +111,7 @@ gtkwave tb_traffic_light.vcd
 
 ### 実用回路設計
 
-- PWM制御技術
+- PWM 制御技術
 - シフトレジスタ応用
 - クロック分周技術
 - マルチモジュール統合
@@ -122,4 +122,4 @@ gtkwave tb_traffic_light.vcd
 2. **可変長シフトレジスタ**: 動的ビット幅制御
 3. **多段分周器**: より柔軟な周波数生成
 
-これらの順序回路は、CPUの制御部分やタイミング制御で重要な役割を果たします。
+これらの順序回路は、CPU の制御部分やタイミング制御で重要な役割を果たします。

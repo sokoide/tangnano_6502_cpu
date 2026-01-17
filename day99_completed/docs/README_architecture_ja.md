@@ -199,7 +199,7 @@ graph TB
 
 ### 2プロセス FSM リファクタ
 
-`cpu_fsm_next_pkg.sv` は boot/fetch 系を `calc_boot_fetch_next()`、デコード〜実行を `calc_cpu_next(cur,in)` で計算する 2プロセス FSM の核です。`calc_cpu_next` は `calc_decode_transfers_next`、`calc_decode_flags_custom_next`、`calc_decode_branches_next`、`calc_decode_compare_next`、`calc_decode_logic_next`、`calc_decode_shifts_next`、`calc_decode_load_store_next`、`calc_decode_store_next` などのカテゴリ別ヘルパーを順次呼び出し、命令ごとの副作用を `cpu_ctx_t` に記録します。INC/DEC、制御フロー、ADC/SBC などの残りカテゴリは [`FSM.md`](./FSM.md) に記録された手順で順次追加中です。
+`cpu_fsm_next_pkg.sv` は boot/fetch 系を `calc_boot_fetch_next()`、デコード〜実行を `calc_cpu_next(cur,in)` で計算する 2 プロセス FSM の核です。`calc_cpu_next` は `calc_decode_transfers_next`、`calc_decode_flags_custom_next`、`calc_decode_branches_next`、`calc_decode_compare_next`、`calc_decode_logic_next`、`calc_decode_shifts_next`、`calc_decode_load_store_next`、`calc_decode_store_next` などのカテゴリ別ヘルパーを順次呼び出し、命令ごとの副作用を `cpu_ctx_t` に記録します。INC/DEC、制御フロー、ADC/SBC などの残りカテゴリは [`FSM.md`](./FSM.md) に記録された手順で順次追加中です。
 
 ```mermaid
 graph LR
@@ -275,7 +275,7 @@ Day 99 では、このブートローダー機能が **CPU のメイン FSM (ス
 
 1. **プログラムデータ**:
     - `include/boot_program.sv` に `boot_program` という SystemVerilog 配列（バイト列）として定義されています。
-    - これは `hex_fpga` ツールによってアセンブリの出力（HEXファイル）から自動生成されます。
+    - これは `hex_fpga` ツールによってアセンブリの出力（HEX ファイル）から自動生成されます。
 
 2. **データ渡し**:
     - `top_core.sv` で `boot_program.sv` をインクルードし、`cpu` モジュールの入力ポート `boot_program` および `boot_program_length` に渡しています。

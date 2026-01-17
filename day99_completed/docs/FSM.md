@@ -1,6 +1,6 @@
 # 2-process FSM（完了）
 
-このCPUは **2-process FSM**（`always_comb` で `next` を計算し、`always_ff` で `cur <= next` を更新）へ移行完了しています。
+この CPU は **2-process FSM**（`always_comb` で `next` を計算し、`always_ff` で `cur <= next` を更新）へ移行完了しています。
 
 ## 現状の構造
 
@@ -12,14 +12,14 @@
 
 - boot/fetch/decode/execute/write/show_info/clear_vram の各状態が `calc_cpu_next()` で完結
 - `IFO`（show-info ROM）も `cpu_fsm_next_pkg.sv` 側に統合して純粋な次状態計算で進行
-- legacy経路を `day99_completed/src/cpu/legacy/` に隔離（現行ビルドでは未使用）
+- legacy 経路を `day99_completed/src/cpu/legacy/` に隔離（現行ビルドでは未使用）
   - `state_*_tasks.sv` / `state_machine.svh` / `cpu_tasks.svh` / `cpu_exec_*_pkg.sv` / `cpu_2proc_skeleton.sv`
 - `cpu_ctx_t` をスリム化（未使用だった `next_state`/`next_fetch_stage` を削除）
 
 ## 検証結果
 
 - シミュ: `make -C day99_completed clean test` が PASS
-- 実機: `make -C day99_completed BOARD=9k download` で稼働確認済み（LCD更新 / `CVR` / `IFO`）
+- 実機: `make -C day99_completed BOARD=9k download` で稼働確認済み（LCD 更新 / `CVR` / `IFO`）
 
 ## 完了後の整備（残タスク）
 
