@@ -179,7 +179,7 @@ Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.m
     - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
 5. [IMPORTANT] Project Preferences → Synthesize → General
     - Select `System Verilog 2017`
-    - ![System Verilog 2017](./images/system_verilog_2017.png)
+    - ![System Verilog 2017](../docs/system_verilog_2017.png)
 
 ### Step 2: Create HDL Code
 

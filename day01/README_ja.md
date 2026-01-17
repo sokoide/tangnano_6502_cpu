@@ -175,7 +175,7 @@ make BOARD=9k download   # または BOARD=20k
     - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
 5. [重要]Project Preferences → Synthesize → General
     - `System Verilog 2017` を選択
-    - ![System Verilog 2017](./images/system_verilog_2017.png)
+    - ![System Verilog 2017](../docs/system_verilog_2017.png)
 
 ### Step 2: HDL コード作成
 
