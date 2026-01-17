@@ -212,6 +212,7 @@ module top (
     assign led = counter[24];
 
 endmodule
+
 ```
 
 ### How to Write Numeric Literals (The Importance of Bit-Width)

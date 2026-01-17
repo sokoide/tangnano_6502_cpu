@@ -208,6 +208,7 @@ module top (
     assign led = counter[24];
 
 endmodule
+
 ```
 
 ### 数値リテラルの書き方 (ビット幅の重要性)

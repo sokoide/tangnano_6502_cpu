@@ -114,8 +114,6 @@ module counter_8bit (
 
 );
 
-
-
     // Sequential block using always_ff
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -142,10 +140,7 @@ module counter_8bit (
 
     assign overflow = (count == 8'hFF) && enable;
 
-
-
 endmodule
-
 
 ```
 
@@ -192,6 +187,7 @@ module pwm_generator (
     assign pwm_out = (counter < duty_cycle);
 
 endmodule
+
 ```
 
 ## 🛠️ Practice 3: Traffic Light Controller
