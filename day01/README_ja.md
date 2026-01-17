@@ -168,11 +168,14 @@ make BOARD=9k download   # または BOARD=20k
 ### Step 1: プロジェクト作成
 
 1. GoWin EDA を起動
-2. "File" → "New Project" を選択
+2. "File" → "New Project" を選択, FPGA Design Project を選択
 3. プロジェクト名: `led_blink`
 4. デバイス選択:
     - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
     - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
+5. [重要] Project Preferences → Synthesize → General
+    - `System Verilog 2017` を選択
+    - ![System Verilog 2017](./images/system_verilog_2017.png)
 
 ### Step 2: HDL コード作成
 

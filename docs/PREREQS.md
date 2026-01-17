@@ -1,6 +1,8 @@
 # 💻 Required Software
 
 - **GoWin EDA** (FPGA synthesis and place & route tool)
+- **Verilator** (SystemVerilog simulator)
+- **GTKWave** (Waveform viewer)
 - **cc65** (6502 assembler, used on Day 10)
 - **srecord** (binary conversion tool)
 - **Make** (build system)
@@ -11,10 +13,21 @@
 
 ```bash
 brew update
-brew install -y srecord cc65 golang gtkwave verilator
+brew install srecord cc65 golang gtkwave verilator openssl@3
+```
+
+- If you already have Homebrew, make sure it's the aarch64 version for Apple Silicon, or the Intel version for Intel CPUs.
+- If there is a mismatch, reinstall Homebrew.
+
+```bash
+❯ brew --prefix
+/opt/homebrew # this is Apple Silicon version (aarch64)
+/usr/local # this is Intel version (x86_64)
 ```
 
 **Linux (Ubuntu/Debian):**
+
+- To install prerequisites via `apt`:
 
 ```bash
 sudo apt update
@@ -22,6 +35,13 @@ sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libas
 sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
+```
+
+- Or, use the Linux version of `homebrew`:
+
+```bash
+brew update
+brew install srecord cc65 golang gtkwave verilator openssl@3
 ```
 
 **GoWin EDA:**

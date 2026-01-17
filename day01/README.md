@@ -172,11 +172,14 @@ Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.m
 ### Step 1: Create Project
 
 1. Launch GoWin EDA
-2. Select "File" → "New Project"
+2. Select "File" → "New Project", then select "FPGA Design Project"
 3. Project name: `led_blink`
 4. Device selection:
     - Tang Nano 9K: `GW1NR-LV9QN88PC6/I5`
     - Tang Nano 20K: `GW2AR-LV18QN88C8/I7`
+5. [IMPORTANT] Project Preferences → Synthesize → General
+    - Select `System Verilog 2017`
+    - ![System Verilog 2017](./images/system_verilog_2017.png)
 
 ### Step 2: Create HDL Code
 
