@@ -8,5 +8,9 @@
   // MD036/no-emphasis-as-heading: 強調文の見出し利用を許可
   "MD036": false,
   // MD041/first-line-heading: ファイルの1行目を見出しに限定しない（バナーやメタデータが先行する場合があるため）
-  "MD041": false
+  "MD041": false,
+  // MD010/no-hard-tabs: コードブロック内でのタブ利用を許可（Goのコードなどで必要なため）
+  "MD010": {
+    "code_blocks": false
+  }
 }
