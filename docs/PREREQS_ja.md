@@ -42,15 +42,15 @@ sudo apt install -y --reinstall \
 **GoWin EDA:**
 
 - <https://www.gowinsemi.com/ja/support/download_eda/> から macOS, Windows, Linux 用の _Gowin V1.9.11.03 Education_ をダウンロードします
-    - Mac ユーザーは、macOS 版 IDE のみが必要です(コンパイラとプログラマの両方が含まれています)
-    - macOS 版 IDE は /Applications/GowinIDE.app にインストールしてください
-    - Windows ユーザーは、Windows 上に Windows 版 IDE（コンパイラとプログラマ）、WSL 上に Linux 版 IDE（コンパイラ）をインストールする必要があります。WSL からはプログラマを使用できないため、WSL でコンパイルした場合でも Windows 版のプログラマが必要です
-    - Linux 版 IDE は $(HOME)/Gowin/IDE にインストールしてください
-    - Windows 版 IDE は c:\Gowin にインストールしてください
+  - Mac ユーザーは、macOS 版 IDE のみが必要です(コンパイラとプログラマの両方が含まれています)
+  - macOS 版 IDE は /Applications/GowinIDE.app にインストールしてください
+  - Windows ユーザーは、Windows 上に Windows 版 IDE（コンパイラとプログラマ）、WSL 上に Linux 版 IDE（コンパイラ）をインストールする必要があります。WSL からはプログラマを使用できないため、WSL でコンパイルした場合でも Windows 版のプログラマが必要です
+  - Linux 版 IDE は $(HOME)/Gowin/IDE にインストールしてください
+  - Windows 版 IDE は c:\Gowin にインストールしてください
 - macOS のみ
-    - 初回 -> 開くのに失敗する場合
-    - macOS の設定 -> プライバシーとセキュリティ -> 一番下までスクロール -> 実行を許可する
-    - コマンドラインツールにパッチを当てる
+  - 初回 -> 開くのに失敗する場合
+  - macOS の設定 -> プライバシーとセキュリティ -> 一番下までスクロール -> 実行を許可する
+  - コマンドラインツールにパッチを当てる
 
 ```bash
 GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE

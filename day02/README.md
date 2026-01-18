@@ -228,6 +228,17 @@ flowchart LR
 
 ### How to Run Tests and Debug
 
+0. **Preparation**
+
+    If you are using Windows, please treat the Windows Repo as the source of truth and read the Windows Directory from the WSL side as follows.
+    Example) If your user name is FOO and you created or cloned this Repo in the Windows user home directory.
+
+    ```bash
+    cd $HOME
+    ln -s /mnt/c/Users/FOO/tangnano_6502_cpu
+    cd tangnano_6502_cpu
+    ```
+
 1. **Run the Simulation:**
 
     ```bash

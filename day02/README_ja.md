@@ -245,8 +245,8 @@ flowchart LR
 
 0. **準備\***
 
-    Windows をご使用の方は、WindowsのRepoを正とし、以下のようにWSL側からWindowsのDirectoryを読み込んでください。
-    例）あなたのユーザー名がFOOで、WindowsのユーザーホームディレクトリにこのRepoを作成またはCloneした場合。
+    Windows をご使用の方は、Windows の Repo を正とし、以下のように WSL 側から Windows の Directory を読み込んでください。
+    例）あなたのユーザー名が FOO で、Windows のユーザーホームディレクトリにこの Repo を作成または Clone した場合。
 
     ```bash
     cd $HOME

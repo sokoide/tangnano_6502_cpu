@@ -41,15 +41,15 @@ sudo apt install -y --reinstall \
 **GoWin EDA:**
 
 - Download _Gowin V1.9.11.03 Education_ for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
-    - Mac users only need macOS version of IDE which includes both compiler & programmer
-    - Install macOS IDE into /Applications/GowinIDE.app
-    - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSL. WSL cannot use the programmer -> needs Windows version of it
-    - Install Linux IDE into $(HOME)/Gowin/IDE
-    - Install Windows IDE into c:\Gowin
+  - Mac users only need macOS version of IDE which includes both compiler & programmer
+  - Install macOS IDE into /Applications/GowinIDE.app
+  - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSL. WSL cannot use the programmer -> needs Windows version of it
+  - Install Linux IDE into $(HOME)/Gowin/IDE
+  - Install Windows IDE into c:\Gowin
 - macOS only
-    - First time -> fails to open
-    - macOS settings -> privacy -> scroll to the bottom -> allow anytime
-    - Patch command line tool
+  - First time -> fails to open
+  - macOS settings -> privacy -> scroll to the bottom -> allow anytime
+  - Patch command line tool
 
 ```bash
 GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
