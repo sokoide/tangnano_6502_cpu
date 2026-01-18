@@ -25,11 +25,14 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 /usr/local # this is Intel version (x86_64)
 ```
 
-**Linux (Ubuntu/Debian):**
+**WSL/Linux (Ubuntu/Debian):**
 
 ```bash
 sudo apt update
-sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev
+sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev \
+  libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
+  libdbus-1-3 libfontconfig1 libxrender1 libxkbcommon0 libxext6 libx11-6 \
+  libxdamage1 libxfixes3 libnss3 libnspr4 libgbm1
 sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
@@ -38,15 +41,15 @@ sudo apt install -y --reinstall \
 **GoWin EDA:**
 
 - Download _Gowin V1.9.11.03 Education_ for macOS, Windows & Linux from <https://www.gowinsemi.com/ja/support/download_eda/>
-  - Mac users only need macOS version of IDE which includes both compiler & programmer
-  - Install macOS IDE into /Applications/GowinIDE.app
-  - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSL. WSL cannot use the programmer -> needs Windows version of it
-  - Install Linux IDE into $(HOME)/Gowin/IDE
-  - Install Windows IDE into c:\Gowin
+    - Mac users only need macOS version of IDE which includes both compiler & programmer
+    - Install macOS IDE into /Applications/GowinIDE.app
+    - Windows users should install Windows version of IDE on Windows (compiler & programmer), Linux version of IDE (compiler) on WSL. WSL cannot use the programmer -> needs Windows version of it
+    - Install Linux IDE into $(HOME)/Gowin/IDE
+    - Install Windows IDE into c:\Gowin
 - macOS only
-  - First time -> fails to open
-  - macOS settings -> privacy -> scroll to the bottom -> allow anytime
-  - Patch command line tool
+    - First time -> fails to open
+    - macOS settings -> privacy -> scroll to the bottom -> allow anytime
+    - Patch command line tool
 
 ```bash
 GW=/Applications/GowinIDE.app/Contents/Resources/Gowin_EDA/IDE
