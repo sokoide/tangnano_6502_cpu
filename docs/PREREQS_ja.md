@@ -30,7 +30,7 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 
 ```bash
 sudo apt update
-sudo apt install -y srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev \
+sudo apt install -y make srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev \
   libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
   libdbus-1-3 libfontconfig1 libxrender1 libxkbcommon0 libxext6 libx11-6 \
   libxdamage1 libxfixes3 libnss3 libnspr4 libgbm1
@@ -80,10 +80,20 @@ done
 - WSL only
 
 ```bash
+# run this only once
 # install IDE and programmer in $HOME/Gowin
+# if you download `Gowin_V1.9.11.03_Education_Linux.tar.gz` in your Windows Downloads folder,
+# it's visible at /mnt/c/Users/$Windows-User-ID/Downloads/Gowin_V1.9.11.03_Education_Linux.tar.gz
+cd
+mkdir Gowin
+cd Gowin
+tar axvf /mnt/c/Users/$Windows-User-ID/Downloads/Gowin_V1.9.11.03_Education_Linux.tar.gz
+
+# run this only once
 cd $HOME/Gowin/IDE/lib
 mv libfreetype.so.6 libfreetype.so.6.gowin.bak
 
+# run this every time when you open a shell
 # set env var
 export QT_QPA_PLATFORM=minimal
 export QT_OPENGL=software
