@@ -15,8 +15,13 @@ package cpu_pkg;
         SHOW_INFO,
         SHOW_INFO2,
         CLEAR_VRAM,
-        CLEAR_VRAM2
+        CLEAR_VRAM2,
+        FAULT
     } cpu_state_e;
+
+    typedef enum logic [2:0] {
+        FAULT_NONE, FAULT_BOOT_LENGTH, FAULT_OPCODE, FAULT_DECIMAL, FAULT_SHADOW_WRITE
+    } cpu_fault_e;
 
     typedef enum logic [2:0] {
         FETCH_OPCODE,

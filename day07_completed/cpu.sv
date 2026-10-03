@@ -10,7 +10,7 @@ module cpu (
     input  logic        pc_enable,    // Enable signal for PC update (used for manual stepping)
     output logic [15:0] address_bus,
     input  logic [ 7:0] data_in,
-    input  logic [15:0] debug_pc,
+    output logic [15:0] debug_pc,
     output logic [ 7:0] debug_a,
     output logic [ 7:0] debug_x,
     output logic [ 7:0] debug_y

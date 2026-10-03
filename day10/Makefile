@@ -3,6 +3,7 @@ PROJECT = day10
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_tft
+LCD_SIM_DIR = build/$(BOARD)/$(SIM_TOP)
 VERILATOR ?= verilator
 
 BASE := $(if \
@@ -25,10 +26,10 @@ else
   SRCS = top_9k.sv $(COMMON_SRCS)
 endif
 
-.PHONY: all clean download help tools-check sim sim-build test tools-check-sim sim-cpu sim-cpu-build
-all: $(PROJECT).fs
+.PHONY: all clean download help tools-check sim sim-build test test-cpu tools-check-sim sim-cpu sim-cpu-build
+all: $(PROJECT)_$(BOARD).fs
 
-$(PROJECT).fs: $(GPRJ) $(SRCS)
+$(PROJECT)_$(BOARD).fs: $(GPRJ) $(SRCS) $(wildcard *.cst src/*.cst)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -42,21 +43,11 @@ $(PROJECT).fs: $(GPRJ) $(SRCS)
 	$(GWSH) $(BUILD_TCL)
 	@rm -f $(BUILD_TCL)
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
-	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
+	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT)_$(BOARD).fs"; else \
 	  echo "[ERROR] Bitstream not found under impl/pnr/." >&2; exit 1; fi
 
-download: $(PROJECT).fs
-	@echo "Programming Tang Nano $(BOARD)..."
-	@fs="$(abspath $(PROJECT).fs)"; \
-	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
-	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
-	rc="$$?"; \
-	cat "$$tmp"; \
-	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
-	rm -f "$$tmp"; \
-	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
-	exit "$$rc"
+download: $(PROJECT)_$(BOARD).fs
+	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(PROJECT)_$(BOARD).fs)"
 
 tools-check:
 	@if [ -x "$(GWSH)" ] || command -v "$$(basename "$(GWSH)")" >/dev/null 2>&1; then : ; \
@@ -69,34 +60,47 @@ tools-check-sim:
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
 
 sim-build: tools-check-sim
+	@rm -rf $(LCD_SIM_DIR)
+	@mkdir -p $(LCD_SIM_DIR)
 	@echo "[sim] Building TFT simulation with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
-		-o V$(SIM_TOP) \
+		-o V$(SIM_TOP) --Mdir $(LCD_SIM_DIR) --assert \
 		sim/Gowin_rPLL9_stub.sv \
 		sim/gowin_rpll40_stub.sv \
-	lcd/tb_tft.sv top_9k.sv lcd_demo.sv boot_loader.sv rom.sv ram.sv \
+	lcd/tb_tft.sv top_$(BOARD).sv lcd_demo.sv boot_loader.sv rom.sv ram.sv \
 	lcd/lcd.sv lcd/vlcd/font_rom.sv include/consts.svh include/opcodes.svh
+
+# CPU logic simulation: separate per-board build directory
+SIM_CPU_TOP ?= tb_cpu
+CPU_SIM_DIR = build/$(BOARD)/$(SIM_CPU_TOP)
 
 sim-cpu-build: tools-check-sim
 	@echo "[sim] Building CPU logic simulation with Verilator..."
+	@rm -rf $(CPU_SIM_DIR)
+	@mkdir -p $(CPU_SIM_DIR)
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module tb_cpu \
-		-o Vtb_cpu \
+		-o Vtb_cpu --Mdir $(CPU_SIM_DIR) --assert \
 		sim/tb_cpu.sv cpu.sv
 
 sim: sim-build sim-cpu-build
 	@echo "[sim] Running TFT simulation..."
-	@./obj_dir/V$(SIM_TOP)
+	@./$(LCD_SIM_DIR)/V$(SIM_TOP)
 	@echo "[sim] Running CPU logic simulation..."
-	@./obj_dir/Vtb_cpu
+	@./$(CPU_SIM_DIR)/Vtb_cpu
+
+# CPU logic test: alias for the existing sim-cpu build/run
+test-cpu: sim-cpu-build
+	@echo "[test] Running CPU logic simulation..."
+	@./$(CPU_SIM_DIR)/Vtb_cpu
 
 test: sim
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-	rm -rf obj_dir/
+	rm -rf build obj_dir obj_tb_cpu
 
 help:
 	@echo "Targets: make | make download | make clean"
-	@echo "         make sim | make test"
+	@echo "         make sim | make test | make test-cpu"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."

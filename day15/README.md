@@ -55,8 +55,24 @@ sequenceDiagram
 
 Starting from Day 05, **the testbench (`day15/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
 
-- **Test Program**: A comprehensive program combining implemented instructions (LDA, STA, JMP, Branch, ALU, etc.).
-- **Simulation**: Run `make sim` and verify the system works correctly and the simulation outputs `PASS`.
+- **Test Program**:
+
+    ```asm
+    LDA #$50
+    CMP #$50   ; equal:      C=1 Z=1 N=0 (A unchanged)
+    CMP #$51   ; smaller:    C=0 Z=0 N=1
+    LDX #$05
+    CPX #$03   ; larger:     C=1 Z=0 N=0
+    LDY #$07
+    CPY #$09   ; smaller:    C=0 Z=0 N=1
+    INC $30    ; 0x0F -> 0x10 (Z=0 N=0)
+    INC $31    ; 0xFF -> 0x00 (wrap: Z=1)
+    DEC $32    ; 0x00 -> 0xFF (wrap: N=1)
+    DEC $30    ; 0x10 -> 0x0F
+    HLT
+    ```
+
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm the register and flag states on the LCD as the program progresses.
 
 ## 🏁 Phase 3 Complete

@@ -14,8 +14,9 @@
         <File path="src/top_9k.sv" type="file.verilog" enable="1"/>
         <File path="src/top_core.sv" type="file.verilog" enable="1"/>
         <File path="src/lcd_cpu_bsram_9K.cst" type="file.cst" enable="1"/>
-        <File path="src/gowin_rpll_9K/gowin_rpll40.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_rpll_9K/gowin_rpll9.v" type="file.verilog" enable="1"/>
+        <File path="src/platform_clocks.sv" type="file.verilog" enable="1"/>
+        <File path="src/reset_sync.sv" type="file.verilog" enable="1"/>
+        <File path="src/day99_9k.sdc" type="file.sdc" enable="1"/>
     </FileList>
 
 

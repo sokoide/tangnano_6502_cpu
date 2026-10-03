@@ -26,12 +26,20 @@ else
 endif
 
 # Build targets
-.PHONY: all clean download help tools-check
+.PHONY: all clean download help tools-check test sim
 
-all: $(PROJECT).fs
+all: $(PROJECT)_$(BOARD).fs
+
+VERILATOR ?= verilator
+SIM_DIR := build/$(BOARD)/tb_led
+test sim:
+	@mkdir -p $(SIM_DIR)
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_led \
+		$(if $(filter 20k,$(BOARD)),-DBOARD_20K,) --Mdir $(SIM_DIR) tb_led.sv $(SRCS)
+	./$(SIM_DIR)/Vtb_led
 
 # Synthesis and Place & Route
-$(PROJECT).fs: $(GPRJ) $(SRCS)
+$(PROJECT)_$(BOARD).fs: $(GPRJ) $(SRCS) $(wildcard *.cst src/*.cst)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD) using $(GPRJ)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -42,28 +50,18 @@ $(PROJECT).fs: $(GPRJ) $(SRCS)
 		"exit" > $(BUILD_TCL)
 	$(GWSH) $(BUILD_TCL)
 	@rm -f $(BUILD_TCL)
-	@# Gowin emits bitstreams under impl/pnr/. Copy the first .fs we find to $(PROJECT).fs.
+	@# Gowin emits bitstreams under impl/pnr/. Copy the first .fs we find to $(PROJECT)_$(BOARD).fs.
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
 	if [ -n "$$fs" ]; then \
-	  cp -f "$$fs" "$(PROJECT).fs"; \
+	  cp -f "$$fs" "$(PROJECT)_$(BOARD).fs"; \
 	else \
 	  echo "[ERROR] Bitstream not found. Check impl/pnr/ for errors." >&2; \
 	  exit 1; \
 	fi
 
 # Download to FPGA
-download: $(PROJECT).fs
-	@echo "Programming Tang Nano $(BOARD)..."
-	@fs="$(abspath $(PROJECT).fs)"; \
-	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
-	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
-	rc="$$?"; \
-	cat "$$tmp"; \
-	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
-	rm -f "$$tmp"; \
-	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
-	exit "$$rc"
+download: $(PROJECT)_$(BOARD).fs
+	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(PROJECT)_$(BOARD).fs)"
 
 # Tool availability check (portable): accepts absolute path or PATH lookup
 tools-check:
@@ -82,7 +80,7 @@ tools-check:
 
 # Clean build artifacts
 clean:
-	rm -rf impl/gwsynthesis impl/pnr $(PROJECT).fs *.rpt *.log $(BUILD_TCL)
+	rm -rf impl/gwsynthesis impl/pnr build $(PROJECT)_$(BOARD).fs *.rpt *.log $(BUILD_TCL)
 
 # Help
 help:

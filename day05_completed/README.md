@@ -1,64 +1,35 @@
-# Day 05: The First Step of CPU (Registers & Program Counter)
+# Day 05: Program Counter, Reset, and Enable
 
----
+[English](README.md) | [日本語](README_ja.md)
 
-🌐 Available languages:
-[English](./README.md) | [日本語](./日本語/README_ja.md)
+## Goal
 
-## 📜 Overview
+Implement a 16-bit PC in `cpu.sv`. Reset it to `$0200`, increment it once on a rising edge
+with `pc_enable=1`, and hold it when enable is zero. Drive `address_bus` and `debug_pc`
+from the same PC. This CPU does not decode instructions yet; incrementing the PC prepares
+for the instruction fetch introduced next.
 
-In Day 04, we built an "LCD Debug Dashboard" to support CPU development and learned the concept of Memory Mapping. Now that we have the "eyes" to project the internal state, it is finally time to start building the "body (CPU)" to be displayed on that screen.
+## Step by Step
 
-The goal of Day 05 is to implement the most fundamental elements of a CPU: the **Register Set** and the **Program Counter (PC)**, and to execute the **`NOP`** (No Operation) instruction.
+1. Implement the PC with an asynchronous active-low reset.
+2. Update it only on an enabled rising edge. Arithmetic wraps at 16 bits.
+3. Run `make test-cpu`: reset, two increments, and holds are checked.
+4. Run `make test-lcd`: the LCD smoke test is separate from CPU verification.
+5. Build with `make BOARD=9k` or `make BOARD=20k`. Hardware uses a slow display enable.
+   Simulation success does not establish hardware operation.
 
-We connected the CPU's internal state to the LCD display circuit built on Day 04 to visually verify that the PC increments with every clock cycle.
+The starter CPU test fails until its TODOs are implemented. The completed workspace uses
+the same testbench with `day05_completed/cpu.sv`. Expect `$0200 → $0201 → $0202`.
+The LCD A/X/Y/P/SP fields do not verify a register file in this CPU.
 
-## 🧠 Memory Model Note
+## Additional exercise: Register File
 
-Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, including Zero Page/Stack/Program RAM, is not used until Day 10.
+[`day05/cpu_registers.sv`](../day05/cpu_registers.sv) is a separate A/X/Y/SP/P exercise.
+It is not connected to the CPU or LCD, and the completed workspace does not contain a
+solution or unit test for it. Passing the CPU test does not complete this exercise.
+Write a separate test for register reset, write enable, and hold behavior.
 
-## 🎯 Learning Objectives
+## Next Day
 
-- **Implement 6502 Register Set**: Create `cpu_registers.sv` to hold the A, X, Y, SP, and P registers.
-- **Program Counter (PC)**: Implement a 16-bit register that holds the address of the next instruction.
-- **Automated Execution Cycle**: Build the basic cycle of incrementing the PC in preparation for fetching instructions from memory.
-- **Understand NOP**: Experience the minimum unit of automatic execution: "Do nothing, but take one step forward."
-
-## 🏗️ Architecture
-
-We defined the "Memory" and "Location" of the CPU.
-
-```mermaid
-graph LR
-    subgraph CPU
-        PC[Program Counter]
-        REGS[Registers: A, X, Y, SP, P]
-    end
-    CPU -- Address (PC) --> ROM
-    ROM -- Data --> CPU
-    CPU -- Debug (PC, Registers) --> LCD
-```
-
-## 🛠️ Implementation Summary
-
-1. **Implement `cpu_registers.sv`**:
-    - Described a synchronous register file using `always_ff`.
-    - Set reset values: SP=0xFF, PC=0x8000, P=0x34.
-2. **Implement `cpu.sv`**:
-    - Wrote logic to increment the PC by `1'b1` synchronized with the `pc_enable` signal.
-3. **Integration in `top_core.sv`**:
-    - Instantiated and connected `cpu` and `cpu_registers`.
-    - Updated the LCD to display PC and register values.
-
-## 💡 Technical Insight: Why NOP?
-
-While `NOP` (No Operation) does nothing, for the CPU, it involves the fundamental cycle of "Fetch -> Decode -> Increment PC". Once this works, the "legs" of your CPU are ready to walk.
-
-## 🧪 Verification
-
-- **Simulation**: Confirm `PC` increments: `8000` -> `8001` -> `8002` ...
-- **FPGA**: Verify that the PC value appears on the LCD and counts up automatically.
-
-## 🎯 Preview for Tomorrow
-
-On Day 06, we will implement the first real instruction that manipulates data: `LDA #imm`. We will focus on the **Instruction Decoder** to understand opcode meanings and the **Flag Calculator** to evaluate operation results.
+Day 06 adds A and the opcode/operand fetch for `LDA #imm`.
+Day 04–09 use ROM; RAM, Zero Page, and stack arrive in Day 10.

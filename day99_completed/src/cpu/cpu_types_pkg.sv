@@ -1,12 +1,4 @@
-// cpu_types_pkg.sv - CPU refactor types
-//
-// This package defines the CPU "context" struct used by the planned refactor:
-// - `cpu_ctx_t` represents all CPU internal state and outputs.
-// - `cpu_in_t` represents per-cycle inputs observed by the CPU.
-//
-// The goal is to enable a formatter-friendly split into `package + function`
-// units (Go-like namespaces) and a 2-process FSM (`always_comb` next-state,
-// `always_ff` state register update).
+// cpu_types_pkg.sv - registered context and per-cycle inputs for the active CPU.
 
 package cpu_types_pkg;
     import cpu_pkg::*;
@@ -74,6 +66,7 @@ package cpu_types_pkg;
         show_info_cmd_t show_info_cmd;
 
         // FSM state.
+        cpu_fault_e fault_reason;
         cpu_state_e state;
         cpu_state_e prev_state;
         cpu_state_e fetch_resume_state;

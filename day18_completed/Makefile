@@ -3,6 +3,7 @@ PROJECT = day18
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
 SIM_TOP ?= tb_tft
+LCD_SIM_DIR = build/$(BOARD)/$(SIM_TOP)
 VERILATOR ?= verilator
 
 BASE := $(if \
@@ -25,10 +26,10 @@ else
   SRCS = top_9k.sv $(COMMON_SRCS)
 endif
 
-.PHONY: all clean download help tools-check sim sim-build test tools-check-sim
-all: $(PROJECT).fs
+.PHONY: all clean download help tools-check sim sim-build test test-cpu test-lcd tools-check-sim
+all: $(PROJECT)_$(BOARD).fs
 
-$(PROJECT).fs: $(GPRJ) $(SRCS)
+$(PROJECT)_$(BOARD).fs: $(GPRJ) $(SRCS) $(wildcard *.cst src/*.cst)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -42,21 +43,11 @@ $(PROJECT).fs: $(GPRJ) $(SRCS)
 	$(GWSH) $(BUILD_TCL)
 	@rm -f $(BUILD_TCL)
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
-	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
+	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT)_$(BOARD).fs"; else \
 	  echo "[ERROR] Bitstream not found under impl/pnr/." >&2; exit 1; fi
 
-download: $(PROJECT).fs
-	@echo "Programming Tang Nano $(BOARD)..."
-	@fs="$(abspath $(PROJECT).fs)"; \
-	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
-	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
-	rc="$$?"; \
-	cat "$$tmp"; \
-	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
-	rm -f "$$tmp"; \
-	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
-	exit "$$rc"
+download: $(PROJECT)_$(BOARD).fs
+	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(PROJECT)_$(BOARD).fs)"
 
 tools-check:
 	@if [ -x "$(GWSH)" ] || command -v "$$(basename "$(GWSH)")" >/dev/null 2>&1; then : ; \
@@ -69,26 +60,92 @@ tools-check-sim:
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
 
 sim-build: tools-check-sim
+	@rm -rf $(LCD_SIM_DIR)
+	@mkdir -p $(LCD_SIM_DIR)
 	@echo "[sim] Building with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
-		-o V$(SIM_TOP) \
+		-o V$(SIM_TOP) --Mdir $(LCD_SIM_DIR) --assert \
+		$(if $(filter 20k,$(BOARD)),-DBOARD_20K,) \
 		sim/Gowin_rPLL9_stub.sv \
 		sim/gowin_rpll40_stub.sv \
-	lcd/tb_tft.sv top_9k.sv lcd_demo.sv boot_loader.sv rom.sv ram.sv \
+	lcd/tb_tft.sv top_$(BOARD).sv lcd_demo.sv boot_loader.sv rom.sv ram.sv \
 	lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv include/consts.svh include/opcodes.svh
+
+# CPU logic simulation: shared testbench from the starter workspace (day18/sim)
+# Built in a fresh per-top build directory so it never clobbers the TFT sim build.
+SIM_CPU_TOP ?= tb_cpu
+CPU_SIM_DIR = build/$(BOARD)/$(SIM_CPU_TOP)
+TB_CPU = ../day18/sim/tb_cpu.sv
+TB_CPU_DEFINES =
+
+test-cpu: tools-check-sim
+	@echo "[test] Building CPU logic simulation with Verilator (--assert)..."
+	@rm -rf $(CPU_SIM_DIR)
+	@mkdir -p $(CPU_SIM_DIR)
+	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --assert --binary --top-module $(SIM_CPU_TOP) \
+		-o V$(SIM_CPU_TOP) --Mdir $(CPU_SIM_DIR) \
+		$(TB_CPU_DEFINES) \
+		$(TB_CPU) cpu.sv
+	@echo "[test] Running CPU logic simulation..."
+	@./$(CPU_SIM_DIR)/V$(SIM_CPU_TOP)
 
 sim: sim-build
 	@echo "[sim] Running..."
-	@./obj_dir/V$(SIM_TOP)
+	@./$(LCD_SIM_DIR)/V$(SIM_TOP)
 
-test: sim
+test-lcd: sim
+
+test: test-cpu test-lcd
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
 	rm -f *.fs *.rpt *.log *.vcd $(BUILD_TCL)
-	rm -rf obj_dir/
+	rm -rf build obj_dir $(CPU_SIM_DIR)
 
 help:
 	@echo "Targets: make | make download | make clean"
-	@echo "         make sim | make test"
+	@echo "         make sim | make test | make test-cpu | make test-lcd"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
+
+# The synchronous RAM integration is tested at full speed and with sparse enables.
+.PHONY: test-sync test-sync-one test-manual-step
+test: test-sync
+test-sync:
+	@for step in 1 4 16; do $(MAKE) test-sync-one STEP_PERIOD=$$step || exit 1; done
+	@$(MAKE) test-manual-step
+STEP_PERIOD ?= 1
+SYNC_DEFS = +define+DAY18_CPU
+test-sync-one: tools-check-sim
+	@mkdir -p build/$(BOARD)/sync-$(STEP_PERIOD)
+	$(VERILATOR) --binary --timing --assert -Wno-fatal $(SYNC_DEFS) \
+		--Mdir build/$(BOARD)/sync-$(STEP_PERIOD) --top-module tb_curriculum_sync \
+		-GSTEP_PERIOD=$(STEP_PERIOD) ../sim/tb_curriculum_sync.sv cpu.sv ram.sv
+	./build/$(BOARD)/sync-$(STEP_PERIOD)/Vtb_curriculum_sync
+test-manual-step: tools-check-sim
+	@mkdir -p build/$(BOARD)/manual-step
+	$(VERILATOR) --binary --timing --assert -Wno-fatal $(SYNC_DEFS) \
+		--Mdir build/$(BOARD)/manual-step --top-module tb_manual_step \
+		../sim/tb_manual_step.sv cpu.sv ram.sv
+	./build/$(BOARD)/manual-step/Vtb_manual_step
+
+.PHONY: test-system test-system-one test-vsync
+test: test-system test-vsync
+test-system:
+	@for mode in 0 1; do $(MAKE) test-system-one RESET_DURING_INFO=$$mode || exit 1; done
+	@$(MAKE) test-system-one REPEAT_REQUESTS=1
+RESET_DURING_INFO ?= 0
+REPEAT_REQUESTS ?= 0
+test-system-one: tools-check-sim
+	@mkdir -p build/$(BOARD)/integration-$(RESET_DURING_INFO)-$(REPEAT_REQUESTS)
+	$(VERILATOR) --binary --timing --assert -Wno-fatal \
+		--Mdir build/$(BOARD)/integration-$(RESET_DURING_INFO)-$(REPEAT_REQUESTS) --top-module tb_day18_integration \
+		-GRESET_DURING_INFO=$(RESET_DURING_INFO) -GREPEAT_REQUESTS=$(REPEAT_REQUESTS) ../sim/tb_day18_integration.sv \
+		sim/Gowin_rPLL9_stub.sv lcd_demo.sv cpu.sv boot_loader.sv ram.sv \
+		lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv
+	./build/$(BOARD)/integration-$(RESET_DURING_INFO)-$(REPEAT_REQUESTS)/Vtb_day18_integration
+test-vsync: tools-check-sim
+	@mkdir -p build/$(BOARD)/vsync
+	$(VERILATOR) --binary --timing --assert -Wno-fatal \
+		--Mdir build/$(BOARD)/vsync --top-module tb_day18_vsync \
+		../sim/tb_day18_vsync.sv cpu.sv ram.sv
+	./build/$(BOARD)/vsync/Vtb_day18_vsync

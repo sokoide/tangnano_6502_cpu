@@ -1,78 +1,43 @@
-# Day 06: 命令の理解と実行 (LDA 命令とフラグ)
+# Day 06: 即値LDAと2段階のfetch
 
----
+[English](README.md) | [日本語](README_ja.md)
 
-🌐 対応言語:
-[English](./README.md) | [日本語](./README_ja.md)
+## この日の到達点
 
-## 📜 概要
+`cpu.sv` のAレジスタと、opcode/operandを順に読む2状態FSMを実装する。
+`A9 42` は `LDA #$42` であり、`$A9` は命令、`$42` はAへ入れるデータである。
+現行completedはLDAとA/PCの更新を実装する。Z/Nフラグや独立decoder/flag moduleの
+統合はこのDayのCPUには含めていない。CPUの演算フラグはDay 08で検査する。
 
-Day 06 では、CPU に最初のデータ操作命令である **`LDA #imm`** (Load Accumulator with Immediate value) を実装し、CPU に「知性」を与えました。これには、Day 05 で用意した **アキュムレータ（A レジスタ）** を本格的に動かすためのデコーダとフラグ計算機の実装が含まれます。
+## Step by Step
 
-今日、CPU はついに「ただ進む」だけではなく、「命令に従ってデータを操作する」ことができるようになりました。
+1. `cpu.sv` のリセットを実装する。PC=`$0200`、A=`$00`、状態はopcode fetchに戻す。
+2. opcode fetchで `$A9` を認識し、PC/addressをoperandへ進める。
+3. operand fetchで入力値をAへ保存し、次のopcodeへ進める。
+4. starterのCPU interfaceに `pc_enable` 入力を追加する（completedには既にある）。
+   `pc_enable=0` で状態を保持する。Day 04–09はROM読出しで、同期RAMの待ち時間はDay 10で導入する。
+5. `make test-cpu` で複数の即値LDA、PC、停止中の保持を確認する。
+   completedは同じテストベンチへ完成CPUを接続する。未実装starterの失敗は課題の未完了を示す。
+6. `make test-lcd` でLCD smokeを別に確認し、`make BOARD=9k` / `make BOARD=20k` でビルドする。
+   LCDの表示だけでは命令やフラグの正しさを検証できない。
 
-## 🧠 メモリ構成の注意
+## メモリ上の例
 
-Day 04〜09 はプログラム命令を `rom.sv` から供給します（簡易 ROM）。Zero Page/Stack/Program RAM を含む RAM は Day 10 まで使用しません。
+| アドレス | バイト | 意味 |
+| --- | --- | --- |
+| `$0200` | `$A9` | LDA immediateのopcode |
+| `$0201` | `$42` | Aへ保存するoperand |
+| `$0202` | 次のopcode | LDA終了後のfetch先 |
 
-## 💡 Day 05 から Day 06 へのステップアップ
+## 追加練習: decoderとflag calculator
 
-Day 05 では、CPU が「ただ一歩進む (PC+1)」という最小の動きを習得しました。Day 06 では、ついに「命令を理解し、データを動かす」という CPU 本来の機能に取り組みました。
+[`day06/simple_decoder.sv`](../day06/simple_decoder.sv) と
+[`day06/flag_calculator.sv`](../day06/flag_calculator.sv) は独立した部品の追加課題。
+現在のCPUは内部caseでLDAを認識し、この2部品をinstantiateしない。
+completedにはこれらの独立課題の解答・単体テストを含めていないため、
+`make test-cpu` の合格はこれらの完成を意味しない。
+Z=`result == 0`、N=`result[7]` を単体検査し、C/Vは後のADC/SBCの仕様と区別する。
 
-## 🎯 学習目標
+## 次のDay
 
-- **命令デコーダの実装**: 8 ビットのオペコードを読み取り、命令の種類を分類する `simple_decoder.sv` を作成。
-- **フラグ計算機の連動**: 演算結果に基づいて Zero (Z) や Negative (N) フラグを計算する `flag_calculator.sv` を実装。
-- **ステートマシンの導入**: 複数サイクルにわたる「フェッチ → デコード → 実行」の流れを管理。
-- **即値アドレッシング**: 命令の直後にあるデータをレジスタに読み込む仕組みを理解。
-
-## 🏗️ アーキテクチャ
-
-デコーダとフラグ計算ロジックが CPU 内に組み込まれました。
-
-```mermaid
-graph TD
-    subgraph CPU
-        PC[Program Counter]
-        DEC[Instruction Decoder]
-        REGS[Registers]
-        ALU[ALU / Flag Calc]
-
-        PC --> MEM[Memory/ROM]
-        MEM -->|Opcode| DEC
-        DEC -->|Control| REGS
-        MEM -->|Data| REGS
-        REGS --> ALU
-        ALU -->|N, Z, C, V| REGS
-    end
-```
-
-## 🛠️ 実習の内容
-
-1. **`simple_decoder.sv` の実装**:
-    - `case` 文を用いて `0xA9` を `is_load` として認識させる。
-2. **`flag_calculator.sv` の実装**:
-    - 結果が 0 なら Z=1、ビット 7 が 1 なら N=1 とする組合せ回路を記述。
-3. **`cpu.sv` の拡張**:
-    - `STATE_FETCH_OPCODE` と `STATE_FETCH_OPERAND` の 2 状態ステートマシンを実装。
-    - `LDA #imm` 命令を実行した際、PC を +2 進め、A レジスタを更新。
-
-## 💡 解説: 「即値アドレッシング」とは？
-
-「即値 (Immediate)」とは、命令が必要とするデータがメモリ上で命令コードの*直後*に配置されていることを意味します。
-
-メモリ上の例:
-
-- `0x8000`: `0xA9` (LDA 命令)
-- `0x8001`: `0x42` (ロードしたい値)
-
-デコーダが `0xA9` を見つけると、CPU は「次のサイクルで `0x8001` から値を読み、それを A レジスタに入れよう」と判断します。これが CPU 実行の基本です。
-
-## 🧪 動作確認
-
-- **テストプログラム**: `A9 42` (LDA #$42) を含む ROM で検証。
-- **実機 (FPGA)**: LCD に「A: 42」と表示され、Negative や Zero フラグが正しく変化することを確認。
-
-## 🎯 明日の予習
-
-Day 07 では、**X および Y インデックスレジスタ**を追加し、`TAX` (Transfer A to X) のようなレジスタ間でデータを転送する命令を実装します。
+Day 07でX/Yとレジスタ転送を加える。Day 08でADC/SBCとC/V/Z/Nの検証へ進む。

@@ -184,7 +184,7 @@ module top (
     output logic led     // LED output
 );
 
-    // Clock divider for visible blinking (約1Hz)
+    // Clock divider for visible blinking (bit 24 が 0.621 秒ごとに反転、1 周期 1.243 秒)
     logic [24:0] counter;
 
     always_ff @(posedge clk) begin
@@ -297,7 +297,7 @@ IO_PORT "led" IO_TYPE=LVCMOS33;
 1. "Process" → "Program Device" を選択
 2. Tang Nano を USB で接続
 3. "SRAM Program" を実行
-4. LED が約 0.8 秒間隔で点滅することを確認
+4. LED が約 0.621 秒ごとに反転し（27 MHz の counter bit 24: 2^24 / 27 MHz = 0.621 秒）、約 1.243 秒周期で点滅することを確認
 
 ## 🔧 トラブルシューティング
 

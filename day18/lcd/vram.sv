@@ -4,10 +4,13 @@ module vram (
     input  logic       clk,
     input  logic       rst_n,
     input  logic [9:0] addr,
+    input logic write_en,
+    input logic [9:0] write_addr,
+    input logic [7:0] write_data,
     output logic [7:0] data
 );
 
-    localparam int DEPTH = COLUMNS * ROWS;
+    localparam int DEPTH = 1024;
 
     localparam int ROW0_LEN = 9;
     localparam logic [7:0] ROW0_TEXT[0:ROW0_LEN-1] = '{"V", "R", "A", "M", " ", "T", "E", "X", "T"};
@@ -20,6 +23,9 @@ module vram (
     integer idx;
 
     assign data = ram[addr];
+    always_ff @(posedge clk) begin
+        if (rst_n && write_en) ram[write_addr] <= write_data;
+    end
 
     initial begin
         for (idx = 0; idx < DEPTH; idx = idx + 1) begin

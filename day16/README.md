@@ -60,18 +60,16 @@ Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    ; Load array contents into A sequentially
-    LDX #$00
-    LOOP:
-    LDA DATA,X ; Load from address DATA + X
-    INX
-    CPX #$03
-    BNE LOOP
+    LDX #$05
+    LDA $1000,X ; A = mem[$1005] = 0x5A (indexed read)
+    LDA #$77
+    STA $1000,X ; mem[$1005] = 0x77    (indexed write)
+    LDY #$05
+    LDA $1000,Y ; A = mem[$1005] = 0x77
     HLT
-    DATA: .byte $11, $22, $33
     ```
 
-- **Simulation**: Run `make sim` and verify that the array data is correctly loaded via indexed addressing and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that the A register changes to `$11`, `$22`, and `$33`, and finally exits the loop.
 
 ## 🎯 Next Step

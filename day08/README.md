@@ -86,16 +86,18 @@ Starting from Day 05, **the testbench (`day08/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    SEC        ; C = 1
-    LDA #$0A   ; A = 10
-    SBC #$05   ; A = 5, C = 1 (no borrow)
-
-    CLC        ; C = 0
-    LDA #$FF   ; A = -1
-    ADC #$01   ; A = 0, C = 1, Z = 1 (overflow)
+    CLC
+    LDA #$3C
+    ADC #$42   ; A = 0x7E (C=0 V=0 Z=0 N=0)
+    ADC #$45   ; A = 0xC3 (C=0 V=1 Z=0 N=1: pos+pos -> neg)
+    SEC
+    SBC #$C3   ; A = 0x00 (C=1 V=0 Z=1 N=0)
+    SBC #$01   ; A = 0xFF (C=0 Z=0 N=1: borrow)
+    LDA #$01
+    ADC #$FF   ; A = 0x00 (C=1 V=0 Z=1 N=0: carry out)
     ```
 
-- **Simulation**: Run `make sim` and verify that the result and flags change correctly and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 
 ## 🎯 Next Step

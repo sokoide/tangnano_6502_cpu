@@ -81,14 +81,18 @@ Starting from Day 05, **the testbench (`day14/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$01
-    ASL A      ; A = $02, C=0
-    ASL A      ; A = $04, C=0
+    LDA #$45
+    ASL A      ; A = 0x8A (C=0 Z=0 N=1)
+    LSR A      ; A = 0x45 (C=0 Z=0 N=0)
+    SEC        ; C = 1
+    ROL A      ; A = 0x8B (C=0 Z=0 N=1)
+    ROR A      ; A = 0x45 (C=1 Z=0 N=0)
     LDA #$80
-    ASL A      ; A = $00, C=1, Z=1
+    ASL A      ; A = 0x00 (C=1 Z=1 N=0)
+    HLT
     ```
 
-- **Simulation**: Run `make sim` and verify that the shift and rotate instructions work correctly and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Observe the loop execution and final stop at a specific address on the LCD.
 
 ## 🎯 Next Step

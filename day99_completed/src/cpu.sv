@@ -1,13 +1,11 @@
 // cpu.sv - 6502 CPU Core Implementation
 //
-// This module implements a complete 6502 microprocessor with custom extensions
+// This module implements a binary 6502 instruction subset with custom extensions
 // for FPGA-based LCD display systems. The CPU includes:
 //
-// Standard 6502 Features:
-// - All standard addressing modes (immediate, zero page, absolute, indexed, etc.)
-// - Complete instruction set except interrupt-related instructions
-// - Standard registers: A, X, Y, SP, PC, and status flags (C, Z, V, N, etc.)
-// - 64KB addressable memory space with configurable memory map
+// Binary 6502 subset: see docs/INSTRUCTIONS.md for supported opcodes.
+// Logical addresses wrap at 16 bits and decode into mirrored 32 KiB RAM.
+// Decimal mode, interrupts, and unsupported opcodes explicitly fault.
 //
 // Custom Extensions:
 // - CVR (0xCF): Clear VRAM - Hardware-accelerated VRAM clearing
@@ -20,7 +18,7 @@
 // - 0x0100-0x01FF: Stack (256B)
 // - 0x0200-0x7BFF: Program RAM (30.5KB)
 // - 0x7C00-0x7FFF: Shadow VRAM (1KB, read-only)
-// - 0xE000-0xE3FF: Text VRAM (1KB, write-only)
+// - 0xE000-0xE3FF: Text VRAM (1KB, read/write via shadow)
 //
 // State Machine Architecture:
 // - Multi-stage fetch/decode/execute pipeline
@@ -36,7 +34,7 @@
 module cpu (
     // Clock and Reset
     input logic rst_n,  // Active-low asynchronous reset
-    input logic clk,    // System clock (40.5MHz)
+    input logic clk,    // System clock (31.5MHz on 9K, 40.5MHz on 20K)
 
     // Memory Interface
     input  logic [ 7:0] dout,  // RAM read data
@@ -53,7 +51,7 @@ module cpu (
 
     // System Integration
     input logic        vsync,                      // LCD vertical sync (for WVS instruction)
-    input logic [ 7:0] boot_program       [7680],  // Boot program ROM (max 30KB)
+    input logic [ 7:0] boot_program       [7680],  // Boot program ROM (max 7680 bytes)
     input logic [15:0] boot_program_length         // Actual boot program size
 );
 
@@ -69,8 +67,12 @@ module cpu (
             dout: dout,
             vsync: vsync,
             boot_program_length: boot_program_length,
-            boot_byte: boot_program[cur.boot_idx]
+            boot_byte: 8'h00
         };
+
+        if (cur.state == INIT_RAM && cur.boot_write &&
+            {1'b0, cur.boot_idx} < boot_program_length && cur.boot_idx < 7680)
+            cpu_inputs.boot_byte = boot_program[cur.boot_idx];
 
         next = cpu_fsm_next_pkg::calc_cpu_next(cur, cpu_inputs);
 
@@ -145,6 +147,7 @@ module cpu (
                 show_info_counter: 32'd0,
                 show_info_cmd: '0,
 
+                fault_reason: FAULT_NONE,
                 state: INIT,
                 prev_state: INIT,
                 fetch_resume_state: INIT,

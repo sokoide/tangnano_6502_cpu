@@ -1,3 +1,5 @@
+> 現行Day 99は1024 byteのtext VRAM。実装済みmap/read-write/clear仕様は [INSTRUCTIONS](INSTRUCTIONS.md#メモリmapとboot) を参照。以下の外部Graphic VRAM、RDY、arbiter/MMUは未実装の設計案であり、現CPUの契約ではない。理論bandwidthだけから実効帯域や影響を保証できない。
+
 # 外部RAMを利用した高解像度Graphic VRAMアーキテクチャ
 
 このドキュメントでは、Tang Nano の外部 RAM (PSRAM/SDRAM) を活用し、6502 CPU からアクセス可能な **Graphic VRAM (480x272, 16bit color)** を構築するためのアーキテクチャを定義する。
@@ -14,7 +16,7 @@
 
 ### 帯域幅の計算 (Bandwidth Analysis)
 
-このシステムが成立する根拠は、外部メモリの転送速度が LCD の要求速度を圧倒している点にある。
+以下は仮定に基づく理論帯域の比較。refresh、command overhead、burst効率、worst-case latencyを含まない。
 
 * **LCD表示に必要な帯域:**
   * Pixel Clock: 約 9 MHz
@@ -24,7 +26,7 @@
   * Bus Width: 16 bit (PSRAM) / 32 bit (SDRAM)
   * Max Throughput: 100 MHz × 16 bit = **1600 Mbps** (Tang Nano 9K の場合)
 
-**結論:** LCD 表示に消費される帯域は全体の **10%未満** である。残りの 90%以上の帯域は CPU のメモリアクセスに割り当てることが可能であり、パフォーマンスへの影響は軽微である。
+理論値の比率は約9%。CPUへの残り帯域割当や表示deadlineは未測定で、成立には実効帯域と最大待ち時間の検証が必要。
 
 ## 2. システムアーキテクチャ
 

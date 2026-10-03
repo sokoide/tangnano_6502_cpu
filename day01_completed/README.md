@@ -188,7 +188,7 @@ module top (
     output logic led     // LED output
 );
 
-    // Clock divider for visible blinking (approx. 1Hz)
+    // Clock divider for visible blinking (bit 24 toggles every 0.621 s; full cycle 1.243 s)
     logic [24:0] counter;
 
     always_ff @(posedge clk) begin
@@ -301,7 +301,7 @@ Clock input pins are normally driven strongly by the board oscillator, so `PULL_
 1. Select "Process" → "Program Device"
 2. Connect the Tang Nano via USB
 3. Run "SRAM Program"
-4. Confirm that the LED blinks at approximately 0.8-second intervals
+4. Confirm that the LED toggles every ~0.621 s (counter bit 24 at 27 MHz: 2^24 / 27 MHz = 0.621 s), i.e. a full on/off cycle of ~1.243 s
 
 ## 🔧 Troubleshooting
 

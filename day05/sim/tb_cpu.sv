@@ -22,73 +22,73 @@ module tb_cpu;
 
     integer error_count = 0;
 
+    // Global watchdog: bounded completion
+    initial begin
+        #200000;  // 10000 cycles
+        $fatal(1, "TIMEOUT: simulation did not finish");
+    end
+
+    // Post-posedge sampling helper (stability check after the clock edge)
+    task automatic sample();
+        @(posedge clk);
+        #1;
+    endtask
+
+    task automatic check16(input string name, input logic [15:0] got, input logic [15:0] exp);
+        if (got !== exp) begin
+            $display("FAIL: %s = 0x%04h (expected 0x%04h)", name, got, exp);
+            error_count++;
+        end else begin
+            $display("PASS: %s = 0x%04h", name, got, exp);
+        end
+    endtask
+
     initial begin
         $display("=== Day 05: CPU Program Counter Test ===");
 
-        // Initialize
+        // Initialize (stimulus setup on negedge)
         clk = 0;
         rst_n = 0;
         pc_enable = 0;
 
-        // Test Case 1: Reset state
-        #25;
-        if (debug_pc !== 16'h0200) begin
-            $display("FAIL: Reset PC should be 0x8000, got 0x%h", debug_pc);
-            error_count++;
-        end else begin
-            $display("PASS: Reset PC is 0x8000");
-        end
+        // Test Case 1: Reset state (reset vector is 0x0200)
+        sample();
+        check16("debug_pc (reset)", debug_pc, 16'h0200);
+        check16("address_bus (reset)", address_bus, 16'h0200);
 
-        // Release reset
+        // Release reset on negedge
+        @(negedge clk);
         rst_n = 1;
-        #20;
 
-        // Test Case 2: PC should stay when pc_enable is 0
-        if (debug_pc !== 16'h0200) begin
-            $display("FAIL: PC should stay at 0x8000 when disabled, got 0x%h", debug_pc);
-            error_count++;
-        end else begin
-            $display("PASS: PC stays when disabled");
-        end
+        // Test Case 2: PC must stay at 0x0200 while pc_enable is 0
+        sample();
+        sample();
+        check16("debug_pc (gated off)", debug_pc, 16'h0200);
 
-        // Test Case 3: PC should increment when pc_enable is 1
+        // Test Case 3: PC increments each cycle while pc_enable is 1
+        @(negedge clk);
         pc_enable = 1;
-        #20;  // 1st clock
-        if (debug_pc !== 16'h0201) begin
-            $display("FAIL: PC should be 0x8001, got 0x%h", debug_pc);
-            error_count++;
-        end else begin
-            $display("PASS: PC incremented to 0x8001");
-        end
+        sample();
+        check16("debug_pc (increment 1)", debug_pc, 16'h0201);
+        sample();
+        check16("debug_pc (increment 2)", debug_pc, 16'h0202);
 
-        #20;  // 2nd clock
-        if (debug_pc !== 16'h0202) begin
-            $display("FAIL: PC should be 0x8002, got 0x%h", debug_pc);
-            error_count++;
-        end else begin
-            $display("PASS: PC incremented to 0x8002");
-        end
-
-        // Test Case 4: PC should stop incrementing when pc_enable is 0 again
+        // Test Case 4: PC stops incrementing when pc_enable returns to 0
+        @(negedge clk);
         pc_enable = 0;
-        #20;
-        if (debug_pc !== 16'h0202) begin
-            $display("FAIL: PC should stay at 0x8002, got 0x%h", debug_pc);
-            error_count++;
-        end else begin
-            $display("PASS: PC stopped incrementing");
-        end
+        sample();
+        sample();
+        check16("debug_pc (gated off again)", debug_pc, 16'h0202);
+        check16("address_bus (gated off again)", address_bus, 16'h0202);
 
         // Final result
         $display("---------------------------------------");
         if (error_count == 0) begin
             $display("RESULT: ALL TESTS PASSED");
+            $finish;
         end else begin
-            $display("RESULT: %0d TESTS FAILED", error_count);
+            $fatal(1, "RESULT: %0d TESTS FAILED", error_count);
         end
-        $display("---------------------------------------");
-
-        $finish;
     end
 
 endmodule

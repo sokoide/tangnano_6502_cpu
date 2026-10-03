@@ -123,13 +123,16 @@ Starting from Day 05, **the testbench (`day07/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$40
-    TAX        ; X = 0x40
-    INX        ; X = 0x41
-    TXA        ; A = 0x41
+    LDA #$42
+    TAX        ; X = 0x42
+    INX        ; X = 0x43
+    TAY        ; Y = 0x42
+    INY        ; Y = 0x43
+    TXA        ; A = 0x43
+    TYA        ; A = 0x43
     ```
 
-- **Simulation**: Run `make sim` and verify that the registers change as expected and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Verify on the LCD that the X register changes as expected.
 
 ## 🎯 Next Step

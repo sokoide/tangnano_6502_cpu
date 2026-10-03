@@ -49,6 +49,7 @@ module cpu_alu (
     // Intermediate calculation signals
     logic [8:0] add_result;  // 9-bit for carry detection
     logic [8:0] sub_result;  // 9-bit for borrow detection
+    logic [7:0] cmp_result;  // 8-bit A - M for compare, independent of carry_in
     logic [7:0] logic_result;
     logic [7:0] shift_result;
     logic       shift_carry;
@@ -68,6 +69,13 @@ module cpu_alu (
         // Intermediate calculations
         add_result = {1'b0, operand_a} + {1'b0, operand_b} + {8'h00, carry_in};
         sub_result = {1'b0, operand_a} - {1'b0, operand_b} - {8'h00, ~carry_in};
+        // Compare uses A - M without borrow so its flags do not depend on carry_in
+        cmp_result = operand_a - operand_b;
+
+        // Defaults for case-branch temporaries (avoids incomplete always_comb)
+        logic_result = 8'h00;
+        shift_result = 8'h00;
+        shift_carry  = 1'b0;
 
         // Overflow detection for signed arithmetic
         add_overflow = (~operand_a[7] & ~operand_b[7] & add_result[7]) |
@@ -114,11 +122,11 @@ module cpu_alu (
                 negative_flag = logic_result[7];
             end
 
-            ALU_CMP: begin  // Compare (A - operand)
+            ALU_CMP: begin  // Compare (A - operand, independent of carry_in)
                 result        = operand_a;  // CMP doesn't change A register
                 carry_out     = (operand_a >= operand_b);
-                zero_flag     = (operand_a == operand_b);
-                negative_flag = sub_result[7];
+                zero_flag     = (cmp_result == 8'h00);  // same as operand_a == operand_b
+                negative_flag = cmp_result[7];
             end
 
             ALU_ASL: begin  // Arithmetic Shift Left

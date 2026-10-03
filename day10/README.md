@@ -94,18 +94,14 @@ Starting from Day 05, **the testbench (`day10/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$AA
-    PHA        ; Push to stack
-    LDA #$00   ; Overwrite A
-    PLA        ; Restore from stack (A should be $AA)
-    JSR SUB    ; Call subroutine
-    HLT        ; Should return here
-    SUB:
-      INX
-      RTS
+    LDA #$42
+    PHA        ; Push 0x42 to $01FF, S: 0xFF -> 0xFE
+    LDA #$00
+    PLA        ; A = 0x42, S: 0xFE -> 0xFF
+    HLT
     ```
 
-- **Simulation**: Run `make sim` and verify that the stack and subroutine instructions behave as expected and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that the Accumulator value is correctly restored and the CPU returns from the subroutine (PC moves to the correct next instruction).
 
 ## 🏁 Phase 2 Complete

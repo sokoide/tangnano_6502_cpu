@@ -9,6 +9,10 @@
 
 /* verilator lint_off UNUSEDPARAM */
 package consts_pkg;
+    localparam int BOOT_CAPACITY = 7680;
+    localparam int VRAM_CAPACITY = 1024;
+    localparam int VISIBLE_CELLS = 1020;
+
     // RAM
     localparam int RAMW = 32'h00007FFF;
     // Convenience masks with explicit widths to avoid tool/lint width truncation warnings.

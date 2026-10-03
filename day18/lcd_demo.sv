@@ -36,8 +36,11 @@ module lcd_demo (
 
     vram vram_inst (
         .clk  (LCD_CLK),
-        .rst_n(cpu_rst_n),
+        .rst_n(rst_n),
         .addr (vram_addr),
+        .write_en(vram_cea),
+        .write_addr(vram_ada),
+        .write_data(vram_din),
         .data (vram_data)
     );
 `else
@@ -116,6 +119,9 @@ module lcd_demo (
     logic [14:0] ram_addr_final;
     logic [ 7:0] ram_din;
     logic        ram_we;
+    logic        ram_we_final;
+    logic [7:0]  ram_din_final;
+    logic        memory_hold;
     logic        boot_active;
 
     // Run CPU at full speed (synchronization is handled by WVS instruction)
@@ -132,15 +138,27 @@ module lcd_demo (
     assign cpu_clk = MEMORY_CLK;
 `endif
 
+    logic vsync_meta, vsync_cpu;
+    always_ff @(posedge cpu_clk or negedge rst_n) begin
+        if (!rst_n) begin
+            vsync_meta <= 0;
+            vsync_cpu <= 0;
+        end else begin
+            vsync_meta <= vsync;
+            vsync_cpu <= vsync_meta;
+        end
+    end
+
     cpu u_cpu (
         .clk(cpu_clk),
         .rst_n(cpu_rst_n),
         .pc_enable(pc_enable),
+        .memory_hold(memory_hold),
         .address_bus(cpu_address_bus),
         .data_in(cpu_data_in),
         .data_out(cpu_data_out),
         .write_en(cpu_write_en),
-        .vsync(vsync),
+        .vsync(vsync_cpu),
         .vram_clear(cpu_vram_clear),
         .show_info(cpu_show_info),
         .debug_pc(cpu_debug_pc),
@@ -179,14 +197,18 @@ module lcd_demo (
         S_CLEAR,
         S_WRITE_REGS,
         S_WRITE_MEM_HEADER,
-        S_WRITE_MEM_LOOP
+        S_WRITE_MEM_LOOP,
+        S_DRAIN
     } debug_state_t;
     debug_state_t        debug_state;
 
     logic         [11:0] debug_counter;
     logic         [15:0] debug_addr;
     logic         [ 3:0] sub_state;
-    logic                cpu_show_info_prev;
+    logic                clear_only;
+    logic [15:0] snapshot_pc;
+    logic [7:0] snapshot_a, snapshot_x, snapshot_y, snapshot_p, snapshot_s;
+    logic [7:0] debug_byte;
 
     always_ff @(posedge cpu_clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -197,13 +219,24 @@ module lcd_demo (
             debug_counter <= 12'd0;
             debug_addr <= 16'h0000;
             sub_state <= 4'd0;
-            cpu_show_info_prev <= 1'b0;
+            clear_only <= 0;
+            snapshot_pc <= 0;
+            snapshot_a <= 0; snapshot_x <= 0; snapshot_y <= 0;
+            snapshot_p <= 0; snapshot_s <= 0;
+            debug_byte <= 0;
         end else begin
-            cpu_show_info_prev <= cpu_show_info;
             vram_cea <= 1'b0;
             case (debug_state)
                 S_IDLE: begin
-                    if (cpu_show_info && !cpu_show_info_prev) begin
+                    if (!boot_active && (cpu_show_info || cpu_vram_clear)) begin
+                        clear_only <= !cpu_show_info;
+                        snapshot_pc <= cpu_debug_pc;
+                        snapshot_a <= cpu_debug_a; snapshot_x <= cpu_debug_x;
+                        snapshot_y <= cpu_debug_y; snapshot_p <= cpu_debug_p;
+                        snapshot_s <= cpu_debug_s;
+`ifdef VERILATOR
+                        assert (!cpu_write_en) else $fatal(1, "Debug request overlaps CPU write");
+`endif
                         debug_state   <= S_CLEAR;
                         debug_counter <= 12'd0;
                     end
@@ -215,7 +248,7 @@ module lcd_demo (
                     vram_din <= 8'h20;
                     if (debug_counter == 1023) begin
                         debug_counter <= 0;
-                        debug_state   <= S_WRITE_REGS;
+                        debug_state   <= clear_only ? S_DRAIN : S_WRITE_REGS;
                     end else begin
                         debug_counter <= debug_counter + 1;
                     end
@@ -286,11 +319,11 @@ module lcd_demo (
                         end
                         15: begin
                             vram_ada <= 1 * COLUMNS + 5;
-                            vram_din <= to_hex(cpu_debug_a[7:4]);
+                            vram_din <= to_hex(snapshot_a[7:4]);
                         end
                         16: begin
                             vram_ada <= 1 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_a[3:0]);
+                            vram_din <= to_hex(snapshot_a[3:0]);
                         end
                         17: begin
                             vram_ada <= 2 * COLUMNS + 0;
@@ -314,11 +347,11 @@ module lcd_demo (
                         end
                         22: begin
                             vram_ada <= 2 * COLUMNS + 5;
-                            vram_din <= to_hex(cpu_debug_x[7:4]);
+                            vram_din <= to_hex(snapshot_x[7:4]);
                         end
                         23: begin
                             vram_ada <= 2 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_x[3:0]);
+                            vram_din <= to_hex(snapshot_x[3:0]);
                         end
                         24: begin
                             vram_ada <= 3 * COLUMNS + 0;
@@ -342,11 +375,11 @@ module lcd_demo (
                         end
                         29: begin
                             vram_ada <= 3 * COLUMNS + 5;
-                            vram_din <= to_hex(cpu_debug_y[7:4]);
+                            vram_din <= to_hex(snapshot_y[7:4]);
                         end
                         30: begin
                             vram_ada <= 3 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_y[3:0]);
+                            vram_din <= to_hex(snapshot_y[3:0]);
                         end
                         31: begin
                             vram_ada <= 4 * COLUMNS + 0;
@@ -370,19 +403,19 @@ module lcd_demo (
                         end
                         36: begin
                             vram_ada <= 4 * COLUMNS + 5;
-                            vram_din <= to_hex(cpu_debug_pc[15:12]);
+                            vram_din <= to_hex(snapshot_pc[15:12]);
                         end
                         37: begin
                             vram_ada <= 4 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_pc[11:8]);
+                            vram_din <= to_hex(snapshot_pc[11:8]);
                         end
                         38: begin
                             vram_ada <= 4 * COLUMNS + 7;
-                            vram_din <= to_hex(cpu_debug_pc[7:4]);
+                            vram_din <= to_hex(snapshot_pc[7:4]);
                         end
                         39: begin
                             vram_ada <= 4 * COLUMNS + 8;
-                            vram_din <= to_hex(cpu_debug_pc[3:0]);
+                            vram_din <= to_hex(snapshot_pc[3:0]);
                         end
                         40: begin
                             vram_ada <= 5 * COLUMNS + 0;
@@ -410,11 +443,11 @@ module lcd_demo (
                         end
                         46: begin
                             vram_ada <= 5 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_s[7:4]);
+                            vram_din <= to_hex(snapshot_s[7:4]);
                         end
                         47: begin
                             vram_ada <= 5 * COLUMNS + 7;
-                            vram_din <= to_hex(cpu_debug_s[3:0]);
+                            vram_din <= to_hex(snapshot_s[3:0]);
                         end
                         48: begin
                             vram_ada <= 6 * COLUMNS + 0;
@@ -438,11 +471,11 @@ module lcd_demo (
                         end
                         53: begin
                             vram_ada <= 6 * COLUMNS + 5;
-                            vram_din <= to_hex(cpu_debug_p[7:4]);
+                            vram_din <= to_hex(snapshot_p[7:4]);
                         end
                         54: begin
                             vram_ada <= 6 * COLUMNS + 6;
-                            vram_din <= to_hex(cpu_debug_p[3:0]);
+                            vram_din <= to_hex(snapshot_p[3:0]);
                         end
                         default: vram_cea <= 1'b0;
                     endcase
@@ -554,18 +587,18 @@ module lcd_demo (
                             vram_cea  <= 1'b1;
                             vram_ada  <= row * COLUMNS + 4;
                             vram_din  <= ":";
-                            sub_state <= 5;
+                            sub_state <= 9;
                         end
                         5: begin  // Data High Nibble
                             vram_cea  <= 1'b1;
                             vram_ada  <= row * COLUMNS + col;
-                            vram_din  <= to_hex(ram_data_out[7:4]);
+                            vram_din  <= to_hex(debug_byte[7:4]);
                             sub_state <= 6;
                         end
                         6: begin  // Data Low Nibble
                             vram_cea  <= 1'b1;
                             vram_ada  <= row * COLUMNS + col + 1;
-                            vram_din  <= to_hex(ram_data_out[3:0]);
+                            vram_din  <= to_hex(debug_byte[3:0]);
                             sub_state <= 7;
                         end
                         7: begin
@@ -575,16 +608,16 @@ module lcd_demo (
                                 debug_counter <= 0;
                             end else begin
                                 debug_addr <= debug_addr + 1;
-                                sub_state  <= 5;
+                                sub_state  <= 9;
                             end
                         end
                         8: begin  // Bit pattern (LED)
                             vram_cea <= 1'b1;
                             vram_ada <= row * COLUMNS + 52 + debug_counter[2:0];
-                            vram_din <= ram_data_out[7-debug_counter[2:0]] ? "1" : "0";
+                            vram_din <= debug_byte[7-debug_counter[2:0]] ? "1" : "0";
                             if (debug_counter == 7) begin
                                 if (debug_addr == 16'h007F) begin
-                                    debug_state <= S_IDLE;
+                                    debug_state <= S_DRAIN;
                                 end else begin
                                     debug_addr <= debug_addr + 1;
                                     sub_state  <= 0;
@@ -593,8 +626,21 @@ module lcd_demo (
                                 debug_counter <= debug_counter + 1;
                             end
                         end
+                        9: begin  // New debug address sampled by synchronous RAM.
+                            vram_cea <= 0;
+                            sub_state <= 10;
+                        end
+                        10: begin
+                            debug_byte <= ram_data_out;
+                            sub_state <= 5;
+                        end
                         default: sub_state <= 0;
                     endcase
+                end
+                S_DRAIN: begin
+                    // The final registered VRAM write retires on this edge.
+                    vram_cea <= 0;
+                    debug_state <= S_IDLE;
                 end
                 default: debug_state <= S_IDLE;
             endcase
@@ -602,16 +648,25 @@ module lcd_demo (
     end
 
     assign boot_active = rst_n && !cpu_rst_n;
-    assign ram_addr_final = (debug_state == S_WRITE_MEM_LOOP && !boot_active)
-        ? debug_addr[14:0]
-        : ram_addr_boot;
+    assign memory_hold = (debug_state != S_IDLE) || cpu_show_info || cpu_vram_clear;
+    // Select the entire memory transaction. Debug must never inherit CPU writes.
+    always_comb begin
+        ram_addr_final = ram_addr_boot;
+        ram_we_final = rst_n && ram_we;
+        ram_din_final = ram_din;
+        if (!boot_active && memory_hold) begin
+            ram_addr_final = debug_addr[14:0];
+            ram_we_final = 0;
+            ram_din_final = 0;
+        end
+    end
 
     // Memory (RAM for $0000-$7FFF)
     ram u_ram (
         .clk(cpu_clk),
         .addr(ram_addr_final),
-        .write_en(ram_we),
-        .din(ram_din),
+        .write_en(ram_we_final),
+        .din(ram_din_final),
         .dout(ram_data_out)
     );
 

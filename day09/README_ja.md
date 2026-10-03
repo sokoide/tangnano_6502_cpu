@@ -64,14 +64,23 @@ Day 05 以降、**テストベンチ (`day09/sim/`) は完成した状態で提�
 - **テストプログラム**:
 
     ```asm
-    LDX #$05
-
-loop:
-    DEX
-    BNE loop   ; X が 0 になるまで繰り返す (5 回)
+    LDA #$00   ; Z=1
+    BEQ +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$01   ; Z=0
+    BNE +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$80   ; N=1
+    BMI +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$01   ; N=0
+    BPL +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$05   ; Z=0
+    BEQ +2     ; NOT taken (fall-through)
     ```
 
-- **シミュレーション**: `make sim` を実行し、分岐が正しく行われてループが 5 回実行され、最終的に `PASS` と表示されることを確認します。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は TFT smoke test も併せて実行します)。
 - **実機 (FPGA)**: LCD で PC がジャンプし、ループしている様子を確認します。
 
 ## 🎯 次のステップ

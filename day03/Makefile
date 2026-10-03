@@ -2,6 +2,7 @@
 PROJECT = day03
 BOARD ?= 9k
 BUILD_TCL = $(PROJECT)_build.tcl
+SIM_DIR = build/$(BOARD)/$(SIM_TOP)
 SIM_TOP = tb_traffic_light
 
 BASE := $(if \
@@ -25,9 +26,9 @@ else
 endif
 
 .PHONY: all clean download help tools-check sim sim-build test tools-check-sim
-all: $(PROJECT).fs
+all: $(PROJECT)_$(BOARD).fs
 
-$(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
+$(PROJECT)_$(BOARD).fs: $(GPRJ) $(TOP_SRCS) $(wildcard *.cst src/*.cst)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -40,21 +41,11 @@ $(PROJECT).fs: $(GPRJ) $(TOP_SRCS)
 	$(GWSH) $(BUILD_TCL)
 	@rm -f $(BUILD_TCL)
 	@fs=$$(ls -1 impl/pnr/*.fs 2>/dev/null | head -n 1); \
-	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT).fs"; else \
+	if [ -n "$$fs" ]; then cp -f "$$fs" "$(PROJECT)_$(BOARD).fs"; else \
 	  echo "[ERROR] Bitstream not found under impl/pnr/." >&2; exit 1; fi
 
-download: $(PROJECT).fs
-	@echo "Programming Tang Nano $(BOARD)..."
-	@fs="$(abspath $(PROJECT).fs)"; \
-	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
-	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
-	rc="$$?"; \
-	cat "$$tmp"; \
-	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
-	rm -f "$$tmp"; \
-	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
-	exit "$$rc"
+download: $(PROJECT)_$(BOARD).fs
+	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(PROJECT)_$(BOARD).fs)"
 
 tools-check:
 	@if [ -x "$(GWSH)" ] || command -v "$$(basename "$(GWSH)")" >/dev/null 2>&1; then : ; \
@@ -67,20 +58,21 @@ tools-check-sim:
 	else echo "[ERROR] verilator not found. Install Verilator and re-run (e.g. macOS: brew install verilator)." >&2; exit 1; fi
 
 sim-build: tools-check-sim
+	@mkdir -p $(SIM_DIR)
 	@echo "[sim] Building with Verilator..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary \
+	@$(VERILATOR) -Wall -Wno-fatal --assert --sv --timing --trace --binary --Mdir $(SIM_DIR) \
 		-o V$(SIM_TOP) \
 		tb_traffic_light.sv traffic_light.sv
 
 sim: sim-build
 	@echo "[sim] Running..."
-	@./obj_dir/V$(SIM_TOP)
+	@./$(SIM_DIR)/V$(SIM_TOP)
 
 # README compatibility
 test: sim
 
 clean:
-	rm -rf impl/gwsynthesis impl/pnr $(PROJECT).fs *.rpt *.log *.vcd $(BUILD_TCL) obj_dir/
+	rm -rf impl/gwsynthesis impl/pnr $(PROJECT)_$(BOARD).fs *.rpt *.log *.vcd $(BUILD_TCL) obj_dir/
 help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"

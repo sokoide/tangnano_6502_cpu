@@ -23,9 +23,7 @@ module Gowin_SDPB_vram (
     end
 
     always_ff @(posedge clka) begin
-        if (reseta) begin
-            // No-op: keep memory contents
-        end else if (cea) begin
+        if (cea) begin
             mem[ada] <= din;
         end
     end
@@ -33,7 +31,7 @@ module Gowin_SDPB_vram (
     always_ff @(posedge clkb) begin
         if (resetb) begin
             dout <= 8'h00;
-        end else if (ceb && oce) begin
+        end else if (ceb) begin
             dout <= mem[adb];
         end
     end

@@ -76,14 +76,23 @@ Starting from Day 05, **the testbench (`day09/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    CLC        ; C = 0
-    LDA #$01
-    ADC #$02   ; A = 3, C = 0, Z = 0
-    SEC        ; C = 1
-    ADC #$01   ; A = 5, C = 0
+    LDA #$00   ; Z=1
+    BEQ +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$01   ; Z=0
+    BNE +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$80   ; N=1
+    BMI +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$01   ; N=0
+    BPL +2     ; taken
+    LDA #$7F   ; (skipped)
+    LDA #$05   ; Z=0
+    BEQ +2     ; NOT taken (fall-through)
     ```
 
-- **Simulation**: Run `make sim` and verify that the results and flags (NVZC) change as expected and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that the calculation results and flags change as expected.
 
 ## 🎯 Next Step

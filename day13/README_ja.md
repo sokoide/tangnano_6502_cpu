@@ -75,16 +75,17 @@ Day 05 以降、**テストベンチ (`day13/sim/`) は完成した状態で提�
 - **テストプログラム**:
 
     ```asm
-    LDA #$01
-    JMP loop
-    LDA #$02   ; この命令はスキップされる
-
-loop:
-    INX
-    JMP loop   ; 無限ループ
+    LDA #$F0
+    AND #$3C   ; A = 0x30 (Z=0 N=0)
+    ORA #$03   ; A = 0x33 (Z=0 N=0)
+    EOR #$33   ; A = 0x00 (Z=1 N=0)
+    LDA #$0F
+    BIT $10    ; M=0xC3: Z=0, N=1, V=1 (A unchanged)
+    BIT $11    ; M=0x30: Z=1, N=0, V=0 (A unchanged)
+    HLT
     ```
 
-- **シミュレーション**: `make sim` を実行し、JMP 命令によって PC が正しく飛び先に更新され、最終的に `PASS` と表示されることを確認します。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は TFT smoke test も併せて実行します)。
 - **実機 (FPGA)**: LCD で PC が不連続にジャンプする様子を確認します。
 
 ## 🎯 次のステップ

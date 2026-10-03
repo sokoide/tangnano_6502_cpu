@@ -19,7 +19,7 @@
 
 - Quick switch: `make BOARD=9k` or `make BOARD=20k`
 - Or set device explicitly: `make DEVICE=GW2AR-18C`
-- Also update `lcd_cpu_bsram.gprj` device/constraints and `src/top.sv` reset polarity.
+- Also update `day99_9k.gprj` / `day99_20k.gprj` (device/constraints) and the board wrapper `src/top_9k.sv` / `src/top_20k.sv` reset polarity.
 
 ## Tool Paths
 

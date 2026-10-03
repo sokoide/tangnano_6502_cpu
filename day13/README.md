@@ -75,16 +75,17 @@ Starting from Day 05, **the testbench (`day13/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$01
-    JMP loop
-    LDA #$02   ; This instruction will be skipped
-
-loop:
-    INX
-    JMP loop   ; Infinite loop
+    LDA #$F0
+    AND #$3C   ; A = 0x30 (Z=0 N=0)
+    ORA #$03   ; A = 0x33 (Z=0 N=0)
+    EOR #$33   ; A = 0x00 (Z=1 N=0)
+    LDA #$0F
+    BIT $10    ; M=0xC3: Z=0, N=1, V=1 (A unchanged)
+    BIT $11    ; M=0x30: Z=1, N=0, V=0 (A unchanged)
+    HLT
     ```
 
-- **Simulation**: Run `make sim` and verify that the PC is correctly updated to the jump target and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Observe the PC jumping non-linearly on the LCD.
 
 ## 🎯 Next Step

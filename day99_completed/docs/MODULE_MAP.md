@@ -6,34 +6,42 @@ This document helps you navigate the _final integrated_ design in `day99_complet
 
 ```mermaid
 graph TD
-  top[top.sv] --> cpu[cpu.sv]
-  top --> lcd[lcd.sv]
-  top --> ram[ram.sv]
+  top9[top_9k.sv] --> core[top_core.sv]
+  top20[top_20k.sv] --> core
+  core --> cpu[cpu.sv]
+  core --> lcd[lcd.sv]
+  core --> ram[ram.sv]
 
-  cpu --> dec[cpu_decoder.sv]
-  cpu --> alu[cpu_alu.sv]
-  cpu --> mem[cpu_memory.sv]
+  cpu --> fsm[cpu/cpu_fsm_next_pkg.sv]
+  cpu --> types[cpu/cpu_types_pkg.sv]
 
-  mem --> ram
   lcd --> vram[(VRAM / BRAM)]
   lcd --> font[(Font ROM)]
 
-  inc[include/*.svh,*.sv] --> top
+  inc[include/*.svh,*.sv] --> core
   inc --> cpu
   inc --> lcd
+
+  standalone[cpu_decoder.sv / cpu_alu.sv / cpu_memory.sv<br/>standalone, not wired into cpu.sv]
+  tbm[tb_cpu_modules.sv] --> standalone
 ```
 
 ## Where to start reading
 
 If you want the shortest “aha” path:
 
-1. `src/top.sv` — system-level wiring and clock/reset
-2. `src/cpu.sv` — overall CPU control flow (fetch/decode/execute)
-3. `src/cpu_decoder.sv` — opcode → micro-ops / control signals
-4. `src/cpu_alu.sv` — arithmetic/logic + flag generation
-5. `src/cpu_memory.sv` — memory bus, stack, and read/write behavior
+1. `src/top_9k.sv` (or `src/top_20k.sv`) — thin board wrapper (reset polarity, IO pins)
+2. `src/top_core.sv` — system-level wiring: PLLs, font ROM, VRAM, RAM, LCD, and CPU
+3. `src/cpu.sv` — overall CPU control flow (fetch/decode/execute, 2-process FSM)
+4. `src/cpu/cpu_fsm_next_pkg.sv` — combinational next-state logic (`calc_cpu_next(cur, in)`)
+5. `src/cpu/cpu_types_pkg.sv` — `cpu_ctx_t` and related types
 6. `src/lcd.sv` — LCD timing + character rendering
 7. `src/ram.sv` — RAM/VRAM plumbing and memory-mapped regions
+
+Note: `src/cpu_decoder.sv`, `src/cpu_alu.sv`, and `src/cpu_memory.sv` exist as standalone,
+self-contained modules (exercised only by `src/tb_cpu_modules.sv`). They are **not**
+instantiated by `src/cpu.sv` — the current CPU implements decode, ALU, and memory handling
+inline through `cpu_fsm_next_pkg.sv`.
 
 For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 

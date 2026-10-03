@@ -1,21 +1,6 @@
-// top.sv - System Integration Module
-//
-// This module integrates all components of the Tang Nano LCD + 6502 CPU system:
-// - Clock generation (PLLs for LCD and CPU/memory domains)
-// - Memory subsystem (RAM, VRAM, Font ROM)
-// - LCD controller for 480x272 display
-// - 6502 CPU core with custom instructions
-// - Clock domain crossing synchronization
-//
-// The system operates with dual clock domains:
-// - 9MHz for LCD pixel timing
-// - 40.5MHz for CPU and memory operations
-//
-// Board Configuration:
-// - Tang Nano 9K: rst_n = ResetButton (active high button)
-// - Tang Nano 20K: rst_n = !ResetButton (active low button)
-//
-module top_core (
+// CPU/memory writes at 31.5MHz (9K) or 40.5MHz (20K); LCD reads at 9MHz.
+// Both domains assert reset on external reset or either PLL lock loss.
+module top_core #(parameter bit BOARD_20K = 0) (
     // Clock and Reset
     input logic rst_n,   // Active-low reset
     input logic XTAL_IN, // 27MHz crystal oscillator input
@@ -28,20 +13,20 @@ module top_core (
     output logic [4:0] LCD_B,    // LCD blue channel (5-bit)
 
     // Debug/Test Outputs
-    output logic MEMORY_CLK  // Memory clock output for debugging (40.5MHz)
+    output logic MEMORY_CLK  // Board-specific CPU/memory clock output
 );
 
     // Clock Generation via Phase-Locked Loops (PLLs)
     // LCD timing: (480+43+8) * (272+8+12) * 58.05Hz ≈ 9MHz
     // CPU/Memory: Higher frequency for processing performance
-    Gowin_rPLL9 rpll9_inst (
-        .clkout(LCD_CLK),  //  9MHz
-        .clkin (XTAL_IN)   //  27MHz
-    );
-    Gowin_rPLL40 rpll40_inst (
-        .clkout(MEMORY_CLK),  //  40.5MHz
-        .clkin (XTAL_IN)      //  27MHz
-    );
+    logic pixel_locked, memory_locked, pixel_rst_n, memory_rst_n;
+    wire ready_n = rst_n && pixel_locked && memory_locked;
+    platform_clocks #(.BOARD_20K(BOARD_20K)) clocks (
+        .clkin(XTAL_IN), .rst_n(rst_n), .pixel_clk(LCD_CLK),
+        .memory_clk(MEMORY_CLK), .pixel_locked(pixel_locked),
+        .memory_locked(memory_locked));
+    reset_sync pixel_reset(.clk(LCD_CLK), .ready_n(ready_n), .rst_n(pixel_rst_n));
+    reset_sync memory_reset(.clk(MEMORY_CLK), .ready_n(ready_n), .rst_n(memory_rst_n));
 
     // pROM for font
     // 16bytes/char x 256 chars = 4KB
@@ -50,7 +35,7 @@ module top_core (
     logic [11:0] f_ad;
     Gowin_pROM_font prom_font_inst (
         .dout(f_dout),  //output [7:0] dout
-        .clk(MEMORY_CLK),  //input clk
+        .clk(LCD_CLK),  // font read belongs to pixel domain
         .oce(f_oce),  //input oce
         .ce(f_ce),  //input ce
         .reset(f_reset),  //input reset
@@ -65,7 +50,7 @@ module top_core (
 
     lcd lcd_inst (
         .PixelClk(LCD_CLK),
-        .nRST    (rst_n),
+        .nRST    (pixel_rst_n),
         .v_dout  (v_dout),
         .f_dout  (f_dout),
 
@@ -77,26 +62,6 @@ module top_core (
         .f_ad  (f_ad),
         .vsync (vsync)
     );
-
-    // Clock Domain Crossing (CDC) Synchronization for VRAM Read Address
-    //
-    // The v_adb signal crosses from the LCD pixel clock domain (9MHz) to the
-    // memory clock domain (40.5MHz). A two-stage synchronizer prevents
-    // metastability and ensures reliable data transfer between domains.
-    //
-    logic [9:0] v_adb_sync1;  // First synchronizer stage
-    logic [9:0] v_adb_sync2;  // Second synchronizer stage (stable output)
-
-    // Two-stage synchronizer running in the memory clock domain
-    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
-        if (!rst_n) begin
-            v_adb_sync1 <= 10'd0;  // Clear on reset
-            v_adb_sync2 <= 10'd0;
-        end else begin
-            v_adb_sync1 <= v_adb;  // Capture LCD domain signal
-            v_adb_sync2 <= v_adb_sync1;  // Stabilize through second register
-        end
-    end
 
     // Memory Interface Signals
 
@@ -116,9 +81,10 @@ module top_core (
     ram ram_inst (
         // common
         .MEMORY_CLK(MEMORY_CLK),
+        .PIXEL_CLK(LCD_CLK),
         // regular RAM
         .dout(dout),
-        .cea(cea),
+        .cea(cea && memory_rst_n),
         .ceb(ceb),
         .oce(oce),
         .reseta(reseta),
@@ -128,13 +94,13 @@ module top_core (
         .din(din),
         // VRAM
         .v_dout(v_dout),
-        .v_cea(v_cea),
+        .v_cea(v_cea && memory_rst_n),
         .v_ceb(v_ceb),
         .v_oce(v_oce),
         .v_reseta(v_reseta),
         .v_resetb(v_resetb),
         .v_ada(v_ada),
-        .v_adb(v_adb_sync2),
+        .v_adb(v_adb),
         .v_din(v_din)
     );
 
@@ -143,7 +109,7 @@ module top_core (
 
     // CPU instance
     cpu cpu_inst (
-        .rst_n(rst_n),
+        .rst_n(memory_rst_n),
         .clk(MEMORY_CLK),
         .dout(dout),
         .vsync(vsync),
@@ -159,25 +125,15 @@ module top_core (
         .v_din(v_din)
     );
 
-    // Initialize control signals
-    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
-        if (!rst_n) begin
-            // RAM control signals
-            reseta   <= 1'b0;
-            resetb   <= 1'b0;
-            oce      <= 1'b0;  // RAM output not reflected initially
-
-            // VRAM control signals
-            v_reseta <= 1'b0;
-            v_resetb <= 1'b0;
-            v_ceb    <= 1'b1;  // Enable VRAM read
-            v_oce    <= 1'b0;  // VRAM output not reflected initially
-
-            // Font ROM control signals
-            f_ce     <= 1'b1;  // Enable font ROM
-            f_oce    <= 1'b1;  // Enable font ROM output
-            f_reset  <= 1'b0;
-        end
-    end
-
+    // READ_MODE=0 bypass outputs use CE, independent of OCE.
+    assign reseta = !memory_rst_n;
+    assign resetb = !memory_rst_n;
+    assign oce = 1'b1;
+    assign v_reseta = !memory_rst_n;
+    assign v_resetb = !pixel_rst_n;
+    assign v_ceb = pixel_rst_n;
+    assign v_oce = 1'b1;
+    assign f_ce = pixel_rst_n;
+    assign f_oce = 1'b1;
+    assign f_reset = !pixel_rst_n;
 endmodule

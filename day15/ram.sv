@@ -10,12 +10,11 @@ module ram (
 );
 
 `ifdef VERILATOR
-    // Behavioral model for simulation (Asynchronous read for compatibility with early CPUs)
+    // One-clock read latency, matching the clocked BSRAM interface.
     logic [7:0] mem[32768];
 
-    assign dout = mem[addr];
-
     always_ff @(posedge clk) begin
+        dout <= mem[addr];  // No consumer may depend on same-edge read/write collision data.
         if (write_en) begin
             mem[addr] <= din;
         end

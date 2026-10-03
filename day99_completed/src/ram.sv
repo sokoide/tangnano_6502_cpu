@@ -7,8 +7,15 @@
 // The module hides the complexity of dual-port memory interfaces and provides
 // consistent naming conventions for both memory types.
 //
-module ram (
+module ram #(
+`ifdef VERILATOR
+    parameter bit USE_VENDOR = 0
+`else
+    parameter bit USE_VENDOR = 1
+`endif
+) (
     input logic MEMORY_CLK,
+    input logic PIXEL_CLK,  // Independent VRAM read clock
 
     // Main RAM Interface (32KB)
     output logic [ 7:0] dout,    // RAM read data
@@ -33,7 +40,7 @@ module ram (
     input  logic [7:0] v_din      // VRAM write data
 );
 
-`ifdef VERILATOR
+generate if (!USE_VENDOR) begin : behavioral
     // Simulation model: simple dual-port RAMs.
     logic [7:0] ram_mem[0:32767];
     logic [7:0] vram_mem[0:1023];
@@ -51,10 +58,10 @@ module ram (
     end
 
     always_ff @(posedge MEMORY_CLK) begin
-        if (!reseta && cea) begin
+        if (cea) begin
             ram_mem[ada] <= din;
         end
-        if (!v_reseta && v_cea) begin
+        if (v_cea) begin
             vram_mem[v_ada] <= v_din;
         end
     end
@@ -62,16 +69,19 @@ module ram (
     always_ff @(posedge MEMORY_CLK) begin
         if (resetb) begin
             dout <= 8'h00;
-        end else if (ceb && oce) begin
+        end else if (ceb) begin
             dout <= ram_mem[adb];
         end
+    end
+
+    always_ff @(posedge PIXEL_CLK) begin
         if (v_resetb) begin
             v_dout <= 8'h00;
-        end else if (v_ceb && v_oce) begin
+        end else if (v_ceb) begin
             v_dout <= vram_mem[v_adb];
         end
     end
-`else
+end else begin : vendor
     // RAM 32KB, address 32768, data width 8, bypass
 
     Gowin_SDPB ram_inst (
@@ -95,7 +105,7 @@ module ram (
         .clka(MEMORY_CLK),  //input clka
         .cea(v_cea),  //input cea, write enable
         .reseta(v_reseta),  //input reseta
-        .clkb(MEMORY_CLK),  //input clkb
+        .clkb(PIXEL_CLK),  // independent pixel read port
         .ceb(v_ceb),  //input ceb, read enable
         .resetb(v_resetb),  //input resetb
         .oce(v_oce),  //input oce, timing when the read value is reflected on dout
@@ -103,6 +113,6 @@ module ram (
         .din(v_din),  //input [7:0] din, written data
         .adb(v_adb)  //input [9:0] adb, for read
     );
-`endif
+end endgenerate
 
 endmodule

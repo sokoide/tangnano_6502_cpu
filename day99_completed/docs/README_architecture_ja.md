@@ -1,3 +1,5 @@
+> CPU仕様の正本は [INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
+
 # 6502 CPU アーキテクチャ詳細ガイド
 
 Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの包括的な技術解説書です。初級から上級まで段階的に学習できるよう構成されています。
@@ -21,7 +23,7 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 
 ### 学習目標
 
-- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/40.5MHz)
+- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/31.5MHz (9K、約33MHz) または40.5MHz (20K))
 - **ステートマシン**: 複雑な CPU 命令実行パイプライン
 - **メモリコントローラ**: SDPB RAM、VRAM、pROM インタフェース
 - **ハードウェア/ソフトウェア連携**: アセンブリプログラムと FPGA 実装の融合
@@ -34,11 +36,11 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 graph TB
     subgraph "Tang Nano FPGA"
         subgraph "クロック生成"
-            XTAL[27MHz 水晶振動子] --> PLL40[40.5MHz PLL]
+            XTAL[27MHz 水晶振動子] --> PLLCPU[31.5MHz (9K、約33MHz) / 40.5MHz (20K) PLL]
             XTAL --> PLL9[9MHz PLL]
         end
 
-        subgraph "CPUサブシステム @ 40.5MHz"
+        subgraph "CPUサブシステム @ 31.5MHz (9K、約33MHz) / 40.5MHz (20K)"
             CPU[6502 CPUコア]
             RAM32[32KB SDPB RAM]
             BOOTROM[ブートプログラム<br/>自動生成]
@@ -114,23 +116,21 @@ graph LR
 
 CPU とディスプレイ両方のアクセスを最適化した洗練されたメモリ階層：
 
-```bash
-CPU アドレス空間 (64KB アドレッシング可能):
-┌─────────────────┬─────────────────┬────────────────────────────────┐
-│ 0x0000-0x00FF   │ ゼロページ      │ 高速8bitアドレッシング, 256B   │
-│ 0x0100-0x01FF   │ スタック        │ ハードウェアスタック操作, 256B │
-│ 0x0200-0x7BFF   │ プログラムRAM   │ メインメモリ, 30.5KB           │
-│ 0x7C00-0x7FFF   │ シャドウVRAM    │ CPU読み取り用VRAM, 1KB         │
-│ 0x8000-0xDFFF   │ (未マップ)      │ 将来の拡張用                   │
-│ 0xE000-0xE3FF   │ テキストVRAM    │ CPU書き込み用表示, 1KB         │
-│ 0xE400-0xEFFF   │ (未マップ)      │ 将来の表示拡張用               │
-│ 0xF000-0xFFFF   │ フォントROM     │ CPUアクセス不可, 4KB           │
-└─────────────────┴─────────────────┴────────────────────────────────┘
-```
+| CPU address | Physical mapping | Access |
+|---|---|---|
+| 0000–7BFF | Main RAM | CPU R/W |
+| 7C00–7FFF | Shadow VRAM | CPU R; writes fault |
+| 8000–DFFF | RAM mirror, clear bit15 | CPU R/W |
+| E000–E3FF | Text VRAM (read through shadow) | CPU R/W |
+| E400–FBFF | RAM mirror, clear bit15 | CPU R/W |
+| FC00–FFFF | Shadow mirror | CPU R; writes fault |
+
+フォントROMはLCD専用の別資源で、CPU mapには含まれない。
+
 
 ### 設計上の重要な決定
 
-1. **デュアル VRAM アクセス**: シャドウ VRAM により CPU が表示内容を読み取り可能、一方で LCD コントローラは専用書き込みアクセス
+1. **デュアル VRAM アクセス**: シャドウ VRAM により CPU が表示内容を読み取り可能、一方で LCD コントローラは専用読み取りアクセス
 2. **メモリマップド I/O**: VRAM は CPU には通常メモリとして見え、ハードウェアが表示タイミングを処理
 3. **フォント ROM 分離**: 4KB フォントデータは LCD コントローラ専用、CPU アドレス空間を節約
 
@@ -433,7 +433,7 @@ end
 システムはクロックドメイン交差を慎重に管理：
 
 ```systemverilog
-// VSync同期 (LCD 9MHz → CPU 40.5MHz)
+// VSync同期 (LCD 9MHz → CPU 31.5MHz (9K、約33MHz) / 40.5MHz (20K))
 logic vsync_meta, vsync_sync;
 always_ff @(posedge clk) begin
     {vsync_sync, vsync_meta} <= {vsync_meta, vsync};

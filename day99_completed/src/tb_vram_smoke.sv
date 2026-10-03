@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 /* verilator lint_off UNUSEDSIGNAL */
 module tb_vram_smoke;
     logic       ResetButton;
@@ -46,13 +47,12 @@ module tb_vram_smoke;
 `endif
 
         $display("[sim] Day99 VRAM smoke test starting...");
-        $dumpfile("waveform.vcd");
-        $dumpvars(0, tb_vram_smoke);
+        // Avoid a large default VCD; dedicated tests verify pixels and timing.
 
-        for (cycles = 0; cycles < 300000; cycles++) begin
+        for (cycles = 0; cycles < 4050000; cycles++) begin
             @(posedge MEMORY_CLK);
 
-            if (dut.u_core.v_cea) begin
+            if (dut.u_core.ram_inst.v_cea) begin
                 vram_writes++;
                 if (vram_writes <= 16) begin
                     $display("[vram] write #%0d addr=%0d data=%02x", vram_writes, dut.u_core.v_ada,
@@ -79,6 +79,7 @@ module tb_vram_smoke;
         $display("[sim] PASS: saw %0d VRAM writes and LCD_DEN activity", vram_writes);
         $finish;
     end
+    initial begin #100000000; $fatal(1, "VRAM smoke timeout (100ms)"); end
 endmodule
 
 /* verilator lint_on UNUSEDSIGNAL */

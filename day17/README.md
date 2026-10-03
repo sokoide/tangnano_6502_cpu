@@ -74,16 +74,19 @@ Starting from Day 05, **the testbench (`day17/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$20
-    STA $10    ; Put $20 into address $0010
-    LDA #$80
-    STA $11    ; Put $80 into address $0011 -> Pointer $8020 complete
-
-    LDY #$01
-    LDA ($10),Y ; Load from address $8020 + 1 = $8021
+    LDX #$03
+    LDA ($40,X) ; pointer at $0043 -> $1234: A = 0x99
+    LDX #$05
+    LDA ($FE,X) ; zero-page wrap ($FE+5 = $03): -> $1250: A = 0xAA
+    LDY #$04
+    LDA ($60),Y ; pointer $1140 + Y -> $1144: A = 0xBB
+    LDY #$00
+    LDA ($FF),Y ; pointer wraps $FF -> $00: -> $1360: A = 0xCC
+    JSR $0250   ; subroutine: LDA #$42 / RTS
+    JMP ($2000) ; pointer at $2000 -> $0230: LDA #$DD / HLT
     ```
 
-- **Simulation**: Run `make sim` and verify that the data at the target address is correctly loaded via indirect addressing and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that the final data pointed to by the pointer is loaded correctly.
 
 ## 🎯 Next Step

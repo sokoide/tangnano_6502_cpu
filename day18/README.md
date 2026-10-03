@@ -25,7 +25,7 @@ From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), 
 
 ```mermaid
 graph TD
-    CPU[CPU Execution] --> Fetch["Fetch 0x12 (WVS)"]
+    CPU[CPU Execution] --> Fetch["Fetch 0xFF (WVS)"]
     Fetch --> Wait{Wait for VSync?}
     VSync[VSync Signal] --> Wait
     Wait -- No --> Wait
@@ -34,9 +34,10 @@ graph TD
 
 | Opcode | Mnemonic     | Description                                                   |
 | :----: | ------------ | ------------------------------------------------------------- |
-| `0x12` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
-| `0x22` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
-| `0x32` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
+| `0xFF` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
+| `0xCF` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
+| `0xDF` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running.  |
 
 > [!NOTE]
 > Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (approx. 40MHz).
@@ -57,16 +58,14 @@ Starting from Day 05, **the testbench (`day18/sim/`) is provided in a complete s
 - **Test Program**:
 
     ```asm
-    LDA #$01
-    STA $00    ; Initialize memory
-    LOOP:
-    INC $00
-    IFO        ; Debug display
-    WVS #$3A   ; Wait 58 V-Syncs (approx. 1 second)
-    JMP LOOP
+    CVR        ; vram_clear pulses for exactly 1 cycle
+    WVS #2     ; PC holds until 2 vsync rising edges
+    IFO        ; show_info pulses for exactly 1 cycle
+    JSR $0210  ; subroutine: LDA #$37 / RTS
+    HLT        ; PC stops (vram_clear/show_info stay low)
     ```
 
-- **Simulation**: Run `make sim` and verify that the system works in harmony and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm on the LCD that all CPU states transition as intended by the program.
 
 ## 🎉 Congratulations

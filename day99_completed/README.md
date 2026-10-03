@@ -1,6 +1,6 @@
 # Tang Nano 6502 CPU with LCD Display
 
-A complete SystemVerilog implementation of a 6502 microprocessor with an LCD controller for Tang Nano FPGA boards. This project features a modular architecture, comprehensive testing, and support for custom assembly programs.
+A complete SystemVerilog implementation of a 6502 microprocessor with an LCD controller for Tang Nano FPGA boards. This project features a modular architecture, smoke-level simulation, and support for custom assembly programs.
 
 ---
 
@@ -40,7 +40,7 @@ make BOARD=20k download
 - **LCD Text Display**: Drives a 480x272 LCD to display 60x17 characters with hardware-accelerated font rendering.
 - **Modular Design**: Clean separation between the CPU core, LCD controller, and memory systems.
 - **Assembly Programming**: Integrated with the cc65 toolchain, with several example programs included.
-- **Comprehensive Testing**: Includes unit tests, integration suites, and simulation testbenches.
+- **Smoke-level Simulation**: Verilator smoke tests (VRAM/BSRAM). Instruction-level test suites are not yet integrated.
 - **Multi-Board Support**: Easily switch between Tang Nano 9K and 20K targets.
 
 ## 📚 Documentation
@@ -62,13 +62,20 @@ For more details, refer to the documentation:
 
 ```bash
 ├── src/                    # SystemVerilog source files
-│   ├── cpu.sv             # Main CPU module
+│   ├── top_9k.sv          # 9K board wrapper (reset polarity, IO)
+│   ├── top_20k.sv         # 20K board wrapper (reset polarity, IO)
+│   ├── top_core.sv        # Top-level system integration (PLL, memory, LCD)
+│   ├── cpu.sv             # Main CPU module (2-process FSM)
+│   ├── cpu/               # cpu_types_pkg.sv, cpu_fsm_next_pkg.sv, legacy/
+│   ├── cpu_alu.sv / cpu_decoder.sv / cpu_memory.sv
+│   │                      # Standalone modules, not wired into cpu.sv
+│   │                      # (exercised by tb_cpu_modules.sv only)
 │   ├── lcd.sv             # LCD timing and character rendering
-│   ├── top.sv             # Top-level system integration
-│   └── gowin_*/           # Board-specific PLL configurations
+│   ├── tb_*.sv            # Testbenches
+│   └── gowin_*/           # Board-specific PLL/BRAM/ROM primitives
+├── sim/                   # Verilator stubs for Gowin primitives
 ├── include/               # Shared constants and auto-generated files
 ├── examples/              # 6502 assembly programs
-├── tests/                 # Testbench files
 └── docs/                  # Comprehensive documentation
 ```
 
@@ -137,7 +144,7 @@ make download               # Program the FPGA with the example
 
 ## 🧪 Testing and Simulation
 
-The project includes a comprehensive testing infrastructure.
+Simulation is currently **smoke-level only**: `make test` runs a CPU -> VRAM smoke test (`tb_vram_smoke`), and `make sim-ram` runs an optional BSRAM smoke test. Instruction-level test suites are not yet integrated. The DSIM testbenches (`tb_cpu.sv` etc. under `src/`) require DSIM Studio on Linux/Windows.
 
 ```bash
 # Run lint and format checks

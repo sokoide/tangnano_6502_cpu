@@ -25,7 +25,7 @@ Day 10 以降はプログラムを Gowin BSRAM で実装した RAM (`ram.sv`) �
 
 ```mermaid
 graph TD
-    CPU[CPU Execution] --> Fetch["Fetch 0x12 (WVS)"]
+    CPU[CPU Execution] --> Fetch["Fetch 0xFF (WVS)"]
     Fetch --> Wait{Wait for VSync?}
     VSync[VSync Signal] --> Wait
     Wait -- No --> Wait
@@ -34,9 +34,10 @@ graph TD
 
 | オペコード | ニーモニック | 説明                                                              |
 | :--------: | ------------ | ----------------------------------------------------------------- |
-|   `0x12`   | `WVS #count` | **Wait for V-Sync**: 指定した回数の垂直同期信号を待つ。           |
-|   `0x22`   | `CVR`        | **Clear VRAM**: VRAM 内容を一括クリア、または特定色で塗りつぶす。 |
-|   `0x32`   | `IFO`        | **Info**: デバッグ情報（レジスタ、PC 等）を画面に表示。           |
+|   `0xFF`   | `WVS #count` | **Wait for V-Sync**: 指定した回数の垂直同期信号を待つ。           |
+|   `0xCF`   | `CVR`        | **Clear VRAM**: VRAM 内容を一括クリア、または特定色で塗りつぶす。 |
+|   `0xDF`   | `IFO`        | **Info**: デバッグ情報（レジスタ、PC 等）を画面に表示。           |
+|   `0xEF`   | `HLT`        | **Halt CPU**: LCD コントローラを動かしたまま CPU を停止する。         |
 
 > [!NOTE]
 > これまではデバッグのために CPU の動作速度を意図的に落としていましたが、`WVS` 命令の実装によりソフトウェア側で画面同期が可能になったため、本日から CPU は FPGA のフルスピード（約 40MHz）で動作します。

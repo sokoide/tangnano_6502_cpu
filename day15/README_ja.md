@@ -58,16 +58,21 @@ Day 05 以降、**テストベンチ (`day15/sim/`) は完成した状態で提�
 - **テストプログラム**:
 
     ```asm
-    LDA #$10
-    CMP #$10   ; Z=1, C=1
-    BNE FAIL   ; ジャンプしないはず
-
-    LDA #$00
-    STA $10    ; メモリ $10 番地に 0 を保存
-    INC $10    ; メモリ $10 番地を 1 にする
+    LDA #$50
+    CMP #$50   ; equal:      C=1 Z=1 N=0 (A unchanged)
+    CMP #$51   ; smaller:    C=0 Z=0 N=1
+    LDX #$05
+    CPX #$03   ; larger:     C=1 Z=0 N=0
+    LDY #$07
+    CPY #$09   ; smaller:    C=0 Z=0 N=1
+    INC $30    ; 0x0F -> 0x10 (Z=0 N=0)
+    INC $31    ; 0xFF -> 0x00 (wrap: Z=1)
+    DEC $32    ; 0x00 -> 0xFF (wrap: N=1)
+    DEC $30    ; 0x10 -> 0x0F
+    HLT
     ```
 
-- **シミュレーション**: `make sim` を実行し、システム全体が正しく動作し、最終的に `PASS` と表示されることを確認します。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は TFT smoke test も併せて実行します)。
 - **実機 (FPGA)**: LCD に CPU の各レジスタとフラグが表示され、プログラムが期待通りに進行することを確認します。
 
 ## 🏁 Phase 3 完了

@@ -10,6 +10,7 @@
 module cpu (
     input  logic        clk,
     input  logic        rst_n,        // Active-low reset
+    input  logic        memory_hold,  // Hold architectural state while debug owns RAM.
     input  logic        pc_enable,    // Enable signal for PC update (used for manual stepping)
     output logic [15:0] address_bus,
     input  logic [ 7:0] data_in,
@@ -39,8 +40,12 @@ module cpu (
     // Day 18 also includes support for custom instructions (WVS, CVR, IFO).
     // Day 18 では、独自命令 (WVS, CVR, IFO) のサポートも含まれます。
 
+    // Keep the memory timing scaffold while instruction implementation remains TODO.
+    logic memory_ready, step_pending;
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
+            memory_ready <= 0;
+            step_pending <= 0;
             pc <= 16'h0200;
             a <= 8'h00;
             x <= 8'h00;
@@ -53,9 +58,22 @@ module cpu (
             write_en <= 1'b0;
             vram_clear <= 1'b0;
             show_info <= 1'b0;
-        end else if (pc_enable) begin
+        end else begin
+            write_en <= 0;
+            vram_clear <= 0;
+            show_info <= 0;
+            if (memory_hold) begin
+                memory_ready <= 0;
+                step_pending <= step_pending | pc_enable;
+            end else if (!memory_ready) begin
+                memory_ready <= 1;
+                step_pending <= step_pending | pc_enable;
+            end else if (pc_enable || step_pending) begin
+                memory_ready <= 0;
+                step_pending <= 0;
             // Integrate state machine and instruction execution logic here
             // ここにステートマシンと命令実行ロジックを統合
+            end
         end
     end
 

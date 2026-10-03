@@ -1,3 +1,5 @@
+> CPU仕様の正本は [INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
+
 # 6502 CPU Architecture Comprehensive Guide
 
 A detailed technical reference for the 6502 CPU core implemented in SystemVerilog on Tang Nano 9K/20K FPGAs. This document is structured to support progressive learning from basic concepts to advanced implementation details.
@@ -26,7 +28,7 @@ This project demonstrates a complete computer system implementation on FPGA, ser
 
 ### Learning Objectives
 
-- **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/40.5MHz)
+- **Clock Domain Design**: Managing multiple clock frequencies (27MHz → 9MHz/31.5MHz (9K, about 33MHz) or 40.5MHz (20K))
 - **State Machine Architecture**: Complex CPU instruction execution pipeline
 - **Memory Controllers**: SDPB RAM, VRAM, and pROM interfaces
 - **Hardware/Software Integration**: Assembly programming with FPGA implementation
@@ -39,11 +41,11 @@ This project demonstrates a complete computer system implementation on FPGA, ser
 graph TB
     subgraph "Tang Nano FPGA"
         subgraph "Clock Generation"
-            XTAL[27MHz Crystal] --> PLL40[40.5MHz PLL]
+            XTAL[27MHz Crystal] --> PLLCPU[31.5MHz (9K, about 33MHz) / 40.5MHz (20K) PLL]
             XTAL --> PLL9[9MHz PLL]
         end
 
-        subgraph "CPU Subsystem @ 40.5MHz"
+        subgraph "CPU Subsystem @ 31.5MHz (9K, about 33MHz) / 40.5MHz (20K)"
             CPU[6502 CPU Core]
             RAM32[32KB SDPB RAM]
             BOOTROM[Boot Program<br/>Auto-generated]
@@ -119,23 +121,21 @@ graph LR
 
 The system implements a sophisticated memory hierarchy optimized for both CPU access and display rendering:
 
-```bash
-CPU Address Space (64KB addressable):
-┌─────────────────┬─────────────────┬──────────────────────────────────┐
-│ 0x0000-0x00FF   │ Zero Page       │ Fast 8-bit addressing, 256B      │
-│ 0x0100-0x01FF   │ Stack           │ Hardware stack operations, 256B  │
-│ 0x0200-0x7BFF   │ Program RAM     │ Main memory, 30.5KB              │
-│ 0x7C00-0x7FFF   │ Shadow VRAM     │ CPU-readable VRAM copy, 1KB      │
-│ 0x8000-0xDFFF   │ (Unmapped)      │ Available for expansion          │
-│ 0xE000-0xE3FF   │ Text VRAM       │ CPU-writable display, 1KB        │
-│ 0xE400-0xEFFF   │ (Unmapped)      │ Future display expansion         │
-│ 0xF000-0xFFFF   │ Font ROM        │ Not CPU-accessible, 4KB          │
-└─────────────────┴─────────────────┴──────────────────────────────────┘
-```
+| CPU address | Physical mapping | Access |
+|---|---|---|
+| 0000–7BFF | Main RAM | CPU R/W |
+| 7C00–7FFF | Shadow VRAM | CPU R; writes fault |
+| 8000–DFFF | RAM mirror, clear bit15 | CPU R/W |
+| E000–E3FF | Text VRAM (read through shadow) | CPU R/W |
+| E400–FBFF | RAM mirror, clear bit15 | CPU R/W |
+| FC00–FFFF | Shadow mirror | CPU R; writes fault |
+
+Font ROM is a separate LCD resource, outside the CPU address map.
+
 
 ### Key Design Decisions
 
-1. **Dual VRAM Access**: Shadow VRAM allows CPU to read display content while LCD controller has dedicated write access
+1. **Dual VRAM Access**: Shadow VRAM allows CPU to read display content while LCD controller has dedicated read access
 2. **Memory-Mapped I/O**: VRAM appears as normal memory to CPU, hardware handles display timing
 3. **Font ROM Isolation**: 4KB font data is LCD-controller-only, saving CPU address space
 
@@ -322,12 +322,12 @@ end
 
 ### 6502 Instruction Set Implementation
 
-The CPU implements the complete standard 6502 instruction set with the following coverage:
+The CPU implements a binary 6502 subset; the audited opcode coverage is in INSTRUCTIONS.md:
 
 **Implemented Instructions:**
 
-- **Load/Store**: LDA, LDX, LDY, STA, STX, STY (all addressing modes)
-- **Arithmetic**: ADC, SBC with decimal mode support
+- **Load/Store**: LDA, LDX, LDY, STA, STX, STY (see audited opcode table for addressing coverage)
+- **Arithmetic**: ADC, SBC in binary mode; decimal requests fault
 - **Logic**: AND, ORA, EOR with all standard addressing modes
 - **Shifts/Rotates**: ASL, LSR, ROL, ROR (accumulator and memory)
 - **Increments/Decrements**: INC, DEC, INX, INY, DEX, DEY
@@ -336,7 +336,7 @@ The CPU implements the complete standard 6502 instruction set with the following
 - **Jumps/Subroutines**: JMP (absolute/indirect), JSR, RTS
 - **Stack Operations**: PHA, PLA, PHP, PLP
 - **Register Transfers**: TAX, TAY, TXA, TYA, TSX, TXS
-- **Flag Operations**: CLC, SEC, CLV (CLD, SED, CLI, SEI not implemented)
+- **Flag Operations**: CLC, SEC, CLV, CLD; SED faults; CLI/SEI unsupported
 - **Miscellaneous**: NOP, BIT
 
 **Not Implemented (Interrupt-Related):**
@@ -488,7 +488,7 @@ end
 The system carefully manages clock domain crossings:
 
 ```systemverilog
-// VSync synchronization (LCD 9MHz → CPU 40.5MHz)
+// VSync synchronization (LCD 9MHz → CPU 31.5MHz (9K, about 33MHz) / 40.5MHz (20K))
 logic vsync_meta, vsync_sync;
 always_ff @(posedge clk) begin
     {vsync_sync, vsync_meta} <= {vsync_meta, vsync};
@@ -785,10 +785,10 @@ Complete 6502 instruction set documentation with cycle counts, flags affected, a
 | 0x0100-0x01FF | 256B   | Stack       | CPU R/W  |
 | 0x0200-0x7BFF | 30.5KB | Program RAM | CPU R/W  |
 | 0x7C00-0x7FFF | 1KB    | Shadow VRAM | CPU R    |
-| 0x8000-0xDFFF | 24KB   | Unmapped    | -        |
-| 0xE000-0xE3FF | 1KB    | Text VRAM   | CPU W    |
-| 0xE400-0xEFFF | 3KB    | Unmapped    | -        |
-| 0xF000-0xFFFF | 4KB    | Font ROM    | LCD only |
+| 0x8000-0xDFFF | 24KB   | RAM mirror  | CPU R/W  |
+| 0xE000-0xE3FF | 1KB    | Text VRAM   | CPU R/W  |
+| 0xE400-0xFBFF | 6KB    | RAM mirror  | CPU R/W  |
+| 0xFC00-0xFFFF | 1KB    | Shadow mirror | CPU R |
 
 ### Register Reference
 

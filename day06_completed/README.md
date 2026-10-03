@@ -1,78 +1,44 @@
-# Day 06: Understanding Instructions (LDA & Flags)
+# Day 06: Immediate LDA and Two-Stage Fetch
 
----
+[English](README.md) | [日本語](README_ja.md)
 
-🌐 Available languages:
-[English](./README.md) | [日本語](./README_ja.md)
+## Goal
 
-## 📜 Overview
+Implement A and a two-state opcode/operand FSM in `cpu.sv`.
+`A9 42` means `LDA #$42`: `$A9` is the opcode and `$42` is the value loaded into A.
+The current completed CPU implements LDA and A/PC updates. It does not update Z/N or
+instantiate the separate decoder/flag modules. Arithmetic CPU flags are tested in Day 08.
 
-On Day 06, we gave our CPU its first "intelligence" by implementing the **`LDA #imm`** (Load Accumulator with Immediate value) instruction. This involved building an **Instruction Decoder** and **Flag Calculator** to finally put the **Accumulator (A register)** prepared on Day 05 into practical use.
+## Step by Step
 
-Today, the CPU evolved from simply "stepping forward" to "manipulating data according to instructions."
+1. Reset PC to `$0200`, A to `$00`, and the FSM to opcode fetch.
+2. Recognize `$A9` in opcode fetch and advance PC/address to its operand.
+3. Save the operand into A and advance to the next opcode.
+4. Add the `pc_enable` input to the starter interface and hold state when it is zero.
+   The completed interface already has this input. Day 04–09 use ROM; synchronous RAM waits arrive in Day 10.
+5. Run `make test-cpu` to check multiple immediate loads, PC, and enable holds.
+   The completed workspace connects the same testbench to the reference CPU.
+   The starter fails until its TODOs are implemented.
+6. Run `make test-lcd` separately and build with `make BOARD=9k` / `make BOARD=20k`.
+   LCD output alone does not verify instruction or flag correctness.
 
-## 🧠 Memory Model Note
+## Memory Example
 
-Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, including Zero Page/Stack/Program RAM, is not used until Day 10.
+| Address | Byte | Meaning |
+| --- | --- | --- |
+| `$0200` | `$A9` | LDA immediate opcode |
+| `$0201` | `$42` | Operand loaded into A |
+| `$0202` | next opcode | Fetch destination after LDA |
 
-## 💡 Stepping Up: From Day 05 to Day 06
+## Additional Exercises
 
-In Day 05, the CPU learned its minimum movement: "just take one step (PC+1)." In Day 06, we finally tackled the core function of a CPU: "understanding instructions and moving data."
+[`day06/simple_decoder.sv`](../day06/simple_decoder.sv) and
+[`day06/flag_calculator.sv`](../day06/flag_calculator.sv) are separate component exercises.
+The CPU recognizes LDA with an internal case statement and does not instantiate these
+modules. Their solutions and unit tests are not included in the completed workspace;
+passing `make test-cpu` does not complete them. Test Z=`result == 0` and N=`result[7]`
+separately; C/V have different requirements for the later ADC/SBC instructions.
 
-## 🎯 Learning Objectives
+## Next Day
 
-- **Implement Instruction Decoder**: Create `simple_decoder.sv` to classify 8-bit opcodes into categories.
-- **Integrate Flag Calculator**: Implement `flag_calculator.sv` to compute Zero (Z) and Negative (N) flags based on results.
-- **Introduce State Machines**: Manage the multi-cycle "Fetch → Decode → Execute" flow.
-- **Immediate Addressing**: Understand the mechanism of loading data that directly follows the opcode in memory.
-
-## 🏗️ Architecture
-
-The decoder and flag logic are now integrated within the CPU core.
-
-```mermaid
-graph TD
-    subgraph CPU
-        PC[Program Counter]
-        DEC[Instruction Decoder]
-        REGS[Registers]
-        ALU[ALU / Flag Calc]
-
-        PC --> MEM[Memory/ROM]
-        MEM -->|Opcode| DEC
-        DEC -->|Control| REGS
-        MEM -->|Data| REGS
-        REGS --> ALU
-        ALU -->|N, Z, C, V| REGS
-    end
-```
-
-## 🛠️ Implementation Summary
-
-1. **Implement `simple_decoder.sv`**:
-    - Used a `case` statement to recognize `0xA9` as `is_load`.
-2. **Implement `flag_calculator.sv`**:
-    - Described combinational logic where Z=1 if the result is 0, and N=1 if bit 7 is 1.
-3. **Extend `cpu.sv`**:
-    - Implemented a 2-state machine (`STATE_FETCH_OPCODE` and `STATE_FETCH_OPERAND`).
-    - Handled the `LDA #imm` instruction by incrementing PC by +2 and updating the Accumulator.
-
-## 💡 Technical Insight: What is "Immediate Addressing"?
-
-"Immediate" means the data the instruction needs is located *immediately* after the instruction code in memory.
-
-Example in memory:
-
-- `0x8000`: `0xA9` (LDA instruction)
-- `0x8001`: `0x42` (The value to load)
-
-When the decoder finds `0xA9`, the CPU decides to read the value from `0x8001` in the next cycle and put it into the A register. This is the foundation of CPU execution.
-
-## 🧪 Verification
-
-- **Test Program**: Verified with a ROM containing `A9 42` (LDA #$42).
-- **FPGA**: Confirmed that "A: 42" appears on the LCD and that the Negative and Zero flags update correctly.
-
-## 🎯 Preview for Tomorrow
-
-In Day 07, we will add the **X and Y index registers** and implement instructions to transfer data between registers, such as `TAX` (Transfer A to X).
+Day 07 adds X/Y and register transfers. Day 08 adds ADC/SBC and C/V/Z/N verification.

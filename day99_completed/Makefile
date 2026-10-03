@@ -3,6 +3,8 @@ SRCS= \
 	include/boot_program.sv \
 	include/cpu_ifo_auto_generated.svh \
 	src/top_core.sv \
+	src/platform_clocks.sv \
+	src/reset_sync.sv \
 	src/lcd.sv \
 	src/ram.sv \
 	src/cpu.sv \
@@ -11,7 +13,9 @@ SRCS= \
 	src/cpu_memory.sv \
 	src/gowin_sdpb/gowin_sdpb.v \
 	src/gowin_sdpb/gowin_sdpb_vram.v \
-	src/gowin_prom/gowin_prom_font.v
+	src/gowin_prom/gowin_prom_font.v \
+	include/consts_pkg.sv include/cpu_pkg.sv \
+	src/cpu/cpu_types_pkg.sv src/cpu/cpu_fsm_next_pkg.sv
 
 # src/gowin_rpll_9K/gowin_rpll9.v \
 # src/gowin_rpll_9K/gowin_rpll40.v \
@@ -60,7 +64,7 @@ else
   SIM_DEFS :=
 endif
 
-$(FS): $(SRCS) $(TOP_WRAPPER)
+$(FS): $(SRCS) $(TOP_WRAPPER) $(PROJ) proj.tcl $(wildcard *.cst src/*.cst *.sdc src/*.sdc)
 	@$(MAKE) tools-check
 	@rm -rf impl/gwsynthesis impl/pnr
 	$(GWSH) proj.tcl
@@ -76,23 +80,13 @@ $(FS): $(SRCS) $(TOP_WRAPPER)
 # 5: embFlash Erase,Program;
 # ...
 download: $(FS)
-	@echo "Programming Tang Nano $(BOARD)..."
-	@fs="$(abspath $(FS))"; \
-	tmp="$$(mktemp -t gowin_programmer.XXXXXX)"; \
-	"$(PRG)" --device "$(DEVICE)" --fsFile "$$fs" --operation_index 2 >"$$tmp" 2>&1; \
-	rc="$$?"; \
-	cat "$$tmp"; \
-	if grep -q "Error:" "$$tmp"; then rm -f "$$tmp"; exit "$$rc"; fi; \
-	if grep -q "Finished" "$$tmp"; then rm -f "$$tmp"; exit 0; fi; \
-	rm -f "$$tmp"; \
-	if [ "$$rc" -eq 0 ] || [ "$$rc" -eq 50 ] || [ "$$rc" -eq 17 ]; then exit 0; fi; \
-	exit "$$rc"
+	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(FS))"
 
 wave:
 	gtkwave ./waveform.vcd
 
 clean:
-	rm -rf obj_dir waveform.* impl/gwsynthesis impl/pnr
+	rm -rf build obj_dir waveform.* impl/gwsynthesis impl/pnr
 
 #--------------------------------------------------
 # Helpers
@@ -130,6 +124,7 @@ tools-check:
 #--------------------------------------------------
 VERILATOR ?= verilator
 SIM_TOP ?= tb_vram_smoke
+SIM_DIR = build/$(BOARD)/$(SIM_TOP)
 
 
 tools-check-sim:
@@ -140,53 +135,87 @@ tools-check-sim:
 SIM_SRCS := \
 	src/tb_vram_smoke.sv \
 	$(TOP_WRAPPER) src/top_core.sv src/lcd.sv src/ram.sv \
+	src/platform_clocks.sv src/reset_sync.sv \
 	src/cpu.sv src/cpu_decoder.sv src/cpu_alu.sv src/cpu_memory.sv \
 	sim/GSR.sv \
-	sim/gowin_rpll9_stub.sv sim/gowin_rpll40_stub.sv \
 	sim/gowin_prom_font_stub.sv \
 	sim/gowin_sdpb_vram_stub.sv
 
 sim-build: tools-check-sim
+	@mkdir -p $(SIM_DIR)
 	@echo "[sim] Building with Verilator (VRAM smoke test)..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) $(SIM_DEFS) \
+	@$(VERILATOR) -Wall -Wno-fatal --assert --sv --timing --trace --binary --top-module $(SIM_TOP) $(SIM_DEFS) \
+		--Mdir $(SIM_DIR) \
 		-Iinclude -Isrc \
 		-o V$(SIM_TOP) \
 		$(SIM_SRCS)
 
 sim: sim-build
 	@echo "[sim] Running..."
-	@./obj_dir/V$(SIM_TOP)
+	@./$(SIM_DIR)/V$(SIM_TOP)
 
-test: sim
+.PHONY: test test-cpu-regression test-cpu-contract test-alu
+test: test-cpu-regression test-cpu-contract test-alu test-ram test-font test-lcd test-clock test-system sim
 
-# Optional: BSRAM (SDPB) smoke test using existing tb
-SIM_RAM_TOP ?= tb_top
-SIM_RAM_SRCS := \
-	src/tb_top_core.sv \
-	sim/GSR.sv
+test-cpu-contract: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_cpu_contract
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/tb_cpu_contract --top-module tb_cpu_contract \
+		src/cpu.sv src/tb_cpu_contract.sv
+	./build/$(BOARD)/tb_cpu_contract/Vtb_cpu_contract
 
-sim-ram-build: tools-check-sim
-	@echo "[sim] Building with Verilator (SDPB smoke test)..."
-	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_RAM_TOP) \
-		-o V$(SIM_RAM_TOP) \
-		$(SIM_RAM_SRCS)
+test-cpu-regression: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_cpu_regression
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/tb_cpu_regression --top-module tb_cpu_regression \
+		src/cpu.sv src/tb_cpu_regression.sv
+	./build/$(BOARD)/tb_cpu_regression/Vtb_cpu_regression
 
-sim-ram: sim-ram-build
-	@echo "[sim] Running..."
-	@./obj_dir/V$(SIM_RAM_TOP)
+test-alu: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_alu_regression
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/tb_alu_regression --top-module tb_alu_regression \
+		src/cpu_alu.sv src/tb_alu_regression.sv
+	./build/$(BOARD)/tb_alu_regression/Vtb_alu_regression
+
+# Contract tests exercise the active design and vendor models separately.
+CONTRACT_TARGETS := test-ram test-font test-lcd test-clock test-system
+PRIMITIVE_MODEL := deps/$(if $(filter 20k,$(BOARD)),gw2a,gw1n)/prim_sim.v
+.PHONY: $(CONTRACT_TARGETS)
+.PHONY: test-reset
+test-reset: test-system
+test-ram: TEST_TOP = tb_ram_contract
+test-font: TEST_TOP = tb_font_contract
+test-lcd: TEST_TOP = tb_lcd_pipeline
+test-clock: TEST_TOP = tb_clock_reset
+test-system: TEST_TOP = tb_top_reset
+TEST_SRCS_tb_ram_contract := src/tb_ram_contract.sv src/ram.sv \
+	src/gowin_sdpb/gowin_sdpb.v src/gowin_sdpb/gowin_sdpb_vram.v $(PRIMITIVE_MODEL)
+TEST_SRCS_tb_font_contract := src/tb_font_contract.sv src/gowin_prom/gowin_prom_font.v $(PRIMITIVE_MODEL)
+TEST_SRCS_tb_lcd_pipeline := src/tb_lcd_pipeline.sv src/ram.sv src/lcd.sv sim/gowin_prom_font_stub.sv
+TEST_SRCS_tb_clock_reset := src/tb_clock_reset.sv src/platform_clocks.sv src/reset_sync.sv
+TEST_SRCS_tb_top_reset := src/tb_top_reset.sv src/top_core.sv src/cpu.sv src/ram.sv src/lcd.sv \
+	src/platform_clocks.sv src/reset_sync.sv sim/gowin_prom_font_stub.sv
+
+$(CONTRACT_TARGETS): tools-check-sim
+	@mkdir -p build/$(BOARD)/$(TEST_TOP)
+	$(VERILATOR) --binary --timing --assert -Wno-fatal $(SIM_DEFS) -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/$(TEST_TOP) --top-module $(TEST_TOP) $(TEST_SRCS_$(TEST_TOP))
+	@if [ "$(TEST_TOP)" = tb_lcd_pipeline ]; then \
+		for phase in 0 7 31; do ./build/$(BOARD)/$(TEST_TOP)/V$(TEST_TOP) +phase=$$phase || exit 1; done; \
+	else ./build/$(BOARD)/$(TEST_TOP)/V$(TEST_TOP); fi
+
+sim-ram sim-ram-build: test-ram
 
 # Lint (exclude vendor IP and generated verilog outputs)
-LINT_SRCS := $(filter-out src/gowin_% impl/pnr/%,$(SRCS))
-lint:
-	@if command -v verilator >/dev/null 2>&1; then \
-	  echo "[lint] verilator --lint-only -Wall $(LINT_SRCS)"; \
-	  verilator --lint-only -Wall $(LINT_SRCS); \
-	else \
-	  echo "[WARN] verilator not found. Install Verilator or skip lint."; \
-	fi
+LINT_SRCS := $(TOP_WRAPPER) src/top_core.sv src/platform_clocks.sv src/reset_sync.sv \
+	src/lcd.sv src/ram.sv src/cpu.sv sim/gowin_prom_font_stub.sv
+lint: tools-check-sim
+	$(VERILATOR) --lint-only --timing --sv -Wall -Wno-fatal --top-module top \
+		$(SIM_DEFS) -Iinclude -Isrc $(LINT_SRCS)
 
 # Format SystemVerilog (in-place) excluding vendor IP
-FORMAT_FILES := $(shell find src include -type f -name '*.sv' ! -path 'src/gowin_*/*')
+FORMAT_FILES := $(shell find src include -type f -name '*.sv' ! -path 'src/gowin_*/*' ! -path 'src/cpu/legacy/*' ! -name boot_program.sv ! -name cpu_ifo_auto_generated.svh)
 FORMAT_FILES += include/consts.svh
 format:
 	@if command -v verible-verilog-format >/dev/null 2>&1; then \

@@ -18,7 +18,7 @@ module top (
     logic rst_n;
     assign rst_n = ResetButton;
 
-    top_core u_core (
+    top_core #(.BOARD_20K(1'b0)) u_core (
         .rst_n(rst_n),
         .XTAL_IN(XTAL_IN),
         .LCD_CLK(LCD_CLK),

@@ -25,7 +25,7 @@ From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), 
 
 ```mermaid
 graph TD
-    CPU[CPU Execution] --> Fetch["Fetch 0x12 (WVS)"]
+    CPU[CPU Execution] --> Fetch["Fetch 0xFF (WVS)"]
     Fetch --> Wait{Wait for VSync?}
     VSync[VSync Signal] --> Wait
     Wait -- No --> Wait
@@ -34,9 +34,10 @@ graph TD
 
 | Opcode | Mnemonic     | Description                                                   |
 | :----: | ------------ | ------------------------------------------------------------- |
-| `0x12` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
-| `0x22` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
-| `0x32` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
+| `0xFF` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
+| `0xCF` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
+| `0xDF` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running.  |
 
 > [!NOTE]
 > Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (approx. 40MHz).
