@@ -10,13 +10,11 @@ module ram (
 );
 
 `ifdef VERILATOR
-    // Bypass read (READ_MODE=0): matches the Gowin SDPB primitive on hardware,
-    // where dout follows the read address combinationally with no clock delay.
+    // One-clock read latency, matching the clocked BSRAM interface.
     logic [7:0] mem[32768];
 
-    assign dout = mem[addr];  // No consumer may depend on same-edge read/write collision data.
-
     always_ff @(posedge clk) begin
+        dout <= mem[addr];  // No consumer may depend on same-edge read/write collision data.
         if (write_en) begin
             mem[addr] <= din;
         end

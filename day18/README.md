@@ -40,7 +40,7 @@ graph TD
 | `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running.  |
 
 > [!NOTE]
-> Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (40.5MHz on both 9K and 20K, see day18_*.sdc).
+> Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (27MHz on 9K, 40.5MHz on 20K, see day18_*.sdc).
 
 ## 🛠️ Implementation Steps
 
