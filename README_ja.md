@@ -88,6 +88,7 @@ graph TD
 ## 📘 その他のリンク
 
 - **[必要なソフトウェア](./docs/PREREQS_ja.md)**: はじめにこれらをインストールしてください。
+- **[ボード設定と環境構築 (9K / 20K)](./docs/BOARD_SETUP_ja.md)**: Tang Nano 9K と 20K の仕様差（リセット極性・クロック・制約）と設定方法。
 - **[全命令リスト](./day99_completed/docs/INSTRUCTIONS.md)** 6502 CPU 命令リスト。
 
 ## 📅 カリキュラム

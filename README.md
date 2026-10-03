@@ -72,9 +72,9 @@ Each day is split into two folders. Use them as follows:
 **Typical Daily Workflow:**
 
 1. Read `dayXX/README.md`.
-2. Edit `.sv` files in `dayXX/`.
-3. Run `make test` to verify logic (Simulation). **Think of this as running your unit tests.**
-4. Run `make download` to program the FPGA (Hardware). **Think of this as deploying to production.**
+2. Edit the starter files in `dayXX/` to complete the task.
+3. Run the test commands listed in each day's README (e.g., `make -C dayXX test-cpu` or `make test`). Note that simulation validates the specified test scope and does not guarantee hardware execution.
+4. `make BOARD=9k download` or `make BOARD=20k download` builds and programs the Day 99 design. To program an individual day, run e.g. `make -C dayXX_completed download BOARD=9k`. Real-hardware verification should be confirmed on your board.
 
 ## 📘 Resources for Software Engineers
 
@@ -88,6 +88,7 @@ Moving from software to hardware requires a shift in mindset. We have prepared g
 ## 📘 Other Links
 
 - **[Required Software](./docs/PREREQS.md)**: Install them first
+- **[Board Setup & Configuration (9K / 20K)](./docs/BOARD_SETUP.md)**: Specifications comparison (reset polarity, clocks, constraints) between Tang Nano 9K and 20K.
 - **[Full Instruction Set List](./day99_completed/docs/INSTRUCTIONS.md)**: 6502 Instruction Set List.
 
 ## 📅 Curriculum Roadmap

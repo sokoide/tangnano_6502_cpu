@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-- `src/`: SystemVerilog sources (`top.sv`, `lcd.sv`, `cpu*.sv`, `ram.sv`) and testbenches `tb_*.sv`. Vendor IP lives under `src/gowin_*`.
+- `src/`: SystemVerilog sources (`top_9k.sv`, `top_20k.sv`, `top_core.sv`, `platform_clocks.sv`, `reset_sync.sv`, `lcd.sv`, `cpu*.sv`, `ram.sv`) and testbenches `tb_*.sv`. Vendor IP lives under `src/gowin_*`.
 - `include/`: Shared headers and generated files (`consts.svh`, `boot_program.sv` [generated], `cpu_ifo_auto_generated.svh` [generated], `cpu_tasks.svh`, `cpu_pkg.sv`).
 - `examples/`: 6502 assembly programs and Makefile that generates `include/boot_program.sv`.
 - `utils/`: Helper tools (e.g., `utils/hex_fpga/` Go converter).
@@ -16,7 +16,7 @@
 - `make clean` — Remove local build artifacts.
 - `cd examples && make` — Assemble 6502 program and regenerate `include/boot_program.sv`.
 - `make wave` — Open `gtkwave` on `waveform.vcd` (produce VCD in your simulator first).
-- Board variant: update `DEVICE` in `Makefile`, device/constraints in `lcd_cpu_bsram.gprj`, and reset polarity in `src/top.sv`.
+- Board variant: target via `make BOARD=9k` (default) or `make BOARD=20k` (`top_9k.sv` / `top_20k.sv` handle reset polarity; `platform_clocks.sv` configures 27MHz/40.5MHz).
 
 ## Coding Style & Naming Conventions
 
@@ -27,7 +27,7 @@
 
 ## Testing Guidelines
 
-- Testbenches: `tb_cpu.sv`, `tb_lcd.sv`, `tb_top.sv`. Run with your SV simulator; emit `waveform.vcd` for inspection and `make wave`.
+- Testbenches: `tb_cpu.sv`, `tb_lcd.sv`, `tb_top.sv`, `tb_lcd_pipeline.sv`, `tb_diag_simple5.sv`. Run with Verilator via `make test`; emit `waveform.vcd` for inspection and `make wave`.
 - Aim for coverage of CPU instruction paths, memory, and LCD timing. Add minimal repros under `examples/` when fixing bugs.
 
 ## Commit & Pull Request Guidelines

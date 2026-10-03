@@ -76,7 +76,7 @@ graph LR
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day14/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 

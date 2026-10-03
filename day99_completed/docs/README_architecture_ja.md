@@ -137,9 +137,14 @@ CPU とディスプレイ両方のアクセスを最適化した洗練された�
 
 ```bash
 src/
-├── top.sv              # システム統合とクロック管理
-├── cpu.sv              # モジュラー設計の6502 CPUコア
-├── lcd.sv              # LCD タイミングと文字レンダリング
+├── top_9k.sv           # Tang Nano 9K トップラッパー（active-high リセット）
+├── top_20k.sv          # Tang Nano 20K トップラッパー（active-low リセット）
+├── top_core.sv         # システム統合（CPU, RAM, VRAM, LCD）
+├── platform_clocks.sv  # PLL クロック生成・ロック監視・リセットゲーティング
+├── reset_sync.sv       # 多段リセット同期回路
+├── cpu.sv              # 2-process FSM 構成の 6502 CPU コア
+├── lcd.sv              # LCD タイミング制御と文字レンダリング（画素クロック同期）
+├── ram.sv              # メモリサブシステム（SDPB BSRAM + アドレスデコード）
 ├── gowin_rpll_9K/      # Tang Nano 9K PLL設定
 └── gowin_rpll_20K/     # Tang Nano 20K PLL設定
 

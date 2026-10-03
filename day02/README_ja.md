@@ -120,19 +120,23 @@ module alu_4bit (
     output logic carry
 );
 
-    logic [4:0] temp_result;  // キャリー計算用
+    logic [4:0] temp_result;  // キャリー計算用 (5ビット幅)
 
     always_comb begin
+        // 重要: ラッチ（意図しないメモリ）を防ぐため、先頭ですべての出力にデフォルト値を代入
+        temp_result = 5'd0;
+        result = 4'd0;
+        carry = 1'b0;
+
         case (op)
-            2'b00: begin  // 加算
-                temp_result = a + b;
+            2'b00: begin  // 加算 (5ビット幅で加算して最上位ビットをキャリーとする)
+                temp_result = {1'b0, a} + {1'b0, b};
                 result = temp_result[3:0];
                 carry = temp_result[4];
             end
-            // TODO: 他の操作を実装
+            // TODO: 他の操作を実装 (2'b01: 減算, 2'b10: AND, 2'b11: OR)
             default: begin
-                result = 4'b0000;
-                carry = 1'b0;
+                // デフォルト値を維持
             end
         endcase
 

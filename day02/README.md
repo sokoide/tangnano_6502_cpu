@@ -105,19 +105,23 @@ module alu_4bit (
     output logic carry
 );
 
-    logic [4:0] temp_result;  // For carry calculation
+    logic [4:0] temp_result;  // For carry calculation (5-bit width)
 
     always_comb begin
+        // Important: Set default values to avoid inferred latches
+        temp_result = 5'd0;
+        result = 4'd0;
+        carry = 1'b0;
+
         case (op)
-            2'b00: begin  // Addition
-                temp_result = a + b;
+            2'b00: begin  // Addition (5-bit addition so bit 4 is the carry out)
+                temp_result = {1'b0, a} + {1'b0, b};
                 result = temp_result[3:0];
                 carry = temp_result[4];
             end
-            // TODO: Implement other operations
+            // TODO: Implement other operations (2'b01: Subtraction, 2'b10: AND, 2'b11: OR)
             default: begin
-                result = 4'b0000;
-                carry = 1'b0;
+                // Keep defaults
             end
         endcase
 

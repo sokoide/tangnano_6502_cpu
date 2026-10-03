@@ -142,9 +142,14 @@ Font ROM is a separate LCD resource, outside the CPU address map.
 
 ```bash
 src/
-├── top.sv              # System integration and clock management
-├── cpu.sv              # Modular 6502 CPU core design
-├── lcd.sv              # LCD timing and character rendering
+├── top_9k.sv           # Tang Nano 9K top wrapper (active-high reset)
+├── top_20k.sv          # Tang Nano 20K top wrapper (active-low reset)
+├── top_core.sv         # System core integration (CPU, RAM, VRAM, LCD)
+├── platform_clocks.sv  # PLL clocks, lock detection, and reset gating
+├── reset_sync.sv       # Multi-stage reset synchronizer
+├── cpu.sv              # 6502 CPU core with 2-process FSM
+├── lcd.sv              # LCD timing and character rendering (pixel domain)
+├── ram.sv              # Memory subsystem (SDPB BSRAM + address decoding)
 ├── gowin_rpll_9K/      # Tang Nano 9K PLL configurations
 └── gowin_rpll_20K/     # Tang Nano 20K PLL configurations
 

@@ -44,16 +44,15 @@ sequenceDiagram
 ## 🛠️ Implementation Steps
 
 1. **Comparison Logic**:
-    - Perform `Register - Operand`.
-    - If `result >= 0`, then `C=1` (No borrow).
-    - If `result == 0`, then `Z=1`.
+    - Compute `Register - Operand`.
+    - If no borrow occurs (`Register >= Operand` in unsigned 8-bit comparison), set `C=1`. Set `N=result[7]`, and `Z=(result == 8'h00)`.
 2. **Read-Modify-Write Sequence**:
     - `INC` and `DEC` require separate cycles to read the data, process it in the ALU, and write it back to the same address.
     - Add states like `STATE_RMW_READ` and `STATE_RMW_WRITE` to your FSM.
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day15/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 

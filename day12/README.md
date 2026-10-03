@@ -63,7 +63,7 @@ Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day12/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 
@@ -74,7 +74,7 @@ Starting from Day 05, **the testbench (`day12/sim/`) is provided in a complete s
     LDA $1234  ; Load from address $1234 (A = 0x55)
     ```
 
-- **Simulation**: Run `make sim` and verify that Absolute addressing read/write works correctly and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` to execute the CPU tests. Verify Absolute addressing read/write behavior with the test program; interpret passing results as limited strictly to the assertions checked in the test.
 - **FPGA**: Confirm on the LCD that the PC and A register values change as expected.
 
 ## 🎯 Next Step

@@ -70,7 +70,7 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day13/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 
@@ -86,7 +86,7 @@ Starting from Day 05, **the testbench (`day13/sim/`) is provided in a complete s
     ```
 
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Observe the PC jumping non-linearly on the LCD.
+- **FPGA**: Confirm on the LCD that A and the N/V/Z flags are displayed. `BIT` holds A unchanged and updates N/V/Z based on the memory value.
 
 ## 🎯 Next Step
 

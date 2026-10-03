@@ -64,31 +64,31 @@ make clean && make          # Build assembly (ca65/cc65 toolchain)
 ### System Block Diagram
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Tang Nano FPGA (9K or 20K)                     │
-│                                                 │
-│  ┌──────────────┐       ┌──────────────────┐    │
-│  │ 6502 CPU     │◄─────┤ 32KB RAM (SDPB)  │    │
-│  │ 40.5MHz      │       │ 0x0200-0x7BFF    │    │
-│  └──────┬───────┘       └──────────────────┘    │
-│         │                                       │
-│         ├──────────────┐                        │
-│         │              │                        │
-│         ▼              ▼                        │
-│  ┌──────────┐   ┌─────────────┐                │
-│  │ 1KB VRAM │◄──┤ Font ROM    │                │
-│  │ 0xE000   │   │ 4KB (pROM)  │                │
-│  └────┬─────┘   └─────────────┘                │
-│       │                                         │
-│       ▼                                         │
-│  ┌─────────────┐                               │
-│  │ LCD Control │  480×272 display              │
-│  │ 9MHz        │  60×17 text mode               │
-│  └─────────────┘                               │
-│                                                 │
-│  27MHz XTAL → PLL40 (40.5MHz CPU/MEM)           │
-│           → PLL9 (9MHz LCD)                     │
-└─────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│  Tang Nano FPGA (9K or 20K)                            │
+│                                                        │
+│  ┌──────────────────────┐       ┌──────────────────┐   │
+│  │ 6502 CPU             │◄─────┤ 32KB RAM (SDPB)  │   │
+│  │ 27MHz (9K)/40.5M(20K)│       │ 0x0200-0x7BFF    │   │
+│  └──────────┬───────────┘       └──────────────────┘   │
+│             │                                          │
+│             ├──────────────┐                           │
+│             │              │                           │
+│             ▼              ▼                           │
+│      ┌──────────┐   ┌─────────────┐                    │
+│      │ 1KB VRAM │◄──┤ Font ROM    │                    │
+│      │ 0xE000   │   │ 4KB (pROM)  │                    │
+│      └────┬─────┘   └─────────────┘                    │
+│           │                                            │
+│           ▼                                            │
+│      ┌─────────────┐                                   │
+│      │ LCD Control │  480×272 display                  │
+│      │ 9MHz        │  60×17 text mode                  │
+│      └─────────────┘                                   │
+│                                                        │
+│  27MHz XTAL → PLL (27MHz 9K / 40.5MHz 20K CPU/MEM)     │
+│             → PLL9 (9MHz LCD)                          │
+└────────────────────────────────────────────────────────┘
 ```
 
 ### Memory Map
@@ -107,10 +107,11 @@ make clean && make          # Build assembly (ca65/cc65 toolchain)
 ### Clock Domains
 
 - **27MHz**: Crystal oscillator input
-- **40.5MHz**: CPU and memory operations (via PLL40)
+- **CPU / Memory operations**:
+  - **Tang Nano 9K**: 27MHz in Day 18 & Day 99 (tuned for safe setup timing slack); 40.5MHz in Day 04–17
+  - **Tang Nano 20K**: 40.5MHz (via PLL40)
 - **9MHz**: LCD pixel clock (via PLL9)
-
-**Critical**: Always use proper synchronizers for clock domain crossings (e.g., VRAM read address from LCD domain to memory domain).
+- **Display pipeline**: VRAM read port (`clkb`) and Font ROM (`clk`) operate in the 9MHz `LCD_CLK` domain (Day 04–18, Day 99), preventing CDC race conditions.
 
 ### Custom 6502 Instructions (Day 17+)
 
@@ -125,8 +126,9 @@ make clean && make          # Build assembly (ca65/cc65 toolchain)
 
 - Device: `GW1NR-9C` vs `GW2AR-18C`
 - Reset polarity: `rst_n = ResetButton` (9K) vs `rst_n = !ResetButton` (20K)
-- Top-level wrapper: `top_9k.sv` vs `top_20k.sv`
-- PLL configuration: Different Gowin PLL primitives
+- Top-level wrapper: `top_9k.sv` vs `top_20k.sv` (with shared `top_core.sv`)
+- PLL configuration: Different Gowin PLL primitives; 9K CPU runs at 27MHz in Day 18/99 while 20K runs at 40.5MHz.
+- See `docs/BOARD_SETUP.md` for detailed comparison.
 
 Build system handles board selection via `BOARD=9k|20k` variable.
 

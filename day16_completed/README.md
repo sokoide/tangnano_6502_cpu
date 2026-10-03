@@ -69,7 +69,7 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
     DATA: .byte $11, $22, $33
     ```
 
-- **FPGA**: Confirm on the LCD that A becomes `$11`, `$22`, and then `$33` before the program exits the loop.
+- **FPGA**: Confirm on the LCD that the A register sequentially changes to `$11`, `$22`, and `$33`, and that the program exits the loop and halts with `A=$33`, `X=$03`.
 
 ## 🎯 Next Step
 

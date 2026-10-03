@@ -8,6 +8,8 @@ This document helps you navigate the _final integrated_ design in `day99_complet
 graph TD
   top9[top_9k.sv] --> core[top_core.sv]
   top20[top_20k.sv] --> core
+  core --> clk[platform_clocks.sv]
+  core --> rst[reset_sync.sv]
   core --> cpu[cpu.sv]
   core --> lcd[lcd.sv]
   core --> ram[ram.sv]
@@ -47,6 +49,8 @@ For the detailed architecture narrative, see `docs/README_architecture_en.md`.
 
 ## Key supporting files
 
+- `src/platform_clocks.sv` — PLL clocks (27MHz 9K / 40.5MHz 20K, 9MHz LCD), lock detection, and reset gating
+- `src/reset_sync.sv` — multi-stage reset synchronizer for clean cross-domain release
 - `include/consts.svh` — shared constants (avoid “magic numbers”) for modules
 - `include/consts_pkg.sv` — shared constants usable from `package` code (Gowin-compatible)
 - `include/boot_program.sv` — boot ROM contents (generated from `examples/`)

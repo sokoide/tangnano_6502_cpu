@@ -55,7 +55,7 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 
@@ -69,8 +69,8 @@ Starting from Day 05, **the testbench (`day16/sim/`) is provided in a complete s
     HLT
     ```
 
-- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Confirm on the LCD that the A register changes to `$11`, `$22`, and `$33`, and finally exits the loop.
+- **Simulation**: Run `make test-cpu` and verify the indexed memory access testbench outputs `PASS` (`make sim` additionally runs the TFT smoke test).
+- **FPGA**: The hardware ROM (`rom.sv`) executes a loop loading array `DATA` ($11, $22, $33). Confirm on the LCD that A sequentially updates to `$11`,`$22`, and `$33`, and finally halts at`A=$33`, `X=$03`.
 
 ## 🎯 Next Step
 

@@ -43,12 +43,12 @@ graph LR
 - **Advantages**: It only requires 1 byte for the address, making instructions shorter and execution faster.
 
 **Analogy:**
-Think of Zero Page as the **"VIP Section"** or **"L1 Cache"** of memory.
+Zero Page is not a dedicated cache, but a memory region where the upper address byte can be omitted. In the 6502, it enables shorter instruction lengths and faster execution for some instructions, though this does not imply any measured speedup in this specific educational implementation.
 
-- **Normal Memory (Absolute)**: Requires a full street address (16-bit) to find. "1234 Main St."
-- **Zero Page**: Only requires a nickname (8-bit) because it's right in the neighborhood. "Bob's House."
+- **Normal Memory (Absolute)**: Requires a full street address (16-bit) to locate: "1234 Main St."
+- **Zero Page**: Only requires a local nickname (8-bit) because it's right in the immediate neighborhood: "Bob's House."
 
-It is functionally used like "extra registers" or high-speed variables for your programs.
+It serves as a compact variable area accessible via shorter instructions.
 
 ## 🏗️ Instructions to Implement
 
@@ -71,7 +71,7 @@ It is functionally used like "extra registers" or high-speed variables for your 
 
 ## 🧪 Verification
 
-Starting from Day 05, **the testbench (`day11/sim/`) is provided in a complete state.** Use it to verify the correctness of your implementation.
+This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 

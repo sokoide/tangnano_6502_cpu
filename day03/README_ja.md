@@ -98,7 +98,7 @@ flowchart LR
 // 8bit Counter
 // 8ビット アップカウンタ
 
-// 8-bit Up Counter with Enable and Synchronous Reset
+// 8-bit Up Counter with Enable and Asynchronous Reset (Active-Low)
 
 module counter_8bit (
     input logic clk,
@@ -207,8 +207,12 @@ module traffic_light (
             current_state <= RED_STATE;
             timer <= 26'b0;
         end else begin
-            current_state <= next_state;
-            timer <= timer + 1;
+            if (current_state != next_state) begin
+                current_state <= next_state;
+                timer <= 26'b0;
+            end else begin
+                timer <= timer + 1;
+            end
         end
     end
 

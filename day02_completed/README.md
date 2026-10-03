@@ -75,7 +75,7 @@ A testbench typically does three things:
 
 ## 🔬 What is Verilator? (The Hardware "Transpiler")
 
-**Verilator** is a simulator that acts like a **transpiler**. It converts your SystemVerilog code into a C++ model that behaves exactly like your hardware. This C++ code is then compiled into a normal executable program that you can run to see the test results.
+**Verilator** is a tool that analyzes SystemVerilog and generates a C++ simulation model. While this model verifies the logical behavior of your RTL, it does not reproduce analog characteristics, actual device delays, or post-place-and-route timing. When that C++ code is compiled and executed, it displays your test results.
 
 The `make test` command automates this entire flow:
 

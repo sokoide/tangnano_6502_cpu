@@ -82,7 +82,7 @@ Instead of consuming limited logic resources (LUTs), we use dedicated **BSRAM (B
 
 ### 1. SDPB (Semi-Dual Port Block RAM)
 
-Used for the **VRAM**. One port is dedicated to the LCD controller for reading pixels, while the other is used for writing character data. This allows smooth updates without display flickering.
+Used for the **VRAM**. One port is dedicated to the LCD controller for reading pixels, while the other is used for writing character data. The LCD read port is clocked by the 9MHz pixel clock and completes in the pixel domain (only writes use the memory clock), allowing smooth and stable updates without display flickering.
 
 ### 2. pROM (Programmable ROM)
 
@@ -91,7 +91,7 @@ Used for the **Font ROM**. It comes pre-loaded with font patterns upon power-up,
 ## 🛠️ Implementation Steps
 
 1. **Integrate `lcd_demo.sv`**:
-    - Instantiate `lcd_demo` in `top_core.sv` to enable video output on the actual LCD.
+    - Follow the TODO in `top_core.sv` to instantiate `lcd_demo` (named `u_demo`) and connect the clocks and LCD output signals.
 2. **Display Demo Text**:
     - VRAM is pre-filled with text like "VRAM TEXT" on boot. Verify that this appears correctly on the screen.
 
@@ -103,14 +103,39 @@ The slow-paced demo circuit driving CPU registers and instruction category LEDs 
 
 **About the Memory Map:** The table above introduces the logical address layout planned for subsequent CPU lessons. The Day 04 LCD demo itself has no CPU address decoding. Furthermore, Day 99 implements mirror regions in higher addresses; refer to the [Day 99 Memory Contract](../day99_completed/docs/INSTRUCTIONS.md) for the final layout.
 
+## 🛠️ Build and Verification Steps
+
+### 1. Simulation (`make sim` or `make test`)
+
+```bash
+make sim
+# Or run with BOARD=20k
+make sim BOARD=20k
+```
+
+> [!WARNING]
+> **Important Note for Starter Code (Preventing Infinite Hangs)**:
+> In the unedited starter code (`top_core.sv`), `lcd_demo` is not yet instantiated, so no LCD clock (`LCD_CLK`) is produced. Running `make sim` in this state causes the testbench to wait indefinitely on `@(posedge LCD_CLK)`, **hanging the simulation**.
+> Be sure to complete the TODO in `top_core.sv` (instantiating `lcd_demo`) before running `make sim`.
+
+### 2. Hardware Programming (`make download`)
+
+```bash
+# For Tang Nano 9K
+make BOARD=9k download
+
+# For Tang Nano 20K
+make BOARD=20k download
+```
+
 ## 💡 Design Tip: The Importance of Visualization
 
 In hardware development, you cannot simply `printf` to a console. By establishing the LCD controller early, you build a hardware-native debugger to visually inspect CPU progress in later days.
 
 ## 📝 Exercises
 
-- [ ] Correctly instantiate `lcd_demo` in `top_core.sv` and ensure the simulation results in `PASS`.
-- [ ] Program the hardware and confirm that the demo text appears on the LCD.
+- [ ] Correctly instantiate `lcd_demo` in `top_core.sv` and ensure the simulation (`make sim`) passes.
+- [ ] Program the hardware (`make download`) and confirm that the demo text appears on the LCD.
 - [ ] (Advanced) Modify the initialization code in `lcd_demo.sv` to display your own name.
 
 ## 📚 What I Learned Today

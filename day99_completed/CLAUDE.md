@@ -73,28 +73,29 @@ make
 1. **Assembly Development**: Edit `.s` files in `examples/`, modify `examples/Makefile` SRCS variable
 2. **Auto-generation**: Assembly programs are converted to SystemVerilog via `utils/hex_fpga/` tool
 3. **FPGA Build**: `include/boot_program.sv` is auto-generated and included in synthesis
-4. **Device Configuration**: Toggle between Tang Nano 9K/20K by editing `Makefile`, `.gprj`, and `src/top.sv`
+4. **Device Configuration**: Select board with `BOARD=9k` (default) or `BOARD=20k` in `make`
 
 ## Testing
 
-**Simulation**: Use DSIM Studio on Linux/Windows x64 (not macOS):
-
-- Open `lcd_cpu_bsram.dpf` project
-- Run "library configuration" then `tb_cpu` simulation
-- Testbenches: `tb_cpu.sv`, `tb_lcd.sv`, `tb_top.sv`
+- **Verilator (Recommended)**: Run `make test` (or `make BOARD=20k test`)
+- **Key Testbenches**: `tb_cpu.sv`, `tb_lcd.sv`, `tb_top.sv`, `tb_lcd_pipeline.sv`, `tb_diag_simple5.sv`
+- **Optional**: DSIM Studio on Linux/Windows x64 via `lcd_cpu_bsram.dpf`
 
 ## Device Variants
 
-**Tang Nano 9K vs 20K**: Three files need modification:
-
-1. `Makefile`: DEVICE variable
-2. `lcd_cpu_bsram.gprj`: Device and constraint file selection
-3. `src/top.sv`: Reset button polarity (`rst_n = ResetButton` vs `rst_n = !ResetButton`)
+**Tang Nano 9K vs 20K**: Handled automatically via `BOARD=9k|20k`:
+- `src/top_9k.sv`: 9K board wrapper (`rst_n = ResetButton;`)
+- `src/top_20k.sv`: 20K board wrapper (`rst_n = !ResetButton;`)
+- `src/platform_clocks.sv`: 27MHz (9K) / 40.5MHz (20K) clock generation and lock gating
+- Constraints: `lcd_cpu_bsram_9K.cst` vs `lcd_cpu_bsram_20K.cst`
 
 ## Key Files
 
-- `src/cpu.sv`: 6502 CPU implementation with custom instructions
-- `src/lcd.sv`: LCD timing controller
-- `src/top.sv`: Top-level module with PLL and interconnects
-- `include/boot_program.sv`: Auto-generated from assembly programs
+- `src/cpu.sv`: 6502 CPU implementation with custom instructions (2-process FSM)
+- `src/top_core.sv`: System-level core interconnect (CPU, VRAM, RAM, LCD)
+- `src/top_9k.sv` / `src/top_20k.sv`: Board-specific top modules
+- `src/platform_clocks.sv`: PLL clocks, lock detection, and reset gating
+- `src/reset_sync.sv`: Reset synchronizer
+- `src/lcd.sv`: LCD timing controller with pixel-domain character pipeline
+- `include/boot_program.sv`: Auto-generated case ROM from assembly programs
 - `include/consts.svh`: Memory map and LCD timing constants
