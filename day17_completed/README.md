@@ -62,7 +62,9 @@ graph TD
 
 ## 🧪 Verification
 
-- **Test Program**:
+- **Running the tests (simulation)**: Run `make test-cpu` in this directory. The shared testbench `../day17/sim/tb_cpu.sv` exercises `LDA (zp,X)`, `LDA (zp),Y`, and `JMP (abs)` (including zero-page wraps and `JSR`/`RTS` interaction) and must finish with `PASS`. `make sim` runs the TFT smoke test. `make test` additionally runs the synchronous RAM integration tests and the LCD pipeline test.
+
+- **On-board program (instruction sequence in `rom.sv`)**:
 
     ```asm
     LDA #$20
@@ -72,10 +74,13 @@ graph TD
 
     LDY #$01
     LDA ($10),Y ; Load from address ($8020 + 1) = $8021
+    HLT
     ```
 
-- **FPGA**: Verify on the LCD that the final data loaded into A matches the content of the address pointed to by your memory variable.
+    The target data `$42` at `$8021` is baked into the ROM; it is not initialized by the CPU. The shared testbench used by `make test-cpu` injects a different program and pointer tables.
+
+- **FPGA**: Confirm on the LCD debug readout (`PC:xxxx A:xx ...`) that A ends up as `$42` and the CPU stops at `HLT`.
 
 ## 🎯 Next Step
 
-In Day 18, we will break away from the standard 6502 set and implement **Custom FPGA Instructions (HLT, WVS, CVR, IFO)** to take direct control of our hardware peripherals.
+In Day 18, we will implement **Custom FPGA Instructions (WVS, CVR, IFO)** beyond the standard 6502 set. Together with `HLT` (introduced in Day 10), they give direct control over our hardware peripherals.

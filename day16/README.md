@@ -1,4 +1,4 @@
-# Day 16: Indexed Addressing (LDA abs,X)
+# Day 16: Indexed Addressing (LDA abs,X / abs,Y, STA abs,X)
 
 ---
 
@@ -13,7 +13,7 @@ In this mode, the CPU accesses an address calculated by adding the value of the 
 
 ## 🧠 Memory Model Note
 
-From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days. The CPU sees `$0000-$7FFF` as RAM and `$8000-$FFFF` as ROM; after reset, `boot_loader.sv` copies the 256-byte boot image from ROM into RAM starting at `$0200` before execution begins.
 
 ## 🎯 Learning Objectives
 
@@ -21,7 +21,7 @@ From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), 
 - **Array Processing**: Buffer or table traversal using loops and the X register.
 - **Multi-cycle Logic**: Handling the extra cycles required for address arithmetic.
 
-## 🏗️ Example Instructions
+## 🏗️ Instructions to Implement
 
 ```mermaid
 graph LR
@@ -43,7 +43,7 @@ graph LR
 | `0xB9` | `LDA abs,Y` | Load A from address (abs + Y) |   4+   |
 | `0x9D` | `STA abs,X` | Store A to address (abs + X)  |   5    |
 
-_Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page boundary" is crossed (e.g., from $xxFF to $yy00). You may implement a simplified fixed-cycle version initially._
+_Note: The cycle counts are those of a real 6502. `LDA abs,X` / `LDA abs,Y` take an extra cycle when a page boundary is crossed (e.g., from $xxFF to $yy00), while `STA abs,X` always takes 5 cycles. This educational CPU performs a single 16-bit add onto the base address with fixed cycles, so there is no page-crossing penalty._
 
 ## 🛠️ Implementation Steps
 
@@ -52,6 +52,8 @@ _Note: The `+` indicates that an extra cycle is added on a real 6502 if a "page 
     - Example: `effective_address = base_address + X;`
 2. **State Machine Adjustment**:
     - Manage the cycles to fetch the base address bytes, perform the addition, and then perform the final memory access.
+3. **Check the Skeleton TODOs**:
+    - The TODO comments inside `cpu.sv` describe exactly what to insert in each of the `STATE_FETCH_OPCODE` / `STATE_FETCH_HIGH` / `STATE_EXECUTE` states.
 
 ## 🧪 Verification
 
@@ -61,16 +63,18 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 
     ```asm
     LDX #$05
-    LDA $1000,X ; A = mem[$1005] = 0x5A (indexed read)
+    LDA $1000,X ; A = mem[$1005] = $5A (indexed read)
     LDA #$77
-    STA $1000,X ; mem[$1005] = 0x77    (indexed write)
+    STA $1000,X ; mem[$1005] = $77    (indexed write)
     LDY #$05
-    LDA $1000,Y ; A = mem[$1005] = 0x77
+    LDA $1000,Y ; A = mem[$1005] = $77
     HLT
     ```
 
+    This is the program that `sim/tb_cpu.sv` injects into its internal memory model (`rom.sv` is not used by this test).
+
 - **Simulation**: Run `make test-cpu` and verify the indexed memory access testbench outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: The hardware ROM (`rom.sv`) executes a loop loading array `DATA` ($11, $22, $33). Confirm on the LCD that A sequentially updates to `$11`,`$22`, and `$33`, and finally halts at`A=$33`, `X=$03`.
+- **FPGA**: The hardware ROM (`rom.sv`) executes a loop loading array `DATA` (`$11`, `$22`, `$33`). Confirm on the LCD that A sequentially updates to `$11`,`$22`, and `$33`, and finally halts at `A=$33`, `X=$03`. On hardware, a 24-bit counter in `lcd_demo.sv` throttles `pc_enable` so the CPU runs slowly enough to follow the register changes by eye.
 
 ## 🎯 Next Step
 

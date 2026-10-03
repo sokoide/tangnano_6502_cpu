@@ -13,7 +13,7 @@ Phase 3 の締めくくりとして、値を比較してフラグを更新する
 
 ## 🧠 メモリ構成の注意
 
-Day 10 以降はプログラムを Gowin BSRAM で実装した RAM (`ram.sv`) から実行します。Day 04〜09 の簡易 ROM とは構成が異なります。
+Day 10 以降は、リセット後に `boot_loader.sv` が ROM の `$0200` から 256 バイトのプログラムを Gowin BSRAM 製 RAM (`ram.sv`, `$0000-$7FFF`) の `$0200` 以降へコピーし、CPU は RAM から実行します (ROM は `$8000-$FFFF` にマップ)。Day 04〜09 の簡易 ROM から直接実行する構成とは異なります。
 
 ## 🎯 学習目標
 
@@ -41,15 +41,16 @@ sequenceDiagram
 |   `0xE6`   | `INC zp`     | 指定アドレスのメモリ値を +1 |     5      |
 |   `0xC6`   | `DEC zp`     | 指定アドレスのメモリ値を -1 |     5      |
 
+サイクル数は実機 6502 の参考値です。本カリキュラムの CPU はマルチサイクル FSM による教育的実装のため、実際のサイクル数はこれより多くなります。
+
 ## 🛠️ 実装ステップ
 
 1. **比較ロジック**:
     - `CMP` などは `Register - Operand` を計算します。
     - 減算でボローが発生しなければ `C=1`（8bit の符号なし比較で Register >= Operand）。結果の bit 7 を `N`、結果が 0 なら `Z=1` とします。
-    - `result == 0` なら `Z=1`。
 2. **Read-Modify-Write (RMW)**:
-    - `INC` や `DEC` はメモリからデータを読み出すサイクル、ALU で計算するサイクル、そして同じアドレスに書き戻すサイクルが必要です。
-    - ステートマシンに `STATE_RMW_READ`, `STATE_RMW_WRITE` などを追加します。
+    - `INC` や `DEC` はメモリからデータを読み出すステップ、±1 を計算するステップ、そして同じアドレスに書き戻すステップに分かれます。
+    - 既存のステートを再利用します: `STATE_FETCH_OPERAND` でゼロページアドレスを `address_bus` にセットして `STATE_EXECUTE` へ遷移、`STATE_EXECUTE` で `data_in ± 1` を計算して `Z`/`N` を更新し `write_en` を立てて `STATE_WRITE_BACK` へ、`STATE_WRITE_BACK` で `write_en` をクリアして `STATE_FETCH_OPCODE` に戻ります (`cpu.sv` の TODO コメントも参照)。
 
 ## 🧪 動作確認
 
@@ -65,12 +66,14 @@ sequenceDiagram
     CPX #$03   ; larger:     C=1 Z=0 N=0
     LDY #$07
     CPY #$09   ; smaller:    C=0 Z=0 N=1
-    INC $30    ; 0x0F -> 0x10 (Z=0 N=0)
-    INC $31    ; 0xFF -> 0x00 (wrap: Z=1)
-    DEC $32    ; 0x00 -> 0xFF (wrap: N=1)
-    DEC $30    ; 0x10 -> 0x0F
-    HLT
+    INC $30    ; $0F -> $10 (Z=0 N=0)
+    INC $31    ; $FF -> $00 (wrap: Z=1)
+    DEC $32    ; $00 -> $FF (wrap: N=1)
+    DEC $30    ; $10 -> $0F
+    HLT        ; $EF: カスタム停止命令 (Day 10 で実装済み)
     ```
+
+    テストベンチ `sim/tb_cpu.sv` はこのプログラムを自身のメモリモデルに直接注入します (FPGA 実機向けの `rom.sv` は別のデモプログラムです)。
 
 - **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は CPU テストに加えて TFT smoke test も実行します)。
 - **実機 (FPGA)**: LCD に CPU の各レジスタとフラグが表示され、プログラムが期待通りに進行することを確認します。

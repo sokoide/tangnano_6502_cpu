@@ -60,8 +60,8 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🛠️ Implementation Steps
 
-1. **Extend the ALU**:
-    - Add `&` (AND), `|` (OR), and `^` (XOR) logic to your `always_comb` block.
+1. **Add the Logical Operations**:
+    - In `STATE_FETCH_OPCODE`, make `OP_AND_IMM` / `OP_ORA_IMM` / `OP_EOR_IMM` transition to operand fetch (`STATE_FETCH_OPERAND`); in `STATE_FETCH_OPERAND`, write `a & data_in` / `a | data_in` / `a ^ data_in` back into A (see the TODO comments in `cpu.sv`).
 2. **Flag Update Logic**:
     - Update `Z = (result == 0)` and `N = result[7]` for logical results.
 3. **Decode BIT Instruction**:
@@ -70,23 +70,23 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🧪 Verification
 
-This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
+This Day includes a CPU testbench (`sim/tb_cpu.sv`). If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
-- **Test Program**:
+- **Test Program** (injected by the testbench into memory at `$0200`):
 
     ```asm
     LDA #$F0
-    AND #$3C   ; A = 0x30 (Z=0 N=0)
-    ORA #$03   ; A = 0x33 (Z=0 N=0)
-    EOR #$33   ; A = 0x00 (Z=1 N=0)
+    AND #$3C   ; A = $30 (Z=0 N=0)
+    ORA #$03   ; A = $33 (Z=0 N=0)
+    EOR #$33   ; A = $00 (Z=1 N=0)
     LDA #$0F
-    BIT $10    ; M=0xC3: Z=0, N=1, V=1 (A unchanged)
-    BIT $11    ; M=0x30: Z=1, N=0, V=0 (A unchanged)
+    BIT $10    ; M=$C3: Z=0, N=1, V=1 (A unchanged)
+    BIT $11    ; M=$30: Z=1, N=0, V=0 (A unchanged)
     HLT
     ```
 
-- **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Confirm on the LCD that A and the N/V/Z flags are displayed. `BIT` holds A unchanged and updates N/V/Z based on the memory value.
+- **Simulation**: Run `make test-cpu` and verify the simulation ends with `RESULT: ALL TESTS PASSED` (`make sim` additionally runs the TFT smoke test).
+- **FPGA**: `rom.sv` contains a different program (starting with `LDA #$EF` and ending with `BIT $11`). Check the A and P rows on the LCD (P = {N,V,1,1,1,1,Z,C}). `BIT` holds A unchanged and updates only N/V/Z based on the memory value.
 
 ## 🎯 Next Step
 

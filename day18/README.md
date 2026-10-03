@@ -1,4 +1,4 @@
-# Day 18: Custom Instructions (WVS, CVR, IFO)
+# Day 18: Custom Instructions (WVS, CVR, IFO, HLT)
 
 ---
 
@@ -32,22 +32,26 @@ graph TD
     Wait -- Yes --> Next[Next Instruction]
 ```
 
-| Opcode | Mnemonic     | Description                                                   |
-| :----: | ------------ | ------------------------------------------------------------- |
-| `0xFF` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
-| `0xCF` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
-| `0xDF` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
-| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running. |
+| Opcode | Mnemonic     | Description                                                               |
+| :----: | ------------ | ------------------------------------------------------------------------- |
+| `0xFF` | `WVS #count` | **Wait for V-Sync**: In Day 18, operand N waits for N VSync rising edges. |
+| `0xCF` | `CVR`        | **Clear VRAM**: Request the peripheral circuit to clear VRAM.             |
+| `0xDF` | `IFO`        | **Info**: Request the peripheral circuit to display debug information.    |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU while the LCD controller keeps running.        |
+
+`CVR` and `IFO` are request signals from the CPU to the peripheral circuit. The CPU instruction execution cycle and the time needed for VRAM clearing or character rendering are separate things.
 
 > [!NOTE]
-> Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (27MHz on 9K, 40.5MHz on 20K, see day18_*.sdc).
+> Through Day 17 the CPU was throttled via `pc_enable` in `lcd_demo.sv` for debugging. In Day 18 the CPU runs continuously (`pc_enable = 1`) and synchronizes with the display in software via the `WVS` instruction. The CPU/memory clock (`MEMORY_CLK`) in Day 18 is 27MHz on the 9K board only (Day 04-17 used 40.5MHz) and 40.5MHz on the 20K board (see `day18_*.sdc`).
 
 ## 🛠️ Implementation Steps
+
+The starter `cpu.sv` already implements all instructions through Day 17, including `HLT` (`$EF`). The TODOs are the three instructions `WVS` / `CVR` / `IFO`.
 
 1. **Opcode Assignment**:
     - Define new instructions in `opcodes.svh`.
 2. **Decoder and Execution Logic**:
-    - Change `WVS` to a 2-byte instruction and implement logic to wait for the specified number of rising edges of the `v-sync` signal.
+    - Implement `WVS` as an opcode plus a 1-byte immediate operand. In the Day 18 spec, operand N waits for N rising edges (Day 99 waits for N+1, so beware the spec difference).
 3. **External Signal Definition**:
     - Add `vsync` input and notification signals to the `cpu` module's ports and connect them to external hardware.
 
@@ -55,18 +59,39 @@ graph TD
 
 This Day includes a CPU testbench. If the starter TODOs are not yet implemented, it is expected and normal for the CPU test to fail. After implementing the TODOs, run `make test-cpu` and confirm the tests pass. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
-- **Test Program**:
+- **Program injected by the testbench** (`sim/tb_cpu.sv`):
 
     ```asm
     CVR        ; vram_clear pulses for exactly 1 cycle
-    WVS #2     ; PC holds until 2 vsync rising edges
+    WVS #2     ; PC holds at $0202 until 2 VSync rising edges (Day 18 semantics)
     IFO        ; show_info pulses for exactly 1 cycle
-    JSR $0210  ; subroutine: LDA #$37 / RTS
-    HLT        ; PC stops (vram_clear/show_info stay low)
+    JSR $0210  ; subroutine: LDA #$37 / RTS (returns to $0207)
+    HLT        ; PC stops at $0207 (vram_clear/show_info stay low)
+    ```
+
+    The testbench injects this program into its own memory model, so it is separate from the `rom.sv` program that runs on hardware.
+
+- **Hardware program** (`rom.sv`):
+
+    ```asm
+    LDA #$01
+    STA $00    ; $00 = $01
+    LDA #$02
+    STA $01    ; $01 = $02
+    LDA #$03
+    STA $02    ; $02 = $03
+    LOOP:      ; $020C
+    CLC
+    ADC #$01   ; A += 1
+    INX
+    INY
+    IFO        ; request debug display
+    WVS #$3A   ; wait for 58 VSyncs (approx. 1 second)
+    JMP LOOP
     ```
 
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Confirm on the LCD that all CPU states transition as intended by the program.
+- **FPGA**: Confirm that the IFO display refreshes about once per second and the A/X/Y registers count up on the LCD.
 
 ## 🎉 Congratulations
 

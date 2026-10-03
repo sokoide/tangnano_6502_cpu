@@ -75,20 +75,20 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 
     ```asm
     LDX #$03
-    LDA ($40,X) ; pointer at $0043 -> $1234: A = 0x99
+    LDA ($40,X) ; pointer at $0043 -> $1234: A = $99
     LDX #$05
-    LDA ($FE,X) ; zero-page wrap ($FE+5 = $03): -> $1250: A = 0xAA
+    LDA ($FE,X) ; zero-page wrap ($FE+5 = $03): -> $1250: A = $AA
     LDY #$04
-    LDA ($60),Y ; pointer $1140 + Y -> $1144: A = 0xBB
+    LDA ($60),Y ; pointer $1140 + Y -> $1144: A = $BB
     LDY #$00
-    LDA ($FF),Y ; pointer wraps $FF -> $00: -> $1360: A = 0xCC
+    LDA ($FF),Y ; pointer wraps $FF -> $00: -> $1360: A = $CC
     JSR $0250   ; subroutine: LDA #$42 / RTS
     JMP ($2000) ; pointer at $2000 -> $0230: LDA #$DD / HLT
     ```
 
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Confirm on the LCD that the final data pointed to by the pointer is loaded correctly.
+- **FPGA**: The on-board ROM (`rom.sv`) runs a different program: it builds the pointer `$8020` at `$10/$11`, then `LDA ($10),Y` loads `$42` from `$8021` into A before `HLT`. Confirm `A:42` on the LCD debug readout (`PC:xxxx A:xx ...`).
 
 ## 🎯 Next Step
 
-In Day 18, we will break away from the standard 6502 set and implement **Custom FPGA Instructions (HLT, WVS, CVR, IFO)** to take direct control of our hardware peripherals.
+In Day 18, we will implement **Custom FPGA Instructions (WVS, CVR, IFO)** beyond the standard 6502 set. Together with `HLT` (introduced in Day 10), they give direct control over our hardware peripherals.

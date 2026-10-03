@@ -1,4 +1,4 @@
-# Day 18: Custom Instructions (WVS, CVR, IFO)
+# Day 18: Custom Instructions (WVS, CVR, IFO, HLT)
 
 ---
 
@@ -32,40 +32,53 @@ graph TD
     Wait -- Yes --> Next[Next Instruction]
 ```
 
-| Opcode | Mnemonic     | Description                                                   |
-| :----: | ------------ | ------------------------------------------------------------- |
-| `0xFF` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
-| `0xCF` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
-| `0xDF` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
-| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running. |
+| Opcode | Mnemonic     | Description                                                               |
+| :----: | ------------ | ------------------------------------------------------------------------- |
+| `0xFF` | `WVS #count` | **Wait for V-Sync**: In Day 18, operand N waits for N VSync rising edges. |
+| `0xCF` | `CVR`        | **Clear VRAM**: Request the peripheral circuit to clear VRAM.             |
+| `0xDF` | `IFO`        | **Info**: Request the peripheral circuit to display debug information.    |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU while the LCD controller keeps running.        |
+
+`CVR` and `IFO` are request signals from the CPU to the peripheral circuit. The CPU instruction execution cycle and the time needed for VRAM clearing or character rendering are separate things.
 
 > [!NOTE]
-> Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (27MHz on 9K, 40.5MHz on 20K, see day18_*.sdc).
+> Through Day 17 the CPU was throttled via `pc_enable` in `lcd_demo.sv` for debugging. In Day 18 the CPU runs continuously (`pc_enable = 1`) and synchronizes with the display in software via the `WVS` instruction. The CPU/memory clock (`MEMORY_CLK`) in Day 18 is 27MHz on the 9K board only (Day 04-17 used 40.5MHz) and 40.5MHz on the 20K board (see `day18_*.sdc`).
 
 ## 🛠️ Implementation Steps
 
 1. **Opcode Assignment**:
     - Define new instructions in `opcodes.svh`.
 2. **Decoder and Execution Logic**:
-    - Change `WVS` to a 2-byte instruction and implement logic to wait for the specified number of rising edges of the `v-sync` signal.
+    - Implement `WVS` as an opcode plus a 1-byte immediate operand. In the Day 18 spec, operand N waits for N rising edges (Day 99 waits for N+1, so beware the spec difference).
 3. **External Signal Definition**:
     - Add `vsync` input and notification signals to the `cpu` module's ports and connect them to external hardware.
 
 ## 🧪 Verification
 
-- **Test Program**:
+Run the completed tests in this directory with `make test`. `test` runs `test-cpu` (CPU logic test with the shared testbench `../day18/sim/tb_cpu.sv`), `test-lcd` (TFT smoke test), `test-lcd-pipeline`, `test-sync`, `test-system` and `test-vsync` in order. Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
+
+- **Completed `rom.sv` program**:
 
     ```asm
     LDA #$01
-    STA $00    ; Initialize memory
-    LOOP:
-    INC $00
-    IFO        ; Debug display
-    WVS #$3A   ; Wait for 58 V-Syncs (approx. 1 second)
+    STA $00    ; $00 = $01
+    LDA #$02
+    STA $01    ; $01 = $02
+    LDA #$03
+    STA $02    ; $02 = $03
+    LOOP:      ; $020C
+    CLC
+    ADC #$01   ; A += 1
+    INX
+    INY
+    IFO        ; request debug display
+    WVS #$3A   ; wait for 58 VSyncs (approx. 1 second)
     JMP LOOP
     ```
 
-- **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
+`make test-cpu` runs the shared testbench `../day18/sim/tb_cpu.sv`. The testbench injects a different program using CVR / `WVS #2` / IFO / `JSR` / `HLT`, so it is separate from the completed ROM listing above.
+
+- **FPGA**: After `make download`, confirm that the IFO display refreshes about once per second and the A/X/Y registers count up on the LCD.
   The right column of the memory area is a day99-style LED view: memory row `0x0k` shows byte `$0k` as eight `@` (1) / space (0) cells, bit 7 down to bit 0 under the `76543210` header, with a `0x0k:` label to the left of each row.
 
 ## 🎉 Congratulations

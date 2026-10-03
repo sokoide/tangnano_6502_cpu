@@ -42,9 +42,11 @@ graph TD
 `CVR` と `IFO` は CPU から周辺回路への要求信号です。CPU 命令の実行サイクルと、VRAM 消去や文字描画に要する時間は別です。
 
 > [!NOTE]
-> クロックはボード別に設定されます。Day 18では9Kは27MHz、20Kは40.5MHzです（`day18_*.sdc` を参照）。`WVS` はVSyncを待つ命令で、CPUクロック自体を変更するものではありません。
+> Day 17 まではデバッグのため `lcd_demo.sv` の `pc_enable` で CPU を減速していました。Day 18 では `pc_enable = 1` で CPU を常時動作させ、表示との同期は `WVS` 命令で取ります。CPU/メモリクロック (`MEMORY_CLK`) は Day 18 のみ 9K ボードでは 27MHz（Day 04〜17 は 40.5MHz）、20K ボードでは 40.5MHz です（`day18_*.sdc` を参照）。
 
 ## 🛠️ 実装ステップ
+
+スターター版 `cpu.sv` には `HLT` (`$EF`) を含む Day 17 までの命令が実装済みです。TODO は `WVS` / `CVR` / `IFO` の 3 命令です。
 
 1. **オペコードの割り当て**:
     - `opcodes.svh` に新しい命令を定義します。
@@ -57,18 +59,39 @@ graph TD
 
 この Day には CPU テストベンチが含まれます。スターターの TODO が未実装なら CPU テストは失敗するのが正常です。実装後に `make test-cpu` を実行し、対応するテストが通ることを確認してください。テスト合格はテスト対象範囲の確認であり、未テストの命令や実機動作は保証しません。
 
-- **テストプログラム**:
+- **テストベンチが注入するプログラム** (`sim/tb_cpu.sv`):
 
     ```asm
-    CVR        ; vram_clear pulses for exactly 1 cycle
-    WVS #2     ; PC holds until 2 VSync rising edges (Day 18 semantics)
-    IFO        ; show_info pulses for exactly 1 cycle
-    JSR $0210  ; subroutine: LDA #$37 / RTS
-    HLT        ; PC stops (vram_clear/show_info stay low)
+    CVR        ; vram_clear がちょうど 1 サイクル立ち上がる
+    WVS #2     ; 2 回の VSync 立ち上がりまで PC が $0202 で保持される (Day 18 の仕様)
+    IFO        ; show_info がちょうど 1 サイクル立ち上がる
+    JSR $0210  ; サブルーチン: LDA #$37 / RTS ($0207 へ復帰)
+    HLT        ; PC が $0207 で停止 (vram_clear/show_info は Low のまま)
+    ```
+
+    テストベンチはこのプログラムを独自のメモリモデルへ注入するため、実機で動く `rom.sv` とは別です。
+
+- **実機プログラム** (`rom.sv`):
+
+    ```asm
+    LDA #$01
+    STA $00    ; $00 = $01
+    LDA #$02
+    STA $01    ; $01 = $02
+    LDA #$03
+    STA $02    ; $02 = $03
+    LOOP:      ; $020C
+    CLC
+    ADC #$01   ; A += 1
+    INX
+    INY
+    IFO        ; デバッグ表示を要求
+    WVS #$3A   ; 58 回の VSync を待つ（約 1 秒）
+    JMP LOOP
     ```
 
 - **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は CPU テストに加えて TFT smoke test も実行します)。
-- **実機 (FPGA)**: LCD に表示される CPU の全状態が、プログラムの意図通りに遷移することを確認します。
+- **実機 (FPGA)**: LCD の IFO 表示が約 1 秒ごとに更新され、A/X/Y レジスタがカウントアップすることを確認します。
 
 ## 🎉 おめでとうございます
 

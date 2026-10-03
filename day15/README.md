@@ -13,7 +13,7 @@ Comparisons are heavily used just before branches to make decisions, while memor
 
 ## 🧠 Memory Model Note
 
-From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, after reset the `boot_loader.sv` copies the 256-byte program at ROM address `$0200` into RAM (`ram.sv`, mapped at `$0000-$7FFF`) starting at `$0200`, and the CPU executes from RAM (the ROM is mapped at `$8000-$FFFF`). This differs from the earlier Day 04-09 setup where the CPU ran directly from the simple ROM.
 
 ## 🎯 Learning Objectives
 
@@ -41,14 +41,16 @@ sequenceDiagram
 | `0xE6` | `INC zp`   | Increment memory at Zero Page |   5    |
 | `0xC6` | `DEC zp`   | Decrement memory at Zero Page |   5    |
 
+Cycle counts are reference values from the real 6502. The CPU in this curriculum is an educational multi-cycle FSM implementation, so actual cycle counts are higher.
+
 ## 🛠️ Implementation Steps
 
 1. **Comparison Logic**:
     - Compute `Register - Operand`.
     - If no borrow occurs (`Register >= Operand` in unsigned 8-bit comparison), set `C=1`. Set `N=result[7]`, and `Z=(result == 8'h00)`.
 2. **Read-Modify-Write Sequence**:
-    - `INC` and `DEC` require separate cycles to read the data, process it in the ALU, and write it back to the same address.
-    - Add states like `STATE_RMW_READ` and `STATE_RMW_WRITE` to your FSM.
+    - `INC` and `DEC` split into steps: read the data, compute ±1, and write it back to the same address.
+    - Reuse the existing states: in `STATE_FETCH_OPERAND` set `address_bus` to the Zero Page address and transition to `STATE_EXECUTE`; in `STATE_EXECUTE` compute `data_in ± 1`, update `Z`/`N`, assert `write_en`, and transition to `STATE_WRITE_BACK`; in `STATE_WRITE_BACK` clear `write_en` and return to `STATE_FETCH_OPCODE` (see also the TODO comments in `cpu.sv`).
 
 ## 🧪 Verification
 
@@ -64,12 +66,14 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
     CPX #$03   ; larger:     C=1 Z=0 N=0
     LDY #$07
     CPY #$09   ; smaller:    C=0 Z=0 N=1
-    INC $30    ; 0x0F -> 0x10 (Z=0 N=0)
-    INC $31    ; 0xFF -> 0x00 (wrap: Z=1)
-    DEC $32    ; 0x00 -> 0xFF (wrap: N=1)
-    DEC $30    ; 0x10 -> 0x0F
-    HLT
+    INC $30    ; $0F -> $10 (Z=0 N=0)
+    INC $31    ; $FF -> $00 (wrap: Z=1)
+    DEC $32    ; $00 -> $FF (wrap: N=1)
+    DEC $30    ; $10 -> $0F
+    HLT        ; $EF: custom halt instruction (implemented on Day 10)
     ```
+
+    The testbench `sim/tb_cpu.sv` injects this program directly into its own memory model (the `rom.sv` used on the FPGA contains a different demo program).
 
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm the register and flag states on the LCD as the program progresses.

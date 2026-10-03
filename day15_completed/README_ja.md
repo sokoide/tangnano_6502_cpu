@@ -13,7 +13,7 @@ Phase 3 の締めくくりとして、値を比較してフラグを更新する
 
 ## 🧠 メモリ構成の注意
 
-Day 10 以降はプログラムを Gowin BSRAM で実装した RAM (`ram.sv`) から実行します。Day 04〜09 の簡易 ROM とは構成が異なります。
+Day 10 以降は、リセット後に `boot_loader.sv` が ROM の `$0200` から 256 バイトのプログラムを Gowin BSRAM 製 RAM (`ram.sv`, `$0000-$7FFF`) の `$0200` 以降へコピーし、CPU は RAM から実行します (ROM は `$8000-$FFFF` にマップ)。Day 04〜09 の簡易 ROM から直接実行する構成とは異なります。
 
 ## 🎯 学習目標
 
@@ -41,17 +41,20 @@ sequenceDiagram
 |   `0xE6`   | `INC zp`     | 指定アドレスのメモリ値を +1 |     5      |
 |   `0xC6`   | `DEC zp`     | 指定アドレスのメモリ値を -1 |     5      |
 
+サイクル数は実機 6502 の参考値です。本カリキュラムの CPU はマルチサイクル FSM による教育的実装のため、実際のサイクル数はこれより多くなります。
+
 ## 🛠️ 実装ステップ
 
 1. **比較ロジック**:
     - `CMP` などは `Register - Operand` を計算します。
     - 減算でボローが発生しなければ `C=1`（8bit の符号なし比較で Register >= Operand）。結果の bit 7 を `N`、結果が 0 なら `Z=1` とします。
-    - `result == 0` なら `Z=1`。
 2. **Read-Modify-Write (RMW)**:
-    - `INC` や `DEC` はメモリからデータを読み出すサイクル、ALU で計算するサイクル、そして同じアドレスに書き戻すサイクルが必要です。
-    - ステートマシンに `STATE_RMW_READ`, `STATE_RMW_WRITE` などを追加します。
+    - `INC` や `DEC` はメモリからデータを読み出すステップ、±1 を計算するステップ、そして同じアドレスに書き戻すステップに分かれます。
+    - 既存のステートを再利用します: `STATE_FETCH_OPERAND` でゼロページアドレスを `address_bus` にセットして `STATE_EXECUTE` へ遷移、`STATE_EXECUTE` で `data_in ± 1` を計算して `Z`/`N` を更新し `write_en` を立てて `STATE_WRITE_BACK` へ、`STATE_WRITE_BACK` で `write_en` をクリアして `STATE_FETCH_OPCODE` に戻ります。
 
 ## 🧪 動作確認
+
+完成版 CPU テストはこのディレクトリで `make test-cpu` を実行します (共有スターターのテストベンチ `../day15/sim/tb_cpu.sv` を使用します)。`make test` はこれに加えて TFT smoke test、同期 RAM 統合テスト (`test-sync`)、LCD パイプラインテスト (`test-lcd-pipeline`) も実行します。テスト合格は各テストの assertion 範囲だけを確認するもので、全命令や実機動作を保証しません。
 
 - **テストプログラム**:
 
@@ -61,10 +64,14 @@ sequenceDiagram
     BNE FAIL   ; ジャンプしないはず
 
     LDA #$00
-    STA $10    ; メモリ $10 ポートに 0 を保存
-    INC $10    ; メモリ $10 ポートを 1 にする
+    STA $10    ; メモリ $10 に 0 を保存
+    INC $10    ; メモリ $10 の値を 1 にする
+    HLT        ; 成功なら $020C で停止
     ```
 
+    これは完成版 `rom.sv` の命令列です (比較が等しければ分岐せず、`STA`/`INC` で `$10` の値が `0` から `1` になります)。共有スターターのテストベンチは別のプログラム (`LDA #$50` / `CMP #$50` ... `HLT`) を注入します。
+
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `RESULT: ALL TESTS PASSED` と表示されることを確認します。
 - **実機 (FPGA)**: LCD でメモリやレジスタの変化、フラグの状態を確認します。
 
 ## 🏁 Phase 3 完了

@@ -42,7 +42,7 @@ graph TD
 `CVR` と `IFO` は CPU から周辺回路への要求信号です。CPU 命令の実行サイクルと、VRAM 消去や文字描画に要する時間は別です。
 
 > [!NOTE]
-> クロックはボード別に設定されます。Day 18では9Kは27MHz、20Kは40.5MHzです（`day18_*.sdc` を参照）。`WVS` はVSyncを待つ命令で、CPUクロック自体を変更するものではありません。
+> Day 17 まではデバッグのため `lcd_demo.sv` の `pc_enable` で CPU を減速していました。Day 18 では `pc_enable = 1` で CPU を常時動作させ、表示との同期は `WVS` 命令で取ります。CPU/メモリクロック (`MEMORY_CLK`) は Day 18 のみ 9K ボードでは 27MHz（Day 04〜17 は 40.5MHz）、20K ボードでは 40.5MHz です（`day18_*.sdc` を参照）。
 
 ## 🛠️ 実装ステップ
 
@@ -55,19 +55,30 @@ graph TD
 
 ## 🧪 動作確認
 
-- **テストプログラム**:
+完成版のテストはこのディレクトリで `make test` を実行します。`test` は `test-cpu`（共有テストベンチ `../day18/sim/tb_cpu.sv` による CPU ロジックテスト）、`test-lcd`（TFT smoke test）、`test-lcd-pipeline`、`test-sync`、`test-system`、`test-vsync` を順に実行します。テスト合格は各テストの assertion 範囲だけを確認するもので、全命令や実機動作を保証しません。
+
+- **完成版 `rom.sv` の実行列**:
 
     ```asm
     LDA #$01
-    STA $00    ; メモリ初期化
-    LOOP:
-    INC $00
-    IFO        ; デバッグ表示
-    WVS #$3A   ; 58回 V-Sync を待つ（約1秒）
+    STA $00    ; $00 = $01
+    LDA #$02
+    STA $01    ; $01 = $02
+    LDA #$03
+    STA $02    ; $02 = $03
+    LOOP:      ; $020C
+    CLC
+    ADC #$01   ; A += 1
+    INX
+    INY
+    IFO        ; デバッグ表示を要求
+    WVS #$3A   ; 58 回の VSync を待つ（約 1 秒）
     JMP LOOP
     ```
 
-- **実機 (FPGA)**: LCD の描画が同期して行われ、1 秒ごとにカウントアップするレジスタとメモリダンプが表示されることを確認します。
+`make test-cpu` は共有テストベンチ `../day18/sim/tb_cpu.sv` を実行します。テストベンチは CVR / `WVS #2` / IFO / `JSR` / `HLT` を使った別のプログラムを注入するため、ここに示した完成版 ROM の列とは別です。
+
+- **実機 (FPGA)**: `make download` 後、LCD の IFO 表示が約 1 秒ごとに更新され、A/X/Y レジスタがカウントアップすることを確認します。
   メモリ領域の右側の列は day99 と同じ LED 表示です。各行の右側には `0x0k:` ラベルに続いてメモリ `$0k` の値が `@`(1)/空白(0) の 8 セルでビット 7→0 の順（ヘッダ `76543210`）に表示されます。
 
 ## 🎉 おめでとうございます

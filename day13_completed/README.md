@@ -44,6 +44,8 @@ graph TD
 | `0x49` | `EOR #imm` | A = A ^ Operand               |   2    |
 | `0x24` | `BIT zp`   | Test bits in memory against A |   3    |
 
+Cycle counts are reference values from the real 6502. The CPU in this course is an educational multi-cycle FSM implementation, so actual cycle counts are higher.
+
 ```mermaid
 graph TD
     Mem[Memory Data]
@@ -60,8 +62,8 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🛠️ Implementation Steps
 
-1. **Extend the ALU**:
-    - Add `&` (AND), `|` (OR), and `^` (XOR) logic to your `always_comb` block.
+1. **Add the Logical Operations**:
+    - In `STATE_FETCH_OPCODE`, make `OP_AND_IMM` / `OP_ORA_IMM` / `OP_EOR_IMM` transition to operand fetch (`STATE_FETCH_OPERAND`); in `STATE_FETCH_OPERAND`, write `a & data_in` / `a | data_in` / `a ^ data_in` back into A.
 2. **Flag Update Logic**:
     - Update `Z = (result == 0)` and `N = result[7]` for logical results.
 3. **Decode BIT Instruction**:
@@ -70,16 +72,26 @@ _Note: The `BIT` instruction also copies memory bit 7 to the N flag and bit 6 to
 
 ## 🧪 Verification
 
+The completed CPU test runs with `make test-cpu` in this directory. `make test` additionally runs the LCD/TFT smoke test, the synchronous RAM integration test, and the LCD pipeline test. Passing the tests verifies only the asserted scope and does not guarantee all instructions or real-hardware behavior.
+
 - **Test Program**:
 
     ```asm
-    LDA #$FF
+    LDA #$EF
     AND #$0F   ; A = $0F, Z=0, N=0
     ORA #$80   ; A = $8F, Z=0, N=1
     EOR #$8F   ; A = $00, Z=1, N=0
+    STA $10
+    LDA #$A5
+    STA $11    ; M[$11] = $A5
+    LDA #$0F
+    BIT $11    ; M=$A5: Z=0, N=1, V=0 (A unchanged)
+    HLT        ; $EF
     ```
 
-- **FPGA**: Confirm on the LCD that the Accumulator and N/Z flags change correctly as each operation completes.
+    This is the instruction sequence in the completed `rom.sv`. The shared starter testbench (`../day13/sim/tb_cpu.sv`) injects a different program.
+
+- **FPGA**: Check the A and P rows on the LCD (P = {N,V,1,1,1,1,Z,C}). `BIT` holds A unchanged and updates only N/V/Z based on the memory value.
 
 ## 🎯 Next Step
 

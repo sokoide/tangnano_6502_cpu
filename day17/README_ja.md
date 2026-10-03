@@ -75,20 +75,20 @@ graph TD
 
     ```asm
     LDX #$03
-    LDA ($40,X) ; pointer at $0043 -> $1234: A = 0x99
+    LDA ($40,X) ; pointer at $0043 -> $1234: A = $99
     LDX #$05
-    LDA ($FE,X) ; zero-page wrap ($FE+5 = $03): -> $1250: A = 0xAA
+    LDA ($FE,X) ; zero-page wrap ($FE+5 = $03): -> $1250: A = $AA
     LDY #$04
-    LDA ($60),Y ; pointer $1140 + Y -> $1144: A = 0xBB
+    LDA ($60),Y ; pointer $1140 + Y -> $1144: A = $BB
     LDY #$00
-    LDA ($FF),Y ; pointer wraps $FF -> $00: -> $1360: A = 0xCC
+    LDA ($FF),Y ; pointer wraps $FF -> $00: -> $1360: A = $CC
     JSR $0250   ; subroutine: LDA #$42 / RTS
     JMP ($2000) ; pointer at $2000 -> $0230: LDA #$DD / HLT
     ```
 
 - **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` は CPU テストに加えて TFT smoke test も実行します)。
-- **実機 (FPGA)**: LCD で、最終的にポインタの指し示す先のデータがロードされていることを確認します。
+- **実機 (FPGA)**: 実機 ROM (`rom.sv`) は上記とは別のプログラムを実行します。`$10/$11` にポインタ `$8020` を設定した後、`LDA ($10),Y` で `$8021` 番地の `$42` を A にロードして `HLT` で停止します。LCD のデバッグ表示 (`PC:xxxx A:xx ...`) で `A:42` を確認します。
 
 ## 🎯 次のステップ
 
-Day 18 では、6502 の標準セットにはない、FPGA 独自の**カスタム命令 (HLT, WVS, CVR, IFO)**を CPU に追加し、ハードウェアをより直接的に制御します。
+Day 18 では、6502 の標準セットにはない、FPGA 独自の**カスタム命令 (WVS, CVR, IFO)**を CPU に追加します。Day 10 で導入した `HLT` と合わせて、ハードウェアをより直接的に制御します。

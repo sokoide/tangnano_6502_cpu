@@ -44,6 +44,8 @@ graph TD
 |   `0x49`   | `EOR #imm`   | A = A ^ オペランド                     |     2      |
 |   `0x24`   | `BIT zp`     | A とメモリの AND 演算 (フラグのみ更新) |     3      |
 
+サイクル数は実機 6502 の参考値です。本カリキュラムの CPU はマルチサイクル FSM による教育的実装のため、実際のサイクル数はこれより多くなります。
+
 ```mermaid
 graph TD
     Mem[Memory Data]
@@ -60,8 +62,8 @@ graph TD
 
 ## 🛠️ 実装ステップ
 
-1. **ALU の拡張**:
-    - `always_comb` ブロックに `&` (AND), `|` (OR), `^` (XOR) の演算ロジックを追加します。
+1. **論理演算の追加**:
+    - `STATE_FETCH_OPCODE` で `OP_AND_IMM` / `OP_ORA_IMM` / `OP_EOR_IMM` をオペランドフェッチ (`STATE_FETCH_OPERAND`) に遷移させ、`STATE_FETCH_OPERAND` で `a & data_in` / `a | data_in` / `a ^ data_in` を A に書き戻します。
 2. **フラグ更新ロジック**:
     - 論理演算の結果が 0 なら `Z=1`、ビット 7（最上位ビット）が 1 なら `N=1` とします。
 3. **BIT 命令のデコード**:
@@ -70,16 +72,26 @@ graph TD
 
 ## 🧪 動作確認
 
+完成版 CPU テストはこのディレクトリで `make test-cpu` を実行します。`make test` はこれに加えて LCD/TFT smoke test、同期 RAM 統合テスト、LCD パイプラインテストも実行します。テスト合格は各テストの assertion 範囲だけを確認するもので、全命令や実機動作を保証しません。
+
 - **テストプログラム**:
 
     ```asm
-    LDA #$FF
+    LDA #$EF
     AND #$0F   ; A = $0F, Z=0, N=0
     ORA #$80   ; A = $8F, Z=0, N=1
     EOR #$8F   ; A = $00, Z=1, N=0
+    STA $10
+    LDA #$A5
+    STA $11    ; M[$11] = $A5
+    LDA #$0F
+    BIT $11    ; M=$A5: Z=0, N=1, V=0 (A は変化なし)
+    HLT        ; $EF
     ```
 
-- **実機 (FPGA)**: LCD 上で A レジスタの値と N, Z フラグが期待通りに変化することを確認します。
+    これは完成版 `rom.sv` の命令列です。共有スターターのテストベンチ (`../day13/sim/tb_cpu.sv`) は別のプログラムを注入します。
+
+- **実機 (FPGA)**: LCD の A 行と P 行 (P = {N,V,1,1,1,1,Z,C}) の値を確認します。`BIT` では A を保持したまま、メモリ値に応じて N/V/Z だけが更新されます。
 
 ## 🎯 次のステップ
 

@@ -13,7 +13,7 @@ Comparisons are heavily used just before branches to make decisions, while memor
 
 ## 🧠 Memory Model Note
 
-From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), not the simple ROM used in earlier days.
+From Day 10 onward, after reset the `boot_loader.sv` copies the 256-byte program at ROM address `$0200` into RAM (`ram.sv`, mapped at `$0000-$7FFF`) starting at `$0200`, and the CPU executes from RAM (the ROM is mapped at `$8000-$FFFF`). This differs from the earlier Day 04-09 setup where the CPU ran directly from the simple ROM.
 
 ## 🎯 Learning Objectives
 
@@ -41,17 +41,20 @@ sequenceDiagram
 | `0xE6` | `INC zp`   | Increment memory at Zero Page |   5    |
 | `0xC6` | `DEC zp`   | Decrement memory at Zero Page |   5    |
 
+Cycle counts are reference values from the real 6502. The CPU in this curriculum is an educational multi-cycle FSM implementation, so actual cycle counts are higher.
+
 ## 🛠️ Implementation Steps
 
 1. **Comparison Logic**:
-    - Perform `Register - Operand`.
-    - If `result >= 0`, then `C=1` (No borrow).
-    - If `result == 0`, then `Z=1`.
+    - Compute `Register - Operand`.
+    - If no borrow occurs (`Register >= Operand` in unsigned 8-bit comparison), set `C=1`. Set `N=result[7]`, and `Z=(result == 8'h00)`.
 2. **Read-Modify-Write Sequence**:
-    - `INC` and `DEC` require separate cycles to read the data, process it in the ALU, and write it back to the same address.
-    - Add states like `STATE_RMW_READ` and `STATE_RMW_WRITE` to your FSM.
+    - `INC` and `DEC` split into steps: read the data, compute ±1, and write it back to the same address.
+    - Reuse the existing states: in `STATE_FETCH_OPERAND` set `address_bus` to the Zero Page address and transition to `STATE_EXECUTE`; in `STATE_EXECUTE` compute `data_in ± 1`, update `Z`/`N`, assert `write_en`, and transition to `STATE_WRITE_BACK`; in `STATE_WRITE_BACK` clear `write_en` and return to `STATE_FETCH_OPCODE`.
 
 ## 🧪 Verification
+
+Run the completed CPU test with `make test-cpu` in this directory (it uses the shared starter testbench `../day15/sim/tb_cpu.sv`). `make test` additionally runs the TFT smoke test, the synchronous RAM integration test (`test-sync`), and the LCD pipeline test (`test-lcd-pipeline`). Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 
@@ -61,10 +64,14 @@ sequenceDiagram
     BNE FAIL   ; Should not jump
 
     LDA #$00
-    STA $10    ; Save 0 at $0010
-    INC $10    ; Memory at $0010 becomes 1
+    STA $10    ; Save 0 at $10
+    INC $10    ; Memory at $10 becomes 1
+    HLT        ; Halts at $020C on success
     ```
 
+    This is the instruction sequence in the completed `rom.sv` (if the comparison is equal, the branch is not taken, and `STA`/`INC` change the value at `$10` from `0` to `1`). The shared starter testbench injects a different program (`LDA #$50` / `CMP #$50` ... `HLT`).
+
+- **Simulation**: Run `make test-cpu` and verify the simulation outputs `RESULT: ALL TESTS PASSED`.
 - **FPGA**: Confirm on the LCD that memory values and status flags change as expected during comparisons and memory updates.
 
 ## 🏁 Phase 3 Complete
