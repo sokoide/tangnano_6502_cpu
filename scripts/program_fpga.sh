@@ -13,7 +13,7 @@ trap 'rm -f "$log"' EXIT HUP INT TERM
 "$programmer" --device "$device" --fsFile "$bitstream" --operation_index 2 >"$log" 2>&1
 result=$?
 cat "$log"
-if [ "$result" -ne 0 ] || grep -qi 'error:' "$log" || ! grep -Eq '^[[:space:]]*Finished[[:space:]]*$' "$log"; then
+if [ "$result" -ne 0 ] || grep -qi 'error:' "$log" || ! grep -Eq '^[[:space:]]*Finished\.?[[:space:]]*$' "$log"; then
     echo "[ERROR] Programmer did not report a successful completion (exit=$result)" >&2
     exit 1
 fi
