@@ -549,11 +549,7 @@ module cpu (
 
                     STATE_FETCH_IND_HIGH: begin
                         temp_addr[15:8] <= data_in;
-                        if (current_opcode == OP_JMP_IND) begin
-                            state <= STATE_IND_ACCESS;
-                        end else begin
-                            state <= STATE_IND_ACCESS;
-                        end
+                        state <= STATE_IND_ACCESS;
                     end
 
                     STATE_IND_ACCESS: begin

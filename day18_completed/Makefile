@@ -95,7 +95,7 @@ sim: sim-build
 
 test-lcd: sim
 
-test: test-cpu test-lcd test-lcd-pipeline
+test: test-cpu test-lcd test-lcd-pipeline test-sync test-system test-vsync
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
@@ -109,7 +109,6 @@ help:
 
 # The synchronous RAM integration is tested at full speed and with sparse enables.
 .PHONY: test-sync test-sync-one test-manual-step
-test: test-sync
 test-sync:
 	@for step in 1 4 16; do $(MAKE) test-sync-one STEP_PERIOD=$$step || exit 1; done
 	@$(MAKE) test-manual-step
@@ -129,7 +128,6 @@ test-manual-step: tools-check-sim
 	./build/$(BOARD)/manual-step/Vtb_manual_step
 
 .PHONY: test-system test-system-one test-vsync
-test: test-system test-vsync
 test-system:
 	@for mode in 0 1; do $(MAKE) test-system-one RESET_DURING_INFO=$$mode || exit 1; done
 	@$(MAKE) test-system-one REPEAT_REQUESTS=1

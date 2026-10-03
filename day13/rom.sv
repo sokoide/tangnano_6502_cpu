@@ -6,7 +6,7 @@ module rom (
 
     always_comb begin
         case (addr)
-            16'h0200: data = 8'hA9;  // LDA #$FF
+            16'h0200: data = 8'hA9;  // LDA #$EF
             16'h0201: data = 8'hEF;
             16'h0202: data = 8'h29;  // AND #$0F -> A=$0F
             16'h0203: data = 8'h0F;

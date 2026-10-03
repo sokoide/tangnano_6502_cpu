@@ -54,7 +54,7 @@ module tb_cpu;
             $display("FAIL: %s = 0x%02h (expected 0x%02h)", name, got, exp);
             error_count++;
         end else begin
-            $display("PASS: %s = 0x%02h", name, got, exp);
+            $display("PASS: %s = 0x%02h", name, got);
         end
     endtask
 

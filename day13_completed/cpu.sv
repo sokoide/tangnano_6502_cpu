@@ -186,53 +186,43 @@ module cpu (
                                 n <= data_in[7];
                             end
                             OP_ADC_IMM: begin
-                                begin
-                                    logic [8:0] sum;
-                                    sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c};
-                                    a <= sum[7:0];
-                                    c <= sum[8];
-                                    z <= (sum[7:0] == 8'h00);
-                                    n <= sum[7];
-                                    v <= (a[7] == data_in[7]) && (a[7] != sum[7]);
-                                end
+                                logic [8:0] sum;
+                                sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c};
+                                a <= sum[7:0];
+                                c <= sum[8];
+                                z <= (sum[7:0] == 8'h00);
+                                n <= sum[7];
+                                v <= (a[7] == data_in[7]) && (a[7] != sum[7]);
                             end
                             OP_AND_IMM: begin
-                                begin
-                                    logic [7:0] res;
-                                    res = a & data_in;
-                                    a <= res;
-                                    z <= (res == 8'h00);
-                                    n <= res[7];
-                                end
+                                logic [7:0] res;
+                                res = a & data_in;
+                                a <= res;
+                                z <= (res == 8'h00);
+                                n <= res[7];
                             end
                             OP_ORA_IMM: begin
-                                begin
-                                    logic [7:0] res;
-                                    res = a | data_in;
-                                    a <= res;
-                                    z <= (res == 8'h00);
-                                    n <= res[7];
-                                end
+                                logic [7:0] res;
+                                res = a | data_in;
+                                a <= res;
+                                z <= (res == 8'h00);
+                                n <= res[7];
                             end
                             OP_EOR_IMM: begin
-                                begin
-                                    logic [7:0] res;
-                                    res = a ^ data_in;
-                                    a <= res;
-                                    z <= (res == 8'h00);
-                                    n <= res[7];
-                                end
+                                logic [7:0] res;
+                                res = a ^ data_in;
+                                a <= res;
+                                z <= (res == 8'h00);
+                                n <= res[7];
                             end
                             OP_SBC_IMM: begin
-                                begin
-                                    logic [8:0] diff;
-                                    diff = {1'b0, a} - {1'b0, data_in} - (c ? 9'h0 : 9'h1);
-                                    a <= diff[7:0];
-                                    c <= !diff[8];
-                                    z <= (diff[7:0] == 8'h00);
-                                    n <= diff[7];
-                                    v <= (a[7] != data_in[7]) && (a[7] != diff[7]);
-                                end
+                                logic [8:0] diff;
+                                diff = {1'b0, a} - {1'b0, data_in} - (c ? 9'h0 : 9'h1);
+                                a <= diff[7:0];
+                                c <= !diff[8];
+                                z <= (diff[7:0] == 8'h00);
+                                n <= diff[7];
+                                v <= (a[7] != data_in[7]) && (a[7] != diff[7]);
                             end
                             OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
                                 automatic logic take_branch;
