@@ -53,6 +53,7 @@ Instead of consuming limited logic resources (LUTs), we use dedicated **BSRAM (B
 ### 1. SDPB (Semi-Dual Port Block RAM)
 
 Used for the **VRAM**. One port is dedicated to the LCD controller for reading pixels, while the other is used for writing character data. This allows smooth updates without display flickering.
+The LCD read port is clocked by the 9MHz pixel clock and completes in the pixel domain (same as day99/day18); only writes use the memory clock.
 
 ### 2. pROM (Programmable ROM)
 

@@ -21,7 +21,8 @@ module vram (
     logic [7:0] ram[0:DEPTH-1];
     integer idx;
 
-    assign data = ram[addr];
+    // READ_MODE=0 still samples the address on the read clock edge.
+    always_ff @(posedge clk) data <= ram[addr];
 
     initial begin
         for (idx = 0; idx < DEPTH; idx = idx + 1'b1) begin

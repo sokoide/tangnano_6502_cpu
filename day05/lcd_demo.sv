@@ -38,7 +38,7 @@ module lcd_demo (
         .data (vram_data)
     );
 `else
-    // FPGA path: match the stable day99 display path (fast MEMORY_CLK + BRAM/pROM).
+    // FPGA path: CPU/VRAM writes use MEMORY_CLK; display reads use LCD_CLK.
     logic MEMORY_CLK;
 
     Gowin_rPLL9 pll9_inst (
@@ -54,24 +54,14 @@ module lcd_demo (
     // Font pROM (Sweet16Font, 4KB: 16 bytes/char x 256 chars)
     Gowin_pROM_font prom_font_inst (
         .dout (font_data),
-        .clk  (MEMORY_CLK),
+        .clk  (LCD_CLK),
         .oce  (1'b1),
         .ce   (1'b1),
         .reset(1'b0),
         .ad   (font_addr)
     );
 
-    // VRAM in SDPB (1KB)
-    logic [9:0] vram_adb_sync1, vram_adb_sync2;
-    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
-        if (!rst_n) begin
-            vram_adb_sync1 <= 10'd0;
-            vram_adb_sync2 <= 10'd0;
-        end else begin
-            vram_adb_sync1 <= vram_addr;
-            vram_adb_sync2 <= vram_adb_sync1;
-        end
-    end
+    // Dual-port VRAM: memory-domain writes, pixel-domain synchronous reads.
 
     logic       vram_cea;
     logic [9:0] vram_ada;
@@ -82,13 +72,13 @@ module lcd_demo (
         .clka  (MEMORY_CLK),
         .cea   (vram_cea),
         .reseta(1'b0),
-        .clkb  (MEMORY_CLK),
+        .clkb  (LCD_CLK),
         .ceb   (1'b1),
         .resetb(1'b0),
         .oce   (1'b0),
         .ada   (vram_ada),
         .din   (vram_din),
-        .adb   (vram_adb_sync2)
+        .adb   (vram_addr)
     );
 
     // CPU

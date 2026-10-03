@@ -127,3 +127,12 @@ test-manual-step: tools-check-sim
 		--Mdir build/$(BOARD)/manual-step --top-module tb_manual_step \
 		../sim/tb_manual_step.sv cpu.sv ram.sv
 	./build/$(BOARD)/manual-step/Vtb_manual_step
+
+# Verify all pixels, cell boundaries, DE latency and two complete frame periods.
+.PHONY: test-lcd-pipeline
+test-lcd-pipeline: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_lcd_pipeline
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_lcd_pipeline \
+		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv
+	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline
+test: test-lcd-pipeline

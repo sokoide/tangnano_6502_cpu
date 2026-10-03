@@ -85,3 +85,12 @@ help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
+
+# Verify all pixels, cell boundaries, DE latency and two complete frame periods.
+.PHONY: test-lcd-pipeline
+test-lcd-pipeline: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_lcd_pipeline
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_lcd_pipeline \
+		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv
+	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline
+test: test-lcd-pipeline

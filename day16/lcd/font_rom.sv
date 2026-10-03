@@ -5,7 +5,8 @@ module font_rom (
 );
 
     logic [7:0] next_data;
-    assign data = next_data;
+    // Match the synchronous READ_MODE=0 pROM used on the FPGA.
+    always_ff @(posedge clk) data <= next_data;
 
     logic [3:0] row;
 
