@@ -66,6 +66,7 @@ graph TD
     ```
 
 - **FPGA**: Confirm that the display updates synchronously and shows registers and memory dumps counting up every second.
+  The right column of the memory area is a day99-style LED view: memory row `0x0k` shows byte `$0k` as eight `@` (1) / space (0) cells, bit 7 down to bit 0 under the `76543210` header, with a `0x0k:` label to the left of each row.
 
 ## 🎉 Congratulations
 

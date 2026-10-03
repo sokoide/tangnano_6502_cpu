@@ -241,6 +241,8 @@ module lcd_demo (
     logic [15:0] snapshot_pc;
     logic [7:0] snapshot_a, snapshot_x, snapshot_y, snapshot_p, snapshot_s;
     logic [7:0] debug_byte;
+    // $00-$07 latched during the dump's first row; drives the LED column.
+    logic [7:0] led_latch[0:7];
 
     always_ff @(posedge cpu_clk or negedge mem_rst_n) begin
         if (!mem_rst_n) begin
@@ -256,6 +258,7 @@ module lcd_demo (
             snapshot_a <= 0; snapshot_x <= 0; snapshot_y <= 0;
             snapshot_p <= 0; snapshot_s <= 0;
             debug_byte <= 0;
+            for (int i = 0; i < 8; i++) led_latch[i] <= 8'h00;
         end else begin
             vram_cea <= 1'b0;
             case (debug_state)
@@ -520,8 +523,10 @@ module lcd_demo (
                 end
 
                 S_WRITE_MEM_HEADER: begin
+                    automatic logic [5:0] led_off = debug_counter[5:0] - 6'd60;
                     vram_cea <= 1;
-                    vram_ada <= 8 * COLUMNS + debug_counter[5:0];
+                    if (debug_counter < 60) begin
+                        vram_ada <= 8 * COLUMNS + debug_counter[5:0];
                     case (debug_counter)
                         0: vram_din <= "M";
                         1: vram_din <= "e";
@@ -572,7 +577,18 @@ module lcd_demo (
                         59: vram_din <= "0";
                         default: vram_din <= 8'h20;
                     endcase
-                    if (debug_counter == 59) begin
+                    end else begin
+                        // LED row labels "0x0k:" (day99 style): rows 9-16, col 47-51.
+                        vram_ada <= (9 + led_off / 5) * COLUMNS + 12'd47 + led_off % 5;
+                        case (led_off % 5)
+                            0: vram_din <= "0";
+                            1: vram_din <= "x";
+                            2: vram_din <= "0";
+                            3: vram_din <= to_hex(led_off / 5);
+                            default: vram_din <= ":";
+                        endcase
+                    end
+                    if (debug_counter == 99) begin
                         debug_counter <= 0;
                         debug_addr <= 16'h0000;
                         sub_state <= 0;
@@ -643,10 +659,10 @@ module lcd_demo (
                                 sub_state  <= 9;
                             end
                         end
-                        8: begin  // Bit pattern (LED)
+                        8: begin  // LED column: row r shows byte $0r ('@' = 1, ' ' = 0)
                             vram_cea <= 1;
                             vram_ada <= row * COLUMNS + 10'd52 + debug_counter[2:0];
-                            vram_din <= debug_byte[7-debug_counter[2:0]] ? "1" : "0";
+                            vram_din <= led_latch[debug_addr[6:4]][7-debug_counter[2:0]] ? "@" : " ";
                             if (debug_counter == 7) begin
                                 if (debug_addr == 16'h007F) begin
                                     debug_state <= S_DRAIN;
@@ -664,6 +680,7 @@ module lcd_demo (
                         end
                         10: begin
                             debug_byte <= ram_data_out;
+                            if (debug_addr < 16'h0008) led_latch[debug_addr[2:0]] <= ram_data_out;
                             sub_state <= 5;
                         end
                         default: sub_state <= 0;

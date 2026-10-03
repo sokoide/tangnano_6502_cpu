@@ -130,6 +130,22 @@ module tb_day18_integration #(parameter bit RESET_DURING_INFO=0, parameter bit R
                     if(addr!=2) assert(dut.u_ram.mem[addr]==expected_byte)
                     else $fatal(1,"RAM changed during dump at %0d",addr);
                 end
+                // LED column: row 9+k shows byte $0k as '@' (1) / ' ' (0), bit 7..0,
+                // with a day99-style "0x0k:" label at cols 47-51.
+                for(int k=0;k<8;k++) begin
+                    automatic logic [7:0] expected_led=(k==0)?8'hab:
+                                  (k==1)?8'h12:(REPEAT_REQUESTS && k==2)?8'h55:8'(k*37+3);
+                    assert(dut.vram_inst.ram[(9+k)*60+47]=="0" &&
+                           dut.vram_inst.ram[(9+k)*60+48]=="x" &&
+                           dut.vram_inst.ram[(9+k)*60+49]=="0" &&
+                           dut.vram_inst.ram[(9+k)*60+50]==hex_digit(k[3:0]) &&
+                           dut.vram_inst.ram[(9+k)*60+51]==":")
+                    else $fatal(1,"LED label mismatch at row %0d",9+k);
+                    for(int b=0;b<8;b++) begin
+                        assert(dut.vram_inst.ram[(9+k)*60+52+b]==(expected_led[7-b]?"@":" "))
+                        else $fatal(1,"LED column mismatch at $%02X bit %0d",k,7-b);
+                    end
+                end
                 repeat(6) begin @(posedge dut.cpu_clk);#2;end
                 assert(dut.cpu_debug_pc==FINAL_PC && !dut.memory_hold)
                 else $fatal(1,"Resume/HLT failed");
