@@ -32,7 +32,7 @@ module tb_clock_reset;
 `ifdef BOARD_20K
     if($realtime-last_m<24.68 || $realtime-last_m>24.70) $fatal(1,"Memory period");
 `else
-    if($realtime-last_m<31.73 || $realtime-last_m>31.76) $fatal(1,"Memory period");
+    if($realtime-last_m<37.02 || $realtime-last_m>37.05) $fatal(1,"Memory period");
 `endif
     clocks.pixel_pll.lock_available=0;
     @(posedge xtal); #1;

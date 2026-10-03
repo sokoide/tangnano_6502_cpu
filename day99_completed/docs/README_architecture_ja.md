@@ -23,7 +23,7 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 
 ### 学習目標
 
-- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/31.5MHz (9K、約33MHz) または40.5MHz (20K))
+- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/27MHz (9K) または40.5MHz (20K))
 - **ステートマシン**: 複雑な CPU 命令実行パイプライン
 - **メモリコントローラ**: SDPB RAM、VRAM、pROM インタフェース
 - **ハードウェア/ソフトウェア連携**: アセンブリプログラムと FPGA 実装の融合
@@ -36,11 +36,11 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 graph TB
     subgraph "Tang Nano FPGA"
         subgraph "クロック生成"
-            XTAL[27MHz 水晶振動子] --> PLLCPU[31.5MHz (9K、約33MHz) / 40.5MHz (20K) PLL]
+            XTAL[27MHz 水晶振動子] --> PLLCPU[27MHz (9K) / 40.5MHz (20K) PLL]
             XTAL --> PLL9[9MHz PLL]
         end
 
-        subgraph "CPUサブシステム @ 31.5MHz (9K、約33MHz) / 40.5MHz (20K)"
+        subgraph "CPUサブシステム @ 27MHz (9K) / 40.5MHz (20K)"
             CPU[6502 CPUコア]
             RAM32[32KB SDPB RAM]
             BOOTROM[ブートプログラム<br/>自動生成]
@@ -432,7 +432,7 @@ end
 システムはクロックドメイン交差を慎重に管理：
 
 ```systemverilog
-// VSync同期 (LCD 9MHz → CPU 31.5MHz (9K、約33MHz) / 40.5MHz (20K))
+// VSync同期 (LCD 9MHz → CPU 27MHz (9K) / 40.5MHz (20K))
 logic vsync_meta, vsync_sync;
 always_ff @(posedge clk) begin
     {vsync_sync, vsync_meta} <= {vsync_meta, vsync};

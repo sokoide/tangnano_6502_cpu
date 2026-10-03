@@ -19,7 +19,7 @@ This project demonstrates a complete computer system implementation on FPGA, com
 
 ### Key Learning Concepts
 
-- **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/31.5MHz (9K, about 33MHz) or 40.5MHz (20K))
+- **Clock Domain Crossing**: Managing multiple clock frequencies (27MHz → 9MHz/27MHz (9K) or 40.5MHz (20K))
 - **Memory Controllers**: SDPB RAM, VRAM, and pROM integration
 - **State Machines**: Complex CPU instruction execution pipeline
 - **Hardware/Software Interface**: Assembly programming meets FPGA implementation
@@ -86,11 +86,11 @@ graph LR
 graph TB
     subgraph "Tang Nano FPGA"
         subgraph "Clock Generation"
-            XTAL[27MHz Crystal] --> PLLCPU[31.5MHz (9K, about 33MHz) / 40.5MHz (20K) PLL]
+            XTAL[27MHz Crystal] --> PLLCPU[27MHz (9K) / 40.5MHz (20K) PLL]
             XTAL --> PLL9[9MHz PLL]
         end
 
-        subgraph "CPU Subsystem @ 31.5MHz (9K, about 33MHz) / 40.5MHz (20K)"
+        subgraph "CPU Subsystem @ 27MHz (9K) / 40.5MHz (20K)"
             CPU[6502 CPU Core]
             RAM32[32KB SDPB RAM]
             BOOTROM[Boot Program<br/>Auto-generated]
@@ -390,7 +390,7 @@ end
 The system carefully manages clock domain crossings:
 
 ```systemverilog
-// VSync synchronization (LCD 9MHz → CPU 31.5MHz (9K, about 33MHz) / 40.5MHz (20K))
+// VSync synchronization (LCD 9MHz → CPU 27MHz (9K) / 40.5MHz (20K))
 logic vsync_meta, vsync_sync;
 always_ff @(posedge clk) begin
     {vsync_sync, vsync_meta} <= {vsync_meta, vsync};

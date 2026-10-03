@@ -7,7 +7,7 @@ module platform_pll #(parameter bit MEMORY = 0, BOARD_20K = 0)(
   logic oscillator = 0;
   // Testbench may force this low to exercise lock loss without stopping clocks.
   logic lock_available = 1;
-  initial forever #(MEMORY ? (BOARD_20K ? 12.345679 : 15.873016) : 55.555556) oscillator = ~oscillator;
+  initial forever #(MEMORY ? (BOARD_20K ? 12.345679 : 18.518519) : 55.555556) oscillator = ~oscillator;
   assign clkout = oscillator;
   logic [3:0] lock_count;
   always @(posedge clkin or negedge rst_n) begin

@@ -23,6 +23,8 @@
 
 9Kの40.5MHz構成はFmax 33.809MHzで不成立だった。33MHz制約もFmax 33.013MHzで余裕がほぼなかったため、27MHz入力からPLL比7/6の31.5MHzへ下げた。9Kでは最悪経路のslackが正で、setup TNSは0。これは今回のGowinツール・選択デバイス条件における内部STA結果であり、外部LCD入出力delayや基板上の計測を含まない。
 
+**[2026-10-03追記]** 31.5MHz構成はslack +0.406nsでも配置ばらつきにより+0.115nsまで落ち、実機(Tang Nano 9K)でCPU状態が破壊された(simple5.sでAレジスタが0x20↔0x5Eにトグル)。27MHz(PLL比7/7、VCO同一)へ低下しslack +0.581ns。現在の9KのCPU/メモリクロックは27MHz。詳細はcommit `7a4ea96`。
+
 各ボードのレポートとbitstreamは`day99_completed/build/fpga/9k/`、`day99_completed/build/fpga/20k/`に保存している。再生成時は`make -C day99_completed BOARD=9k`または`BOARD=20k`を使う。
 
 ## 全体テスト

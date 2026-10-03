@@ -54,7 +54,7 @@
 
 ## Day 99 pixel pipeline（2026-10-03）
 
-VRAMのwrite portは9Kでは31.5MHz（約33MHz）、20Kでは40.5MHzのMEMORY_CLKへ接続する。read portは両ボードとも9MHz PixelClkへ接続する。
+VRAMのwrite portは9Kでは27MHz、20Kでは40.5MHzのMEMORY_CLKへ接続する。read portは両ボードとも9MHz PixelClkへ接続する。
 font ROMとLCDはPixelClkに揃える。多bit addressを2FFで転送する旧CDC経路は使用しない。
 
 VRAM addressをbeam座標から組合せ生成し、同期VRAM 1clock → 同期font ROM 1clock → RGB/DE登録の順で描画する。
