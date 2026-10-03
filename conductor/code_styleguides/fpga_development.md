@@ -1,1 +1,0 @@
-# FPGA Development Style Guide
