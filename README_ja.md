@@ -13,7 +13,7 @@
 
 ## 🏗️ システムアーキテクチャ
 
-このコースを修了する頃には、FPGA 内部に以下のようなシステムが構築されます。
+Day 01–03 では基礎回路を個別に作り、Day 04 ではLCDデモを作ります。CPUとRAM、VRAM、LCDを統合したシステムはDay 99で構築します。
 最大の特徴は**ハードウェアネイティブ・デバッガ**です。CPU がデバッグ情報を直接 VRAM に書き込み、LCD 画面上で内部レジスタの状態を確認できます。
 
 ```mermaid
@@ -22,17 +22,15 @@ graph TD
         CPU[6502 CPU コア]
         VRAM["VRAM (デュアルポート RAM)"]
         LCD[LCD コントローラ]
-        ROM[プログラム ROM]
-        GPIO[LED / ボタン]
+        RAM[プログラム / データ RAM (BSRAM)]
 
-        CPU -- "アドレス/データ" --> ROM
-        CPU -- "アドレス/データ (書込)" --> VRAM
-        CPU -- "制御信号" --> GPIO
-        VRAM -- "ピクセルデータ (読出)" --> LCD
+        CPU -- "アドレス/データ" --> RAM
+        RAM -- "読出しデータ" --> CPU
+        CPU -- "文字/デバッグ書込み" --> VRAM
+        VRAM -- "文字コード" --> LCD
     end
 
-    LCD -- "HDMI / LCD 信号" --> DISPLAY[外部ディスプレイ]
-    GPIO -- "点滅" --> LEDS[基板上 LED]
+    LCD -- "LCD 信号" --> DISPLAY[480x272 LCD パネル]
 
     style CPU fill:#f96,stroke:#333,stroke-width:2px
     style VRAM fill:#69f,stroke:#333,stroke-width:2px
@@ -74,7 +72,7 @@ graph TD
 1. `dayXX/README_ja.md` を読む。
 2. `dayXX/` 内の課題ファイルを編集して実装する。
 3. 各 Day の README に記載された `make -C dayXX test-cpu` / `test` などを実行する。シミュレーションは指定されたテスト範囲だけを検証し、実機動作までは保証しない。
-4. `make BOARD=9k download` または `make BOARD=20k download` は Day 99 をビルドして書き込むコマンド。個別 Day の書き込みは `make -C dayXX_completed download BOARD=9k` のように実行する。実機確認は別途ボード上で行う。
+4. `make BOARD=9k download` または `make BOARD=20k download` はリポジトリ直下の既定ターゲット（Day 99）をビルドして書き込むコマンド。個別 Day の書き込みは `make -C dayXX_completed download BOARD=9k` のように実行する。実機確認は別途ボード上で行う。
 
 ## 📘 ソフトウェアエンジニア向けリソース
 

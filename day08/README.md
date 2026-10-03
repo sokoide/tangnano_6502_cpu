@@ -7,7 +7,7 @@
 
 ## 📜 Overview
 
-Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which bundles the individual status flags we began implementing in Day 06.
+Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which bundles the arithmetic status flags introduced in this lesson.
 
 This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
 
@@ -26,7 +26,7 @@ Before proceeding, make sure you understand:
 ## 🎯 Learning Objectives
 
 - **Integrate ALU**: Fully support 8-bit addition and subtraction.
-- **Integrate Status Register (P)**: Connect the flag calculation logic from Day 06 to the P register.
+- **Integrate Status Register (P)**: Implement the N/V/Z/C flags and collect them in the P register.
 - **Complete `ADC` / `SBC`**: Implement accurate arithmetic that accounts for carry/borrow.
 - **Observe Flag Changes**: Confirm on the LCD that the P register content (Negative, Overflow, Zero, Carry) changes correctly based on operation results.
 

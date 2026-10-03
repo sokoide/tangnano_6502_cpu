@@ -19,7 +19,7 @@ This is the completed project for designing combinational circuits in SystemVeri
 
 - Four types of operations: Addition, Subtraction, AND, OR
 - Flag outputs: Zero, Carry
-- Overflow/underflow detection
+- Zero detection and a carry output indicating carry/borrow
 
 ## How to Build and Test
 

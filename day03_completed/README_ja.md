@@ -9,7 +9,8 @@ SystemVerilog の順序回路設計の完成版プロジェクトです。
 - `traffic_light.sv` - 交通信号制御器（状態機械）
 - `shift_register.sv` - 8bit シフトレジスタ
 - `clock_divider.sv` - 可変分周器
-- `top.sv` - 統合テストモジュール
+- `top_9k.sv` / `top_20k.sv` - ボード別トップ（入力を定数接続）
+- `top_core.sv` - 内部回路の統合モジュール
 - `tb_traffic_light.sv` - 交通信号テストベンチ
 - `Makefile` - ビルド・テスト自動化
 
@@ -81,18 +82,9 @@ gtkwave tb_traffic_light.vcd
 
 ## ハードウェア動作確認
 
-### 入力
+この完成版のボードトップは `clk`、`ResetButton`、`led[5:0]` のみを外部ポートとして持ちます。スイッチ入力や7セグメント表示はありません。`top_9k.sv` / `top_20k.sv` は `top_core.sv` の `switches` を `4'b0` に固定し、PWM出力を未接続にしています。
 
-- `rst_n`: リセットボタン
-- `switches[3:0]`: 制御スイッチ
-
-### 出力
-
-- `count_out[7:0]`: カウンタ値（LED または 7 セグメント表示）
-- `pwm_out`: PWM 信号出力
-- `red_led`, `yellow_led`, `green_led`: 交通信号 LED
-- `shift_serial_out`: シフトレジスタ出力
-- `div_clk_out`: 分周クロック出力
+`top_core.sv` 内では交通信号の状態とカウンタ下位ビットを6個のLED信号へ割り当てています。リセットボタンで初期状態へ戻ること、LEDの状態が回路動作に応じて変化することを確認してください。内部の `count_out`、`pwm_out`、シフト出力、分周クロックはボードの外部ピンには出ていません。
 
 ## 学習ポイント
 

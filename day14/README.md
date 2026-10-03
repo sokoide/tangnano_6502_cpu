@@ -93,7 +93,7 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
     ```
 
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
-- **FPGA**: Observe the loop execution and final stop at a specific address on the LCD.
+- **FPGA**: Observe the shift/rotate results and the final halted state on the LCD.
 
 ## 🎯 Next Step
 

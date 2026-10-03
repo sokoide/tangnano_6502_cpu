@@ -25,7 +25,7 @@ Before proceeding, make sure you understand:
 
 ## 🎯 Learning Objectives
 
-- **Utilize X and Y Registers**: Prepare to use the general-purpose index registers implemented in Day 05.
+- **Utilize X and Y Registers**: Add X/Y to the CPU and use them in transfer and increment instructions.
 - **Implement Transfer Instructions**: Implement `TAX`, `TAY`, `TXA`, and `TYA`.
 - **Implement Increment Instructions**: Implement `INX` and `INY`.
 - **Expand Decoder**: Master handling 1-byte instructions (no operands).

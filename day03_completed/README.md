@@ -14,7 +14,8 @@ This is the completed project for designing sequential circuits in SystemVerilog
 - `traffic_light.sv` - Traffic light controller (state machine)
 - `shift_register.sv` - 8-bit shift register
 - `clock_divider.sv` - Variable clock divider
-- `top.sv` - Integrated test module
+- `top_9k.sv` / `top_20k.sv` - Board wrappers (inputs tied to constants)
+- `top_core.sv` - Internal circuit integration
 - `tb_traffic_light.sv` - Traffic light testbench
 - `Makefile` - Build and test automation
 
@@ -86,18 +87,9 @@ gtkwave tb_traffic_light.vcd
 
 ## Hardware Verification
 
-### Inputs
+The board top exposes only `clk`, `ResetButton`, and `led[5:0]`. There are no switch inputs or seven-segment display. `top_9k.sv` and `top_20k.sv` tie `top_core.sv`'s `switches` input to `4'b0` and leave its PWM output unconnected.
 
-- `rst_n`: Reset button
-- `switches[3:0]`: Control switches
-
-### Outputs
-
-- `count_out[7:0]`: Counter value (for LED or 7-segment display)
-- `pwm_out`: PWM signal output
-- `red_led`, `yellow_led`, `green_led`: Traffic light LEDs
-- `shift_serial_out`: Shift register output
-- `div_clk_out`: Divided clock output
+Inside `top_core.sv`, traffic-light state and low counter bits are mapped to the six LED signals. Check that the reset button restores the initial state and that the LEDs change as the circuits run. Internal signals such as `count_out`, `pwm_out`, shift output, and divided clock are not exposed on board pins.
 
 ## Learning Points
 

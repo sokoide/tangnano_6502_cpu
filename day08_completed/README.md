@@ -7,7 +7,7 @@
 
 ## 📜 Overview
 
-Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which bundles the individual status flags we began implementing in Day 06.
+Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which stores the N/V/Z/C arithmetic flags introduced in this lesson.
 
 This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
 
@@ -18,7 +18,7 @@ Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, inc
 ## 🎯 Learning Objectives
 
 - **Integrate ALU**: Fully support 8-bit addition and subtraction.
-- **Integrate Status Register (P)**: Connect the flag calculation logic from Day 06 to the P register.
+- **Integrate Status Register (P)**: Implement the N/V/Z/C flags and store them in the P register.
 - **Complete `ADC` / `SBC`**: Implement accurate arithmetic that accounts for carry/borrow.
 - **Observe Flag Changes**: Confirm on the LCD that the P register content (Negative, Overflow, Zero, Carry) changes correctly based on operation results.
 
@@ -69,6 +69,8 @@ The 6502 flags are updated automatically by many instructions. We focus on the f
 In the 6502, it is standard to call `SEC` (Set Carry) before an `SBC` operation. This is because the formula is `A - data - (1 - C)`, meaning `C=1` represents "No Borrow".
 
 ## 🧪 Verification
+
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
 
 - **Test Program**:
 

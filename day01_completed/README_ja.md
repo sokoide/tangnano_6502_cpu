@@ -188,11 +188,11 @@ module top (
     logic [24:0] counter;
 
     always_ff @(posedge clk) begin
-        counter <= counter + 1;
+        counter <= counter + 1'b1;
     end
 
     // LED点滅 (counterの最上位ビットを使用)
-    assign led = counter[24];
+    assign led = ~counter[24];
 
 endmodule
 ```
@@ -238,7 +238,7 @@ flowchart LR
 - `reg`: 古い Verilog で値を保持する変数のためのデータ型で、`always` ブロック内で使われます。新しい SystemVerilog のコードでは一般的に `logic` が推奨されます。
 
 - `always_ff @(posedge clk)`: これは**シーケンシャル（順序）かつクロック同期**のロジックブロックを記述します。このブロック内のコードは、`clk` 信号の立ち上がりエッジ（0 から 1 への遷移）でのみ実行されます。これにより、状態を保持する**レジスタ**（フリップフロップなど）が作られます。
-- `assign`: このキーワードは**組み合わせ（Combinational）ロジック**を作ります。これは、直接的な配線接続やロジックゲートのように、常に真である関係を記述します。例えば、`assign led = counter[24];` は、`counter` レジスタの 25 番目のビットを `led` 出力に直接接続する配線を生成します。
+- `assign`: このキーワードは**組み合わせ（Combinational）ロジック**を作ります。これは、直接的な配線接続やロジックゲートのように、常に真である関係を記述します。例えば、`assign led = ~counter[24];` は `counter[24]` を反転して `led` に出力します。9K の LED は Active Low です。
 
 **ソフトウェアエンジニアのための重要ルール:**
 

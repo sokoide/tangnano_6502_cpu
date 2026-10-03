@@ -17,7 +17,7 @@ Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, inc
 
 ## 🎯 Learning Objectives
 
-- **Utilize X and Y Registers**: Put the general-purpose index registers implemented in Day 05 into practical use.
+- **Utilize X and Y Registers**: Add X/Y to the CPU and use them in transfer and increment instructions.
 - **Implement Transfer Instructions**: Implement `TAX`, `TAY`, `TXA`, and `TYA`.
 - **Implement Increment Instructions**: Implement `INX` and `INY`.
 - **Expand Decoder**: Master handling single-byte instructions with no operands.
@@ -102,16 +102,24 @@ The X and Y registers shine when implementing **indexed addressing modes** (e.g.
 
 ## 🧪 Verification
 
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+
 - **Test Program**:
 
     ```asm
     LDA #$40
-    TAX        ; X = 0x40
-    INX        ; X = 0x41
-    TXA        ; A = 0x41
+    TAX        ; X = $40
+    TAY        ; Y = $40
+    INX        ; X = $41
+    INY        ; Y = $41
+    TXA        ; A = $41
+    TYA        ; A = $41
     ```
 
+    This is the sequence in `rom.sv`; after `TYA`, A, X, and Y are `$41`. The shared starter testbench injects a separate `$42` program.
+
 - **FPGA**: Verify on the LCD that the X register changes as expected.
+
 
 ## 🎯 Next Step
 

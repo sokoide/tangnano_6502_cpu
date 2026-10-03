@@ -62,6 +62,8 @@ graph LR
 
 ## 🧪 動作確認
 
+完成版 CPU テストはこのディレクトリで `make test-cpu` を実行します。`make sim` は LCD/TFT smoke test も実行します。テスト合格は各テストの assertion 範囲だけを確認するもので、全命令や実機動作を保証しません。
+
 - **テストプログラム**:
 
     ```asm

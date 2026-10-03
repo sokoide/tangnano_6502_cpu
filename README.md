@@ -13,7 +13,7 @@ The goal of this curriculum is the instruction subset and LCD peripheral circuit
 
 ## 🏗️ System Architecture
 
-By the end of this course, you will have built the following system inside the FPGA.
+Days 01–03 build foundational circuits separately, and Day 04 builds an LCD demo. Day 99 integrates the CPU, RAM, VRAM, and LCD into one system.
 The key feature is the **Hardware-Native Debugger**: the CPU writes debug info directly to VRAM, allowing you to see internal registers on the LCD screen.
 
 ```mermaid
@@ -22,17 +22,15 @@ graph TD
         CPU[6502 CPU Core]
         VRAM["VRAM (Dual Port RAM)"]
         LCD[LCD Controller]
-        ROM[Program ROM]
-        GPIO[LEDs / Buttons]
+        RAM[Program / Data RAM (BSRAM)]
 
-        CPU -- "Addr/Data" --> ROM
-        CPU -- "Addr/Data (Write)" --> VRAM
-        CPU -- "Control" --> GPIO
-        VRAM -- "Pixel Data (Read)" --> LCD
+        CPU -- "Address / data" --> RAM
+        RAM -- "Read data" --> CPU
+        CPU -- "Text / debug writes" --> VRAM
+        VRAM -- "Character codes" --> LCD
     end
 
-    LCD -- "HDMI / LCD Signals" --> DISPLAY[External Display]
-    GPIO -- "Blinky" --> LEDS[On-board LEDs]
+    LCD -- "LCD signals" --> DISPLAY["480x272 LCD panel"]
 
     style CPU fill:#f96,stroke:#333,stroke-width:2px
     style VRAM fill:#69f,stroke:#333,stroke-width:2px

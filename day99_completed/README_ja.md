@@ -80,6 +80,8 @@ make BOARD=20k download
 
 ## 🧠 6502 CPU 実装
 
+本CPUは文書化された2進演算の命令サブセットと4つの独自opcodeを実装します。未対応命令はfaultで停止し、NMOS 6502の完全互換やサイクル完全互換は対象外です。
+
 ## 🧭 day06-18（教育用CPU）との違い
 
 このリポジトリの day06-18 は、6502 を「部品→統合」の順で理解するための教育用ステップで、モジュール分割や制御方法が day99 と一致しない部分があります。
@@ -102,13 +104,21 @@ make BOARD=20k download
 
 ### メモリマップ
 
-```bash
-0x0000-0x01FF  ゼロページ＆スタック (512B)
-0x0200-0x7BFF  プログラムRAM (30.5KB)
-0x7C00-0x7FFF  シャドウVRAM (1KB, 読み取り専用)
-0xE000-0xE3FF  VRAM (1KB, 書き込み専用)
-0xF000-0xFFFF  フォントROM (4KB, ディスプレイコントローラ用)
+```text
+0x0000-0x00FF  ゼロページ (RAM)
+0x0100-0x01FF  スタック (RAM)
+0x0200-0x7BFF  プログラム/データ RAM
+0x7C00-0x7FFF  VRAM のシャドウコピー用 RAM (CPU 読出し可、書込みは無視)
+0x8000-0xDFFF  RAM のミラー: 0x0000-0x5FFF (bit 15 は RAM アドレスに含まれない)
+0xE000-0xE3FF  テキスト VRAM (CPU 書込み可、CPU読出しはVRAMに接続されない)
+0xE400-0xFBFF  RAM のミラー: 0x6400-0x7BFF
+0xFC00-0xFFFF  RAM のミラー: 0x7C00-0x7FFF (VRAM シャドウ読出しの格納先)
 ```
+
+フォント ROM は LCD 専用の別資源で、CPU のアドレス空間には含まれません。VRAM への書込みは、CPU が読み出すシャドウコピー (`0x7C00-0x7FFF`) の RAM にも同じ値を書き込みます。`0xE000-0xE3FF` の読出しは VRAM から値を取得しません。`0xFC00-0xFFFF` 経由の書込みは RAM のミラー先だけを変更し、VRAM は更新しません。この対応関係は `src/cpu_memory.sv` のデコードと `src/ram.sv` の15ビット RAM アドレスに基づきます。
+
+**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横60列・縦17行で表示します。対応命令とメモリ動作は [`docs/INSTRUCTIONS.md`](./docs/INSTRUCTIONS.md) を参照してください。
+
 
 ## 🎮 プログラミング例
 

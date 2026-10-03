@@ -192,11 +192,11 @@ module top (
     logic [24:0] counter;
 
     always_ff @(posedge clk) begin
-        counter <= counter + 1;
+        counter <= counter + 1'b1;
     end
 
     // Blink LED (use the most significant bit of the counter)
-    assign led = counter[24];
+    assign led = ~counter[24];
 
 endmodule
 ```
@@ -242,7 +242,7 @@ flowchart LR
 - `reg`: The older Verilog data type for a variable that stores a value, used inside an `always` block. `logic` is generally recommended for new SystemVerilog code.
 
 - `always_ff @(posedge clk)`: This describes a block of logic that is **sequential and clocked**. The code inside this block only executes on the rising edge (0 to 1 transition) of the `clk` signal. This is how you create **registers** (like flip-flops) that hold state.
-- `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = counter[24];` creates a wire that connects the 25th bit of the `counter` register directly to the `led` output.
+- `assign`: This keyword creates **combinational logic**. It describes a relationship that is always true, like a direct wire connection or a logic gate. For example, `assign led = ~counter[24];` inverts the most significant counter bit before driving the LED (active-low on the Tang Nano 9K).
 
 **Important Rule for Software Engineers:**
 

@@ -19,7 +19,7 @@ instantiate the separate decoder/flag modules. Arithmetic CPU flags are tested i
 5. Run `make test-cpu` to check multiple immediate loads, PC, and enable holds.
    The completed workspace connects the same testbench to the reference CPU.
    The starter fails until its TODOs are implemented.
-6. Run `make test-lcd` separately and build with `make BOARD=9k` / `make BOARD=20k`.
+6. Run `make sim` separately and build with `make BOARD=9k` / `make BOARD=20k`.
    LCD output alone does not verify instruction or flag correctness.
 
 ## Memory Example

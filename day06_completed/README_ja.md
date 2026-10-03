@@ -18,7 +18,7 @@
    `pc_enable=0` で状態を保持する。Day 04–09 は ROM 読出しで、同期 RAM の待ち時間は Day 10 で導入する。
 5. `make test-cpu` で複数の即値 LDA、PC、停止中の保持を確認する。
    完成例は同じテストベンチへ完成 CPU を接続しています。スターターは未実装部分があるため、実装前にテストが失敗しても正常です。
-6. `make test-lcd` で LCD smoke を別に確認し、`make BOARD=9k` / `make BOARD=20k` でビルドする。
+6. `make sim` で CPU テストに加えて LCD smoke も確認し、`make BOARD=9k` / `make BOARD=20k` でビルドする。
    LCD の表示だけでは命令やフラグの正しさを検証できない。
 
 ## メモリ上の例

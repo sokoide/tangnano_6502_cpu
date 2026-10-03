@@ -95,7 +95,7 @@ Used for the **Font ROM**. It comes pre-loaded with font patterns upon power-up,
 2. **Display Demo Text**:
     - VRAM is pre-filled with text like "VRAM TEXT" on boot. Verify that this appears correctly on the screen.
 
-### Part 2: Scope of Day 04 vs. Subsequent Days
+### Day 04 Scope and Later CPU Days
 
 In the Day 04 starter, we instantiate `lcd_demo` inside `top_core.sv` to establish the display output path. The CPU, instruction decoder, and register demo logic are not connected yet. You will verify that the text initialized by `lcd_demo.sv` appears correctly on the LCD.
 

@@ -63,6 +63,8 @@ Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
 
 ## 🧪 Verification
 
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+
 - **Test Program**:
 
     ```asm

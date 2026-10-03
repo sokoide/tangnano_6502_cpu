@@ -63,6 +63,8 @@ graph LR
 
 ## 🧪 Verification
 
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+
 - **Test Program**:
 
     ```asm

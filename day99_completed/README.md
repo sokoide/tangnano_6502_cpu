@@ -81,6 +81,8 @@ For more details, refer to the documentation:
 
 ## 🧠 6502 CPU Implementation
 
+This project implements a documented binary-mode instruction subset with four custom opcodes. Unsupported instructions fault; this is not a cycle-exact or fully compatible NMOS 6502.
+
 ## 🧭 How this differs from day06-18 (educational CPU)
 
 The day06-18 folders are an educational, step-by-step 6502 build-up (components → integration). For teaching, their module boundaries and control style intentionally prioritize clarity and incremental learning, so they do not necessarily match day99.
@@ -103,21 +105,20 @@ In addition to the standard 6502 instruction set, this CPU includes custom opcod
 
 ### Memory Map
 
-```bash
-0x0000-0x01FF  Zero Page & Stack (512B)
-0x0200-0x7BFF  Program RAM (30.5KB)
-0x7C00-0x7FFF  Shadow VRAM (1KB, read-only)
-0xE000-0xE3FF  VRAM (1KB, write-only)
-0xF000-0xFFFF  Font ROM (4KB, for display controller)
+```text
+0x0000-0x00FF  Zero Page (RAM)
+0x0100-0x01FF  Stack (RAM)
+0x0200-0x7BFF  Program/Data RAM
+0x7C00-0x7FFF  VRAM shadow copy in RAM (CPU reads use this copy; writes to this range are ignored)
+0x8000-0xDFFF  RAM mirror of 0x0000-0x5FFF (address bit 15 is not stored)
+0xE000-0xE3FF  Text VRAM (CPU writes; reads are not mapped to VRAM)
+0xE400-0xFBFF  RAM mirror of 0x6400-0x7BFF
+0xFC00-0xFFFF  RAM mirror of 0x7C00-0x7FFF, backing VRAM shadow reads
 ```
 
-**Display System:**
+The font ROM is a separate LCD-only resource and is not in the CPU address map. VRAM writes also update the RAM shadow copy at `0x7C00-0x7FFF`, which CPU reads access. Reads from `0xE000-0xE3FF` do not read VRAM. Writes through `0xFC00-0xFFFF` address the RAM mirror directly and do not update VRAM. This follows the decode in `src/cpu_memory.sv` and the 15-bit RAM ports in `src/ram.sv`.
 
-- 60×17 character text mode (480×272 pixels)
-- 16×8 pixel font characters with [Sweet16Font](https://github.com/kmar/Sweet16Font) (Boost licensed)
-- Hardware accelerated character rendering
-
-Complete instruction reference and addressing modes available in [docs/README_architecture_en.md](./docs/README_architecture_en.md).
+**Display system:** 60 columns × 17 rows at 8 × 16 pixels per character on a 480 × 272 LCD. See [`docs/INSTRUCTIONS.md`](./docs/INSTRUCTIONS.md) for the supported instructions and memory behavior.
 
 ## 🎮 Programming Examples
 
