@@ -45,7 +45,7 @@ sequenceDiagram
 
 1. **比較ロジック**:
     - `CMP` などは `Register - Operand` を計算します。
-    - `result >= 0` なら `C=1`（ボローなし）。
+    - 減算でボローが発生しなければ `C=1`（8bitの符号なし比較で Register >= Operand）。結果のbit 7を `N`、結果が0なら `Z=1` とします。
     - `result == 0` なら `Z=1`。
 2. **Read-Modify-Write (RMW)**:
     - `INC` や `DEC` はメモリからデータを読み出すサイクル、ALU で計算するサイクル、そして同じアドレスに書き戻すサイクルが必要です。

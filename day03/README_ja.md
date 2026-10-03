@@ -74,11 +74,10 @@ traffic_light #(.TIMER_LIMIT(26'd10)) dut (...);
 
 ハードウェアにおいて、クロックは **心臓の鼓動** です。すべての `posedge clk` において、CPU 内のすべてのレジスタが同時に更新されます。
 
-**ソフトウェアエンジニアのための例え:**
-クロックは、ゲームエンジンの **フレーム更新ループ (tick)** や、JavaScript の **イベントループ** だと考えてください。
+**設計上の役割:**
 
-- **組み合わせ回路** は `update()` 関数の中の計算処理のようなものです（現在の状態から次の状態を計算する）。
-- **クロックの立ち上がり** は、そのフレームが確定し、次のフレームのために状態が保存される瞬間にあたります。
+- **組み合わせ回路** は現在の入力と状態から次状態や出力を計算します。
+- **クロックエッジ** でフリップフロップが値を取り込み、状態が更新されます。これらは別々の回路として並列に動作します。
 
 この同期性こそが、6502 のような複雑なシステムが、カオスな競合状態を起こさずに確実に動作することを可能にしています。
 
@@ -106,7 +105,7 @@ module counter_8bit (
     input logic rst_n,  // Active Low Reset
     input logic enable,  // Increment only when enable is high
     output logic [7:0] count,
-    output logic overflow  // Set to 1 when count rolls over from FF to 00
+    output logic overflow  // count==FF かつ enable の間、次の桁上がりを示す
 );
 
     // Sequential block using always_ff
@@ -130,8 +129,8 @@ endmodule
 
 ### 仕様
 
-- 8bit デューティサイクル制御
-- 可変周波数対応
+- 8bit デューティサイクル制御（周期は256クロックに固定）
+- duty_cycleに応じたデューティ比の変更
 
 PWM（Pulse Width Modulation）は「高速に ON/OFF する信号の ON 比率（デューティ）を変えて、見かけ上の明るさなどを制御する」方式です。
 
@@ -151,7 +150,7 @@ flowchart LR
 module pwm_generator (
     input logic clk,
     input logic rst_n,
-    input logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (100% ON)
+    input logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (255/256 ON)
     output logic pwm_out
 );
 
