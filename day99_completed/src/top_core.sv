@@ -1,4 +1,4 @@
-// CPU/memory writes at 31.5MHz (9K) or 40.5MHz (20K); LCD reads at 9MHz.
+// CPU/memory writes at 27MHz (9K) or 40.5MHz (20K); LCD reads at 9MHz.
 // Both domains assert reset on external reset or either PLL lock loss.
 module top_core #(parameter bit BOARD_20K = 0) (
     // Clock and Reset
@@ -104,8 +104,19 @@ module top_core #(parameter bit BOARD_20K = 0) (
         .v_din(v_din)
     );
 
-    // Boot program instance
+    // Boot program ROM
+`ifdef VERILATOR
+    // cpu keeps the boot ROM array ports only for Verilator builds; mirror
+    // the generated function ROM into an array so top-level smoke tests
+    // boot the embedded program exactly like synthesis does.
     `include "../include/boot_program.sv"
+    logic [ 7:0] boot_program [7680];
+    logic [15:0] boot_length;
+    initial begin
+        for (int i = 0; i < 7680; i++) boot_program[i] = boot_program_byte(15'(i));
+        boot_length = boot_program_length;
+    end
+`endif
 
     // CPU instance
     cpu cpu_inst (
@@ -113,8 +124,10 @@ module top_core #(parameter bit BOARD_20K = 0) (
         .clk(MEMORY_CLK),
         .dout(dout),
         .vsync(vsync),
+`ifdef VERILATOR
         .boot_program(boot_program),
-        .boot_program_length(boot_program_length),
+        .boot_program_length(boot_length),
+`endif
         .din(din),
         .ada(ada),
         .cea(cea),

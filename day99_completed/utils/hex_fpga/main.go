@@ -10,7 +10,7 @@
 //     6502 address space is 16-bit); all other types are rejected
 //   - data must start at 0x0200 and be byte-contiguous: gaps, overlaps, and
 //     addresses outside 0x0200-0x1FFF are rejected
-//   - at most 7680 bytes (boot_program[7680]); a hex file without any data
+//   - at most 7680 bytes (BOOT_CAPACITY); a hex file without any data
 //     byte is rejected because the boot loader has no defined empty program
 //   - the output is written to a temp file in the destination directory and
 //     renamed into place only after a fully successful conversion, so any
@@ -29,12 +29,12 @@ import (
 )
 
 // Boot program placement contract: linker script examples/baremetal.cfg
-// places CODE/DATA at 0x0200 with size 0x1E00, and src/cpu.sv declares
-// boot_program[7680]. The two must stay in sync.
+// places CODE/DATA at 0x0200 with size 0x1E00, and src/cpu.sv reads the
+// boot ROM through boot_program_byte() over 15-bit indices. The two must
+// stay in sync.
 const (
 	bootBaseAddr = 0x0200
 	bootCapacity = 7680
-	bootArrayLen = 7680
 )
 
 // hexRecord is one decoded Intel HEX record. data holds only the payload
@@ -196,8 +196,11 @@ func parseIntelHex(r io.Reader) ([]byte, error) {
 	return image, nil
 }
 
-// renderSV produces the SystemVerilog include. The layout is identical to
-// the previous generator so include/boot_program.sv stays compatible.
+// renderSV produces the SystemVerilog include: a boot_program_length
+// localparam plus a case-based boot_program_byte() function ROM. Each ROM
+// bit is then a small logic function of the index, which is safe for Gowin
+// synthesis (the previous unpacked-array localparam read with a dynamic
+// index lost bit7 of bytes past index 15 on real hardware).
 // srcName, when set, is recorded in the header so the day99 build can tell
 // which example program is currently embedded.
 func renderSV(image []byte, srcName string) string {
@@ -207,13 +210,16 @@ func renderSV(image []byte, srcName string) string {
 	if srcName != "" {
 		fmt.Fprintf(&b, "// source: %s\n", srcName)
 	}
-	fmt.Fprintf(&b, "localparam logic [7:0] boot_program[%d] = '{\n", bootArrayLen)
-	for i, v := range image {
-		fmt.Fprintf(&b, "    %d: 8'h%02X,\n", i, v)
-	}
-	b.WriteString("    default: 8'hEA\n")
-	b.WriteString("};\n")
 	fmt.Fprintf(&b, "localparam logic [15:0] boot_program_length = %d;\n", len(image))
+	b.WriteString("\n")
+	b.WriteString("function automatic logic [7:0] boot_program_byte(input logic [14:0] addr);\n")
+	b.WriteString("    case (addr)\n")
+	for i, v := range image {
+		fmt.Fprintf(&b, "    15'd%d: boot_program_byte = 8'h%02X;\n", i, v)
+	}
+	b.WriteString("    default: boot_program_byte = 8'hEA;\n")
+	b.WriteString("    endcase\n")
+	b.WriteString("endfunction\n")
 	return b.String()
 }
 

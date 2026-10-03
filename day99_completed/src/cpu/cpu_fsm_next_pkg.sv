@@ -57,11 +57,9 @@ package cpu_fsm_next_pkg;
             end
 
             FETCH_REQ: begin
-                if (fetch_stage == FETCH_OPCODE) begin
-                    r.next_state = FETCH_RECV;
-                end else begin
-                    r.next_state = FETCH_WAIT;
-                end
+                // All reads go through the registered RAM sample (dout_r).
+                // WAIT gives the synchronous RAM output one edge to reach it.
+                r.next_state = FETCH_WAIT;
             end
 
             FETCH_WAIT: begin
@@ -1917,7 +1915,7 @@ package cpu_fsm_next_pkg;
             cur.fetch_stage,
             cur.fetch_resume_state,
             cur.prev_state,
-            in.dout,
+            cur.dout_r,
             cur.boot_idx,
             in.boot_program_length,
             cur.boot_write,
@@ -1972,7 +1970,7 @@ package cpu_fsm_next_pkg;
             FETCH_RECV: begin
                 unique case (cur.fetch_stage)
                     FETCH_OPCODE: begin
-                        next.opcode = in.dout;
+                        next.opcode = cur.dout_r;
                         if (fsm.next_state == FAULT) next.fault_reason = FAULT_OPCODE;
                         next.fetched_data_bytes = 0;
                         next.written_data_bytes = 0;
@@ -1983,14 +1981,14 @@ package cpu_fsm_next_pkg;
                         end
                     end
                     FETCH_OPERAND1: begin
-                        next.operands[7:0] = in.dout;
+                        next.operands[7:0] = cur.dout_r;
                     end
                     FETCH_OPERAND1OF2: begin
-                        next.operands[7:0] = in.dout;
+                        next.operands[7:0] = cur.dout_r;
                         next.adb = physical_read(cur.pc_plus2);
                     end
                     FETCH_OPERAND2: begin
-                        next.operands[15:8] = in.dout;
+                        next.operands[15:8] = cur.dout_r;
                     end
                     default: begin
                         // Keep defaults.

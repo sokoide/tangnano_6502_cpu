@@ -181,7 +181,35 @@ sim: sim-build
 	@./$(SIM_DIR)/V$(SIM_TOP)
 
 .PHONY: test test-cpu-regression test-cpu-contract test-alu
-test: test-cpu-regression test-cpu-contract test-alu test-ram test-font test-lcd test-clock test-system sim
+test: test-cpu-regression test-cpu-contract test-simple5 test-diag-simple5 test-alu test-ram test-font test-lcd test-clock test-system sim
+
+.PHONY: test-simple5
+test-simple5: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_simple5_sweep
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/tb_simple5_sweep --top-module tb_simple5_sweep \
+		src/cpu.sv src/ram.sv src/tb_simple5_sweep.sv \
+		src/gowin_sdpb/gowin_sdpb.v src/gowin_sdpb/gowin_sdpb_vram.v $(PRIMITIVE_MODEL)
+	./build/$(BOARD)/tb_simple5_sweep/Vtb_simple5_sweep
+	./build/$(BOARD)/tb_simple5_sweep/Vtb_simple5_sweep +poison_live_read
+
+.PHONY: test-diag-simple5
+test-diag-simple5: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_diag_simple5
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -Iinclude -Isrc \
+		--Mdir build/$(BOARD)/tb_diag_simple5 --top-module tb_diag_simple5 \
+		src/cpu.sv src/tb_diag_simple5.sv
+	./build/$(BOARD)/tb_diag_simple5/Vtb_diag_simple5
+
+# This uses the currently embedded program and the actual P&R netlist.
+# Keep it explicit: gate simulation is much slower than RTL regression.
+.PHONY: test-simple5-netlist
+test-simple5-netlist: $(FS) tools-check-sim
+	@test "$(EMBEDDED_PROG)" = simple5.s || \
+		{ echo "Run make prog PROG=simple5 before the netlist test" >&2; exit 1; }
+	python3 utils/test_simple5_netlist.py --netlist impl/pnr/$(BITSTREAM_BASE).vo \
+		--primitives $(PRIMITIVE_MODEL) --output-dir build/$(BOARD)/simple5-netlist \
+		--verilator $(VERILATOR)
 
 test-cpu-contract: tools-check-sim
 	@mkdir -p build/$(BOARD)/tb_cpu_contract
