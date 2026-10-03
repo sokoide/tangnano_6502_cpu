@@ -50,15 +50,16 @@ module cpu (
     output logic [7:0] v_din,  // VRAM write data (character codes)
 
     // System Integration
-    input logic        vsync                        // LCD vertical sync (for WVS instruction)
 `ifdef VERILATOR
+    input logic        vsync,                      // LCD vertical sync (for WVS instruction)
     // Simulation-only boot ROM ports: testbenches inject custom programs
     // through this array. Synthesis uses the boot_program_byte() function
     // ROM included below instead (Gowin mis-compiles an array localparam
     // crossed through ports and read with a dynamic index).
-    ,
     input logic [ 7:0] boot_program       [7680],  // Boot program ROM (max 7680 bytes)
     input logic [15:0] boot_program_length         // Actual boot program size
+`else
+    input logic        vsync                       // LCD vertical sync (for WVS instruction)
 `endif
 );
 
