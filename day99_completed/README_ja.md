@@ -55,7 +55,7 @@ make BOARD=20k download
 | **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | サポートされている CPU 命令とカスタム拡張機能。 |
 | **[docs/LCD.md](./docs/LCD.md)**                                       | LCD の仕様とコントローラの詳細。                |
 | **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog コーディング規約。                |
-| **[CLAUDE.md](./CLAUDE.md)**                                           | AI 支援開発のガイドライン。                     |
+| **[AGENTS.md](./AGENTS.md)**                                           | AI 支援開発のガイドライン。                     |
 
 ## 🏗️ プロジェクト構成
 

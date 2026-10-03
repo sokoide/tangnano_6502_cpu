@@ -90,7 +90,7 @@ test-summary:
 
 format:
 	@echo "Formatting all projects"
-	pnpm dlx markdownlint-cli "**/*.md" --ignore "conductor/**" --ignore "CLAUDE.md" --ignore "AGENTS.md" --fix
+	pnpm dlx markdownlint-cli "**/*.md" --ignore "conductor/**" --ignore "AGENTS.md" --fix
 	pnpm dlx textlint --fix "**/*.md" --ignore-path .textlintignore
 	find . $(SVFILES) -not -path "./conductor/*" \
 		-not -path "*/deps/*" -not -path "*/gowin_*/*" -not -path "*/legacy/*" \
