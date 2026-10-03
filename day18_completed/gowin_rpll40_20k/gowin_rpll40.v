@@ -7,12 +7,14 @@
 //Device Version: C
 //Created Time: Sun Apr 20 19:56:53 2025
 
-module Gowin_rPLL40 (clkout, clkin);
+module Gowin_rPLL40 (clkout, clkin, locked);
 
 output clkout;
+output locked;
 input clkin;
 
 wire lock_o;
+assign locked = lock_o;
 wire clkoutp_o;
 wire clkoutd_o;
 wire clkoutd3_o;

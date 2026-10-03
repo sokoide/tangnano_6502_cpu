@@ -29,7 +29,7 @@ endif
 .PHONY: all clean download help tools-check sim sim-build test test-cpu test-lcd tools-check-sim
 all: $(PROJECT)_$(BOARD).fs
 
-$(PROJECT)_$(BOARD).fs: $(GPRJ) $(SRCS) $(wildcard *.cst src/*.cst)
+$(PROJECT)_$(BOARD).fs: $(GPRJ) $(SRCS) $(wildcard *.cst src/*.cst *.sdc gowin_*/*.v)
 	@$(MAKE) tools-check
 	@echo "Building for Tang Nano $(BOARD)..."
 	@rm -rf impl/gwsynthesis impl/pnr
@@ -95,7 +95,7 @@ sim: sim-build
 
 test-lcd: sim
 
-test: test-cpu test-lcd
+test: test-cpu test-lcd test-lcd-pipeline
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
@@ -149,3 +149,11 @@ test-vsync: tools-check-sim
 		--Mdir build/$(BOARD)/vsync --top-module tb_day18_vsync \
 		../sim/tb_day18_vsync.sv cpu.sv ram.sv
 	./build/$(BOARD)/vsync/Vtb_day18_vsync
+
+# Verify all pixels, cell boundaries, DE latency and two complete frame periods.
+.PHONY: test-lcd-pipeline
+test-lcd-pipeline: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_lcd_pipeline
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_lcd_pipeline \
+		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv lcd/vram.sv
+	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline

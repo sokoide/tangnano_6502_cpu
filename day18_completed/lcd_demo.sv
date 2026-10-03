@@ -24,6 +24,13 @@ module lcd_demo (
     logic [ 9:0] vram_ada;
     logic [ 7:0] vram_din;
 
+    // Memory-domain reset. On FPGA it is gated by PLL LOCK (day99-style) to
+    // keep the boot copy stable through the post-configuration unlock window.
+    logic mem_rst_n;
+`ifdef VERILATOR
+    assign mem_rst_n = rst_n;
+`endif
+
 `ifdef VERILATOR
     // Simulation path: keep everything in the PixelClk domain with simple models.
     Gowin_rPLL9 pll_inst (
@@ -47,8 +54,14 @@ module lcd_demo (
         .data (vram_data)
     );
 `else
-    // FPGA path: match the stable day99 display path (fast MEMORY_CLK + BRAM/pROM).
+    // FPGA path: CPU/VRAM writes use MEMORY_CLK; display reads use LCD_CLK.
+    // Hold the memory domain in reset until the PLL LOCK stays asserted for 16
+    // cycles: during the post-configuration unlock window the boot copy into RAM
+    // gets corrupted on real hardware (day99-style LOCK-gated reset).
     logic MEMORY_CLK;
+    logic locked_raw, locked_meta, locked_sync, lock_stable;
+    logic [3:0] lock_count;
+    assign mem_rst_n = rst_n && lock_stable;
 
     Gowin_rPLL9 pll9_inst (
         .clkout(LCD_CLK),
@@ -57,43 +70,60 @@ module lcd_demo (
 
     Gowin_rPLL40 pll40_inst (
         .clkout(MEMORY_CLK),
-        .clkin (XTAL_IN)
+        .clkin (XTAL_IN),
+        .locked(locked_raw)
     );
+
+    // 2FF synchronizer for the asynchronous PLL LOCK into MEMORY_CLK.
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            locked_meta <= 1'b0;
+            locked_sync <= 1'b0;
+        end else begin
+            locked_meta <= locked_raw;
+            locked_sync <= locked_meta;
+        end
+    end
+
+    // Release the memory-domain reset only after LOCK has held for 16 cycles.
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            lock_count  <= 4'd0;
+            lock_stable <= 1'b0;
+        end else if (!locked_sync) begin
+            lock_count  <= 4'd0;
+            lock_stable <= 1'b0;
+        end else if (lock_count != 4'd15) begin
+            lock_count  <= lock_count + 1'b1;
+            lock_stable <= 1'b0;
+        end else begin
+            lock_stable <= 1'b1;
+        end
+    end
 
     // Font pROM (Sweet16Font, 4KB: 16 bytes/char x 256 chars)
     Gowin_pROM_font prom_font_inst (
         .dout (font_data),
-        .clk  (MEMORY_CLK),
+        .clk  (LCD_CLK),
         .oce  (1'b1),
         .ce   (1'b1),
         .reset(1'b0),
         .ad   (font_addr)
     );
 
-    // VRAM in SDPB (1KB)
-    logic [9:0] vram_adb_sync1, vram_adb_sync2;
-    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
-        if (!rst_n) begin
-            vram_adb_sync1 <= 10'd0;
-            vram_adb_sync2 <= 10'd0;
-        end else begin
-            vram_adb_sync1 <= vram_addr;
-            vram_adb_sync2 <= vram_adb_sync1;
-        end
-    end
-
+    // Dual-port VRAM: memory-domain writes, pixel-domain synchronous reads.
     Gowin_SDPB_vram vram_inst (
         .dout  (vram_data),
         .clka  (MEMORY_CLK),
         .cea   (vram_cea),
         .reseta(1'b0),
-        .clkb  (MEMORY_CLK),
+        .clkb  (LCD_CLK),
         .ceb   (1'b1),
         .resetb(1'b0),
         .oce   (1'b0),
         .ada   (vram_ada),
         .din   (vram_din),
-        .adb   (vram_adb_sync2)
+        .adb   (vram_addr)
     );
 `endif
 
@@ -141,8 +171,8 @@ module lcd_demo (
 `endif
 
     logic vsync_meta, vsync_cpu;
-    always_ff @(posedge cpu_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always_ff @(posedge cpu_clk or negedge mem_rst_n) begin
+        if (!mem_rst_n) begin
             vsync_meta <= 0;
             vsync_cpu <= 0;
         end else begin
@@ -212,8 +242,8 @@ module lcd_demo (
     logic [7:0] snapshot_a, snapshot_x, snapshot_y, snapshot_p, snapshot_s;
     logic [7:0] debug_byte;
 
-    always_ff @(posedge cpu_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always_ff @(posedge cpu_clk or negedge mem_rst_n) begin
+        if (!mem_rst_n) begin
             vram_cea <= 1'b0;
             vram_ada <= 10'd0;
             vram_din <= 8'h20;
@@ -679,7 +709,7 @@ module lcd_demo (
 
     boot_loader u_boot (
         .clk(cpu_clk),
-        .rst_n(rst_n),
+        .rst_n(mem_rst_n),
         .cpu_address_bus(cpu_address_bus),
         .cpu_data_out(cpu_data_out),
         .cpu_write_en(cpu_write_en),
