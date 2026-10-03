@@ -21,6 +21,14 @@ SRCS= \
 # src/gowin_rpll_9K/gowin_rpll40.v \
 
 BOARD ?= 9k
+
+# Boot program embedded into the bitstream: examples/<PROG>.s. Switch it with
+# `make prog PROG=<name>` (regenerates include/boot_program.sv), or
+# `make prog-download PROG=<name>` to also rebuild the bitstream and program
+# the board.
+PROG ?= simple5
+EMBEDDED_PROG := $(shell sed -n 's|^// source: ||p' include/boot_program.sv 2>/dev/null)
+
 PROJECT := day99
 BITSTREAM_BASE := $(PROJECT)_$(BOARD)
 PROJ := $(BITSTREAM_BASE).gprj
@@ -55,6 +63,7 @@ all: $(FS)
 
 .PHONY: all clean wave download help lint format format-check tools-check
 .PHONY: sim sim-build sim-ram sim-ram-build tools-check-sim
+.PHONY: prog prog-download
 
 ifeq ($(BOARD),20k)
   TOP_WRAPPER := src/top_20k.sv
@@ -82,10 +91,20 @@ $(FS): $(SRCS) $(TOP_WRAPPER) $(PROJ) proj.tcl $(wildcard *.cst src/*.cst *.sdc 
 download: $(FS)
 	@../scripts/program_fpga.sh "$(PRG)" "$(DEVICE)" "$(abspath $(FS))"
 
+# Rebuild include/boot_program.sv from examples/$(PROG).s. The FPGA bitstream
+# target $(FS) already depends on boot_program.sv, so a later `make` / `make
+# download` picks the new program up automatically.
+prog:
+	@$(MAKE) -C examples PROG=$(PROG) sv
+
+prog-download: prog
+	$(MAKE) BOARD=$(BOARD) download
+
 wave:
 	gtkwave ./waveform.vcd
 
 clean:
+	$(MAKE) -C examples clean
 	rm -rf build obj_dir waveform.* impl/gwsynthesis impl/pnr
 
 #--------------------------------------------------
@@ -95,6 +114,8 @@ help:
 	@echo "Targets:"
 	@echo "  make                - Build FPGA bitstream ($(FS))"
 	@echo "  make download       - Program Tang Nano SRAM (DEVICE=$(DEVICE))"
+	@echo "  make prog           - Rebuild include/boot_program.sv from examples/$(PROG).s"
+	@echo "  make prog-download  - prog + download (switch boot program and program the board)"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make lint           - Verilator lint (excludes vendor IP)"
 	@echo "  make format         - Verible format (in-place)"
@@ -102,6 +123,11 @@ help:
 	@echo "Variables:"
 	@echo "  BOARD=9k|20k        - Select board (maps DEVICE if DEVICE unset)"
 	@echo "  DEVICE=...          - Override explicit device code"
+	@echo "  PROG=<name>         - Boot program (examples/<name>.s; embedded now: $(EMBEDDED_PROG))"
+	@echo "Switch the sample program:"
+	@echo "  make prog-download PROG=simple   # pick examples/simple.s, rebuild bitstream, program board"
+	@echo "  make prog PROG=simple            # regenerate boot_program.sv only (no build/download)"
+	@echo "  make help                        # show the program embedded now (PROG=<name>: ...)"
 	@echo "Note: Board selection is encoded in the per-board .gprj (top_9k/top_20k wrapper)."
 
 # Tool availability check (portable): accepts absolute path or PATH lookup

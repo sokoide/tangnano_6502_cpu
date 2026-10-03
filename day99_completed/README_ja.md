@@ -118,12 +118,19 @@ make BOARD=20k download
 # 前提条件のインストール（macOS）
 brew install srecord cc65
 
-# サンプルをビルドして実行
-cd examples
-make clean && make          # デフォルトでsimple5.sをビルド
-cd ..
-make download               # FPGAにサンプルをプログラム
+# サンプルをビルドしてFPGAへ書き込む（デフォルト: simple5）
+# PROGで examples/*.s を拡張子なしの名前で指定できる
+cd day99_completed
+make prog-download               # = prog + download（デフォルトのプログラム）
+make prog-download PROG=simple   # 例: simple.s は画面左上に 'A' を表示
+
+# ブートプログラムの再生成だけ行い、ビルド/書き込みを分ける場合
+make prog PROG=simple
+make download
 ```
+
+現在埋め込まれているプログラムは `include/boot_program.sv` の `// source:` 行に
+記録され、`make help` でも表示される。
 
 **オンラインツール:**
 

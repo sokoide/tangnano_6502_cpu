@@ -66,8 +66,8 @@ cd .. && make download
 
 ```mermaid
 graph LR
-    ASM[Assembly Source<br/>simple5.s] --> CC65[cc65 Assembler]
-    CC65 --> HEX[Intel HEX<br/>example.hex]
+    ASM[Assembly Source<br/>examples/simple5.s] --> CC65[cc65 Assembler]
+    CC65 --> HEX[Intel HEX<br/>simple5.hex]
     HEX --> CONV[hex_fpga Converter]
     CONV --> SV[SystemVerilog<br/>boot_program.sv]
 
@@ -202,18 +202,17 @@ The build system automatically handles board differences:
 ### Assembly Program Integration
 
 ```bash
-cd examples/
-# Edit Makefile to select program:
-# SRCS = simple5.s
-
-make clean && make
+# Select the program with PROG (any examples/*.s, default: simple5):
+make prog PROG=simple5
 # Generates:
-# - example.hex (Intel HEX format)
-# - example.lst (Assembly listing)
-# - ../include/boot_program.sv (SystemVerilog include)
+# - simple5.hex (Intel HEX format)
+# - simple5.lst (Assembly listing)
+# - ../include/boot_program.sv (SystemVerilog include, with a
+#   "// source: simple5.s" provenance header)
 
-cd ../
 make download  # Build FPGA with new program
+# Or do both in one step:
+make prog-download PROG=simple5
 ```
 
 ## CPU Implementation

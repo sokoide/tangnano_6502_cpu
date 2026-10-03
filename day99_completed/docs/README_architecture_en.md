@@ -91,9 +91,8 @@ make BOARD=20k         # Tang Nano 20K target
 make download
 
 # 3. Assembly Program Development
-cd examples
-make clean && make     # Build simple5.s (default)
-cd .. && make download # Program FPGA
+make prog-download             # Build and program the default (simple5.s)
+make prog-download PROG=simple # Switch the program and program (any examples/*.s)
 
 # 4. Custom Tool Paths (if needed)
 make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download
@@ -103,8 +102,8 @@ make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download
 
 ```mermaid
 graph LR
-    ASM[Assembly Source<br/>simple5.s] --> CC65[cc65 Assembler]
-    CC65 --> HEX[Intel HEX<br/>example.hex]
+    ASM[Assembly Source<br/>examples/simple5.s] --> CC65[cc65 Assembler]
+    CC65 --> HEX[Intel HEX<br/>simple5.hex]
     HEX --> CONV[hex_fpga Converter]
     CONV --> SV[SystemVerilog<br/>boot_program.sv]
 

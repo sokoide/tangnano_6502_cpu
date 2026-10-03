@@ -13,7 +13,7 @@
 - Clean: `make clean`
 - Lint (if Verilator): `make lint`
 - Format (if Verible): `make format`
-- Build examples: `cd examples && make` (regenerates `include/boot_program.sv`)
+- Switch boot program: `make prog PROG=simple5` or `make prog-download PROG=simple5` (regenerates `include/boot_program.sv`)
 
 ## Board Switch
 

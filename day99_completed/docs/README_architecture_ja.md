@@ -86,9 +86,8 @@ make BOARD=20k         # Tang Nano 20K用
 make download
 
 # 3. アセンブリプログラム開発
-cd examples
-make clean && make     # simple5.s をビルド（デフォルト）
-cd .. && make download # FPGAに書き込み
+make prog-download             # デフォルト（simple5.s）をビルドして書き込み
+make prog-download PROG=simple # プログラムを切り替えて書き込み（examples/*.s から選択）
 
 # 4. カスタムツールパス（必要に応じて）
 make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download
@@ -98,8 +97,8 @@ make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download
 
 ```mermaid
 graph LR
-    ASM[アセンブリソース<br/>simple5.s] --> CC65[cc65 アセンブラ]
-    CC65 --> HEX[Intel HEX<br/>example.hex]
+    ASM[アセンブリソース<br/>examples/simple5.s] --> CC65[cc65 アセンブラ]
+    CC65 --> HEX[Intel HEX<br/>simple5.hex]
     HEX --> CONV[hex_fpga 変換器]
     CONV --> SV[SystemVerilog<br/>boot_program.sv]
 

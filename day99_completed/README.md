@@ -130,12 +130,19 @@ brew install srecord cc65
 # Install prerequisites (Linux)
 sudo apt install srecord cc65
 
-# Build and run an example
-cd examples
-make clean && make          # Builds simple5.s by default
-cd ..
-make download               # Program the FPGA with the example
+# Build and program an example (default: simple5).
+# PROG selects any examples/*.s by name, without the .s extension.
+cd day99_completed
+make prog-download               # = prog + download, with the default program
+make prog-download PROG=simple   # e.g. simple.s draws 'A' in the top-left corner
+
+# Or regenerate the boot program only, then build/program separately
+make prog PROG=simple
+make download
 ```
+
+The currently embedded program is recorded in the `// source:` line of
+`include/boot_program.sv` and shown by `make help`.
 
 **Online Tools:**
 
