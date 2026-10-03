@@ -4,13 +4,13 @@
 
 CLDは対応。SEDとPLPでD=1を復元する要求は `FAULT_DECIMAL`。PLPはSPを1増やしてN/V/I/Z/Cを復元し、B/bit5は保存flagとして扱わない。PHPのstack byteはB=1/bit5=1。BCD結果を二進結果で代用しない。
 
-`+` はRTL decodeが存在すること、`!` はcustom命令、`D` は明示decimal fault、`—` はunsupported fault。下表は256 opcodeの静的auditであり、全命令の全入力の検証済み表ではない。未対応の例はBRK/RTI/CLI/SEI、LDY abs,X ($BC)、ROR abs,X ($7E)。
+`+` はRTL decodeが存在すること、`!` はcustom命令、`D` は明示decimal fault、`—` はunsupported fault。下表は256 opcodeの静的auditであり、全命令の全入力の検証済み表ではない。未対応の例はBRK/RTI/CLI/SEI、LDY abs,X ($BC)、ROR abs,X ($7E)、ORA (zp),Y ($11)、BIT zp ($24)。
 
 | high \ low | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | — | + ORA idx | — | — | — | + ORA zp | + ASL zp | — | + PHP impl | + ORA imm | + ASL acc | — | — | + ORA abs | + ASL abs | — |
-| 1 | + BPL rel | + ORA idy | — | — | — | + ORA zpx | + ASL zpx | — | + CLC impl | + ORA aby | — | — | — | + ORA abx | + ASL abx | — |
-| 2 | + JSR abs | + AND idx | — | — | + BIT zp | + AND zp | + ROL zp | — | + PLP impl | + AND imm | + ROL acc | — | — | — | + ROL abs | — |
+| 1 | + BPL rel | — | — | — | — | + ORA zpx | + ASL zpx | — | + CLC impl | + ORA aby | — | — | — | + ORA abx | + ASL abx | — |
+| 2 | + JSR abs | + AND idx | — | — | — | + AND zp | + ROL zp | — | + PLP impl | + AND imm | + ROL acc | — | — | — | + ROL abs | — |
 | 3 | + BMI rel | + AND idy | — | — | — | + AND zpx | + ROL zpx | — | + SEC impl | — | — | — | — | — | + ROL abx | — |
 | 4 | — | + EOR idx | — | — | — | + EOR zp | + LSR zp | — | + PHA impl | + EOR imm | + LSR acc | — | + JMP abs | — | + LSR abs | — |
 | 5 | + BVC rel | + EOR idy | — | — | — | + EOR zpx | + LSR zpx | — | — | — | — | — | — | — | + LSR abx | — |

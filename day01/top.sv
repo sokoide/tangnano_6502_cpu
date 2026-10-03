@@ -9,14 +9,14 @@ module top (
     // 25-bit counter. 
     // A 27MHz clock ticks 27,000,000 times per second.
     // 2^25 is approximately 33,554,432.
-    // By using the 25th bit (MSB), the LED will toggle roughly every 1.24 seconds 
-    // (33.5M / 27M), resulting in a visible blink.
+    // By using the 25th bit (MSB), the LED will toggle roughly every 0.62 seconds
+    // (16.7M / 27M, full period ~1.24s), resulting in a visible blink.
     logic [24:0] counter;
 
     // Sequential logic: updates on the rising edge of the clock
     // We initialize the counter to 0 to ensure a predictable starting state.
     always_ff @(posedge clk) begin
-        counter <= counter + 1;
+        counter <= counter + 1'b1;
     end
 
     // Combinational logic: continuous assignment

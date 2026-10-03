@@ -21,8 +21,8 @@ module cpu (
     // -------------------------------------------------------------------------
     // 1. Operation during reset (rst_n == 0): / リセット時の動作 (rst_n == 0):
     //    Initialize PC to 16'h0200. / PC を 16'h0200 に初期化してください。
-    //    (The original start address of 6502 is 0xFFFC, but this project uses 0x8000)
-    //    (6502の本来の開始アドレスは 0xFFFC ですが、本プロジェクトでは 0x8000 を使用します)
+    //    (The original start address of 6502 is 0xFFFC, but this project starts execution from 0x0200)
+    //    (6502の本来の開始アドレスは 0xFFFC ですが、本プロジェクトでは 0x0200 から実行を開始します)
     //
     // 2. Normal operation (at rising edge of clk): / 通常時の動作 (clk 立ち上がり時):
     //    When pc_enable is '1', increment PC by 1 (PC <= PC + 1).

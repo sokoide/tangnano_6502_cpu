@@ -11,7 +11,7 @@ module rom (
             16'h0202: data = 8'h29;  // AND #$0F -> A=$0F
             16'h0203: data = 8'h0F;
             16'h0204: data = 8'h09;  // ORA #$80 -> A=$8F
-            16'h0205: data = 8'h02;
+            16'h0205: data = 8'h80;
             16'h0206: data = 8'h49;  // EOR #$8F -> A=$00
             16'h0207: data = 8'h8F;
             16'h0208: data = 8'h85;  // STA $10

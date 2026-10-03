@@ -132,7 +132,7 @@ C 言語や Python の `for` ループにおける `i` や、配列のインデ�
     TYA        ; A = 0x43
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD で X レジスタが期待通りに変化することを確認します。
 
 ## 🎯 次のステップ

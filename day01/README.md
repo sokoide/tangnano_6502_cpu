@@ -197,8 +197,8 @@ module top (
     // 25-bit counter.
     // A 27MHz clock ticks 27,000,000 times per second.
     // 2^25 is approximately 33,554,432.
-    // By using the 25th bit (MSB), the LED will toggle roughly every 1.24 seconds
-    // (33.5M / 27M), resulting in a visible blink.
+    // By using the 25th bit (MSB), the LED will toggle roughly every 0.62 seconds
+    // (16.7M / 27M, full period ~1.24s), resulting in a visible blink.
     logic [24:0] counter;
 
     // Sequential logic: updates on the rising edge of the clock
@@ -315,7 +315,7 @@ Clock input pins are normally driven strongly by the board oscillator, so `PULL_
 1. Select "Process" → "Program Device"
 2. Connect the Tang Nano via USB
 3. Run "SRAM Program"
-4. Confirm that the LED blinks at approximately 0.8-second intervals
+4. Confirm that the LED toggles every ~0.62 seconds (full blink period ~1.24s)
 
 ## 🔧 Troubleshooting
 

@@ -80,7 +80,7 @@ graph TD
     BEQ +2     ; NOT taken (fall-through)
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD で PC がジャンプし、ループしている様子を確認します。
 
 ## 🎯 次のステップ

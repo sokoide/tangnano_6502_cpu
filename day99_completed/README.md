@@ -1,6 +1,6 @@
 # Tang Nano 6502 CPU with LCD Display
 
-A complete SystemVerilog implementation of a 6502 microprocessor with an LCD controller for Tang Nano FPGA boards. This project features a modular architecture, smoke-level simulation, and support for custom assembly programs.
+A SystemVerilog implementation of a 6502 instruction subset with custom extensions, along with an LCD controller, for Tang Nano 9K and 20K FPGA boards. This project features a modular architecture, a Verilator-based regression test suite, and support for custom assembly programs.
 
 ---
 
@@ -36,11 +36,11 @@ make BOARD=20k download
 
 ## ✨ Features
 
-- **Complete 6502 CPU**: Implements the standard instruction set with custom extensions for hardware control.
+- **6502 Instruction Subset**: Implements a subset of the 6502 instruction set plus custom extensions. Unimplemented opcodes stop with a FAULT; interrupts, decimal mode, and full cycle accuracy are out of scope (see `docs/INSTRUCTIONS.md`).
 - **LCD Text Display**: Drives a 480x272 LCD to display 60x17 characters with hardware-accelerated font rendering.
 - **Modular Design**: Clean separation between the CPU core, LCD controller, and memory systems.
 - **Assembly Programming**: Integrated with the cc65 toolchain, with several example programs included.
-- **Smoke-level Simulation**: Verilator smoke tests (VRAM/BSRAM). Instruction-level test suites are not yet integrated.
+- **Incremental Simulation**: `make test` runs CPU regression/contract, ALU, RAM, font, LCD, clock, and system tests, among others. Each test covers only its own scope; they do not cover the full 6502 instruction set or real hardware.
 - **Multi-Board Support**: Easily switch between Tang Nano 9K and 20K targets.
 
 ## 📚 Documentation
@@ -144,7 +144,7 @@ make download               # Program the FPGA with the example
 
 ## 🧪 Testing and Simulation
 
-Simulation is currently **smoke-level only**: `make test` runs a CPU -> VRAM smoke test (`tb_vram_smoke`), and `make sim-ram` runs an optional BSRAM smoke test. Instruction-level test suites are not yet integrated. The DSIM testbenches (`tb_cpu.sv` etc. under `src/`) require DSIM Studio on Linux/Windows.
+`make test` runs the CPU regression/contract tests plus peripheral and integration simulations. The CPU regression suite (`tb_cpu_regression.sv`) verifies selected cases of the implemented subset. The static opcode audit in `docs/INSTRUCTIONS.md` and these local tests do not guarantee all inputs and boundary conditions; synthesis, place-and-route, and continuous operation on real hardware are separate validations.
 
 ```bash
 # Run lint and format checks

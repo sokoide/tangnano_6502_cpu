@@ -11,7 +11,7 @@ module rom (
             16'h0202: data = 8'h0A;  // ASL A -> A=$02, C=0
             16'h0203: data = 8'h0A;  // ASL A -> A=$04, C=0
             16'h0204: data = 8'hA9;  // LDA #$80
-            16'h0205: data = 8'h02;
+            16'h0205: data = 8'h80;
             16'h0206: data = 8'h0A;  // ASL A -> A=$00, C=1, Z=1
             16'h0207: data = 8'h2A;  // ROL A -> A=$01, C=0 (Carry was 1)
             16'h0208: data = 8'h38;  // SEC (Set Carry)

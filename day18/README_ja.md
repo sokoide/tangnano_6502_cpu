@@ -67,7 +67,7 @@ graph TD
     HLT        ; PC stops (vram_clear/show_info stay low)
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD に表示される CPU の全状態が、プログラムの意図通りに遷移することを確認します。
 
 ## 🎉 おめでとうございます

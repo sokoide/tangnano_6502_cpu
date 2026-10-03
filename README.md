@@ -9,7 +9,7 @@
 
 This project is a step-by-step learning curriculum designed to guide you through implementing the legendary 8-bit MOS 6502 CPU from scratch in SystemVerilog on an FPGA (Tang Nano 9K/20K).
 
-Ultimately, you will build a complete computer system on the FPGA, capable of running classic software like the Woz Monitor used in the Apple I.
+The goal of this curriculum is the instruction subset and LCD peripheral circuits covered by the Day 99 integrated design. It does not guarantee full NMOS 6502 compatibility (all instructions, interrupts, or cycle timing), nor does it guarantee that the Woz Monitor or Apple I BASIC will run.
 
 ## 🏗️ System Architecture
 
@@ -142,9 +142,9 @@ Complex addressing modes and hardware-native custom instructions.
 
 ### 🏁 Final Goal (Day 99)
 
-- **Nearly Complete 6502 CPU** (excluding full interrupts).
-- **Running Woz Monitor** or **Apple I Basic**.
-- Custom OS or programs controlling FPGA-native hardware.
+- An integrated design implementing the 6502 instruction subset and custom instructions defined on Day 99 (not fully instruction/interrupt/cycle-accurate compatible).
+- Running sample programs that use the instruction subset and custom instructions.
+- Writing your own programs that control custom peripheral hardware.
 
 ## 🛠️ What You'll Need
 

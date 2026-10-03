@@ -11,7 +11,7 @@ module rom (
             16'h0202: data = 8'h85;  // STA $10
             16'h0203: data = 8'h10;
             16'h0204: data = 8'hA9;  // LDA #$80
-            16'h0205: data = 8'h02;
+            16'h0205: data = 8'h80;
             16'h0206: data = 8'h85;  // STA $11 -> Pointer at $10/$11 is now $8020
             16'h0207: data = 8'h11;
             16'h0208: data = 8'hA0;  // LDY #$01

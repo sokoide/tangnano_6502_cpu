@@ -13,7 +13,7 @@
 1. `cpu.sv` のPCを順序回路として実装する。非同期・active-lowリセットを確認する。
 2. 実行許可のある立上りでだけPCを更新する。加算は16bitでwrapする。
 3. `make test-cpu` を実行し、リセット値・2回のincrement・停止中の保持を検査する。
-4. `make test-lcd` を実行する。これはLCDのsmoke testで、CPUの合否とは別の検査である。
+4. `make sim` を実行する。CPUテストに加えてLCDのsmoke testも実行される。
 5. `make BOARD=9k` または `make BOARD=20k` でビルドする。実機では表示用の遅い
    enableに従ってPCが進む。今回のシミュレーション成功だけで実機を確認したとは扱わない。
 

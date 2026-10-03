@@ -65,6 +65,7 @@ sim-build: tools-check-sim
 	@echo "[sim] Building TFT simulation with Verilator..."
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module $(SIM_TOP) \
 		-o V$(SIM_TOP) --Mdir $(LCD_SIM_DIR) --assert \
+		$(if $(filter 20k,$(BOARD)),-DBOARD_20K,) \
 		sim/Gowin_rPLL9_stub.sv \
 		sim/gowin_rpll40_stub.sv \
 	lcd/tb_tft.sv top_$(BOARD).sv lcd_demo.sv rom.sv \
@@ -80,6 +81,7 @@ sim-cpu-build: tools-check-sim
 	@mkdir -p $(CPU_SIM_DIR)
 	@$(VERILATOR) -Wall -Wno-fatal --sv --timing --trace --binary --top-module tb_cpu \
 		-o Vtb_cpu --Mdir $(CPU_SIM_DIR) --assert \
+		+define+TB_CPU_HAS_PC_ENABLE \
 		sim/tb_cpu.sv cpu.sv
 
 sim: sim-build sim-cpu-build

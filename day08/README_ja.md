@@ -98,7 +98,7 @@ graph TD
     ADC #$FF   ; A = 0x00 (C=1 V=0 Z=1 N=0: carry out)
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD で演算結果とフラグが正しく変化することを確認します。
 
 ## 🎯 次のステップ

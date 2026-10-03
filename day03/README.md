@@ -74,11 +74,10 @@ traffic_light #(.TIMER_LIMIT(26'd10)) dut (...);
 
 In hardware, the clock is your **heartbeat**. Every `posedge clk`, all registers in your CPU update simultaneously.
 
-**Analogy for Software Engineers:**
-Think of the clock like the **frame update loop (tick)** in a game engine or the **event loop** in JavaScript.
+**Architectural Role:**
 
-- **Combinational Logic** is like the code inside `update()`: it calculates the new state based on the current state.
-- **Clock Edge** is the moment the frame actually renders and the new state is saved for the next frame.
+- **Combinational Logic** calculates the next state and outputs from current inputs and states.
+- **Clock Edges** trigger flip-flops to capture values and update state. These run in parallel as distinct circuits.
 
 This synchronicity is what allows complex systems like 6502 to function reliably without chaotic race conditions.
 
@@ -105,7 +104,7 @@ module counter_8bit (
     input logic rst_n,  // Active Low Reset
     input logic enable,  // Increment only when enable is high
     output logic [7:0] count,
-    output logic overflow  // Set to 1 when count rolls over from FF to 00
+    output logic overflow  // Active when count==FF and enable is high (indicates rollover on next clock)
 );
 
     // Sequential block using always_ff
@@ -129,8 +128,8 @@ endmodule
 
 ### Specifications
 
-- 8-bit duty cycle control
-- Supports variable frequency
+- 8-bit duty cycle control (period fixed to 256 clock cycles)
+- Adjustable duty ratio based on `duty_cycle`
 
 PWM = Pulse Width Modulation. It toggles an output fast and changes the **ON ratio** (duty cycle).
 
@@ -150,7 +149,7 @@ flowchart LR
 module pwm_generator (
     input logic clk,
     input logic rst_n,
-    input logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (100% ON)
+    input logic [7:0] duty_cycle,  // 0 (0% ON) to 255 (255/256 ON)
     output logic pwm_out
 );
 

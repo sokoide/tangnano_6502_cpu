@@ -95,19 +95,17 @@ Used for the **Font ROM**. It comes pre-loaded with font patterns upon power-up,
 2. **Display Demo Text**:
     - VRAM is pre-filled with text like "VRAM TEXT" on boot. Verify that this appears correctly on the screen.
 
-### Part 2: Integrating the Demo Circuit (Demo Sequence Controller)
+### Part 2: Scope of Day 04 vs. Subsequent Days
 
-The bottom of `top_core.sv` includes logic with names like `demo_counter` and `demo_state`. These components serve essential roles in providing the "visualization" features of this educational board:
+In the Day 04 starter, we instantiate `lcd_demo` inside `top_core.sv` to establish the display output path. The CPU, instruction decoder, and register demo logic are not connected yet. You will verify that the text initialized by `lcd_demo.sv` appears correctly on the LCD.
 
-1. **Scaffolding for Development**: At this stage, the CPU's ability to fetch instructions from memory is not yet implemented. This demo circuit acts as "scaffolding" by manually supplying "pseudo-opcodes (e.g., `0xA9`)" and "data (e.g., `0x55`)" to the registers, allowing us to verify that individual components work correctly.
-2. **Human-Readable Speed**: A real CPU runs at several MHz, far too fast for the human eye to track LED blinks or LCD updates. This circuit purposefully switches states every ~1.8 seconds, making it possible to visually verify the operation.
-3. **Persistent "Status Dashboard"**: Even after the actual CPU logic (`cpu.sv`) is completed in later days (Day 07 and beyond), this `demo_` logic remains in `top_core.sv`. It functions as a **"Status Dashboard"**, independent of the high-speed CPU, to continuously demonstrate that the instruction decoder correctly recognizes categories via the slow-blinking LEDs.
+The slow-paced demo circuit driving CPU registers and instruction category LEDs is added to `top_core.sv` in subsequent days. The LCD display in Day 04 does not show CPU instruction execution or debug information. Please refer to each specific day's `top_core.sv` and README for its actual wiring.
 
-In this project, we utilize the technique of coexisting "high-speed production logic" with "low-speed monitoring logic" to facilitate real-time visual verification on hardware.
+**About the Memory Map:** The table above introduces the logical address layout planned for subsequent CPU lessons. The Day 04 LCD demo itself has no CPU address decoding. Furthermore, Day 99 implements mirror regions in higher addresses; refer to the [Day 99 Memory Contract](../day99_completed/docs/INSTRUCTIONS.md) for the final layout.
 
 ## 💡 Design Tip: The Importance of Visualization
 
-In hardware development, it is notoriously difficult to see what's happening inside the chip. By building this dashboard today, you will be able to visually confirm things like the Program Counter moving starting tomorrow.
+In hardware development, you cannot simply `printf` to a console. By establishing the LCD controller early, you build a hardware-native debugger to visually inspect CPU progress in later days.
 
 ## 📝 Exercises
 
@@ -123,4 +121,5 @@ In hardware development, it is notoriously difficult to see what's happening ins
 
 ## 🎯 Preview for Tomorrow
 
-From Day 05, we finally start building the CPU itself. We will begin by implementing the **Register Set** for memory and the **Program Counter** to track execution flow.
+From Day 05, we begin building the CPU itself.
+We will start by implementing the **Program Counter (PC)** along with reset and execution enable. Implementing independent A/X/Y register files is provided as an optional exercise, with CPU integration coming in later steps.

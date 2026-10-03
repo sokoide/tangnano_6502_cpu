@@ -24,11 +24,10 @@ Day 10 以降は Zero Page/Stack/Program RAM がすべて RAM になるため、
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | 高速アクセス用の 256 バイト領域 |
 | `0x0100 - 0x01FF` | Stack | スタックポインタ (SP) が使う領域 |
-| `0x0200 - 0x7BFF` | Program RAM | プログラム/データの主記憶 (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU 読み取り用 VRAM (シャドウ領域), 1KB |
-| `0x8000 - 0xDFFF` | (未使用) | 将来拡張のために予約 |
-| `0xE000 - 0xE3FF` | Text VRAM | LCD 表示用文字コード (ASCII), 1KB |
-| `0xE400 - 0xFFFF` | (未使用) | I/O または拡張用に予約 |
+| `0x0200 - 0x7FFF` | プログラム/データ RAM | 32KB BSRAM。起動時に `rom.sv` のプログラムを `$0200` へコピーしてから CPU が開始する |
+| `0x8000 - 0xFFFF` | デモ用ROM (読み出し専用) | アドレスbit15で選択。読み出しは `rom.sv` の内容（プログラム外は `$EA`）、CPUからの書き込みは無視される |
+
+注: Day 10〜18 のLCDテキストVRAMは `lcd_demo.sv` 内のデバッグ表示ロジックのみが書き込むもので、CPUのアドレス空間にはマップされない。Day 99 のシャドウ/テキストVRAM ($7C00, $E000) のマップはこの実装には適用されない。
 
 ## 🔙 復習: Day 09
 
@@ -77,15 +76,19 @@ graph TD
 
 ## 🛠️ 実装ステップ
 
-1. **スタックポインタの定義**:
-    - `cpu.sv` に `logic [7:0] S;` を追加。リセット時に `8'hFF`。
-2. **RAM 書き込みロジック**:
-    - `write_en` 信号を追加し、メモリが書き込み可能な状態（RAM 領域など）を制御します。
-3. **JSR / RTS のステート制御**:
-    - これらは多くのサイクルを必要とします（戻りアドレス 2 バイトの保存など）。
-    - `STATE_PUSH_PCL`, `STATE_PUSH_PCH` などの一時的な状態を追加して実装します。
-4. **LCD 表示の更新**:
-    - スタックポインタ `S` の値を LCD に表示し、プッシュ/プルで値が変わることを確認します。
+スターター版 `cpu.sv` には Day 10 の枠組み（スタックポインタ `s`（リセット値 `8'hFF`）、`write_en` 出力、`STATE_PUSH_*` / `STATE_PULL_*` のFSM状態、LCDデバッグ配線）が実装済みです。TODO はスタック命令 `PHA` と `PLA` のみです。
+
+1. **ステップタイミングの理解**:
+    - CPU はメモリクロック2サイクルで1ステップ進みます。*リクエスト*ステップで `address_bus`/`write_en` を発行し、次の*データ取得*ステップで `memory_ready` が立ち、同期BSRAMの読み出しデータが有効になります。
+    - `pc_enable` によるリクエストは `step_pending` にラッチされ、次の `memory_ready` ウィンドウで消費されるため、手動ステップ実行はセトル logic と独立して動作します。
+2. **PHA（プッシュ）の実装**:
+    - `STATE_FETCH_OPCODE` で `OP_PHA` をデコード: `write_en` をアサートし、`address_bus = 16'h0100 + s` を設定、`data_out` に `a` を出力して `STATE_PUSH_LOW` へ遷移。
+    - `STATE_PUSH_LOW` で `s` をデクリメントし、PC を進めて `STATE_FETCH_OPCODE` へ戻る。
+3. **PLA（プル）の実装**:
+    - `STATE_FETCH_OPCODE` で `OP_PLA` をデコード: `address_bus = 16'h0100 + (s + 1)` を設定して `STATE_PULL_LOW` へ遷移。
+    - `STATE_PULL_LOW` で `s` をインクリメントし、`data_in` を `a` にロード（Z/N更新）、PC を進めて `STATE_FETCH_OPCODE` へ戻る。
+4. **LCDでの観察**:
+    - デバッグ表示は `PC/A/X/Y/S/P` を表示済みです。プッシュ/プルで `S` が変わることを確認します。
 
 ## 🧪 動作確認
 
@@ -101,7 +104,7 @@ graph TD
     HLT
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD で A レジスタの値が正しく復元され、サブルーチンから戻ってくる（PC が適切に移動する）ことを確認します。
 
 ## 🏁 Phase 2 完了

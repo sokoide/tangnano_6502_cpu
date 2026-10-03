@@ -72,7 +72,7 @@ sequenceDiagram
     HLT
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD に CPU の各レジスタとフラグが表示され、プログラムが期待通りに進行することを確認します。
 
 ## 🏁 Phase 3 完了

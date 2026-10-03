@@ -24,11 +24,10 @@ From Day 10 onward, Zero Page, Stack, and Program RAM are all RAM-backed, so the
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
-| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
-| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
+| `0x0200 - 0x7FFF` | Program/Data RAM | 32KB BSRAM. The boot loader copies the `rom.sv` program to `$0200` before the CPU starts |
+| `0x8000 - 0xFFFF` | Demo ROM (read-only) | Selected by address bit 15: CPU reads return `rom.sv` bytes (`$EA` fill outside the program); CPU writes to this range are ignored |
+
+Note: In Day 10-18, the LCD text VRAM is written only by the debug display logic inside `lcd_demo.sv` and is not mapped into the CPU address space. The Day 99 shadow/text VRAM map (`$7C00`, `$E000`) does not apply to this build.
 
 ## 🎯 Learning Objectives
 
@@ -64,19 +63,22 @@ graph TD
 | `0x48` | `PHA`     | Push Accumulator (A)               |   3    |
 | `0x68` | `PLA`     | Pull Accumulator (A)               |   4    |
 | `0x4C` | `JMP abs` | Jump to Absolute Address           |   3    |
-| `0xFF" | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
+| `0xEF` | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
 
 ## 🛠️ Implementation Steps
 
-1. **Add Stack Pointer**:
-    - Declare `logic [7:0] S;` in `cpu.sv`. Initialize to `8'hFF`.
+The completed `cpu.sv` advances one FSM step per two memory clocks: a *request* step that issues `address_bus`/`write_en`, followed by a *data* step where `memory_ready` is set so the synchronous BSRAM read data is valid. `pc_enable` requests are latched into `step_pending` and consumed on the next `memory_ready` window.
+
+1. **Stack Pointer**:
+    - `logic [7:0] s;` is declared in `cpu.sv` and reset to `8'hFF`.
 2. **RAM Write Enable**:
-    - Add a `write_en` signal to the memory bus. Ensure the ROM/RAM decoder allows writing to the `$0000-$01FF` region.
-3. **JSR/RTS Multi-cycle Logic**:
-    - These instructions require several cycles to complete (e.g., pushing two bytes of return address).
-    - Add intermediate states like `STATE_PUSH_PCL` and `STATE_PUSH_PCH` to your FSM.
-4. **Update LCD Display**:
-    - Display the value of `S` on the LCD. Watch it change during pushes and pulls.
+    - The CPU pulses `write_en` on the memory bus; `boot_loader.sv` gates writes so only addresses below `$8000` (RAM) are written.
+3. **Multi-cycle Subroutine Logic**:
+    - `JSR`/`JMP abs` fetch the 2-byte target through `STATE_FETCH_LOW`/`STATE_FETCH_HIGH`.
+    - `JSR` pushes the return address via `STATE_PUSH_HIGH`/`STATE_PUSH_LOW`; `RTS` pulls it back via `STATE_PULL_LOW`/`STATE_PULL_HIGH` (`+1` correction on return).
+    - `PHA`/`PHP` use `STATE_PUSH_LOW`; `PLA`/`PLP` use `STATE_PULL_LOW`.
+4. **LCD Display**:
+    - The debug display shows `PC/A/X/Y/S/P`; watch `S` change during pushes and pulls.
 
 ## 🧪 Verification
 

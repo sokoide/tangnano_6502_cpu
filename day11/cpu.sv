@@ -1,95 +1,386 @@
-// Day 11: Zero Page Addressing & RAM - Skeleton
+// Day 11: Zero Page Addressing & RAM (LDA/STA zp) - Skeleton
 //
 // Learning Goals: / 学習目標:
-// 1. Implementation of zero page addressing / ゼロページ・アドレッシングの実装
-// 2. Write logic to RAM (Random Access Memory) (STA) / RAM (Random Access Memory) への書き込みロジック (STA)
-// 3. Basics of memory-mapped I/O / メモリマップド I/O の基礎
+// 1. Implementation of Zero Page Addressing / ゼロページ・アドレッシングの実装
+// 2. RAM write logic via bus interface (STA zp) / バスインターフェース経由でのRAM書き込みロジック (STA zp)
+// 3. RAM read logic via bus interface (LDA zp) / バスインターフェース経由でのRAM読み出しロジック (LDA zp)
 
 `include "include/opcodes.svh"
 
 module cpu (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic        pc_enable,
+    input logic clk,
+    input logic rst_n,  // Active-low reset
+    input logic pc_enable,  // Enable signal for PC update (manual stepping or display enable)
     output logic [15:0] address_bus,
-    input  logic [ 7:0] data_in,
-    output logic [ 7:0] data_out,
-    output logic        write_en,
+    input logic [7:0] data_in,
+    output logic [7:0] data_out,
+    output logic write_en,
     output logic [15:0] debug_pc,
-    output logic [ 7:0] debug_a,
-    output logic [ 7:0] debug_x,
-    output logic [ 7:0] debug_y,
-    output logic [ 7:0] debug_p,
-    output logic [ 7:0] debug_s
+    output logic [7:0] debug_a,
+    output logic [7:0] debug_x,
+    output logic [7:0] debug_y,
+    output logic [7:0] debug_p,
+    output logic [7:0] debug_s
 );
 
     logic [15:0] pc;
-    logic [7:0] a, x, y, s;
-    logic n, v, z, c;
+    logic [ 7:0] a;  // Accumulator
+    logic [7:0] x, y;  // Index registers
+    logic [7:0] s;  // Stack pointer
+    logic n, v, z, c;  // Status flags
 
-    typedef enum logic [2:0] {
+    // State Machine for Instruction Timing
+    typedef enum logic [3:0] {
         STATE_FETCH_OPCODE,
         STATE_FETCH_OPERAND,
+        STATE_FETCH_LOW,
+        STATE_FETCH_HIGH,
+        STATE_PUSH_HIGH,
+        STATE_PUSH_LOW,
+        STATE_PULL_LOW,
+        STATE_PULL_HIGH,
         STATE_EXECUTE
     } state_t;
+
     state_t state;
     logic [7:0] current_opcode;
+    logic [15:0] temp_addr;
+
+    // Settle progresses at the memory clock, independently of manual stepping.
+    logic memory_ready, step_pending;
 
     // -------------------------------------------------------------------------
-    // TODO: Implementation of zero page addressing and STA instruction
-    // TODO: ゼロページ・アドレッシングと STA 命令の実装
+    // TODO: Implement Zero Page Addressing (LDA zp, STA zp)
+    // TODO: ゼロページ・アドレッシング (LDA zp, STA zp) の実装
     // -------------------------------------------------------------------------
-    // Please implement LDA zp (0xA5) and STA zp (0x85).
-    // LDA zp (0xA5) および STA zp (0x85) を実装してください。
+    // 1. In STATE_FETCH_OPCODE:
+    //    - Add OP_LDA_ZP (0xA5) and OP_STA_ZP (0x85) to transition to STATE_FETCH_OPERAND.
     //
-    // 1. In STATE_FETCH_OPERAND, obtain the zero page address (lower 8 bits).
-    // 1. STATE_FETCH_OPERAND で、ゼロページのアドレス（下位8ビット）を取得します。
-    // 2. In STATE_EXECUTE: / 2. STATE_EXECUTE で：
-    //    - For LDA: Output the obtained address to address_bus and store data_in in A.
-    //    - LDA の場合：address_bus に取得したアドレスを出力し、data_in を a に格納。
-    //    - For STA: Output the obtained address to address_bus, output A to data_out, and set write_en to 1.
-    //    - STA の場合：address_bus に取得したアドレスを出力し、data_out に a を出力、write_en を 1 に。
+    // 2. In STATE_FETCH_OPERAND:
+    //    - For OP_LDA_ZP:
+    //        Set address_bus <= {8'h00, data_in};
+    //        state <= STATE_EXECUTE;
+    //    - For OP_STA_ZP:
+    //        Set address_bus <= {8'h00, data_in};
+    //        write_en <= 1'b1;
+    //        data_out <= a;
+    //        state <= STATE_EXECUTE;
+    //
+    // 3. In STATE_EXECUTE:
+    //    - For OP_LDA_ZP:
+    //        Load memory byte: a <= data_in;
+    //        Update Z and N flags.
+    //    - For OP_STA_ZP:
+    //        Deassert write_en <= 1'b0;
+    //    - Advance PC and return to STATE_FETCH_OPCODE:
+    //        pc <= pc + 1'b1;
+    //        address_bus <= pc + 1'b1;
+    //        state <= STATE_FETCH_OPCODE;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc <= 16'h0200;
-            a <= 8'h00;
-            x <= 8'h00;
-            y <= 8'h00;
-            s <= 8'hFF;
-            n <= 1'b0;
-            v <= 1'b0;
-            z <= 1'b0;
-            c <= 1'b0;
-            state <= STATE_FETCH_OPCODE;
-            write_en <= 1'b0;
-        end else if (pc_enable) begin
-            write_en <= 1'b0;
-            case (state)
-                STATE_FETCH_OPCODE: begin
-                    current_opcode <= data_in;
-                    pc <= pc + 1;
-                    state <= STATE_FETCH_OPERAND;
-                end
-                STATE_FETCH_OPERAND: begin
-                    // TODO
-                    state <= STATE_EXECUTE;
-                end
-                STATE_EXECUTE: begin
-                    // TODO
-                    pc <= pc + 1;
-                    state <= STATE_FETCH_OPCODE;
-                end
-            endcase
+            memory_ready   <= 1'b0;
+            step_pending   <= 1'b0;
+            pc             <= 16'h0200;
+            a              <= 8'h00;
+            x              <= 8'h00;
+            y              <= 8'h00;
+            s              <= 8'hFF;
+            n              <= 1'b0;
+            v              <= 1'b0;
+            z              <= 1'b0;
+            c              <= 1'b0;
+            state          <= STATE_FETCH_OPCODE;
+            current_opcode <= 8'h00;
+            write_en       <= 1'b0;
+            data_out       <= 8'h00;
+            address_bus    <= 16'h0200;
+        end else begin
+            write_en <= 1'b0;  // One accepted memory edge per issued write.
+            if (!memory_ready) begin
+                memory_ready <= 1'b1;
+                step_pending <= step_pending | pc_enable;
+            end else if (pc_enable || step_pending) begin
+                memory_ready <= 1'b0;
+                step_pending <= 1'b0;
+                write_en     <= 1'b0;
+                case (state)
+                    STATE_FETCH_OPCODE: begin
+                        current_opcode <= data_in;
+                        if (data_in == OP_HLT) begin
+                            address_bus <= pc;
+                            state       <= STATE_EXECUTE;
+                        end else begin
+                            address_bus <= pc + 1'b1;
+                            case (data_in)
+                                OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM, OP_ADC_IMM, OP_SBC_IMM,
+                                OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
+                                    pc    <= pc + 1'b1;
+                                    state <= STATE_FETCH_OPERAND;
+                                end
+
+                                // TODO: Add OP_LDA_ZP, OP_STA_ZP to fetch operand
+                                // TODO: OP_LDA_ZP, OP_STA_ZP のオペランドフェッチ遷移を追加
+
+                                OP_JSR, OP_JMP_ABS: begin
+                                    pc    <= pc + 1'b1;
+                                    state <= STATE_FETCH_LOW;
+                                end
+                                OP_RTS: begin
+                                    state       <= STATE_PULL_LOW;
+                                    address_bus <= 16'h0100 + (s + 1'b1);
+                                end
+                                OP_PHA, OP_PHP: begin
+                                    state <= STATE_PUSH_LOW;
+                                    write_en <= 1'b1;
+                                    address_bus <= 16'h0100 + s;
+                                    data_out    <= (data_in == OP_PHA) ? a : {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
+                                end
+                                OP_PLA, OP_PLP: begin
+                                    state       <= STATE_PULL_LOW;
+                                    address_bus <= 16'h0100 + (s + 1'b1);
+                                end
+
+                                // Register transfers
+                                OP_TAX: begin
+                                    x           <= a;
+                                    z           <= (a == 8'h00);
+                                    n           <= a[7];
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_TAY: begin
+                                    y           <= a;
+                                    z           <= (a == 8'h00);
+                                    n           <= a[7];
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_TXA: begin
+                                    a           <= x;
+                                    z           <= (x == 8'h00);
+                                    n           <= x[7];
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_TYA: begin
+                                    a           <= y;
+                                    z           <= (y == 8'h00);
+                                    n           <= y[7];
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_INX: begin
+                                    x           <= x + 1'b1;
+                                    z           <= ((x + 8'h01) == 8'h00);
+                                    n           <= (x + 8'h01) >> 7;
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_INY: begin
+                                    y           <= y + 1'b1;
+                                    z           <= ((y + 8'h01) == 8'h00);
+                                    n           <= (y + 8'h01) >> 7;
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+
+                                // Flag operations
+                                OP_CLC: begin
+                                    c           <= 1'b0;
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                                OP_SEC: begin
+                                    c           <= 1'b1;
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+
+                                default: begin
+                                    pc          <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state       <= STATE_FETCH_OPCODE;
+                                end
+                            endcase
+                        end
+                    end
+
+                    STATE_FETCH_OPERAND: begin
+                        case (current_opcode)
+                            OP_LDA_IMM: begin
+                                a <= data_in;
+                                z <= (data_in == 8'h00);
+                                n <= data_in[7];
+                            end
+                            OP_ADC_IMM: begin
+                                begin
+                                    logic [8:0] sum;
+                                    sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c};
+                                    a <= sum[7:0];
+                                    c <= sum[8];
+                                    z <= (sum[7:0] == 8'h00);
+                                    n <= sum[7];
+                                    v <= (a[7] == data_in[7]) && (a[7] != sum[7]);
+                                end
+                            end
+                            OP_SBC_IMM: begin
+                                begin
+                                    logic [8:0] diff;
+                                    diff = {1'b0, a} - {1'b0, data_in} - (c ? 9'h0 : 9'h1);
+                                    a <= diff[7:0];
+                                    c <= !diff[8];
+                                    z <= (diff[7:0] == 8'h00);
+                                    n <= diff[7];
+                                    v <= (a[7] != data_in[7]) && (a[7] != diff[7]);
+                                end
+                            end
+                            OP_BNE, OP_BEQ, OP_BPL, OP_BMI: begin
+                                automatic logic take_branch;
+                                case (current_opcode)
+                                    OP_BNE:  take_branch = !z;
+                                    OP_BEQ:  take_branch = z;
+                                    OP_BPL:  take_branch = !n;
+                                    OP_BMI:  take_branch = n;
+                                    default: take_branch = 1'b0;
+                                endcase
+                                if (take_branch) begin
+                                    pc <= (pc + 1'b1) + 16'($signed(data_in));
+                                end else begin
+                                    pc <= pc + 1'b1;
+                                end
+                            end
+
+                            // TODO: Add OP_LDA_ZP, OP_STA_ZP operand handling (set address_bus and next state)
+                            // TODO: OP_LDA_ZP, OP_STA_ZP のオペランド処理 (address_bus 設定と STATE_EXECUTE への遷移) を実装
+
+                            default: begin
+                                pc    <= pc + 1'b1;
+                                state <= STATE_FETCH_OPCODE;
+                            end
+                        endcase
+                        if (current_opcode == OP_LDA_IMM || current_opcode == OP_ADC_IMM ||
+                            current_opcode == OP_SBC_IMM || current_opcode == OP_BNE ||
+                            current_opcode == OP_BEQ || current_opcode == OP_BPL ||
+                            current_opcode == OP_BMI) begin
+                            if (current_opcode == OP_LDA_IMM || current_opcode == OP_ADC_IMM ||
+                                current_opcode == OP_SBC_IMM) begin
+                                pc <= pc + 1'b1;
+                            end
+                            address_bus <= (current_opcode == OP_BNE || current_opcode == OP_BEQ ||
+                                            current_opcode == OP_BPL || current_opcode == OP_BMI) ?
+                                           (((!z && current_opcode == OP_BNE) || (z && current_opcode == OP_BEQ) ||
+                                             (!n && current_opcode == OP_BPL) || (n && current_opcode == OP_BMI)) ?
+                                            ((pc + 1'b1) + 16'($signed(
+                                data_in
+                            ))) : (pc + 1'b1)) : (pc + 1'b1);
+                            state <= STATE_FETCH_OPCODE;
+                        end
+                    end
+
+                    STATE_FETCH_LOW: begin
+                        temp_addr[7:0] <= data_in;
+                        pc             <= pc + 1'b1;
+                        address_bus    <= pc + 1'b1;
+                        state          <= STATE_FETCH_HIGH;
+                    end
+
+                    STATE_FETCH_HIGH: begin
+                        temp_addr[15:8] <= data_in;
+                        if (current_opcode == OP_JSR) begin
+                            state       <= STATE_PUSH_HIGH;
+                            write_en    <= 1'b1;
+                            address_bus <= 16'h0100 + s;
+                            data_out    <= pc[15:8];  // Push High byte (PCH)
+                        end else if (current_opcode == OP_JMP_ABS) begin
+                            pc          <= {data_in, temp_addr[7:0]};
+                            address_bus <= {data_in, temp_addr[7:0]};
+                            state       <= STATE_FETCH_OPCODE;
+                        end
+                    end
+
+                    STATE_PUSH_HIGH: begin
+                        s           <= s - 1'b1;
+                        state       <= STATE_PUSH_LOW;
+                        write_en    <= 1'b1;
+                        address_bus <= 16'h0100 + (s - 1'b1);
+                        data_out    <= pc[7:0];  // Push Low byte (PCL)
+                    end
+
+                    STATE_PUSH_LOW: begin
+                        s <= s - 1'b1;
+                        if (current_opcode == OP_JSR) begin
+                            pc          <= temp_addr;
+                            address_bus <= temp_addr;
+                        end else begin
+                            pc          <= pc + 1'b1;
+                            address_bus <= pc + 1'b1;
+                        end
+                        state <= STATE_FETCH_OPCODE;
+                    end
+
+                    STATE_PULL_LOW: begin
+                        s              <= s + 1'b1;
+                        temp_addr[7:0] <= data_in;
+                        if (current_opcode == OP_RTS) begin
+                            state       <= STATE_PULL_HIGH;
+                            address_bus <= 16'h0100 + (s + 8'd2);
+                        end else if (current_opcode == OP_PLA) begin
+                            a           <= data_in;
+                            z           <= (data_in == 8'h00);
+                            n           <= data_in[7];
+                            pc          <= pc + 1'b1;
+                            address_bus <= pc + 1'b1;
+                            state       <= STATE_FETCH_OPCODE;
+                        end else if (current_opcode == OP_PLP) begin
+                            {n, v, temp_addr[5:2], z, c} <= data_in;
+                            pc                           <= pc + 1'b1;
+                            address_bus                  <= pc + 1'b1;
+                            state                        <= STATE_FETCH_OPCODE;
+                        end
+                    end
+
+                    STATE_PULL_HIGH: begin
+                        s           <= s + 1'b1;
+                        pc          <= {data_in, temp_addr[7:0]} + 1'b1;
+                        address_bus <= {data_in, temp_addr[7:0]} + 1'b1;
+                        state       <= STATE_FETCH_OPCODE;
+                    end
+
+                    STATE_EXECUTE: begin
+                        // TODO: Implement execution for OP_LDA_ZP, OP_STA_ZP in STATE_EXECUTE
+                        // TODO: STATE_EXECUTE での OP_LDA_ZP, OP_STA_ZP の実行処理を実装
+
+                        // Stay here for HLT
+                        if (current_opcode == OP_HLT) begin
+                            address_bus <= pc;
+                            state       <= STATE_EXECUTE;
+                        end else begin
+                            pc          <= pc + 1'b1;
+                            address_bus <= pc + 1'b1;
+                            state       <= STATE_FETCH_OPCODE;
+                        end
+                    end
+
+                    default: state <= STATE_FETCH_OPCODE;
+                endcase
+            end
         end
     end
 
-    assign address_bus = pc;  // TODO: Switch according to state / TODO: ステートに応じて切り替え
     assign debug_pc = pc;
-    assign debug_a = a;
-    assign debug_x = x;
-    assign debug_y = y;
-    assign debug_p = {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
-    assign debug_s = s;
+    assign debug_a  = a;
+    assign debug_x  = x;
+    assign debug_y  = y;
+    assign debug_p  = {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
+    assign debug_s  = s;
 
 endmodule

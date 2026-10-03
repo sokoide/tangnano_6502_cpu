@@ -24,11 +24,10 @@ From Day 10 onward, Zero Page, Stack, and Program RAM are all RAM-backed, so the
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
 | `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
-| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
-| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
+| `0x0200 - 0x7FFF` | Program/Data RAM | 32KB BSRAM. The boot loader copies the `rom.sv` program to `$0200` before the CPU starts |
+| `0x8000 - 0xFFFF` | Demo ROM (read-only) | Selected by address bit 15: CPU reads return `rom.sv` bytes (`$EA` fill outside the program); CPU writes to this range are ignored |
+
+Note: In Day 10-18, the LCD text VRAM is written only by the debug display logic inside `lcd_demo.sv` and is not mapped into the CPU address space. The Day 99 shadow/text VRAM map (`$7C00`, `$E000`) does not apply to this build.
 
 ## 🔙 Review: Day 09
 
@@ -73,19 +72,23 @@ graph TD
 | `0x48` | `PHA`     | Push Accumulator (A)               |   3    |
 | `0x68` | `PLA`     | Pull Accumulator (A)               |   4    |
 | `0x4C` | `JMP abs` | Jump to Absolute Address           |   3    |
-| `0xFF` | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
+| `0xEF` | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
 
 ## 🛠️ Implementation Steps
 
-1. **Add Stack Pointer**:
-    - Declare `logic [7:0] S;` in `cpu.sv`. Initialize to `8'hFF`.
-2. **RAM Write Enable**:
-    - Add a `write_en` signal to the memory bus. Ensure the ROM/RAM decoder allows writing to the `$0000-$01FF` region.
-3. **JSR/RTS Multi-cycle Logic**:
-    - These instructions require several cycles to complete (e.g., pushing two bytes of return address).
-    - Add intermediate states like `STATE_PUSH_PCL` and `STATE_PUSH_PCH` to your FSM.
-4. **Update LCD Display**:
-    - Display the value of `S` on the LCD. Watch it change during pushes and pulls.
+The starter `cpu.sv` already contains the Day 10 frame: the stack pointer `s` (reset to `8'hFF`), the `write_en` output, the `STATE_PUSH_*` / `STATE_PULL_*` FSM states, and the LCD debug wiring. Your TODOs are limited to the stack operations `PHA` and `PLA`.
+
+1. **Understand the provided step timing**:
+    - The CPU advances one FSM step per two memory clocks: a *request* step that issues `address_bus`/`write_en`, followed by a *data* step where `memory_ready` is set so the synchronous BSRAM read data is valid.
+    - `pc_enable` requests are latched into `step_pending` and consumed on the next `memory_ready` window, so manual stepping works independently of the settle logic.
+2. **Implement PHA (push)**:
+    - In `STATE_FETCH_OPCODE`, decode `OP_PHA`: assert `write_en`, drive `address_bus = 16'h0100 + s`, put `a` on `data_out`, and go to `STATE_PUSH_LOW`.
+    - In `STATE_PUSH_LOW`, decrement `s`, advance PC, and return to `STATE_FETCH_OPCODE`.
+3. **Implement PLA (pull)**:
+    - In `STATE_FETCH_OPCODE`, decode `OP_PLA`: drive `address_bus = 16'h0100 + (s + 1)` and go to `STATE_PULL_LOW`.
+    - In `STATE_PULL_LOW`, increment `s`, load `data_in` into `a` (update Z/N), advance PC, and return to `STATE_FETCH_OPCODE`.
+4. **Observe on the LCD**:
+    - The debug display already shows `PC/A/X/Y/S/P`; watch `S` change during pushes and pulls.
 
 ## 🧪 Verification
 

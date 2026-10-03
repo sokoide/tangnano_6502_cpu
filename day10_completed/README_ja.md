@@ -24,11 +24,10 @@ Day 10 以降は Zero Page/Stack/Program RAM がすべて RAM になるため、
 | :--- | :--- | :--- |
 | `0x0000 - 0x00FF` | Zero Page | 高速アクセス用の 256 バイト領域 |
 | `0x0100 - 0x01FF` | Stack | スタックポインタ (SP) が使う領域 |
-| `0x0200 - 0x7BFF` | Program RAM | プログラム/データの主記憶 (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU 読み取り用 VRAM (シャドウ領域), 1KB |
-| `0x8000 - 0xDFFF` | (未使用) | 将来拡張のために予約 |
-| `0xE000 - 0xE3FF` | Text VRAM | LCD 表示用文字コード (ASCII), 1KB |
-| `0xE400 - 0xFFFF` | (未使用) | I/O または拡張用に予約 |
+| `0x0200 - 0x7FFF` | プログラム/データ RAM | 32KB BSRAM。起動時に `rom.sv` のプログラムを `$0200` へコピーしてから CPU が開始する |
+| `0x8000 - 0xFFFF` | デモ用ROM (読み出し専用) | アドレスbit15で選択。読み出しは `rom.sv` の内容（プログラム外は `$EA`）、CPUからの書き込みは無視される |
+
+注: Day 10〜18 のLCDテキストVRAMは `lcd_demo.sv` 内のデバッグ表示ロジックのみが書き込むもので、CPUのアドレス空間にはマップされない。Day 99 のシャドウ/テキストVRAM ($7C00, $E000) のマップはこの実装には適用されない。
 
 ## 🎯 学習目標
 
@@ -68,15 +67,18 @@ graph TD
 
 ## 🛠️ 実装ステップ
 
+完成版 `cpu.sv` はメモリクロック2サイクルで1ステップ進みます。*リクエスト*ステップで `address_bus`/`write_en` を発行し、次の*データ取得*ステップで `memory_ready` が立ち、同期BSRAMの読み出しデータが有効になります。`pc_enable` によるリクエストは `step_pending` にラッチされ、次の `memory_ready` ウィンドウで消費されます。
+
 1. **スタックポインタの定義**:
-    - `cpu.sv` に `logic [7:0] S;` を追加。リセット時に `8'hFF`。
+    - `cpu.sv` に `logic [7:0] s;` を定義。リセット時に `8'hFF`。
 2. **RAM 書き込みロジック**:
-    - `write_en` 信号を追加し、メモリが書き込み可能な状態（RAM 領域など）を制御します。
-3. **JSR / RTS のステート制御**:
-    - これらは多くのサイクルを必要とします（戻りアドレス 2 バイトの保存など）。
-    - `STATE_PUSH_PCL`, `STATE_PUSH_PCH` などの一時的な状態を追加して実装します。
+    - CPU が `write_en` をパルス出力し、`boot_loader.sv` が `$8000` 未満（RAM領域）のみ書き込み可能にゲートします。
+3. **サブルーチンのマルチサイクル制御**:
+    - `JSR`/`JMP abs` は `STATE_FETCH_LOW`/`STATE_FETCH_HIGH` で2バイトのターゲットアドレスを取得します。
+    - `JSR` は `STATE_PUSH_HIGH`/`STATE_PUSH_LOW` で戻りアドレスをプッシュ、`RTS` は `STATE_PULL_LOW`/`STATE_PULL_HIGH` で取り出して `+1` 補正して復帰します。
+    - `PHA`/`PHP` は `STATE_PUSH_LOW`、`PLA`/`PLP` は `STATE_PULL_LOW` を使用します。
 4. **LCD 表示の更新**:
-    - スタックポインタ `S` の値を LCD に表示し、プッシュ/プルで値が変わることを確認します。
+    - デバッグ表示は `PC/A/X/Y/S/P` を表示します。プッシュ/プルで `S` が変わることを確認します。
 
 ## 🧪 動作確認
 

@@ -10,7 +10,7 @@ module rom (
             16'h0201: data = 8'h10;
             16'h0202: data = 8'hC9;  // CMP #$10 -> Z=1, C=1
             16'h0203: data = 8'h10;
-            16'h0204: data = 8'hD0;  // BNE FAIL (+07 -> 800D)
+            16'h0204: data = 8'hD0;  // BNE FAIL (+07 -> $020D)
             16'h0205: data = 8'h07;
             16'h0206: data = 8'hA9;  // Success path: LDA #$00
             16'h0207: data = 8'h00;

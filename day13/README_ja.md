@@ -85,7 +85,7 @@ graph TD
     HLT
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCDでAとN/V/Zの表示を確認します。`BIT`ではAを保持し、メモリ値に応じてN/V/Zを更新します。
 
 ## 🎯 次のステップ

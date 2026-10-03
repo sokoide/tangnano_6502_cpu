@@ -12,10 +12,10 @@ TangNano 9K/20K と GoWIN IDE を使って、FPGA の開発方法と、必要な
 
 ## Project Goals
 
-- 6502 CPU を SystemVerilog で完全に実装し、Tang Nano 9K/20K 上で動作させる。
+- 6502 命令サブセットと独自拡張を SystemVerilog で実装し、Tang Nano 9K/20K 上で動作させる（NMOS 6502 の完全互換は保証しない）。
 - FPGA の基本的な開発フロー（設計、シミュレーション、論理合成、実機検証）を習得する。
 - 8bit CPU の実装を通じて、レジスタ、ALU、デコーダ、メモリマップド I/O などのコンピュータアーキテクチャの核心を理解する。
-- 最終的に Woz Monitor などの実用的なソフトウェアが動作するシステムを構築する。
+- 最終的に、Day99 の命令サブセット + 独自命令 + LCD 周辺回路を統合したデザインを到達点とする（Woz Monitor などの実用ソフトウェアの動作は保証しない）。
 
 ## Key Features
 

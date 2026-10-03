@@ -86,7 +86,7 @@ graph TD
     JMP ($2000) ; pointer at $2000 -> $0230: LDA #$DD / HLT
     ```
 
-- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make test-lcd` はLCD smoke testを別に実行します)。
+- **シミュレーション**: `make test-cpu` を実行し、最終的に `PASS` と表示されることを確認します (`make sim` はCPUテストに加えてTFT smoke testも実行します)。
 - **実機 (FPGA)**: LCD で、最終的にポインタの指し示す先のデータがロードされていることを確認します。
 
 ## 🎯 次のステップ

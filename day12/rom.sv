@@ -16,7 +16,7 @@ module rom (
             16'h0207: data = 8'hAD;  // LDA $0200
             16'h0208: data = 8'h00;
             16'h0209: data = 8'h02;
-            16'h020A: data = 8'h4C;  // JMP $8000
+            16'h020A: data = 8'h4C;  // JMP $0200
             16'h020B: data = 8'h00;
             16'h020C: data = 8'h02;
             default:  data = 8'hEA;  // NOP

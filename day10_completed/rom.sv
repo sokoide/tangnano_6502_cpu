@@ -12,7 +12,7 @@ module rom (
             16'h0203: data = 8'h69;  // ADC #$01 -> A=$AB (Testing status logic)
             16'h0204: data = 8'h01;
             16'h0205: data = 8'h68;  // PLA -> A=$AA (Restored)
-            16'h0206: data = 8'h20;  // JSR 800A
+            16'h0206: data = 8'h20;  // JSR $020A
             16'h0207: data = 8'h0A;
             16'h0208: data = 8'h02;
             16'h0209: data = 8'hEF;  // HLT (End of program)
