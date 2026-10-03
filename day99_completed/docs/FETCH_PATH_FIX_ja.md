@@ -112,6 +112,32 @@ endfunction
 | `src/tb_pnr_trace.sv` | Post-PnR ネットリストから SDPB モデルの RAM/VRAM を直接観測 |
 | `docs/DIAG_SIMPLE5_ja.md` | 診断プログラムの使い方と期待値 |
 
+## 教材 (day01-18) への適用範囲
+
+Day99 の調査結果を day01-18 教材に展開した際の方針 (2026-10-03):
+
+- **パターンB (アレイROM動的インデックス) は全dayに存在しない**。教材の
+  ROM はすべて case 文またはベンダ IP であり、boot program を RAM へ
+  展開する構造も Day99 と異なり rom.sv の case 組み合わせ出力のみ。
+- **day18 (starter/completed) は本修正と同種の構造だったため適用済み**:
+  cpu.sv が `data_r` 登録サンプルからデコードし (クロック数・ステート
+  遷移は不変、TODO 構造も維持)、`+poison_live_read` による強制テストを
+  `make -C day18_completed test-sync-one` に追加した。SDC
+  (day18_9k.sdc / day18_20k.sdc) も新規に整備し、gprj 経由で PnR が
+  認識する。PnR スラックは 9K 40.5MHz で +0.552ns、20K で +11.296ns。
+- **day10-17 は意図的に旧構造 (data_in 直接デコード) のまま**。これらの
+  CPU は `pc_enable` が 2^24 クロックに 1 回しか立たず、デコードエッジの
+  前に実質無限のセットル時間がある (連続実行しない) ため、Day99 で
+  問題になった「遷移追従レース」の条件が存在しない。教材の変更範囲を
+  最小にするため、シミュレーションモデルの実機整合 (下記) のみ実施した。
+  将来これらの日を連続実行する課題に拡張する場合は、day18 と同じ
+  `data_r` 登録サンプル化を行うこと。
+- **day10-18 の ram.sv (starter/completed 計18ファイル)**: VERILATOR
+  モデルの読み出しを同期 (1サイクル遅延) から bypass (組み合わせ) に
+  変更し、実機 IP (READ_MODE=0) と整合させた。「シミュでは差が出ない
+  構造」をなくすための変更で、書き込みポートは同期のまま。
+
+
 ## 運用上の注意
 
 - `examples/*.s` を編集しただけでは `make download` は組み込みプログラムを

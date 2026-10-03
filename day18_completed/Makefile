@@ -121,6 +121,7 @@ test-sync-one: tools-check-sim
 		--Mdir build/$(BOARD)/sync-$(STEP_PERIOD) --top-module tb_curriculum_sync \
 		-GSTEP_PERIOD=$(STEP_PERIOD) ../sim/tb_curriculum_sync.sv cpu.sv ram.sv
 	./build/$(BOARD)/sync-$(STEP_PERIOD)/Vtb_curriculum_sync
+	./build/$(BOARD)/sync-$(STEP_PERIOD)/Vtb_curriculum_sync +poison_live_read
 test-manual-step: tools-check-sim
 	@mkdir -p build/$(BOARD)/manual-step
 	$(VERILATOR) --binary --timing --assert -Wno-fatal $(SYNC_DEFS) \

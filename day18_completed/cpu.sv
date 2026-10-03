@@ -59,10 +59,15 @@ module cpu (
     // Settle progresses at the memory clock, independently of manual stepping.
     logic memory_ready, step_pending;
 
+    // Registered fetch data: sampled from the raw bus (bypass RAM output) on
+    // the settle edge and decoded one edge later, never decoded live.
+    logic [ 7:0] data_r;
+
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             memory_ready <= 1'b0;
             step_pending <= 1'b0;
+            data_r       <= 8'h00;
             pc               <= 16'h0200;
             a                <= 8'h00;
             x                <= 8'h00;
@@ -106,36 +111,39 @@ module cpu (
                     end
                 end
             end else if (!memory_ready) begin
+                // Settle edge: the address has been stable for one full clock,
+                // so latch the memory response here and decode it next edge.
                 memory_ready <= 1'b1;
+                data_r       <= data_in;
                 step_pending <= step_pending | pc_enable;
             end else if (pc_enable || step_pending) begin
                 memory_ready <= 1'b0;
                 step_pending <= 1'b0;
                 case (state)
                     STATE_FETCH_OPCODE: begin
-                        current_opcode <= data_in;
+                        current_opcode <= data_r;
                         vram_clear <= 1'b0;
                         show_info <= 1'b0;
-                        if (data_in == OP_HLT) begin
+                        if (data_r == OP_HLT) begin
                             address_bus <= pc;
                             state <= STATE_EXECUTE;
-                        end else if (data_in == OP_WVS) begin
+                        end else if (data_r == OP_WVS) begin
                             pc <= pc + 1'b1;
                             address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPERAND;
-                        end else if (data_in == OP_CVR) begin
+                        end else if (data_r == OP_CVR) begin
                             vram_clear <= 1'b1;
                             pc <= pc + 1'b1;
                             address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
-                        end else if (data_in == OP_IFO) begin
+                        end else if (data_r == OP_IFO) begin
                             show_info <= 1'b1;
                             pc <= pc + 1'b1;
                             address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end else begin
                             address_bus <= pc + 1'b1;
-                            case (data_in)
+                            case (data_r)
                                 OP_LDA_IMM, OP_LDX_IMM, OP_LDY_IMM,
                                 OP_ADC_IMM, OP_SBC_IMM,
                                 OP_BNE, OP_BEQ, OP_BPL, OP_BMI,
@@ -160,7 +168,7 @@ module cpu (
                                     state <= STATE_PUSH_LOW;
                                     write_en <= 1'b1;
                                     address_bus <= 16'h0100 + s;
-                                    data_out <= (data_in == OP_PHA) ? a : {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
+                                    data_out <= (data_r == OP_PHA) ? a : {n, v, 1'b1, 1'b1, 1'b1, 1'b1, z, c};
                                 end
                                 OP_PLA, OP_PLP: begin
                                     state <= STATE_PULL_LOW;
@@ -294,81 +302,81 @@ module cpu (
                     STATE_FETCH_OPERAND: begin
                         case (current_opcode)
                             OP_WVS: begin
-                                vsync_wait_count <= data_in;
+                                vsync_wait_count <= data_r;
                                 state <= STATE_WAIT_VSYNC;
                                 vsync_pending <= 1'b0;
                             end
                             OP_LDA_IMM: begin
-                                a <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                a <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_LDX_IMM: begin
-                                x <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                x <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_LDY_IMM: begin
-                                y <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                y <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_ADC_IMM: begin
                                 logic [8:0] sum;
-                                sum = {1'b0, a} + {1'b0, data_in} + {8'd0, c};
+                                sum = {1'b0, a} + {1'b0, data_r} + {8'd0, c};
                                 a <= sum[7:0];
                                 c <= sum[8];
                                 z <= (sum[7:0] == 8'h00);
                                 n <= sum[7];
-                                v <= (a[7] == data_in[7]) && (a[7] != sum[7]);
+                                v <= (a[7] == data_r[7]) && (a[7] != sum[7]);
                             end
                             OP_AND_IMM: begin
                                 logic [7:0] res;
-                                res = a & data_in;
+                                res = a & data_r;
                                 a <= res;
                                 z <= (res == 8'h00);
                                 n <= res[7];
                             end
                             OP_ORA_IMM: begin
                                 logic [7:0] res;
-                                res = a | data_in;
+                                res = a | data_r;
                                 a <= res;
                                 z <= (res == 8'h00);
                                 n <= res[7];
                             end
                             OP_EOR_IMM: begin
                                 logic [7:0] res;
-                                res = a ^ data_in;
+                                res = a ^ data_r;
                                 a <= res;
                                 z <= (res == 8'h00);
                                 n <= res[7];
                             end
                             OP_SBC_IMM: begin
                                 logic [8:0] diff;
-                                diff = {1'b0, a} - {1'b0, data_in} - (c ? 9'h0 : 9'h1);
+                                diff = {1'b0, a} - {1'b0, data_r} - (c ? 9'h0 : 9'h1);
                                 a <= diff[7:0];
                                 c <= !diff[8];
                                 z <= (diff[7:0] == 8'h00);
                                 n <= diff[7];
-                                v <= (a[7] != data_in[7]) && (a[7] != diff[7]);
+                                v <= (a[7] != data_r[7]) && (a[7] != diff[7]);
                             end
                             OP_CMP_IMM: begin
                                 logic [8:0] diff;
-                                diff = {1'b0, a} - {1'b0, data_in};
+                                diff = {1'b0, a} - {1'b0, data_r};
                                 c <= !diff[8];
                                 z <= (diff[7:0] == 8'h00);
                                 n <= diff[7];
                             end
                             OP_CPX_IMM: begin
                                 logic [8:0] diff;
-                                diff = {1'b0, x} - {1'b0, data_in};
+                                diff = {1'b0, x} - {1'b0, data_r};
                                 c <= !diff[8];
                                 z <= (diff[7:0] == 8'h00);
                                 n <= diff[7];
                             end
                             OP_CPY_IMM: begin
                                 logic [8:0] diff;
-                                diff = {1'b0, y} - {1'b0, data_in};
+                                diff = {1'b0, y} - {1'b0, data_r};
                                 c <= !diff[8];
                                 z <= (diff[7:0] == 8'h00);
                                 n <= diff[7];
@@ -383,24 +391,24 @@ module cpu (
                                     default: take_branch = 1'b0;
                                 endcase
                                 if (take_branch) begin
-                                    pc <= (pc + 1'b1) + 16'($signed(data_in));
-                                    address_bus <= (pc + 1'b1) + 16'($signed(data_in));
+                                    pc <= (pc + 1'b1) + 16'($signed(data_r));
+                                    address_bus <= (pc + 1'b1) + 16'($signed(data_r));
                                 end else begin
                                     pc <= pc + 1'b1;
                                     address_bus <= pc + 1'b1;
                                 end
                             end
                             OP_LDA_ZP, OP_LDX_ZP, OP_LDY_ZP, OP_BIT_ZP, OP_INC_ZP, OP_DEC_ZP: begin
-                                address_bus <= {8'h00, data_in};
+                                address_bus <= {8'h00, data_r};
                             end
                             OP_LDA_IZX: begin
-                                address_bus <= {8'h00, data_in + x};
+                                address_bus <= {8'h00, data_r + x};
                             end
                             OP_LDA_IZY: begin
-                                address_bus <= {8'h00, data_in};
+                                address_bus <= {8'h00, data_r};
                             end
                             OP_STA_ZP, OP_STX_ZP, OP_STY_ZP: begin
-                                address_bus <= {8'h00, data_in};
+                                address_bus <= {8'h00, data_r};
                                 write_en <= 1'b1;
                                 if (current_opcode == OP_STA_ZP) data_out <= a;
                                 else if (current_opcode == OP_STX_ZP) data_out <= x;
@@ -437,33 +445,33 @@ module cpu (
                     end
 
                     STATE_FETCH_LOW: begin
-                        temp_addr[7:0] <= data_in;
+                        temp_addr[7:0] <= data_r;
                         pc <= pc + 1'b1;
                         address_bus <= pc + 1'b1;
                         state <= STATE_FETCH_HIGH;
                     end
 
                     STATE_FETCH_HIGH: begin
-                        temp_addr[15:8] <= data_in;
+                        temp_addr[15:8] <= data_r;
                         if (current_opcode == OP_JSR) begin
                             state <= STATE_PUSH_HIGH;
                             write_en <= 1'b1;
                             address_bus <= 16'h0100 + s;
                             data_out <= pc[15:8];  // Push High byte (PCH)
                         end else if (current_opcode == OP_JMP_ABS) begin
-                            pc <= {data_in, temp_addr[7:0]};
-                            address_bus <= {data_in, temp_addr[7:0]};
+                            pc <= {data_r, temp_addr[7:0]};
+                            address_bus <= {data_r, temp_addr[7:0]};
                             state <= STATE_FETCH_OPCODE;
                         end else if (current_opcode == OP_JMP_IND) begin
-                            address_bus <= {data_in, temp_addr[7:0]};
+                            address_bus <= {data_r, temp_addr[7:0]};
                             state <= STATE_FETCH_IND_LOW;
                         end else if (current_opcode == OP_LDA_ABS || current_opcode == OP_LDA_ABX || current_opcode == OP_LDA_ABY) begin
-                            address_bus <= {data_in, temp_addr[7:0]} +
+                            address_bus <= {data_r, temp_addr[7:0]} +
                                            ((current_opcode == OP_LDA_ABX) ? {8'h00, x} :
                                             (current_opcode == OP_LDA_ABY) ? {8'h00, y} : 16'h0000);
                             state <= STATE_EXECUTE;
                         end else if (current_opcode == OP_STA_ABS || current_opcode == OP_STA_ABX) begin
-                            address_bus <= {data_in, temp_addr[7:0]} +
+                            address_bus <= {data_r, temp_addr[7:0]} +
                                            ((current_opcode == OP_STA_ABX) ? {8'h00, x} : 16'h0000);
                             write_en <= 1'b1;
                             data_out <= a;
@@ -493,19 +501,19 @@ module cpu (
 
                     STATE_PULL_LOW: begin
                         s <= s + 1'b1;
-                        temp_addr[7:0] <= data_in;
+                        temp_addr[7:0] <= data_r;
                         if (current_opcode == OP_RTS) begin
                             state <= STATE_PULL_HIGH;
                             address_bus <= 16'h0100 + (s + 8'd2);
                         end else if (current_opcode == OP_PLA) begin
-                            a <= data_in;
-                            z <= (data_in == 8'h00);
-                            n <= data_in[7];
+                            a <= data_r;
+                            z <= (data_r == 8'h00);
+                            n <= data_r[7];
                             pc <= pc + 1'b1;
                             address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
                         end else if (current_opcode == OP_PLP) begin
-                            {n, v, temp_addr[5:2], z, c} <= data_in;  // Reuse temp_addr bits
+                            {n, v, temp_addr[5:2], z, c} <= data_r;  // Reuse temp_addr bits
                             pc <= pc + 1'b1;
                             address_bus <= pc + 1'b1;
                             state <= STATE_FETCH_OPCODE;
@@ -514,44 +522,44 @@ module cpu (
 
                     STATE_PULL_HIGH: begin
                         s <= s + 1'b1;
-                        pc <= {data_in, temp_addr[7:0]} + 1'b1;
-                        address_bus <= {data_in, temp_addr[7:0]} + 1'b1;
+                        pc <= {data_r, temp_addr[7:0]} + 1'b1;
+                        address_bus <= {data_r, temp_addr[7:0]} + 1'b1;
                         state <= STATE_FETCH_OPCODE;
                     end
 
                     STATE_EXECUTE: begin
                         case (current_opcode)
                             OP_LDA_ZP, OP_LDA_ABS, OP_LDA_ABX, OP_LDA_ABY, OP_LDA_IZX, OP_LDA_IZY: begin
-                                a <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                a <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_LDX_ZP: begin
-                                x <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                x <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_LDY_ZP: begin
-                                y <= data_in;
-                                z <= (data_in == 8'h00);
-                                n <= data_in[7];
+                                y <= data_r;
+                                z <= (data_r == 8'h00);
+                                n <= data_r[7];
                             end
                             OP_BIT_ZP: begin
-                                z <= ((a & data_in) == 8'h00);
-                                n <= data_in[7];
-                                v <= data_in[6];
+                                z <= ((a & data_r) == 8'h00);
+                                n <= data_r[7];
+                                v <= data_r[6];
                             end
                             OP_INC_ZP: begin
-                                data_out <= data_in + 8'h01;
-                                z <= ((data_in + 8'h01) == 8'h00);
-                                n <= (data_in + 8'h01) >> 7;
+                                data_out <= data_r + 8'h01;
+                                z <= ((data_r + 8'h01) == 8'h00);
+                                n <= (data_r + 8'h01) >> 7;
                                 write_en <= 1'b1;
                                 state <= STATE_WRITE_BACK;
                             end
                             OP_DEC_ZP: begin
-                                data_out <= data_in - 8'h01;
-                                z <= ((data_in - 8'h01) == 8'h00);
-                                n <= (data_in - 8'h01) >> 7;
+                                data_out <= data_r - 8'h01;
+                                z <= ((data_r - 8'h01) == 8'h00);
+                                n <= (data_r - 8'h01) >> 7;
                                 write_en <= 1'b1;
                                 state <= STATE_WRITE_BACK;
                             end
@@ -578,7 +586,7 @@ module cpu (
                     end
 
                     STATE_FETCH_IND_LOW: begin
-                        temp_addr[7:0] <= data_in;
+                        temp_addr[7:0] <= data_r;
                         if (current_opcode == OP_JMP_IND) begin
                             address_bus <= address_bus + 1'b1;
                         end else begin
@@ -589,7 +597,7 @@ module cpu (
                     end
 
                     STATE_FETCH_IND_HIGH: begin
-                        temp_addr[15:8] <= data_in;
+                        temp_addr[15:8] <= data_r;
                         state <= STATE_IND_ACCESS;
                     end
 

@@ -10,11 +10,14 @@ module ram (
 );
 
 `ifdef VERILATOR
-    // One-clock read latency, matching the clocked BSRAM interface.
+    // Bypass read: the Gowin_SDPB IP is configured with READ_MODE = 1'b0, so
+    // dout is a combinational (0-cycle) read. The write port remains
+    // clock-synchronous.
     logic [7:0] mem[32768];
 
+    assign dout = mem[addr];  // Bypass read, matching hardware READ_MODE = 1'b0.
+
     always_ff @(posedge clk) begin
-        dout <= mem[addr];  // No consumer may depend on same-edge read/write collision data.
         if (write_en) begin
             mem[addr] <= din;
         end

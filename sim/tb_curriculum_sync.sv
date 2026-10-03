@@ -16,7 +16,20 @@ module tb_curriculum_sync #(parameter int STEP_PERIOD=1);
         ,.memory_hold(1'b0),.vsync(1'b0),.vram_clear(vram_clear),.show_info(show_info)
 `endif
     );
-    ram u_ram(.clk(clk),.addr(address_bus[14:0]),.write_en(write_en),.din(data_out),.dout(data_in));
+    logic [7:0] ram_dout;
+    ram u_ram(.clk(clk),.addr(address_bus[14:0]),.write_en(write_en),.din(data_out),.dout(ram_dout));
+`ifdef DAY18_CPU
+    // The CPU must decode from its settle-edge sample (dut.data_r), never the
+    // live RAM bus. With +poison_live_read the bus is inverted on decode edges
+    // (day99 tb_simple5_sweep technique); designs that decode data_in directly
+    // fail this run.
+    bit poison_live_read;
+    initial poison_live_read = $test$plusargs("poison_live_read");
+    wire decode_edge = rst_n && dut.memory_ready && (dut.pc_enable || dut.step_pending);
+    assign data_in = poison_live_read && decode_edge ? ~ram_dout : ram_dout;
+`else
+    assign data_in = ram_dout;
+`endif
     always #5 clk=~clk;
     int ticks=0,writes=0,pause_left=0;
     bit paused=0;
