@@ -1,7 +1,7 @@
 # Gowin SUG940-2.0E timing constraints for Tang Nano 9K.
 create_clock -name xtal_clk -period 37.037037 -waveform {0 18.518519} [get_ports {XTAL_IN}]
 create_generated_clock -name pixel_clk -source [get_ports {XTAL_IN}] -divide_by 3 [get_pins {u_core/clocks/pixel_pll/rpll_inst/CLKOUT}]
-create_generated_clock -name memory_clk -source [get_ports {XTAL_IN}] -multiply_by 7 -divide_by 6 [get_pins {u_core/clocks/memory_pll/rpll_inst/CLKOUT}]
+create_generated_clock -name memory_clk -source [get_ports {XTAL_IN}] -multiply_by 7 -divide_by 7 [get_pins {u_core/clocks/memory_pll/rpll_inst/CLKOUT}]
 
 set_false_path -from [get_clocks {pixel_clk}] -to [get_regs {u_core/cpu_inst/*vsync_meta*}]
 set_false_path -from [get_ports {ResetButton}]

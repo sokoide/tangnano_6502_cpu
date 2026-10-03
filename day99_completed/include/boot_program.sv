@@ -22,9 +22,11 @@ localparam logic [7:0] boot_program[7680] = '{
     17: 8'h7F,
     18: 8'hD0,
     19: 8'hEE,
-    20: 8'h4C,
-    21: 8'h02,
-    22: 8'h02,
+    20: 8'hA9,
+    21: 8'h20,
+    22: 8'h4C,
+    23: 8'h02,
+    24: 8'h02,
     default: 8'hEA
 };
-localparam logic [15:0] boot_program_length = 23;
+localparam logic [15:0] boot_program_length = 25;

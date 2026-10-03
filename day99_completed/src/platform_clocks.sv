@@ -45,9 +45,11 @@ rPLL rpll_inst (
 
 defparam rpll_inst.FCLKIN = "27";
 defparam rpll_inst.DYN_IDIV_SEL = "false";
-// GW1NR-9 runs the CPU/memory clock at 31.5MHz (27MHz * 7 / 6) to
-// meet the measured timing limit. GW2AR-18 retains the 40.5MHz setting.
-defparam rpll_inst.IDIV_SEL = MEMORY ? (BOARD_20K ? 1 : 5) : 2;
+// GW1NR-9 runs the CPU/memory clock at 27MHz (27MHz * 7 / 7). 31.5MHz
+// (7/6) passed PNR with only 0.115ns of setup slack and failed on real
+// silicon; 27MHz keeps the same VCO configuration with real margin.
+// GW2AR-18 retains the 40.5MHz setting.
+defparam rpll_inst.IDIV_SEL = MEMORY ? (BOARD_20K ? 1 : 6) : 2;
 defparam rpll_inst.DYN_FBDIV_SEL = "false";
 defparam rpll_inst.FBDIV_SEL = MEMORY ? (BOARD_20K ? 2 : 6) : 0;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
