@@ -48,12 +48,12 @@ module tb_cpu;
     // and the boot_program_byte() function; mirror it into an array for the
     // simulation-only cpu array ports.
     `include "../include/boot_program.sv"
-    logic [7:0] boot_rom [7680];
+    logic [7:0] boot_rom[7680];
     initial begin
         for (int i = 0; i < 7680; i++) boot_rom[i] = boot_program_byte(15'(i));
     end
 
-cpu dut (
+    cpu dut (
         .rst_n(rst_n),
         .clk(clk),
         .dout(dout),

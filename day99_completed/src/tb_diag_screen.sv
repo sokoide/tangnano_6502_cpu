@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 /* verilator lint_off UNUSEDSIGNAL */
 // Dump the 60x17 text screen from the behavioral VRAM model after a few frames.
 module tb_diag_screen;

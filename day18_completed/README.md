@@ -37,7 +37,7 @@ graph TD
 | `0xFF` | `WVS #count` | **Wait for V-Sync**: Wait for a specified number of V-Syncs.  |
 | `0xCF` | `CVR`        | **Clear VRAM**: Clear VRAM or fill with a specific color.     |
 | `0xDF` | `IFO`        | **Info**: Display debug info (registers, PC, etc.) on screen. |
-| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running.  |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU; the LCD controller keeps running. |
 
 > [!NOTE]
 > Previously, the CPU speed was intentionally throttled for debugging. With the `WVS` instruction, we can now synchronize with the display in software, so the CPU now runs at the full FPGA clock speed (27MHz on 9K, 40.5MHz on 20K, see day18_*.sdc).

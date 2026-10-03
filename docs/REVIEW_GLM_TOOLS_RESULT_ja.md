@@ -21,7 +21,7 @@ converter と ALU の変更はすでに working tree の diff に含まれてい
    ELA アドレスフィールドが非ゼロ（0x0012）のレコードを拒否する回帰テストを追加。
 3. **main_test.go チェックサムフィクスチャ修正**:
    `TestConvertPreservesDestinationOnInvalidInput` の `good[:len(good)-1]+"00"` は
-   1文字のみ切り詰め、奇数長の hex 行となり意図した「チェックサム不一致」ではなく
+   1 文字のみ切り詰め、奇数長の hex 行となり意図した「チェックサム不一致」ではなく
    hex 桁数エラーを発生させていた。`good[:len(good)-2]+"00"` に修正し、
    エラーが `checksum mismatch` であることを明示的にアサート。
 4. **main_test.go TestCapacity**: 7905 バイト（31×255）のオーバーフロー案例を
@@ -29,7 +29,7 @@ converter と ALU の変更はすでに working tree の diff に含まれてい
 
 ## テスト結果
 
-```
+```console
 $ env GOCACHE=/private/tmp/tangnano-go-cache go test ./...
 ok  	hex_fpga	0.287s
 ```

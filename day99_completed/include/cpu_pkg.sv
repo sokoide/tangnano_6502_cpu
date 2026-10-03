@@ -20,7 +20,11 @@ package cpu_pkg;
     } cpu_state_e;
 
     typedef enum logic [2:0] {
-        FAULT_NONE, FAULT_BOOT_LENGTH, FAULT_OPCODE, FAULT_DECIMAL, FAULT_SHADOW_WRITE
+        FAULT_NONE,
+        FAULT_BOOT_LENGTH,
+        FAULT_OPCODE,
+        FAULT_DECIMAL,
+        FAULT_SHADOW_WRITE
     } cpu_fault_e;
 
     typedef enum logic [2:0] {

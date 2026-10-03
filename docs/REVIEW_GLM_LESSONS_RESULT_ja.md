@@ -10,7 +10,7 @@
 ### 1. Makefile (day05–18 の starter / completed 計 28 ファイル)
 
 - CPU ロジックシミュレーションのビルドディレクトリを `obj_$(SIM_CPU_TOP)` /
-  `obj_tb_cpu` から **`build/$(BOARD)/$(SIM_CPU_TOP)`** に統一。
+  `obj_tb_cpu` から**`build/$(BOARD)/$(SIM_CPU_TOP)`**に統一。
   - completed 側は既存の `SIM_CPU_TOP` / `TB_CPU_DEFINES` / `test-cpu` ターゲット定義をそのまま維持。
   - starter 側も既存の `sim-cpu-build` / `test-cpu` / `sim` ターゲット構成は変更せず、変数のみ導入。
 - LCD (TFT) シミュレーションビルド (`sim-build`) も per-board 化:

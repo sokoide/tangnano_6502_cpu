@@ -54,27 +54,27 @@
 
 ## Day 99 pixel pipeline（2026-10-03）
 
-VRAMのwrite portは9Kでは27MHz、20Kでは40.5MHzのMEMORY_CLKへ接続する。read portは両ボードとも9MHz PixelClkへ接続する。
-font ROMとLCDはPixelClkに揃える。多bit addressを2FFで転送する旧CDC経路は使用しない。
+VRAM の write port は 9K では 27MHz、20K では 40.5MHz の MEMORY_CLK へ接続する。read port は両ボードとも 9MHz PixelClk へ接続する。
+font ROM と LCD は PixelClk に揃える。多 bit address を 2FF で転送する旧 CDC 経路は使用しない。
 
-VRAM addressをbeam座標から組合せ生成し、同期VRAM 1clock → 同期font ROM 1clock → RGB/DE登録の順で描画する。
-font row・bit index・active validを同じpipelineで運び、DEはbeamに対し2edge遅延する。
-画素はfont byteのMSBから左順。active幅480、active行272、周期531×292 pixelである。
-reset時にpipeline validをクリアする。font memoryのREAD_MODE=0ではOCEによらずCEで読出す。
+VRAM address を beam 座標から組合せ生成し、同期 VRAM 1clock → 同期 font ROM 1clock → RGB/DE 登録の順で描画する。
+font row・bit index・active valid を同じ pipeline で運び、DE は beam に対し 2edge 遅延する。
+画素は font byte の MSB から左順。active 幅 480、active 行 272、周期 531×292 pixel である。
+reset 時に pipeline valid をクリアする。font memory の READ_MODE=0 では OCE によらず CE で読出す。
 
-実font MIはmetadata上4096byte容量だが、収録データは128文字×16行=2048byte。
-simulationはこの2048byteを読み、残る2048byteをvendor INITと同じゼロで埋める。
-全4096byteのvendor INITとの一致を `tb_font_contract` で確認する。
+実 font MI は metadata 上 4096byte 容量だが、収録データは 128 文字×16 行=2048byte。
+simulation はこの 2048byte を読み、残る 2048byte を vendor INIT と同じゼロで埋める。
+全 4096byte の vendor INIT との一致を `tb_font_contract` で確認する。
 
-`platform_clocks` は既存PLLと同じrPLL値を持つproject所有wrapperで、LOCKを公開する。
-9K/20Kのpixel ODIVは48/64、memory ODIVは16で、board wrapperからparameterを渡す。
-外部resetまたはいずれかのPLL lock喪失時に両domainへ非同期resetをassertし、各domainの2edge後に解除する。
-CPU/RAM/VRAMのwriteはmemory reset中gateされ、LCD DEはpixel reset中0となる。
+`platform_clocks` は既存 PLL と同じ rPLL 値を持つ project 所有 wrapper で、LOCK を公開する。
+9K/20K の pixel ODIV は 48/64、memory ODIV は 16 で、board wrapper から parameter を渡す。
+外部 reset またはいずれかの PLL lock 喪失時に両 domain へ非同期 reset を assert し、各 domain の 2edge 後に解除する。
+CPU/RAM/VRAM の write は memory reset 中 gate され、LCD DE は pixel reset 中 0 となる。
 
-同一VRAM addressへの非同期read/write衝突のold/new値は保証しない。
-CPUから表示中に書く場合、画面の一時的な変化は許容し、frame atomicityは提供しない。
-simulationによる非同期位相検査は、実機metastability耐性・timing・連続安定動作の証明ではない。
-旧 `sim/gowin_rpll*_stub.sv` と `tb_top.sv` はlegacy参考で、現行受入経路には使わない。
+同一 VRAM address への非同期 read/write 衝突の old/new 値は保証しない。
+CPU から表示中に書く場合、画面の一時的な変化は許容し、frame atomicity は提供しない。
+simulation による非同期位相検査は、実機 metastability 耐性・timing・連続安定動作の証明ではない。
+旧 `sim/gowin_rpll*_stub.sv` と `tb_top.sv` は legacy 参考で、現行受入経路には使わない。
 
 実行: `make test-ram`, `make test-font`, `make test-lcd`, `make test-clock`, `make test-reset`。
-詳細な実行結果・未検証範囲は [Sol LCD実装結果](../../docs/REVIEW_SOL_LCD_RESULT_ja.md) を参照する。
+詳細な実行結果・未検証範囲は[Sol LCD実装結果](../../docs/REVIEW_SOL_LCD_RESULT_ja.md)を参照する。

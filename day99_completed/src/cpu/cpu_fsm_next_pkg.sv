@@ -1012,8 +1012,7 @@ package cpu_fsm_next_pkg;
     // Compare helper: C = no borrow (lhs >= operand), Z/N from the 8-bit diff.
     // Source register and V are preserved; the incoming C does not participate.
     function automatic cpu_ctx_t complete_compare(input cpu_ctx_t cur, cpu_ctx_t next,
-                                                  input logic [7:0] lhs,
-                                                  input logic [7:0] operand,
+                                                  input logic [7:0] lhs, input logic [7:0] operand,
                                                   input logic [15:0] next_pc);
         logic [7:0] result;
         result = lhs - operand;
@@ -1046,9 +1045,13 @@ package cpu_fsm_next_pkg;
                 if (cur.opcode == 8'hD9) target_addr = target_addr + {8'h00, cur.ry};
                 if (cur.fetched_data_bytes == 0) next = request_data_fetch(next, target_addr);
                 else begin
-                    next = complete_compare(cur, next,
+                    next = complete_compare(
+                        cur,
+                        next,
                         cur.opcode == 8'hEC ? cur.rx : cur.opcode == 8'hCC ? cur.ry : cur.ra,
-                        cur.dout_r, cur.pc_plus3);
+                        cur.dout_r,
+                        cur.pc_plus3
+                    );
                 end
             end
             8'hC5: begin  // CMP zero page
@@ -1421,8 +1424,7 @@ package cpu_fsm_next_pkg;
                     end
                     1: begin
                         next.fetched_data[7:0] = cur.dout_r;
-                        next = request_data_fetch(next,
-                                                  cur.operands + 16'd1);
+                        next = request_data_fetch(next, cur.operands + 16'd1);
                     end
                     2: begin
                         logic [15:0] ind_addr = ({cur.dout_r, cur.fetched_data[7:0]}) & 16'hFFFF;
@@ -1532,14 +1534,7 @@ package cpu_fsm_next_pkg;
             end
             8'h08: begin  // PHP
                 status = {
-                    cur.flg_n,
-                    cur.flg_v,
-                    1'b1,
-                    1'b1,
-                    cur.flg_d,
-                    cur.flg_i,
-                    cur.flg_z,
-                    cur.flg_c
+                    cur.flg_n, cur.flg_v, 1'b1, 1'b1, cur.flg_d, cur.flg_i, cur.flg_z, cur.flg_c
                 };
                 stack_addr = (STACK + {8'h00, cur.sp});
                 next.sp = (cur.sp - 1'b1) & 8'hFF;

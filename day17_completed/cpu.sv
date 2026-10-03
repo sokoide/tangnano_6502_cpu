@@ -53,8 +53,8 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            memory_ready <= 1'b0;
-            step_pending <= 1'b0;
+            memory_ready   <= 1'b0;
+            step_pending   <= 1'b0;
             pc             <= 16'h0200;
             a              <= 8'h00;
             x              <= 8'h00;
@@ -77,7 +77,7 @@ module cpu (
             end else if (pc_enable || step_pending) begin
                 memory_ready <= 1'b0;
                 step_pending <= 1'b0;
-            write_en <= 1'b0;
+                write_en <= 1'b0;
                 case (state)
                     STATE_FETCH_OPCODE: begin
                         current_opcode <= data_in;

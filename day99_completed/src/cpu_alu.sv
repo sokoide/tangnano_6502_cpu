@@ -75,7 +75,7 @@ module cpu_alu (
         // Defaults for case-branch temporaries (avoids incomplete always_comb)
         logic_result = 8'h00;
         shift_result = 8'h00;
-        shift_carry  = 1'b0;
+        shift_carry = 1'b0;
 
         // Overflow detection for signed arithmetic
         add_overflow = (~operand_a[7] & ~operand_b[7] & add_result[7]) |

@@ -24,7 +24,7 @@ cd tangnano_6502_cpu
 
 ### 2. ビルドとダウンロード
 
-Makefile は両ボードのビルドを自動化します。デフォルトは **Tang Nano 9K**、`BOARD=20k` を渡すと 20K 向けになります。
+Makefile は両ボードのビルドを自動化します。デフォルトは**Tang Nano 9K**、`BOARD=20k` を渡すと 20K 向けになります。
 
 ```bash
 # Tang Nano 9K（デフォルト）
@@ -36,11 +36,11 @@ make BOARD=20k download
 
 ## ✨ 特徴
 
-- **6502命令サブセット**: 実装済み命令と独自拡張を搭載。未実装opcodeはfaultで停止し、割り込み・decimal演算・サイクル完全互換などは対象外です（詳細は `docs/INSTRUCTIONS.md`）。
+- **6502命令サブセット**: 実装済み命令と独自拡張を搭載。未実装 opcode は fault で停止し、割り込み・decimal 演算・サイクル完全互換などは対象外です（詳細は `docs/INSTRUCTIONS.md`）。
 - **LCD テキストディスプレイ**: 480x272 LCD を駆動し、ハードウェアアクセラレーションによるフォントレンダリングで 60x17 文字を表示。
 - **モジュラー設計**: CPU コア、LCD コントローラ、メモリシステム間のクリーンな分離。
 - **アセンブリプログラミング**: cc65 ツールチェーンと統合され、いくつかのサンプルプログラムが含まれています。
-- **段階的なシミュレーション**: `make test` はCPU regression/contract、ALU、RAM、font、LCD、clock、system等を実行します。各テストの対象は個別で、6502全命令や実機を網羅しません。
+- **段階的なシミュレーション**: `make test` は CPU regression/contract、ALU、RAM、font、LCD、clock、system 等を実行します。各テストの対象は個別で、6502 全命令や実機を網羅しません。
 - **マルチボードサポート**: Tang Nano 9K と 20K のターゲットを簡単に切り替え可能。
 
 ## 📚 ドキュメント
@@ -85,9 +85,9 @@ make BOARD=20k download
 このリポジトリの day06-18 は、6502 を「部品→統合」の順で理解するための教育用ステップで、モジュール分割や制御方法が day99 と一致しない部分があります。
 
 - **day06-18**: レジスタ/ALU/デコーダ/メモリ IF/制御ユニットなど、学習しやすい粒度で分割（段階的に機能を増やすことを優先）。
-- **day99**: 実機( LCD + VRAM + カスタム命令 )を動かす統合版。CPU は `cpu_ctx_t` を中心に **2-process FSM**（`always_comb`で`next`計算、`always_ff`で`cur<=next`更新）へ収束し、リファクタしやすい形を優先。
+- **day99**: 実機( LCD + VRAM + カスタム命令 )を動かす統合版。CPU は `cpu_ctx_t` を中心に**2-process FSM**（`always_comb`で`next`計算、`always_ff`で`cur<=next`更新）へ収束し、リファクタしやすい形を優先。
 
-教育用途としては **day06-18は現状のままの方が分かりやすい**（制御の段階的な導入がしやすい）一方で、実務寄りの「安全なリファクタ/拡張」を学ぶなら day99 の 2-process FSM 構造が参考になります。
+教育用途としては**day06-18は現状のままの方が分かりやすい**（制御の段階的な導入がしやすい）一方で、実務寄りの「安全なリファクタ/拡張」を学ぶなら day99 の 2-process FSM 構造が参考になります。
 
 詳細は `day99_completed/docs/FSM.md` と `day99_completed/docs/README_architecture_ja.md` を参照してください。
 
@@ -139,7 +139,7 @@ make download
 
 ## 🧪 テストとシミュレーション
 
-`make test` はCPU regression/contractと各周辺回路・統合シミュレーションを実行します。CPU回帰テストは実装済みサブセットの選択したケースを検証します。opcode一覧の静的auditや局所テストは全入力・全境界条件の保証ではなく、合成・配置配線・実機の連続動作も別の検証です。
+`make test` は CPU regression/contract と各周辺回路・統合シミュレーションを実行します。CPU 回帰テストは実装済みサブセットの選択したケースを検証します。opcode 一覧の静的 audit や局所テストは全入力・全境界条件の保証ではなく、合成・配置配線・実機の連続動作も別の検証です。
 
 ```bash
 # lintとフォーマットチェックを実行

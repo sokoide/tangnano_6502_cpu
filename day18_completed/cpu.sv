@@ -61,8 +61,8 @@ module cpu (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            memory_ready <= 1'b0;
-            step_pending <= 1'b0;
+            memory_ready     <= 1'b0;
+            step_pending     <= 1'b0;
             pc               <= 16'h0200;
             a                <= 8'h00;
             x                <= 8'h00;
@@ -83,12 +83,11 @@ module cpu (
             vsync_prev       <= 1'b0;
             vsync_pending    <= 1'b0;
         end else begin
-            write_en <= 1'b0;  // One accepted memory edge per issued write.
+            write_en   <= 1'b0;  // One accepted memory edge per issued write.
             vram_clear <= 1'b0;
-            show_info <= 1'b0;
+            show_info  <= 1'b0;
             vsync_prev <= vsync;
-            if (state == STATE_WAIT_VSYNC && vsync && !vsync_prev)
-                vsync_pending <= 1'b1;
+            if (state == STATE_WAIT_VSYNC && vsync && !vsync_prev) vsync_pending <= 1'b1;
             if (memory_hold) begin
                 memory_ready <= 1'b0;
                 step_pending <= step_pending | pc_enable;
@@ -610,7 +609,7 @@ module cpu (
 
                     STATE_WAIT_VSYNC: ;  // Serviced above, independent of CPU enables.
 
-                default: state <= STATE_FETCH_OPCODE;
+                    default: state <= STATE_FETCH_OPCODE;
                 endcase
             end
         end

@@ -69,8 +69,8 @@ module tb_cpu;
     // P register layout: {N, V, 1, 1, 1, 1, Z, C}
     task automatic check_p(input string name, input logic [7:0] exp);
         if (debug_p !== exp) begin
-            $display("FAIL: %s: P = 0x%02h (expected N=%b V=%b Z=%b C=%b -> 0x%02h)", name, debug_p,
-                     exp[7], exp[6], exp[1], exp[0], exp);
+            $display("FAIL: %s: P = 0x%02h (expected N=%b V=%b Z=%b C=%b -> 0x%02h)", name,
+                     debug_p, exp[7], exp[6], exp[1], exp[0], exp);
             error_count++;
         end else begin
             $display("PASS: %s: P = 0x%02h (N=%b V=%b Z=%b C=%b)", name, debug_p, debug_p[7],

@@ -1,8 +1,8 @@
-> 現行Day 99は1024 byteのtext VRAM。実装済みmap/read-write/clear仕様は [INSTRUCTIONS](INSTRUCTIONS.md#メモリmapとboot) を参照。以下の外部Graphic VRAM、RDY、arbiter/MMUは未実装の設計案であり、現CPUの契約ではない。理論bandwidthだけから実効帯域や影響を保証できない。
+> 現行Day 99は1024 byteのtext VRAM。実装済みmap/read-write/clear仕様は[INSTRUCTIONS](INSTRUCTIONS.md#メモリmapとboot)を参照。以下の外部Graphic VRAM、RDY、arbiter/MMUは未実装の設計案であり、現CPUの契約ではない。理論bandwidthだけから実効帯域や影響を保証できない。
 
 # 外部RAMを利用した高解像度Graphic VRAMアーキテクチャ
 
-このドキュメントでは、Tang Nano の外部 RAM (PSRAM/SDRAM) を活用し、6502 CPU からアクセス可能な **Graphic VRAM (480x272, 16bit color)** を構築するためのアーキテクチャを定義する。
+このドキュメントでは、Tang Nano の外部 RAM (PSRAM/SDRAM) を活用し、6502 CPU からアクセス可能な**Graphic VRAM (480x272, 16bit color)**を構築するためのアーキテクチャを定義する。
 
 ## 1. 概要と実現可能性
 
@@ -10,13 +10,13 @@
 
 * **解像度:** 480 x 272 ピクセル
 * **色深度:** 16bit (RGB565)
-* **VRAM容量:** 約 261 KB (480 *272* 2 bytes)
+* **VRAM 容量:**約 261 KB (480 *272* 2 bytes)
 * **フレームレート:** 60fps
 * **機能:** CPU と LCD コントローラで単一の外部 RAM を共有する。
 
 ### 帯域幅の計算 (Bandwidth Analysis)
 
-以下は仮定に基づく理論帯域の比較。refresh、command overhead、burst効率、worst-case latencyを含まない。
+以下は仮定に基づく理論帯域の比較。refresh、command overhead、burst 効率、worst-case latency を含まない。
 
 * **LCD表示に必要な帯域:**
   * Pixel Clock: 約 9 MHz
@@ -26,11 +26,11 @@
   * Bus Width: 16 bit (PSRAM) / 32 bit (SDRAM)
   * Max Throughput: 100 MHz × 16 bit = **1600 Mbps** (Tang Nano 9K の場合)
 
-理論値の比率は約9%。CPUへの残り帯域割当や表示deadlineは未測定で、成立には実効帯域と最大待ち時間の検証が必要。
+理論値の比率は約 9%。CPU への残り帯域割当や表示 deadline は未測定で、成立には実効帯域と最大待ち時間の検証が必要。
 
 ## 2. システムアーキテクチャ
 
-外部メモリはシングルポートであるため、**Memory Arbiter（調停回路）** と **Video FIFO** を用いてアクセス権を制御する「バケツリレー方式」を採用する。
+外部メモリはシングルポートであるため、**Memory Arbiter（調停回路）**と**Video FIFO**を用いてアクセス権を制御する「バケツリレー方式」を採用する。
 
 ### ブロック図
 
@@ -91,7 +91,7 @@ graph TD
 
 3. **バス権の切り替え**
     * Arbiter は CPU の `RDY` を Low にし、CPU を停止させる。
-    * Arbiter はメモリコントローラに対して **バースト読み出し** コマンドを発行する（例: 64 ピクセル一括読み出し）。
+    * Arbiter はメモリコントローラに対して**バースト読み出し**コマンドを発行する（例: 64 ピクセル一括読み出し）。
 
 4. **データ充填**
     * メモリから高速にデータが読み出され、FIFO に格納される。
@@ -124,7 +124,7 @@ graph TD
 | `0x000000` - `0x03FC00` | **VRAM** | ~261 KB | 480x272x16b. 外部RAM先頭に配置 |
 | `0x040000` - `0xXXXXXX` | **Main RAM** | 残り全域 | CPU用のプログラム・データ領域 |
 
-※ 6502 は 16bit アドレス空間(64KB)しか持たないため、VRAM や大容量 RAM へのアクセスには **バンク切り替え (Bank Switching)** または **メモリマッパ (MMU)** の実装が別途必要となる点に注意が必要。
+※ 6502 は 16bit アドレス空間(64KB)しか持たないため、VRAM や大容量 RAM へのアクセスには**バンク切り替え (Bank Switching)**または**メモリマッパ (MMU)**の実装が別途必要となる点に注意が必要。
 
 ## 6. 実装サンプル (SystemVerilog)
 

@@ -35,13 +35,13 @@ module lcd_demo (
     );
 
     vram vram_inst (
-        .clk  (LCD_CLK),
+        .clk(LCD_CLK),
         .rst_n(rst_n),
-        .addr (vram_addr),
+        .addr(vram_addr),
         .write_en(vram_cea),
         .write_addr(vram_ada),
         .write_data(vram_din),
-        .data (vram_data)
+        .data(vram_data)
     );
 `else
     // FPGA path: match the stable day99 display path (fast MEMORY_CLK + BRAM/pROM).
@@ -120,7 +120,7 @@ module lcd_demo (
     logic [ 7:0] ram_din;
     logic        ram_we;
     logic        ram_we_final;
-    logic [7:0]  ram_din_final;
+    logic [ 7:0] ram_din_final;
     logic        memory_hold;
     logic        boot_active;
 
@@ -142,10 +142,10 @@ module lcd_demo (
     always_ff @(posedge cpu_clk or negedge rst_n) begin
         if (!rst_n) begin
             vsync_meta <= 0;
-            vsync_cpu <= 0;
+            vsync_cpu  <= 0;
         end else begin
             vsync_meta <= vsync;
-            vsync_cpu <= vsync_meta;
+            vsync_cpu  <= vsync_meta;
         end
     end
 
@@ -206,11 +206,11 @@ module lcd_demo (
     logic         [15:0] debug_addr;
     logic         [ 3:0] sub_state;
     logic                clear_only;
-    logic [15:0] snapshot_pc;
+    logic         [15:0] snapshot_pc;
     logic [7:0] snapshot_a, snapshot_x, snapshot_y, snapshot_p, snapshot_s;
     logic [7:0] debug_byte;
     // $00-$07 latched during the dump's first row; drives the LED column.
-    logic [7:0] led_latch[0:7];
+    logic [7:0] led_latch  [0:7];
 
     always_ff @(posedge cpu_clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -223,8 +223,11 @@ module lcd_demo (
             sub_state <= 4'd0;
             clear_only <= 0;
             snapshot_pc <= 0;
-            snapshot_a <= 0; snapshot_x <= 0; snapshot_y <= 0;
-            snapshot_p <= 0; snapshot_s <= 0;
+            snapshot_a <= 0;
+            snapshot_x <= 0;
+            snapshot_y <= 0;
+            snapshot_p <= 0;
+            snapshot_s <= 0;
             debug_byte <= 0;
             for (int i = 0; i < 8; i++) led_latch[i] <= 8'h00;
         end else begin
@@ -232,13 +235,16 @@ module lcd_demo (
             case (debug_state)
                 S_IDLE: begin
                     if (!boot_active && (cpu_show_info || cpu_vram_clear)) begin
-                        clear_only <= !cpu_show_info;
+                        clear_only  <= !cpu_show_info;
                         snapshot_pc <= cpu_debug_pc;
-                        snapshot_a <= cpu_debug_a; snapshot_x <= cpu_debug_x;
-                        snapshot_y <= cpu_debug_y; snapshot_p <= cpu_debug_p;
-                        snapshot_s <= cpu_debug_s;
+                        snapshot_a  <= cpu_debug_a;
+                        snapshot_x  <= cpu_debug_x;
+                        snapshot_y  <= cpu_debug_y;
+                        snapshot_p  <= cpu_debug_p;
+                        snapshot_s  <= cpu_debug_s;
 `ifdef VERILATOR
-                        assert (!cpu_write_en) else $fatal(1, "Debug request overlaps CPU write");
+                        assert (!cpu_write_en)
+                        else $fatal(1, "Debug request overlaps CPU write");
 `endif
                         debug_state   <= S_CLEAR;
                         debug_counter <= 12'd0;
@@ -495,56 +501,56 @@ module lcd_demo (
                     vram_cea <= 1'b1;
                     if (debug_counter < 60) begin
                         vram_ada <= 8 * COLUMNS + debug_counter[5:0];
-                    case (debug_counter)
-                        0: vram_din <= "M";
-                        1: vram_din <= "e";
-                        2: vram_din <= "m";
-                        3: vram_din <= "o";
-                        4: vram_din <= "r";
-                        5: vram_din <= "y";
-                        6: vram_din <= ")";
-                        9: vram_din <= "+";
-                        10: vram_din <= "0";
-                        11: vram_din <= "+";
-                        12: vram_din <= "1";
-                        13: vram_din <= "+";
-                        14: vram_din <= "2";
-                        15: vram_din <= "+";
-                        16: vram_din <= "3";
-                        18: vram_din <= "+";
-                        19: vram_din <= "4";
-                        20: vram_din <= "+";
-                        21: vram_din <= "5";
-                        22: vram_din <= "+";
-                        23: vram_din <= "6";
-                        24: vram_din <= "+";
-                        25: vram_din <= "7";
-                        28: vram_din <= "+";
-                        29: vram_din <= "8";
-                        30: vram_din <= "+";
-                        31: vram_din <= "9";
-                        32: vram_din <= "+";
-                        33: vram_din <= "A";
-                        34: vram_din <= "+";
-                        35: vram_din <= "B";
-                        37: vram_din <= "+";
-                        38: vram_din <= "C";
-                        39: vram_din <= "+";
-                        40: vram_din <= "D";
-                        41: vram_din <= "+";
-                        42: vram_din <= "E";
-                        43: vram_din <= "+";
-                        44: vram_din <= "F";
-                        52: vram_din <= "7";
-                        53: vram_din <= "6";
-                        54: vram_din <= "5";
-                        55: vram_din <= "4";
-                        56: vram_din <= "3";
-                        57: vram_din <= "2";
-                        58: vram_din <= "1";
-                        59: vram_din <= "0";
-                        default: vram_din <= 8'h20;
-                    endcase
+                        case (debug_counter)
+                            0: vram_din <= "M";
+                            1: vram_din <= "e";
+                            2: vram_din <= "m";
+                            3: vram_din <= "o";
+                            4: vram_din <= "r";
+                            5: vram_din <= "y";
+                            6: vram_din <= ")";
+                            9: vram_din <= "+";
+                            10: vram_din <= "0";
+                            11: vram_din <= "+";
+                            12: vram_din <= "1";
+                            13: vram_din <= "+";
+                            14: vram_din <= "2";
+                            15: vram_din <= "+";
+                            16: vram_din <= "3";
+                            18: vram_din <= "+";
+                            19: vram_din <= "4";
+                            20: vram_din <= "+";
+                            21: vram_din <= "5";
+                            22: vram_din <= "+";
+                            23: vram_din <= "6";
+                            24: vram_din <= "+";
+                            25: vram_din <= "7";
+                            28: vram_din <= "+";
+                            29: vram_din <= "8";
+                            30: vram_din <= "+";
+                            31: vram_din <= "9";
+                            32: vram_din <= "+";
+                            33: vram_din <= "A";
+                            34: vram_din <= "+";
+                            35: vram_din <= "B";
+                            37: vram_din <= "+";
+                            38: vram_din <= "C";
+                            39: vram_din <= "+";
+                            40: vram_din <= "D";
+                            41: vram_din <= "+";
+                            42: vram_din <= "E";
+                            43: vram_din <= "+";
+                            44: vram_din <= "F";
+                            52: vram_din <= "7";
+                            53: vram_din <= "6";
+                            54: vram_din <= "5";
+                            55: vram_din <= "4";
+                            56: vram_din <= "3";
+                            57: vram_din <= "2";
+                            58: vram_din <= "1";
+                            59: vram_din <= "0";
+                            default: vram_din <= 8'h20;
+                        endcase
                     end else begin
                         // LED row labels "0x0k:" (day99 style): rows 9-16, col 47-51.
                         vram_ada <= (9 + led_off / 5) * COLUMNS + 12'd47 + led_off % 5;
@@ -643,7 +649,7 @@ module lcd_demo (
                             end
                         end
                         9: begin  // New debug address sampled by synchronous RAM.
-                            vram_cea <= 0;
+                            vram_cea  <= 0;
                             sub_state <= 10;
                         end
                         10: begin
@@ -669,12 +675,12 @@ module lcd_demo (
     // Select the entire memory transaction. Debug must never inherit CPU writes.
     always_comb begin
         ram_addr_final = ram_addr_boot;
-        ram_we_final = rst_n && ram_we;
-        ram_din_final = ram_din;
+        ram_we_final   = rst_n && ram_we;
+        ram_din_final  = ram_din;
         if (!boot_active && memory_hold) begin
             ram_addr_final = debug_addr[14:0];
-            ram_we_final = 0;
-            ram_din_final = 0;
+            ram_we_final   = 0;
+            ram_din_final  = 0;
         end
     end
 

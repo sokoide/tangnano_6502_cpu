@@ -1,9 +1,12 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
 module tb_led;
     logic clk = 0;
     logic led;
-    top dut (.clk(clk), .led(led));
+    top dut (
+        .clk(clk),
+        .led(led)
+    );
     always #1 clk = ~clk;
 
     initial begin

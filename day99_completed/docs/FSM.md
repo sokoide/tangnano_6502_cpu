@@ -1,6 +1,6 @@
 # 2-process FSM（完了）
 
-この CPU は **2-process FSM**（`always_comb` で `next` を計算し、`always_ff` で `cur <= next` を更新）へ移行完了しています。
+この CPU は**2-process FSM**（`always_comb` で `next` を計算し、`always_ff` で `cur <= next` を更新）へ移行完了しています。
 
 ## 現状の構造
 

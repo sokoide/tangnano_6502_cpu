@@ -4,9 +4,9 @@ module vram (
     input  logic       clk,
     input  logic       rst_n,
     input  logic [9:0] addr,
-    input logic write_en,
-    input logic [9:0] write_addr,
-    input logic [7:0] write_data,
+    input  logic       write_en,
+    input  logic [9:0] write_addr,
+    input  logic [7:0] write_data,
     output logic [7:0] data
 );
 

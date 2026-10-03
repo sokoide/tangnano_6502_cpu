@@ -1,20 +1,20 @@
 # 教材・完成版CPUのレビューと改善計画
 
 作成日: 2026-10-02
-対象: Day 01–18のstarter／completed、共通教材、Day 99完成版、ビルド・生成ツール
+対象: Day 01–18 の starter／completed、共通教材、Day 99 完成版、ビルド・生成ツール
 基準コミット: `b261ad5` (`update: docs`)
 
 ## 1. 判断とレビュー範囲
 
 **最初に改善するのは、学習課題と検証経路の対応、およびシミュレーションと実機の整合性である。**
-現在の構成は、部品からCPUへ進む学習順、早期のLCD可視化、Day 99の2-process FSMという土台を持つ。一方、完成コードがその日の課題を満たすか、テストのPASSが何を保証するか、6502のどこまで互換かが不明瞭になっている。ここを直してから保守性を改善する。
+現在の構成は、部品から CPU へ進む学習順、早期の LCD 可視化、Day 99 の 2-process FSM という土台を持つ。一方、完成コードがその日の課題を満たすか、テストの PASS が何を保証するか、6502 のどこまで互換かが不明瞭になっている。ここを直してから保守性を改善する。
 
 今回確認した範囲:
 
-- ルートREADME、Day 01–18の日本語README・CPU機能の段階差分・starterとcompletedの差分。
-- 各DayのMakefile、テストベンチの接続・判定、ボードwrapper、RAM・boot loader・LCD統合経路。
-- Day 99の現行CPU、2,071行の次状態計算package、メモリ・LCD・クロック／リセット、テスト、Gowinプロジェクト。
-- Day 99の命令表・構成図・ビルド説明、アセンブリ／HEX生成経路、同梱Gowin primitive model。
+- ルート README、Day 01–18 の日本語 README・CPU 機能の段階差分・starter と completed の差分。
+- 各 Day の Makefile、テストベンチの接続・判定、ボード wrapper、RAM・boot loader・LCD 統合経路。
+- Day 99 の現行 CPU、2,071 行の次状態計算 package、メモリ・LCD・クロック／リセット、テスト、Gowin プロジェクト。
+- Day 99 の命令表・構成図・ビルド説明、アセンブリ／HEX 生成経路、同梱 Gowin primitive model。
 
 計画作成時点では静的レビューのみで、シミュレーション・合成・配置配線・書込みは未実施だった。以下の「確認済み」はソース上の矛盾・制御経路を確認したという意味で、実行再現を意味しない。実装後の検証結果は[最終状況](REVIEW_FINAL_STATUS_ja.md)に記録する。既存の`docs/FSM.md`にある実機成功記録も、今回の検証結果には含めない。全命令・全波形・全ボード電気仕様の完全監査は実装段階の検証対象とする。
 
@@ -30,45 +30,45 @@
 
 ### R01 / P0: テスト経路がstarterとcompletedで異なる
 
-根拠: [Day 08 starter Makefile](../day08/Makefile)、[completed Makefile](../day08_completed/Makefile)、[TFTテスト](../day08_completed/lcd/tb_tft.sv)、[ルートMakefile](../Makefile)。Day 05–18のstarterには`sim-cpu-build`があり、`sim`でCPUテストも実行する。completedの標準`sim`はTFT smoke testで、対応する`sim/tb_cpu.sv`もない。
+根拠: [Day 08 starter Makefile](../day08/Makefile)、[completed Makefile](../day08_completed/Makefile)、[TFTテスト](../day08_completed/lcd/tb_tft.sv)、[ルートMakefile](../Makefile)。Day 05–18 の starter には`sim-cpu-build`があり、`sim`で CPU テストも実行する。completed の標準`sim`は TFT smoke test で、対応する`sim/tb_cpu.sv`もない。
 
-LCDデモ内にもCPUは存在するが、TFTテストの合格条件はDENと色の観測であり、命令結果の検証ではない。ルート`make test`はcompletedを回すため、starterで案内されるCPU課題の検証と一致しない。Day 01 completedには`sim`ターゲットがなく、ルートの一律実行にも不整合がある。
+LCD デモ内にも CPU は存在するが、TFT テストの合格条件は DEN と色の観測であり、命令結果の検証ではない。ルート`make test`は completed を回すため、starter で案内される CPU 課題の検証と一致しない。Day 01 completed には`sim`ターゲットがなく、ルートの一律実行にも不整合がある。
 
 計画:
 
-- `test-cpu`、`test-lcd`、`test-system`を明確に分け、`test`は各Dayで必要な検証を集約する。
-- starterとcompletedで同じ課題仕様・同じテストを使い、completedを解答として検証する。
-- CPUソース・トップ・board defineを明示する。Day 05–18 completedのシミュレーションで固定されている`top_9k.sv`をBOARD選択へ合わせる。
-- Day 01は短いカウンタ検証を追加するか、実機課題専用であることをmanifestに明記し、集約側で明示的に扱う。
+- `test-cpu`、`test-lcd`、`test-system`を明確に分け、`test`は各 Day で必要な検証を集約する。
+- starter と completed で同じ課題仕様・同じテストを使い、completed を解答として検証する。
+- CPU ソース・トップ・board define を明示する。Day 05–18 completed のシミュレーションで固定されている`top_9k.sv`を BOARD 選択へ合わせる。
+- Day 01 は短いカウンタ検証を追加するか、実機課題専用であることを manifest に明記し、集約側で明示的に扱う。
 
-完了条件: 各課題の正しいcompletedが通り、課題に関係する故意の誤りで対応テストが失敗する。CPU検証結果とLCD検証結果を別々に報告できる。
+完了条件: 各課題の正しい completed が通り、課題に関係する故意の誤りで対応テストが失敗する。CPU 検証結果と LCD 検証結果を別々に報告できる。
 
 ### R02 / P0: 失敗してもプロセスが成功終了する経路
 
-根拠: [Day 15 CPUテスト](../day15/sim/tb_cpu.sv)、Day 05–18のCPUテスト群、[Day 99 CPUテスト](../day99_completed/src/tb_cpu.sv)、[モジュールテスト](../day99_completed/src/tb_cpu_modules.sv)、ルートMakefile。
+根拠: [Day 15 CPUテスト](../day15/sim/tb_cpu.sv)、Day 05–18 の CPU テスト群、[Day 99 CPUテスト](../day99_completed/src/tb_cpu.sv)、[モジュールテスト](../day99_completed/src/tb_cpu_modules.sv)、ルート Makefile。
 
-CPUテストは`error_count`を表示してから`$finish`する。Day 99には未実装の状態チェック、検査せず待つだけのケース、VRAM書込み未検出を成功扱いするケースがある。Day 02–03のMakefileは`assert`を使うテストに`--assert`を指定していない。ルートのshell loopも途中の子make失敗を保持せず、後続成功によって失敗を隠す可能性がある。
+CPU テストは`error_count`を表示してから`$finish`する。Day 99 には未実装の状態チェック、検査せず待つだけのケース、VRAM 書込み未検出を成功扱いするケースがある。Day 02–03 の Makefile は`assert`を使うテストに`--assert`を指定していない。ルートの shell loop も途中の子 make 失敗を保持せず、後続成功によって失敗を隠す可能性がある。
 
 計画:
 
-- 不一致・timeoutを`$fatal(1, ...)`へ統一し、assertionを有効にする。
-- 成功時は実行ケース数・検査数を報告する。未実装チェックをPASSとして数えない。
-- 集約makeは失敗時停止、または失敗一覧を蓄積して最後に非ゼロ終了する。
+- 不一致・timeout を`$fatal(1, ...)`へ統一し、assertion を有効にする。
+- 成功時は実行ケース数・検査数を報告する。未実装チェックを PASS として数えない。
+- 集約 make は失敗時停止、または失敗一覧を蓄積して最後に非ゼロ終了する。
 - テスト未実行・ツール不足・課題未実装・判定不一致を別の結果として表示する。
 
-完了条件: DUTの演算／分岐／メモリ書込みをそれぞれ故意に壊したとき、per-dayとルートの両方が非ゼロ終了する。
+完了条件: DUT の演算／分岐／メモリ書込みをそれぞれ故意に壊したとき、per-day とルートの両方が非ゼロ終了する。
 
 ### R03 / P0: メモリモデルが実機のタイミング・OCE動作と異なる
 
 根拠: [Day 10 RAM](../day10_completed/ram.sv)、[Day 99 RAM](../day99_completed/src/ram.sv)、[top_core](../day99_completed/src/top_core.sv)、[Gowin RAM wrapper](../day99_completed/src/gowin_sdpb/gowin_sdpb.v)、[同梱primitive model](../day99_completed/deps/gw1n/prim_sim.v)。
 
-- Day 10–18のVerilator RAMは非同期読出し。実機BSRAMの読出しはクロックに従う。単純な配列モデルではアドレス更新とデータ取得のずれを見逃す。
-- Day 99のVerilatorモデルは`ceb && oce`／`v_ceb && v_oce`でのみ読出すが、topは`oce`／`v_oce`をリセット時に0とし、その後1へ更新しない。
-- 実機IPは`READ_MODE=0`。同梱SDPB modelではbypass出力`bp_reg`の更新はCEBに従い、OCEは追加pipeline registerを制御する。Verilatorモデルと意味が一致していない。
+- Day 10–18 の Verilator RAM は非同期読出し。実機 BSRAM の読出しはクロックに従う。単純な配列モデルではアドレス更新とデータ取得のずれを見逃す。
+- Day 99 の Verilator モデルは`ceb && oce`／`v_ceb && v_oce`でのみ読出すが、top は`oce`／`v_oce`をリセット時に 0 とし、その後 1 へ更新しない。
+- 実機 IP は`READ_MODE=0`。同梱 SDPB model では bypass 出力`bp_reg`の更新は CEB に従い、OCE は追加 pipeline register を制御する。Verilator モデルと意味が一致していない。
 
-計画: 実機のCEB・OCE・READ_MODE・読出しレイテンシ・同一アドレス読書き動作を契約として書き、behavioral modelとvendor modelの両方で同じ入出力系列を確認する。Day 10への移行で同期RAMの待ち状態を導入し、Day 18のフル速度でも成立させる。
+計画: 実機の CEB・OCE・READ_MODE・読出しレイテンシ・同一アドレス読書き動作を契約として書き、behavioral model と vendor model の両方で同じ入出力系列を確認する。Day 10 への移行で同期 RAM の待ち状態を導入し、Day 18 のフル速度でも成立させる。
 
-完了条件: プログラムのコピーから命令実行まで両モデルで一致し、RAMのread enableを壊すとCPUテストが失敗する。実機受入は別途記録する。
+完了条件: プログラムのコピーから命令実行まで両モデルで一致し、RAM の read enable を壊すと CPU テストが失敗する。実機受入は別途記録する。
 
 ### R04 / P0: Day 99のRTSが古い上位バイトを使う
 
@@ -76,75 +76,75 @@ CPUテストは`error_count`を表示してから`$finish`する。Day 99には�
 
 `next.fetched_data[15:8] = cur.dout_r`の直後に、復帰アドレスを`cur.fetched_data + 1`で計算している。現在読み出した上位バイトは`cur`へまだ反映されていないため、復帰先が過去の状態に依存する。
 
-計画: 読み出した上位バイトと保持済み下位バイトから16bit値を組み立ててから+1する。先に、失敗を示すCPU実行テストを用意する。
+計画: 読み出した上位バイトと保持済み下位バイトから 16bit 値を組み立ててから+1 する。先に、失敗を示す CPU 実行テストを用意する。
 
-完了条件: `$0200`付近の呼出し、異なるページのサブルーチン、下位バイト`$FF`での桁上がり、入れ子、SPのwrapを確認する。期待するPC・SP・スタック内容を同時に検査する。
+完了条件: `$0200`付近の呼出し、異なるページのサブルーチン、下位バイト`$FF`での桁上がり、入れ子、SP の wrap を確認する。期待する PC・SP・スタック内容を同時に検査する。
 
 ### R05 / P0: 命令表の「実装済み」が現行CPUと一致しない
 
-根拠: [命令表](../day99_completed/docs/INSTRUCTIONS.md)、現行`calc_decode_*`群。BCS (`$B0`)・PLP (`$28`)はfetch分類にあるが実行handlerにない。CMP／CPX／CPYはimmediateのみで、表のメモリ形式まで実装した状態ではない。CLD／SEDも実行handlerにない。未処理命令は次状態を変えずDECODE_EXECUTEに残る。
+根拠: [命令表](../day99_completed/docs/INSTRUCTIONS.md)、現行`calc_decode_*`群。BCS (`$B0`)・PLP (`$28`)は fetch 分類にあるが実行 handler にない。CMP／CPX／CPY は immediate のみで、表のメモリ形式まで実装した状態ではない。CLD／SED も実行 handler にない。未処理命令は次状態を変えず DECODE_EXECUTE に残る。
 
 計画:
 
-- 256 opcodeについて「命令長・addressing・変更するflags・実行handler・対象Day・検証状況」を棚卸しする。
-- 未対応opcodeには明示的なfault／停止理由を設け、意図的なHLTと区別する。
-- 直近はBCS・PLP・比較命令の不足を修正し、CLD／SEDとdecimal ADC／SBCは互換性方針に沿って段階追加する。
+- 256 opcode について「命令長・addressing・変更する flags・実行 handler・対象 Day・検証状況」を棚卸しする。
+- 未対応 opcode には明示的な fault／停止理由を設け、意図的な HLT と区別する。
+- 直近は BCS・PLP・比較命令の不足を修正し、CLD／SED と decimal ADC／SBC は互換性方針に沿って段階追加する。
 - 実装メタデータから一覧を生成しても、期待値は独立した仕様・一次資料から作る。
 
-完了条件: 表で実装済みとしたopcode全件がCPU実行テストを持つ。未対応opcode・長さ不明opcodeが無言の停止や誤fetchに進まない。
+完了条件: 表で実装済みとした opcode 全件が CPU 実行テストを持つ。未対応 opcode・長さ不明 opcode が無言の停止や誤 fetch に進まない。
 
 ### R06 / P1: boot容量・長さ判定が不整合
 
 根拠: [cpu.sv](../day99_completed/src/cpu.sv)、[INIT_RAM](../day99_completed/src/cpu/cpu_fsm_next_pkg.sv)、[HEX変換ツール](../day99_completed/utils/hex_fpga/main.go)、[linker設定](../day99_completed/examples/baremetal.cfg)。
 
-boot配列は`logic [7:0] boot_program[7680]`で7.5KiB。コメントの最大30KBとは異なる。生成側のlengthはバイト数だが、loaderはindexがlengthと等しくなるまで書込みを行うため、`0..length`の1バイト余分なアクセスを生む。length=7680では配列範囲外へ達する。`cpu.sv`は状態に関係なく配列をindexする。
+boot 配列は`logic [7:0] boot_program[7680]`で 7.5KiB。コメントの最大 30KB とは異なる。生成側の length はバイト数だが、loader は index が length と等しくなるまで書込みを行うため、`0..length`の 1 バイト余分なアクセスを生む。length=7680 では配列範囲外へ達する。`cpu.sv`は状態に関係なく配列を index する。
 
-計画: `BOOT_CAPACITY`とlengthの意味を統一し、`index < length`のときだけデータ参照／書込みする。空プログラム・容量超過の動作を定義し、CPU解放前に最終書込みが完了する順序を保証する。
+計画: `BOOT_CAPACITY`と length の意味を統一し、`index < length`のときだけデータ参照／書込みする。空プログラム・容量超過の動作を定義し、CPU 解放前に最終書込みが完了する順序を保証する。
 
-完了条件: 長さ0・1・容量−1・容量・容量+1を検証し、合法な入力では指定したバイトだけが書かれ、超過入力は生成時点で拒否される。
+完了条件: 長さ 0・1・容量−1・容量・容量+1 を検証し、合法な入力では指定したバイトだけが書かれ、超過入力は生成時点で拒否される。
 
 ### R07 / P1: VRAM境界・shadow・書込みパルスの契約が曖昧
 
-根拠: `apply_store_write`、`apply_ram_write`、`CLEAR_VRAM2`、`store_and_fetch`とfetch遷移。
+根拠: `apply_store_write`、`apply_ram_write`、`CLEAR_VRAM2`、`store_and_fetch`と fetch 遷移。
 
-- 物理VRAMは1,024B、表示は60×17=1,020文字。通常storeのVRAM判定は1,020Bで、文書の1KiB領域とは異なる。
-- clearの条件は`<= 1020`で、次のVRAMアドレスとshadowアドレスに異なるindexを使う。表示末尾の余分な書込み・位置のずれを生む。
-- shadowをread-onlyと説明する一方、通常RAMへのstore経路では直接書込みを拒否しない。STX／STY／RMWのRAM専用経路とSTAのVRAM経路も異なる。
-- `store_and_fetch`で立てたwrite enableをFETCH_REQでは落とさず、FETCH_RECVで落とすため、単一のstoreが複数クロックの書込みとなる。RAMでは同じ値の再書込みが見えにくいが、将来のMMIOでは意味が変わる。
+- 物理 VRAM は 1,024B、表示は 60×17=1,020 文字。通常 store の VRAM 判定は 1,020B で、文書の 1KiB 領域とは異なる。
+- clear の条件は`<= 1020`で、次の VRAM アドレスと shadow アドレスに異なる index を使う。表示末尾の余分な書込み・位置のずれを生む。
+- shadow を read-only と説明する一方、通常 RAM への store 経路では直接書込みを拒否しない。STX／STY／RMW の RAM 専用経路と STA の VRAM 経路も異なる。
+- `store_and_fetch`で立てた write enable を FETCH_REQ では落とさず、FETCH_RECV で落とすため、単一の store が複数クロックの書込みとなる。RAM では同じ値の再書込みが見えにくいが、将来の MMIO では意味が変わる。
 
-計画: 物理容量と表示領域を別定数にする。write要求を一か所でdecodeし、命令種別による領域差をなくす。shadowの所有者・read/write権限を決め、clearと通常書込みで同じindexの値を保つ。書込みを1要求1回へ統一する。
+計画: 物理容量と表示領域を別定数にする。write 要求を一か所で decode し、命令種別による領域差をなくす。shadow の所有者・read/write 権限を決め、clear と通常書込みで同じ index の値を保つ。書込みを 1 要求 1 回へ統一する。
 
-完了条件: `$DFFF/$E000/$E3FB/$E3FC/$E3FF/$E400`、shadow両端、STA／STX／STY／RMW／clearの結果・書込み回数を検査する。clear後に全表示セルとshadowが一致する。
+完了条件: `$DFFF/$E000/$E3FB/$E3FC/$E3FF/$E400`、shadow 両端、STA／STX／STY／RMW／clear の結果・書込み回数を検査する。clear 後に全表示セルと shadow が一致する。
 
 ### R08 / P1: 16bitアドレスと32KiBへの折返しを区別していない
 
-根拠: `RAMW16=16'h7FFF`、`request_data_fetch`、`return_to_opcode_fetch`、branch計算、[Day 17の例](../day17/README_ja.md)。
+根拠: `RAMW16=16'h7FFF`、`request_data_fetch`、`return_to_opcode_fetch`、branch 計算、[Day 17の例](../day17/README_ja.md)。
 
-アドレスの下位15bit化に加え、PC加算やbranchも`$7FFF`でmaskする。CPUの16bit演算とボードの物理メモリ配置が混ざっている。Day 17の例は`$8021`を読むが、説明されるRAM領域は`$0000–$7FFF`で、上位領域の意味を示していない。
+アドレスの下位 15bit 化に加え、PC 加算や branch も`$7FFF`で mask する。CPU の 16bit 演算とボードの物理メモリ配置が混ざっている。Day 17 の例は`$8021`を読むが、説明される RAM 領域は`$0000–$7FFF`で、上位領域の意味を示していない。
 
-計画: PC／実効アドレス計算は16bitで定義し、物理変換はメモリdecodeで行う。直近の教材例を実際に用意したRAM領域へ揃える。上位RAM mirrorを残す場合は正式なplatform仕様として明記し、暗黙のmaskへ任せない。
+計画: PC／実効アドレス計算は 16bit で定義し、物理変換はメモリ decode で行う。直近の教材例を実際に用意した RAM 領域へ揃える。上位 RAM mirror を残す場合は正式な platform 仕様として明記し、暗黙の mask へ任せない。
 
-完了条件: `$00FF`のゼロページwrap、`$7FFF`と`$FFFF`付近のPC・分岐、unmapped領域を検査する。フル64KiB実装はボード資源を測って別途判断する。
+完了条件: `$00FF`のゼロページ wrap、`$7FFF`と`$FFFF`付近の PC・分岐、unmapped 領域を検査する。フル 64KiB 実装はボード資源を測って別途判断する。
 
 ### R09 / P1: LCDのCDCとpipelineをsmoke testで確認できない
 
-根拠: Day 99 `top_core.sv`の10bit VRAMアドレス2段FF、MEMORY_CLK側font ROM、PixelClk側`lcd.sv`、[PLL stub](../day99_completed/sim/gowin_rpll9_stub.sv)、[font stub](../day99_completed/sim/gowin_prom_font_stub.sv)。
+根拠: Day 99 `top_core.sv`の 10bit VRAM アドレス 2 段 FF、MEMORY_CLK 側 font ROM、PixelClk 側`lcd.sv`、[PLL stub](../day99_completed/sim/gowin_rpll9_stub.sv)、[font stub](../day99_completed/sim/gowin_prom_font_stub.sv)。
 
-多bitアドレスを各bitの2段FFで渡すだけでは、値全体の整合性は保証できない。fontアドレス／データもクロック境界を通る。stubは両PLL出力をXTAL_INに直結し、実機の9MHzと40.5MHz・位相差を再現しない。font stubは全0で、文字の正しさを検証できない。PLL lockを使った各domainのreset解放もない。
+多 bit アドレスを各 bit の 2 段 FF で渡すだけでは、値全体の整合性は保証できない。font アドレス／データもクロック境界を通る。stub は両 PLL 出力を XTAL_IN に直結し、実機の 9MHz と 40.5MHz・位相差を再現しない。font stub は全 0 で、文字の正しさを検証できない。PLL lock を使った各 domain の reset 解放もない。
 
-計画: VRAM読出しとfont ROMをPixelClk domainに揃え、CPU側からはdual-clock memoryの書込みportを使う構成を第一候補とする。選択したGowin IPの設定・衝突時動作・読出し遅延を確認する。別案の要求／応答handshakeは、pixel deadlineと複雑さを比較して採否を決める。
+計画: VRAM 読出しと font ROM を PixelClk domain に揃え、CPU 側からは dual-clock memory の書込み port を使う構成を第一候補とする。選択した Gowin IP の設定・衝突時動作・読出し遅延を確認する。別案の要求／応答 handshake は、pixel deadline と複雑さを比較して採否を決める。
 
-完了条件: 実周波数比・複数位相のsimulationで文字境界／行境界／最後のセルを画像期待値と比較する。合成・タイミング・CDC評価と9K／20K実機のreset／連続表示を別に確認する。simulationでmetastability耐性を証明したとは扱わない。一般的なCDC評価軸は[AMD Report CDC](https://docs.amd.com/r/2024.2-English/ug949-vivado-design-methodology/Report-CDC)を参考にし、Gowin固有設定はGowin資料で確認する。
+完了条件: 実周波数比・複数位相の simulation で文字境界／行境界／最後のセルを画像期待値と比較する。合成・タイミング・CDC 評価と 9K／20K 実機の reset／連続表示を別に確認する。simulation で metastability 耐性を証明したとは扱わない。一般的な CDC 評価軸は[AMD Report CDC](https://docs.amd.com/r/2024.2-English/ug949-vivado-design-methodology/Report-CDC)を参考にし、Gowin 固有設定は Gowin 資料で確認する。
 
 ### R10 / P1: Day 18の表示処理がCPUのRAMアクセスと競合する
 
 根拠: [Day 18 lcd_demo](../day18_completed/lcd_demo.sv)、`ram_addr_final`、`S_WRITE_MEM_LOOP`、`pc_enable=1`。
 
-表示FSMがメモリを読む間、RAMアドレスをdebug_addrへ切り替えるが、CPUは停止せず、CPU由来のwrite enableとwrite dataもそのまま使う。命令fetchがdebug対象のデータを読む、CPU書込みがdebugアドレスへ向かう経路がある。`cpu_vram_clear`はCPUへ接続されるが、表示FSMのclear開始条件には使われていない。
+表示 FSM がメモリを読む間、RAM アドレスを debug_addr へ切り替えるが、CPU は停止せず、CPU 由来の write enable と write data もそのまま使う。命令 fetch が debug 対象のデータを読む、CPU 書込みが debug アドレスへ向かう経路がある。`cpu_vram_clear`は CPU へ接続されるが、表示 FSM の clear 開始条件には使われていない。
 
-計画: IFO開始時にレジスタをsnapshotし、RAM portをdebuggerへ貸す間はCPUを安全な境界で止める。CPUのwriteを完了させてから所有権を切り替え、表示完了で戻す。CVRの外部要求と完了も接続する。
+計画: IFO 開始時にレジスタを snapshot し、RAM port を debugger へ貸す間は CPU を安全な境界で止める。CPU の write を完了させてから所有権を切り替え、表示完了で戻す。CVR の外部要求と完了も接続する。
 
-完了条件: IFO中のCPU PC・RAM・レジスタが変化せず、復帰後も同じプログラムが継続する。CVRが全セルを消し、表示処理中のstoreが別アドレスへ書かれない。
+完了条件: IFO 中の CPU PC・RAM・レジスタが変化せず、復帰後も同じプログラムが継続する。CVR が全セルを消し、表示処理中の store が別アドレスへ書かれない。
 
 ### R11 / P1: 演習・解答・テストの内容がずれている
 
@@ -163,39 +163,39 @@ boot配列は`logic [7:0] boot_program[7680]`で7.5KiB。コメントの最大30
 | Day 18 | READMEはWVS/CVR/IFO=`$12/$22/$32`、実装は`$FF/$CF/$DF` | 実装とassembler表記に合わせる |
 | Day 18→99 | IFOは1byte通知→3byte命令、WVSはcount待ち→count+1待ちへ変化 | 移行表を作り、仕様差を説明するか共通化する |
 
-WVSはDay 99文書内でも`FF 05`を6回、`FF 3A`を58回と説明している。現行コードはcount+1なので`$3A`は59回。0・1・58・255を対象に仕様を固定する。
+WVS は Day 99 文書内でも`FF 05`を 6 回、`FF 3A`を 58 回と説明している。現行コードは count+1 なので`$3A`は 59 回。0・1・58・255 を対象に仕様を固定する。
 
-完了条件: 各Dayの「学習目標→編集ファイル→完成例→検査→期待出力」が一対一に辿れる。assemblerの例とテスト用byte列を照合できる。
+完了条件: 各 Day の「学習目標→編集ファイル→完成例→検査→期待出力」が一対一に辿れる。assembler の例とテスト用 byte 列を照合できる。
 
 ### R12 / P1: ビルド依存関係・ボード切替・生成ツール
 
-根拠: 各Dayの`$(PROJECT).fs`、Day 99 `SRCS`と`.gprj`、`sim-ram-build`、examples Makefile、HEX変換ツール。
+根拠: 各 Day の`$(PROJECT).fs`、Day 99 `SRCS`と`.gprj`、`sim-ram-build`、examples Makefile、HEX 変換ツール。
 
-- 多くのDayはBOARDにかかわらず同じ`dayXX.fs`を使う。変数だけを変えた際、成果物の再生成を確実に要求できない。
-- Day 99のFS依存には現行FSM/type/constants packageや`.gprj`・`.cst`・PLL IPが含まれず、変更がbitstream再生成につながらない。
+- 多くの Day は BOARD にかかわらず同じ`dayXX.fs`を使う。変数だけを変えた際、成果物の再生成を確実に要求できない。
+- Day 99 の FS 依存には現行 FSM/type/constants package や`.gprj`・`.cst`・PLL IP が含まれず、変更が bitstream 再生成につながらない。
 - `sim-ram-build`は存在しない`src/tb_top_core.sv`を参照する。
-- programmerログに`Error:`があってもreturn codeが0なら成功終了し、Finishedがなくても特定のcodeを成功へ変換する。成功規則の根拠を確定する必要がある。
-- HEX変換はrecord addressを配置に使わず、checksum・短い行・容量を検査しない。Scanner失敗もログだけで続行する。出力を先にtruncateするため、失敗時に以前の生成物を失う。
+- programmer ログに`Error:`があっても return code が 0 なら成功終了し、Finished がなくても特定の code を成功へ変換する。成功規則の根拠を確定する必要がある。
+- HEX 変換は record address を配置に使わず、checksum・短い行・容量を検査しない。Scanner 失敗もログだけで続行する。出力を先に truncate するため、失敗時に以前の生成物を失う。
 
-計画: BOARD／SIM_TOPごとに出力先を分け、ビルド入力のmanifestをMake・Gowin・simulationで揃える。生成物の依存元・ツール版・hashを記録する。HEXは対応record type、配置、欠損、checksum、容量を検査し、不正入力では原本を保持して停止する。出力は一時ファイルから成功後に置換する。
+計画: BOARD／SIM_TOP ごとに出力先を分け、ビルド入力の manifest を Make・Gowin・simulation で揃える。生成物の依存元・ツール版・hash を記録する。HEX は対応 record type、配置、欠損、checksum、容量を検査し、不正入力では原本を保持して停止する。出力は一時ファイルから成功後に置換する。
 
-完了条件: FSM変更・pin設定変更・BOARD切替で正しい再ビルドが起こる。壊れたHEXやプログラマ失敗を成功と報告しない。生成物の再生成で意図しない差分がない。
+完了条件: FSM 変更・pin 設定変更・BOARD 切替で正しい再ビルドが起こる。壊れた HEX やプログラマ失敗を成功と報告しない。生成物の再生成で意図しない差分がない。
 
 ### R13 / P2: 実際の構造と構成図・保守手順が異なる
 
 根拠: [MODULE_MAP](../day99_completed/docs/MODULE_MAP.md)、[architecture](../day99_completed/docs/README_architecture_ja.md)、[BUILD](../day99_completed/docs/BUILD.md)、Day 99 README／AGENTS、現行`cpu.sv`。
 
-現行CPUは`calc_cpu_next`を使い、`cpu_alu`・`cpu_decoder`・`cpu_memory`をinstantiateしない。構成図はこれらをCPU内部に接続しており、`top.sv`や`tests/`など現行にない経路も案内する。独立モジュールのテスト成功は現行CPUの正しさを保証しない。FSM packageのヘッダは未接続と説明しているが、実際には接続済み。定数はheaderとpackageに重複する。
+現行 CPU は`calc_cpu_next`を使い、`cpu_alu`・`cpu_decoder`・`cpu_memory`を instantiate しない。構成図はこれらを CPU 内部に接続しており、`top.sv`や`tests/`など現行にない経路も案内する。独立モジュールのテスト成功は現行 CPU の正しさを保証しない。FSM package のヘッダは未接続と説明しているが、実際には接続済み。定数は header と package に重複する。
 
-計画: 現行経路を図と読解順の正本にする。旧モジュールは教材用参考として位置付けるか、同じ関数を使うwrapperへ整理する。legacyは利用者を確認してから縮小する。定数・opcode・生成仕様の正本を定め、formatでvendor／generated／legacyを一括書換えしない。
+計画: 現行経路を図と読解順の正本にする。旧モジュールは教材用参考として位置付けるか、同じ関数を使う wrapper へ整理する。legacy は利用者を確認してから縮小する。定数・opcode・生成仕様の正本を定め、format で vendor／generated／legacy を一括書換えしない。
 
-完了条件: 新しい開発者がREADMEから現在のtop→CPU→FSM→RAM→LCDへ辿れ、命令追加時の編集・生成・検証手順を再現できる。
+完了条件: 新しい開発者が README から現在の top→CPU→FSM→RAM→LCD へ辿れ、命令追加時の編集・生成・検証手順を再現できる。
 
 ## 3. 6502互換性の目標
 
-直近の表現は**「6502命令の一部とLCD向け独自拡張を備えた教育用CPU」**へ修正する。標準opcodeの対応不足、decimal未対応、固定開始PC、32KiB変換、命令実行周期の違いを踏まえると、「割込み以外は完全互換」という現在の表現は成立しない。
+直近の表現は**「6502 命令の一部と LCD 向け独自拡張を備えた教育用 CPU」**へ修正する。標準 opcode の対応不足、decimal 未対応、固定開始 PC、32KiB 変換、命令実行周期の違いを踏まえると、「割込み以外は完全互換」という現在の表現は成立しない。
 
-次の段階で目指すのはNMOS 6502の公式命令についての命令結果互換。実機6502のbus cycle互換やundocumented opcodeは別目標にする。標準命令の演算・stack・branch仕様は[MCS6500 Programming Manual](https://syncopate.us/books/Synertek6502ProgrammingManual.html)を根拠に固定する。NMOSと65C02の相違を混ぜず、JMP indirectのページ末尾動作・decimal flagsなどは対象機種ごとに追加照合する。
+次の段階で目指すのは NMOS 6502 の公式命令についての命令結果互換。実機 6502 の bus cycle 互換や undocumented opcode は別目標にする。標準命令の演算・stack・branch 仕様は[MCS6500 Programming Manual](https://syncopate.us/books/Synertek6502ProgrammingManual.html)を根拠に固定する。NMOS と 65C02 の相違を混ぜず、JMP indirect のページ末尾動作・decimal flags などは対象機種ごとに追加照合する。
 
 | 項目 | 現状の扱い | 到達目標／計画 |
 | --- | --- | --- |
@@ -208,23 +208,23 @@ WVSはDay 99文書内でも`FF 05`を6回、`FF 3A`を58回と説明している
 | 独自命令 | Day 18と99で引数／待ち回数が違う | byte列・長さ・副作用・完了条件を定義 |
 | Woz Monitor／Apple I BASIC | 最終目標として記載 | 必要なI/O・ROM配置・命令・ライセンスを調査する独立課題にする |
 
-Woz Monitor／BASICの動作はCPU命令対応だけでは完了しない。現行topには該当する入力I/Oの統合がなく、原機softwareとの結合は別の受入条件が必要である。
+Woz Monitor／BASIC の動作は CPU 命令対応だけでは完了しない。現行 top には該当する入力 I/O の統合がなく、原機 software との結合は別の受入条件が必要である。
 
 ## 4. 教材をStep by Stepとして再構成する
 
 ### 4.1 各Dayの共通形式
 
-各Dayは次の順で短く読めるようにする。日本語版と英語版に同じ課題ID・期待値を付ける。
+各 Day は次の順で短く読めるようにする。日本語版と英語版に同じ課題 ID・期待値を付ける。
 
-1. 前日の到達状態と、今日追加する機能を1つの図／表で示す。
-2. 今日の契約を定義する。入出力、reset値、命令byte列、変更するflags、必要なclock数。
-3. 編集するファイルとTODOを列挙し、今回の課題が現在の回路のどこに入るか示す。
-4. 入力を与えたときのPC・register・address・write enableを予測する。
+1. 前日の到達状態と、今日追加する機能を 1 つの図／表で示す。
+2. 今日の契約を定義する。入出力、reset 値、命令 byte 列、変更する flags、必要な clock 数。
+3. 編集するファイルと TODO を列挙し、今回の課題が現在の回路のどこに入るか示す。
+4. 入力を与えたときの PC・register・address・write enable を予測する。
 5. 実装して、目的別コマンドで検証する。成功出力と失敗例を示す。
 6. 波形を観察して予測との差を説明する。実機確認では期待する表示／ボタン動作を示す。
-7. 完了チェックと次Dayへの移行方法を示す。
+7. 完了チェックと次 Day への移行方法を示す。
 
-完成コード全体を読む前に、当日増える部分の差分を示す。`dayXX`は前日完成状態に当日のTODOだけを足した状態にし、解答と無関係な周辺回路の違いを減らす。
+完成コード全体を読む前に、当日増える部分の差分を示す。`dayXX`は前日完成状態に当日の TODO だけを足した状態にし、解答と無関係な周辺回路の違いを減らす。
 
 ### 4.2 Dayごとの改訂内容
 
@@ -252,16 +252,16 @@ Woz Monitor／BASICの動作はCPU命令対応だけでは完了しない。現�
 
 ### 4.3 教材表現と学習効果
 
-- `<=`は「clock周期の終わり」ではなく「edgeで評価した値をsimulationのNBA更新段階で反映」と説明し、`cur`と`next`を使うRTS例へ接続する。
-- 間接アドレスの比喩を使った後は、実際の2byte pointerと読出し順を必ず示す。HDMIを出力しない回路の図にはLCD接続だけを描く。
-- 「常に」「完全」「包括的」などは保証範囲を伴う場合だけ使う。途中の模擬データ・実CPU・debug表示を区別する。
-- 初学者がDay 06・10・17の3課題を、予測→実行→説明できるか確認する。所要時間、つまずく手順、誤答を記録し、UIの見栄えだけで学習効果を判断しない。
+- `<=`は「clock 周期の終わり」ではなく「edge で評価した値を simulation の NBA 更新段階で反映」と説明し、`cur`と`next`を使う RTS 例へ接続する。
+- 間接アドレスの比喩を使った後は、実際の 2byte pointer と読出し順を必ず示す。HDMI を出力しない回路の図には LCD 接続だけを描く。
+- 「常に」「完全」「包括的」などは保証範囲を伴う場合だけ使う。途中の模擬データ・実 CPU・debug 表示を区別する。
+- 初学者が Day 06・10・17 の 3 課題を、予測→実行→説明できるか確認する。所要時間、つまずく手順、誤答を記録し、UI の見栄えだけで学習効果を判断しない。
 
 ## 5. Day 99の設計・保守性の改善
 
 ### 5.1 採用する構成
 
-2-process FSMを維持し、packageとfunctionを責務ごとに整理する。現行の独立モジュール群を急いでCPUへ接続する大規模置換は行わず、検証した演算関数・opcode定義を正本にする。
+2-process FSM を維持し、package と function を責務ごとに整理する。現行の独立モジュール群を急いで CPU へ接続する大規模置換は行わず、検証した演算関数・opcode 定義を正本にする。
 
 ```mermaid
 flowchart LR
@@ -290,18 +290,18 @@ flowchart LR
 | ALU | binary演算・compare・shiftを共通関数へまとめ、flag write maskを明示 | 独立`cpu_alu`のCMP Nは入力C依存の減算結果を使うため修正対象。例: A=`$80`, M=`$00`, C=0 |
 | memory | 16bit論理address、領域decode、書込み回数、shadow規則をまとめる | CPUとdebugの所有権を明示する |
 | fetch/write | 要求・応答・待ち状態を固定し、enable停止中に要求を再実行しない | 学習用CPUの`pc_enable`とRAM clockの関係も扱う |
-| debug | IFO開始時のsnapshotとメモリ検査を独立させる |表示中に異なる時点のregisterを混在させない |
+| debug | IFO開始時のsnapshotとメモリ検査を独立させる | 表示中に異なる時点のregisterを混在させない |
 | LCD | pixel側のRAM／font読みとDE/RGBをlatencyに合わせる | offsetのmagic numberを増やして合わせない |
 | reset | 非同期assert・各domainで同期deassert、PLL lock待ち | wrapperのボタン極性コメントも実配線と照合する |
 
-現在の2,071行packageはboot/fetch、addressing、命令群、debug／clearへ分ける。分割は挙動を変えずに行い、R04–R08の修正と同じ変更に混ぜない。関数の`handled`、`next`で変更するfield、終了条件を明示する。
+現在の 2,071 行 package は boot/fetch、addressing、命令群、debug／clear へ分ける。分割は挙動を変えずに行い、R04–R08 の修正と同じ変更に混ぜない。関数の`handled`、`next`で変更する field、終了条件を明示する。
 
 ### 5.2 共通化の境界
 
-- 共有するのはビルド規則、board選択、テスト結果形式、安定したLCD基盤、仕様データ。
-- 各DayのCPUと課題固有テストは教材フォルダから読める状態を保つ。抽象化のために学習者が多数の共通ファイルを追う設計は避ける。
-- lesson manifestに前提Day・編集対象・追加opcode・テスト・実機条件を持たせ、READMEのリンクと課題対応を検査する。
-- 共通基盤変更後は全completedと代表starterで回帰確認する。生成・vendorファイルはformat対象から除く。
+- 共有するのはビルド規則、board 選択、テスト結果形式、安定した LCD 基盤、仕様データ。
+- 各 Day の CPU と課題固有テストは教材フォルダから読める状態を保つ。抽象化のために学習者が多数の共通ファイルを追う設計は避ける。
+- lesson manifest に前提 Day・編集対象・追加 opcode・テスト・実機条件を持たせ、README のリンクと課題対応を検査する。
+- 共通基盤変更後は全 completed と代表 starter で回帰確認する。生成・vendor ファイルは format 対象から除く。
 
 ## 6. 検証計画
 
@@ -316,9 +316,9 @@ flowchart LR
 | 実機 | reset連打、長時間表示、文字端、loop、WVS回数、書込み結果 | 指定基板・LCD・条件で実動作を観測できる |
 | 学習 | 予測・実装・波形説明、つまずきの記録 | 対象学習者が課題の目的を理解できる |
 
-CPUの比較は単なる固定clock数の待機を減らし、命令完了・HLT・faultを観測してtimeout付きで行う。独立referenceとの比較は、対象6502 variant・未対応命令・platform mapを固定してから追加する。LCD modelでは実fontを使い、文字ごとの画素位置を確認する。
+CPU の比較は単なる固定 clock 数の待機を減らし、命令完了・HLT・fault を観測して timeout 付きで行う。独立 reference との比較は、対象 6502 variant・未対応命令・platform map を固定してから追加する。LCD model では実 font を使い、文字ごとの画素位置を確認する。
 
-証拠にはcommit、BOARD、tool版、コマンド、終了code、対象case、log／waveform／画像を残す。実機未実施は未実施と記録し、simulationの成功を代用しない。
+証拠には commit、BOARD、tool 版、コマンド、終了 code、対象 case、log／waveform／画像を残す。実機未実施は未実施と記録し、simulation の成功を代用しない。
 
 ## 7. 実施順と完了判定
 
@@ -332,26 +332,26 @@ CPUの比較は単なる固定clock数の待機を減らし、命令完了・HLT
 | 5: 保守整理 | R12/R13、package分割、生成／共通化、全Day日英更新 | 挙動差分なし、依存更新が再buildに反映 |
 | 6: 互換性拡張 | 公式命令不足、decimal、software移植要件 | 仕様範囲ごとの実行証拠を得て互換性表現を更新 |
 
-各段階を独立した変更単位にし、テスト入口修正、CPU bug修正、挙動を保つ分割、教材更新をレビューしやすくする。初回実装は**Day 08の課題テスト整合、Day 99 RAM model整合、RTS最小再現**を代表例にして検証基盤を固める。
+各段階を独立した変更単位にし、テスト入口修正、CPU bug 修正、挙動を保つ分割、教材更新をレビューしやすくする。初回実装は**Day 08の課題テスト整合、Day 99 RAM model整合、RTS最小再現**を代表例にして検証基盤を固める。
 
 最終チェック:
 
-- [ ] 各Dayの新機能が、そのDayのcompletedと専用テストで確認できる。
-- [ ] 不一致／timeout／ツール不足で誤ったPASSを出さない。
-- [ ] 同期RAM・OCE・boot・write回数・shadowの契約が実装と一致する。
+- [ ] 各 Day の新機能が、その Day の completed と専用テストで確認できる。
+- [ ] 不一致／timeout／ツール不足で誤った PASS を出さない。
+- [ ] 同期 RAM・OCE・boot・write 回数・shadow の契約が実装と一致する。
 - [ ] RTS・branch・stack・index・独自命令の境界を検査する。
-- [ ] 実装済み命令表が実行handlerと一致し、未対応を明示する。
-- [ ] Day 18→99の引数・待ち回数・FSM・メモリ方式の変化を説明する。
-- [ ] 構成図・build手順・ファイル経路・生成仕様が現行に合う。
-- [ ] 9K／20Kのbuild、simulation、実機結果を混同しない。
+- [ ] 実装済み命令表が実行 handler と一致し、未対応を明示する。
+- [ ] Day 18→99 の引数・待ち回数・FSM・メモリ方式の変化を説明する。
+- [ ] 構成図・build 手順・ファイル経路・生成仕様が現行に合う。
+- [ ] 9K／20K の build、simulation、実機結果を混同しない。
 - [ ] 学習者が値を予測し、波形を使って理由を説明できる。
 
 ## 8. 保留して判断する事項
 
-- 全64KiB RAM、IRQ/NMI、原機bus cycle互換、Woz Monitor／BASIC移植は必須修正に混ぜない。要求software・resource・timingから追加範囲を決める。
-- LCDのCDC改修案はGowinの対象IP・実測latency・resource利用で選ぶ。現行の2段FFを増やすだけの対応では完了としない。
-- legacy削除、CPU全Dayの共通化、教材全体のinteractive化は、利用者と学習負荷を確認して判断する。
-- FPGA／LCDのボタン極性、電気特性、panel timingは原資料と実機で照合する。今回の静的レビューだけで正常性を断定しない。
+- 全 64KiB RAM、IRQ/NMI、原機 bus cycle 互換、Woz Monitor／BASIC 移植は必須修正に混ぜない。要求 software・resource・timing から追加範囲を決める。
+- LCD の CDC 改修案は Gowin の対象 IP・実測 latency・resource 利用で選ぶ。現行の 2 段 FF を増やすだけの対応では完了としない。
+- legacy 削除、CPU 全 Day の共通化、教材全体の interactive 化は、利用者と学習負荷を確認して判断する。
+- FPGA／LCD のボタン極性、電気特性、panel timing は原資料と実機で照合する。今回の静的レビューだけで正常性を断定しない。
 
 ## 9. モデル別の担当案
 
@@ -359,9 +359,9 @@ CPUの比較は単なる固定clock数の待機を減らし、命令完了・HLT
 
 **GLM-5.3-Flashは仕様が固定された修正、GLM-5.3は局所的なコード・テスト実装、GPT-6.1 Solは複数の状態・クロック・所有権をまたぐ設計と独立レビューへ割り当てる。**
 
-これは本リポジトリの作業内容に基づく暫定的な担当判断である。3モデルで同じSystemVerilog課題を比較実行していないため、「GLMでは不可能」「Solなら正しい」とは断定しない。優先度P0であることと、強いモデルを必要とすることは別である。
+これは本リポジトリの作業内容に基づく暫定的な担当判断である。3 モデルで同じ SystemVerilog 課題を比較実行していないため、「GLM では不可能」「Sol なら正しい」とは断定しない。優先度 P0 であることと、強いモデルを必要とすることは別である。
 
-公式資料は[GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3)、[GLM-5.3-Flash](https://docs.z.ai/guides/vlm/glm-5.3-flash)、[GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol)を確認した。各社の一般的なcoding能力の説明から、このFPGA設計での優劣は確定できない。
+公式資料は[GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3)、[GLM-5.3-Flash](https://docs.z.ai/guides/vlm/glm-5.3-flash)、[GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol)を確認した。各社の一般的な coding 能力の説明から、この FPGA 設計での優劣は確定できない。
 
 ### 9.1 GLM-5.3-Flashを第一候補にする作業
 
@@ -374,7 +374,7 @@ CPUの比較は単なる固定clock数の待機を減らし、命令完了・HLT
 | 教材4章 | 確定した課題templateへの整形、日英の課題ID・期待値の同期 | flag・cycle・addressの意味を独自に補完しない |
 | 棚卸し | opcode・source・リンク・TODO一覧の生成 | 一覧の生成と仕様の判断を区別する |
 
-Flashには1項目または1Dayずつ渡し、対象・期待値・禁止する仕様変更・完了条件を固定する。R02でも未実装のCPU検査を新たに設計する部分はGLM-5.3以上へ分ける。
+Flash には 1 項目または 1Day ずつ渡し、対象・期待値・禁止する仕様変更・完了条件を固定する。R02 でも未実装の CPU 検査を新たに設計する部分は GLM-5.3 以上へ分ける。
 
 ### 9.2 GLM-5.3を第一候補にする作業
 
@@ -389,7 +389,7 @@ Flashには1項目または1Dayずつ渡し、対象・期待値・禁止する�
 | 5章ALU | binary演算関数・CMPの入力C独立性・flag保持の修正 | decimal semanticsやCPUとの統合再設計 |
 | 5章構造整理 | 決まった境界に従うpackage分割 | 分割境界、state所有者、bus契約の判断はSol |
 
-RTSは重大な不具合だが、原因と修正範囲が既に具体化されているため、GLM-5.3へ任せる候補にできる。実装前に反例を作り、修正後にPC・SP・stackを確認する。コード量が少なくてもCPU状態を扱うため、初回はSolの独立レビューを推奨する。
+RTS は重大な不具合だが、原因と修正範囲が既に具体化されているため、GLM-5.3 へ任せる候補にできる。実装前に反例を作り、修正後に PC・SP・stack を確認する。コード量が少なくても CPU 状態を扱うため、初回は Sol の独立レビューを推奨する。
 
 ### 9.3 GPT-6.1 Solを設計・レビュー担当にする作業
 
@@ -406,16 +406,16 @@ RTSは重大な不具合だが、原因と修正範囲が既に具体化され�
 | 5章設計 | FSM分割境界、bus契約、state責務、共通化範囲 | 大きなrefactorの前に不変条件を定義する必要がある |
 | 統合受入 | 複数Dayの回帰、model差、実機結果、互換性表現の最終レビュー | 個々のPASSで見落とす接続・前提の不一致を確認する |
 
-これらも仕様・不変条件・期待traceが固定された後は、GLM-5.3へ実装を分担できる。Solに集中させるのは設計判断、問題切分け、統合の確認である。どのモデルでも実機のtiming・CDC・長期安定性を文章上の推論だけで保証できない。
+これらも仕様・不変条件・期待 trace が固定された後は、GLM-5.3 へ実装を分担できる。Sol に集中させるのは設計判断、問題切分け、統合の確認である。どのモデルでも実機の timing・CDC・長期安定性を文章上の推論だけで保証できない。
 
 ### 9.4 進め方と担当変更の条件
 
-1. FlashでR02の終了判定と、R11/R13の明確な文書訂正を進める。
-2. GLM-5.3でR01のtest入口、R04のRTS、R12のHEX検査を個別変更として実装する。
-3. SolでR03のRAM契約を確定し、R06/R07/R08/R10を実際のclock edgeと所有権から設計する。
-4. SolでR09を設計し、実装範囲が固定された部分をGLMへ渡す。
-5. 正しい完成例を基にGLMで全Dayの課題・テストを揃え、Flashで日英文書を同期する。Solは段階境界をレビューする。
+1. Flash で R02 の終了判定と、R11/R13 の明確な文書訂正を進める。
+2. GLM-5.3 で R01 の test 入口、R04 の RTS、R12 の HEX 検査を個別変更として実装する。
+3. Sol で R03 の RAM 契約を確定し、R06/R07/R08/R10 を実際の clock edge と所有権から設計する。
+4. Sol で R09 を設計し、実装範囲が固定された部分を GLM へ渡す。
+5. 正しい完成例を基に GLM で全 Day の課題・テストを揃え、Flash で日英文書を同期する。Sol は段階境界をレビューする。
 
-Solへ担当を変える条件は、修正が別の状態遷移へ波及する、vendor modelとbehavioral modelが食い違う、期待値が仕様として決まらない、テストを緩めないと通らない、同じ原因不明の失敗を繰り返す場合とする。実機だけの失敗ではmodelを替える前にclock・timing・波形・接続の証拠を取得する。
+Sol へ担当を変える条件は、修正が別の状態遷移へ波及する、vendor model と behavioral model が食い違う、期待値が仕様として決まらない、テストを緩めないと通らない、同じ原因不明の失敗を繰り返す場合とする。実機だけの失敗では model を替える前に clock・timing・波形・接続の証拠を取得する。
 
-初回はR02・R04・Day 08教材testの3作業について、完了条件を満たしたか、追加レビューで何件の欠陥が出たか、所要時間・利用量を記録する。その結果で担当範囲を広げる。モデル名だけで恒久的な能力境界を固定しない。
+初回は R02・R04・Day 08 教材 test の 3 作業について、完了条件を満たしたか、追加レビューで何件の欠陥が出たか、所要時間・利用量を記録する。その結果で担当範囲を広げる。モデル名だけで恒久的な能力境界を固定しない。

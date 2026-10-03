@@ -20,7 +20,7 @@
 
 新規ファイル `.textlintignore`:
 
-```
+```text
 conductor/
 CLAUDE.md
 AGENTS.md
@@ -73,7 +73,7 @@ AGENTS.md
 
 - mermaid を実階層（`top_9k/top_20k → top_core → cpu/lcd/ram`、`cpu → cpu_fsm_next_pkg/cpu_types_pkg`）に修正。
 - 読書順リストから `src/top.sv` を除去し、`top_core.sv` と `src/cpu/` 配下の package を案内に追加。
-- `src/cpu_decoder.sv` / `src/cpu_alu.sv` / `src/cpu_memory.sv` が **cpu.sv には未接続の単体モジュール**
+- `src/cpu_decoder.sv` / `src/cpu_alu.sv` / `src/cpu_memory.sv` が**cpu.sv には未接続の単体モジュール**
   （`tb_cpu_modules.sv` でのみ使用）であることを明記。
 
 `day99_completed/docs/BUILD.md`:

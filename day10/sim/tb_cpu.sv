@@ -48,8 +48,7 @@ module tb_cpu;
         .debug_x(debug_x),
         .debug_y(debug_y),
         .debug_p(debug_p)
-`ifdef TB_CPU_HAS_BUS_IF
-        ,
+`ifdef TB_CPU_HAS_BUS_IF,
         .debug_s(debug_s)
 `endif
     );

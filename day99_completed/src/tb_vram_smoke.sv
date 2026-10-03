@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 /* verilator lint_off UNUSEDSIGNAL */
 module tb_vram_smoke;
     logic       ResetButton;
@@ -79,7 +79,10 @@ module tb_vram_smoke;
         $display("[sim] PASS: saw %0d VRAM writes and LCD_DEN activity", vram_writes);
         $finish;
     end
-    initial begin #100000000; $fatal(1, "VRAM smoke timeout (100ms)"); end
+    initial begin
+        #100000000;
+        $fatal(1, "VRAM smoke timeout (100ms)");
+    end
 endmodule
 
 /* verilator lint_on UNUSEDSIGNAL */

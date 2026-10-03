@@ -1,4 +1,4 @@
-> CPU仕様の正本は [INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
+> CPU仕様の正本は[INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
 
 # 6502 CPU アーキテクチャ詳細ガイド
 
@@ -23,7 +23,7 @@ Tang Nano 9K/20K FPGA 上で SystemVerilog で実装された 6502 CPU コアの
 
 ### 学習目標
 
-- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/27MHz (9K) または40.5MHz (20K))
+- **クロックドメイン設計**: 複数クロック周波数の管理(27MHz → 9MHz/27MHz (9K) または 40.5MHz (20K))
 - **ステートマシン**: 複雑な CPU 命令実行パイプライン
 - **メモリコントローラ**: SDPB RAM、VRAM、pROM インタフェース
 - **ハードウェア/ソフトウェア連携**: アセンブリプログラムと FPGA 実装の融合
@@ -116,7 +116,7 @@ graph LR
 CPU とディスプレイ両方のアクセスを最適化した洗練されたメモリ階層：
 
 | CPU address | Physical mapping | Access |
-|---|---|---|
+| --- | --- | --- |
 | 0000–7BFF | Main RAM | CPU R/W |
 | 7C00–7FFF | Shadow VRAM | CPU R; writes fault |
 | 8000–DFFF | RAM mirror, clear bit15 | CPU R/W |
@@ -124,8 +124,7 @@ CPU とディスプレイ両方のアクセスを最適化した洗練された�
 | E400–FBFF | RAM mirror, clear bit15 | CPU R/W |
 | FC00–FFFF | Shadow mirror | CPU R; writes fault |
 
-フォントROMはLCD専用の別資源で、CPU mapには含まれない。
-
+フォント ROM は LCD 専用の別資源で、CPU map には含まれない。
 
 ### 設計上の重要な決定
 
@@ -203,7 +202,7 @@ graph TB
 
 ### 2プロセス FSM リファクタ
 
-`cpu_fsm_next_pkg.sv` は boot/fetch 系を `calc_boot_fetch_next()`、デコード〜実行を `calc_cpu_next(cur,in)` で計算する 2 プロセス FSM の核です。`calc_cpu_next` は `calc_decode_transfers_next`、`calc_decode_flags_custom_next`、`calc_decode_branches_next`、`calc_decode_compare_next`、`calc_decode_logic_next`、`calc_decode_shifts_next`、`calc_decode_load_store_next`、`calc_decode_store_next` などのカテゴリ別ヘルパーを順次呼び出し、命令ごとの副作用を `cpu_ctx_t` に記録します。INC/DEC、制御フロー、ADC/SBC などの残りカテゴリは [`FSM.md`](./FSM.md) に記録された手順で順次追加中です。
+`cpu_fsm_next_pkg.sv` は boot/fetch 系を `calc_boot_fetch_next()`、デコード〜実行を `calc_cpu_next(cur,in)` で計算する 2 プロセス FSM の核です。`calc_cpu_next` は `calc_decode_transfers_next`、`calc_decode_flags_custom_next`、`calc_decode_branches_next`、`calc_decode_compare_next`、`calc_decode_logic_next`、`calc_decode_shifts_next`、`calc_decode_load_store_next`、`calc_decode_store_next` などのカテゴリ別ヘルパーを順次呼び出し、命令ごとの副作用を `cpu_ctx_t` に記録します。INC/DEC、制御フロー、ADC/SBC などの残りカテゴリは[`FSM.md`](./FSM.md)に記録された手順で順次追加中です。
 
 ```mermaid
 graph LR
@@ -275,7 +274,7 @@ stateDiagram-v2
 
 Day 10 以降の設計と同様に、本システムではプログラムを Gowin BSRAM (Block SRAM) で実装された RAM (`ram.sv`) 上で実行します。FPGA 起動時（リセット直後）に、ROM 扱いのデータ配列から RAM へプログラムをコピーする仕組みを採用しています。
 
-Day 99 では、このブートローダー機能が **CPU のメイン FSM (ステートマシン)** に統合されています。
+Day 99 では、このブートローダー機能が**CPU のメイン FSM (ステートマシン)**に統合されています。
 
 1. **プログラムデータ**:
     - `include/boot_program.sv` に `boot_program` という SystemVerilog 配列（バイト列）として定義されています。

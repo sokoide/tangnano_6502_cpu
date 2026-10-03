@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 /* verilator lint_off UNUSEDSIGNAL */
 // Post-PnR netlist observation: peek the SDPB sim models to read RAM bytes
 // and the VRAM cell at (59,0) — the character the user sees on the LCD.
@@ -27,16 +27,16 @@ module tb_pnr_trace;
     always #18.518519 XTAL_IN = ~XTAL_IN;
 
     // RAM bit columns: instance 2b = ada[14]==0 bank, 2b+1 = ada[14]==1 bank.
-    wire r00 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_0  .ram_MEM[probe_addr[13:0]];
-    wire r01 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_1  .ram_MEM[probe_addr[13:0]];
-    wire r02 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_2  .ram_MEM[probe_addr[13:0]];
-    wire r03 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_3  .ram_MEM[probe_addr[13:0]];
-    wire r04 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_4  .ram_MEM[probe_addr[13:0]];
-    wire r05 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_5  .ram_MEM[probe_addr[13:0]];
-    wire r06 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_6  .ram_MEM[probe_addr[13:0]];
-    wire r07 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_7  .ram_MEM[probe_addr[13:0]];
-    wire r08 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_8  .ram_MEM[probe_addr[13:0]];
-    wire r09 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_9  .ram_MEM[probe_addr[13:0]];
+    wire r00 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_0 .ram_MEM[probe_addr[13:0]];
+    wire r01 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_1 .ram_MEM[probe_addr[13:0]];
+    wire r02 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_2 .ram_MEM[probe_addr[13:0]];
+    wire r03 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_3 .ram_MEM[probe_addr[13:0]];
+    wire r04 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_4 .ram_MEM[probe_addr[13:0]];
+    wire r05 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_5 .ram_MEM[probe_addr[13:0]];
+    wire r06 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_6 .ram_MEM[probe_addr[13:0]];
+    wire r07 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_7 .ram_MEM[probe_addr[13:0]];
+    wire r08 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_8 .ram_MEM[probe_addr[13:0]];
+    wire r09 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_9 .ram_MEM[probe_addr[13:0]];
     wire r10 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_10 .ram_MEM[probe_addr[13:0]];
     wire r11 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_11 .ram_MEM[probe_addr[13:0]];
     wire r12 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_12 .ram_MEM[probe_addr[13:0]];
@@ -45,7 +45,7 @@ module tb_pnr_trace;
     wire r15 = dut.\u_core/ram_inst/vendor.ram_inst/sdpb_inst_15 .ram_MEM[probe_addr[13:0]];
 
     logic [14:0] probe_addr;
-    logic [7:0]  probe_byte;
+    logic [7:0] probe_byte;
     always_comb begin
         probe_byte[0] = probe_addr[14] ? r01 : r00;
         probe_byte[1] = probe_addr[14] ? r03 : r02;
@@ -60,7 +60,7 @@ module tb_pnr_trace;
     // VRAM is a single 8-bit SDPB; ram_MEM[cell*8 +: 8] = char code.
     wire [16383:0] vram_mem = dut.\u_core/ram_inst/vendor.vram_inst/sdpb_inst_0  .ram_MEM;
     logic [7:0]    vram_char59;
-    always_comb vram_char59 = vram_mem[59*8 +: 8];
+    always_comb vram_char59 = vram_mem[59*8+:8];
 
     initial begin
         integer cyc;
@@ -69,7 +69,7 @@ module tb_pnr_trace;
         integer k;
 
         XTAL_IN = 1'b0;
-        ResetButton = 1'b0;   // 9K: rst_n = ResetButton (active-high button)
+        ResetButton = 1'b0;  // 9K: rst_n = ResetButton (active-high button)
         #200;
         ResetButton = 1'b1;
 
@@ -97,8 +97,8 @@ module tb_pnr_trace;
                 @(posedge MEMORY_CLK);
                 if (cyc % 100000 == 0) $display("[pnr] frame-progress k=%0d cyc=%0d", k, cyc);
             end
-            $display("[pnr] t=%0dms vram[59]=%02x ram[0210]=%02x",
-                     (k+1)*37, vram_char59, probe_byte);
+            $display("[pnr] t=%0dms vram[59]=%02x ram[0210]=%02x", (k + 1) * 37, vram_char59,
+                     probe_byte);
         end
         $finish;
     end

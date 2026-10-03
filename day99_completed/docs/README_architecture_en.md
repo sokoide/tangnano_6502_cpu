@@ -1,4 +1,4 @@
-> CPU仕様の正本は [INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
+> CPU仕様の正本は[INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
 
 # 6502 CPU Architecture Comprehensive Guide
 
@@ -121,7 +121,7 @@ graph LR
 The system implements a sophisticated memory hierarchy optimized for both CPU access and display rendering:
 
 | CPU address | Physical mapping | Access |
-|---|---|---|
+| --- | --- | --- |
 | 0000–7BFF | Main RAM | CPU R/W |
 | 7C00–7FFF | Shadow VRAM | CPU R; writes fault |
 | 8000–DFFF | RAM mirror, clear bit15 | CPU R/W |
@@ -130,7 +130,6 @@ The system implements a sophisticated memory hierarchy optimized for both CPU ac
 | FC00–FFFF | Shadow mirror | CPU R; writes fault |
 
 Font ROM is a separate LCD resource, outside the CPU address map.
-
 
 ### Key Design Decisions
 
@@ -783,16 +782,16 @@ Complete 6502 instruction set documentation with cycle counts, flags affected, a
 
 ### Memory Map Reference
 
-| Address Range | Size   | Purpose     | Access   |
-| ------------- | ------ | ----------- | -------- |
-| 0x0000-0x00FF | 256B   | Zero Page   | CPU R/W  |
-| 0x0100-0x01FF | 256B   | Stack       | CPU R/W  |
-| 0x0200-0x7BFF | 30.5KB | Program RAM | CPU R/W  |
-| 0x7C00-0x7FFF | 1KB    | Shadow VRAM | CPU R    |
-| 0x8000-0xDFFF | 24KB   | RAM mirror  | CPU R/W  |
-| 0xE000-0xE3FF | 1KB    | Text VRAM   | CPU R/W  |
-| 0xE400-0xFBFF | 6KB    | RAM mirror  | CPU R/W  |
-| 0xFC00-0xFFFF | 1KB    | Shadow mirror | CPU R |
+| Address Range | Size   | Purpose       | Access   |
+| ------------- | ------ | ------------- | -------- |
+| 0x0000-0x00FF | 256B   | Zero Page     | CPU R/W  |
+| 0x0100-0x01FF | 256B   | Stack         | CPU R/W  |
+| 0x0200-0x7BFF | 30.5KB | Program RAM   | CPU R/W  |
+| 0x7C00-0x7FFF | 1KB    | Shadow VRAM   | CPU R    |
+| 0x8000-0xDFFF | 24KB   | RAM mirror    | CPU R/W  |
+| 0xE000-0xE3FF | 1KB    | Text VRAM     | CPU R/W  |
+| 0xE400-0xFBFF | 6KB    | RAM mirror    | CPU R/W  |
+| 0xFC00-0xFFFF | 1KB    | Shadow mirror | CPU R    |
 
 ### Register Reference
 

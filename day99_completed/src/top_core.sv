@@ -1,6 +1,8 @@
 // CPU/memory writes at 27MHz (9K) or 40.5MHz (20K); LCD reads at 9MHz.
 // Both domains assert reset on external reset or either PLL lock loss.
-module top_core #(parameter bit BOARD_20K = 0) (
+module top_core #(
+    parameter bit BOARD_20K = 0
+) (
     // Clock and Reset
     input logic rst_n,   // Active-low reset
     input logic XTAL_IN, // 27MHz crystal oscillator input
@@ -21,12 +23,26 @@ module top_core #(parameter bit BOARD_20K = 0) (
     // CPU/Memory: Higher frequency for processing performance
     logic pixel_locked, memory_locked, pixel_rst_n, memory_rst_n;
     wire ready_n = rst_n && pixel_locked && memory_locked;
-    platform_clocks #(.BOARD_20K(BOARD_20K)) clocks (
-        .clkin(XTAL_IN), .rst_n(rst_n), .pixel_clk(LCD_CLK),
-        .memory_clk(MEMORY_CLK), .pixel_locked(pixel_locked),
-        .memory_locked(memory_locked));
-    reset_sync pixel_reset(.clk(LCD_CLK), .ready_n(ready_n), .rst_n(pixel_rst_n));
-    reset_sync memory_reset(.clk(MEMORY_CLK), .ready_n(ready_n), .rst_n(memory_rst_n));
+    platform_clocks #(
+        .BOARD_20K(BOARD_20K)
+    ) clocks (
+        .clkin(XTAL_IN),
+        .rst_n(rst_n),
+        .pixel_clk(LCD_CLK),
+        .memory_clk(MEMORY_CLK),
+        .pixel_locked(pixel_locked),
+        .memory_locked(memory_locked)
+    );
+    reset_sync pixel_reset (
+        .clk(LCD_CLK),
+        .ready_n(ready_n),
+        .rst_n(pixel_rst_n)
+    );
+    reset_sync memory_reset (
+        .clk(MEMORY_CLK),
+        .ready_n(ready_n),
+        .rst_n(memory_rst_n)
+    );
 
     // pROM for font
     // 16bytes/char x 256 chars = 4KB
@@ -110,7 +126,7 @@ module top_core #(parameter bit BOARD_20K = 0) (
     // the generated function ROM into an array so top-level smoke tests
     // boot the embedded program exactly like synthesis does.
     `include "../include/boot_program.sv"
-    logic [ 7:0] boot_program [7680];
+    logic [ 7:0] boot_program[7680];
     logic [15:0] boot_length;
     initial begin
         for (int i = 0; i < 7680; i++) boot_program[i] = boot_program_byte(15'(i));

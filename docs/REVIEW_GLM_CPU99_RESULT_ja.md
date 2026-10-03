@@ -2,7 +2,7 @@
 
 - 実施日: 2026-10-02
 - 実装モデル: GLM-5.3（Claude Code 上で実行）
-- 対象: `day99_completed/src/cpu/cpu_fsm_next_pkg.sv` の既定3件（RTS / BCS / CMP・CPX・CPY）と新規回帰テストベンチ
+- 対象: `day99_completed/src/cpu/cpu_fsm_next_pkg.sv` の既定 3 件（RTS / BCS / CMP・CPX・CPY）と新規回帰テストベンチ
 - スコープ外（指示により未変更）: Makefile / docs 修正、boot オフバイワン（R06）、アドレス 15bit マスク混在（R07）、他 CPU / RAM / boot / LCD / 独立 ALU
 
 ## 実装内容
@@ -26,11 +26,11 @@ fetch 分類には既に列挙済みで実行 handler が無かったもの。
 
 ### 3. CMP / CPX / CPY のメモリ形式実装（R05 の一部）
 
-`calc_decode_compare_next` を拡張。即値3種はヘルパー `complete_compare` に統一し、
+`calc_decode_compare_next` を拡張。即値 3 種はヘルパー `complete_compare` に統一し、
 fetch 分類（opcode メタデータ）に列挙済みのメモリ形式を実装した:
 
 | opcode | 命令 | 実装方式 |
-|---|---|---|
+| --- | --- | --- |
 | `$C5` | CMP zp | `request_data_fetch` → `dout_r` で比較 |
 | `$D5` | CMP zp,X | 8bit 加算で zp wrap |
 | `$C1` | CMP (zp,X) | `fetched_data_bytes` 0..3 の多段（LDA `$A1` と同型） |
@@ -51,10 +51,10 @@ fetch 分類（opcode メタデータ）に列挙済みのメモリ形式を実�
   flag 誤りは `$7BFE=$FF`、完了は `$7BFF=$A5` + HLT。
 - 自己検査・有界（20,000 サイクルで watchdog `$fatal`）。`--assert` 指定。
 
-テスト項目（12チェックポイント）:
+テスト項目（12 チェックポイント）:
 
 | # | 内容 |
-|---|---|
+| --- | --- |
 | 0 | CMP 即値の基本（C/Z/N） |
 | 1 | CMP zp（一致 → C=1, Z=1） |
 | 2 | CMP zp,X（`$F8+$10` の zp wrap → `$08`） |
@@ -85,7 +85,7 @@ exit code: 0
 バグを一時的に復元して同一テストベンチで失敗することを確認（確認後すべて復元・削除済み）:
 
 | 復元したバグ | 結果 | exit code |
-|---|---|---|
+| --- | --- | --- |
 | RTS 組立を旧ロジックに戻す | checkpoint 9/10/11 FAIL + timeout watchdog | 1 |
 | BCS handler を削除 | checkpoint 3 以降 FAIL + timeout（未処理命令で DECODE_EXECUTE 停留） | 1 |
 | CMP zp handler を削除 | checkpoint 1 以降 FAIL + timeout | 1 |

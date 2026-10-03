@@ -4,19 +4,19 @@
 対象: [改善計画](REVIEW_IMPROVEMENT_PLAN_ja.md) R03/R06/R07/R08/R09
 状態: **設計提案。RTL未変更、シミュレーション・合成・実機検証未実施。**
 
-ユーザー指定順序は GLM修正 → Solレビュー → Sol設計修正。GLMの命令FSM修正中に同じRTLを編集しない。本書は後続実装の責任範囲と契約を具体化するもので、実装完了を表すものではない。
+ユーザー指定順序は GLM 修正 → Sol レビュー → Sol 設計修正。GLM の命令 FSM 修正中に同じ RTL を編集しない。本書は後続実装の責任範囲と契約を具体化するもので、実装完了を表すものではない。
 
 ## 1. 現行経路と問題
 
-実稼働経路は `top_9k/top_20k → top_core → cpu → calc_cpu_next`。`cpu_memory.sv` は現在のCPUからinstantiateされていないため、この参考モジュールを直すだけではメモリ問題は解消しない。
+実稼働経路は `top_9k/top_20k → top_core → cpu → calc_cpu_next`。`cpu_memory.sv` は現在の CPU から instantiate されていないため、この参考モジュールを直すだけではメモリ問題は解消しない。
 
-- RAM/VRAM vendor IPは `READ_MODE=0`, `RESET_MODE="SYNC"`。同梱SDPB modelではCEBによってbypass出力を更新し、OCEは追加pipeline registerだけに作用する。`ram.sv` とVRAM stubの `ceb && oce` は不一致。
-- 同梱SDPB modelのwrite enableは `pcea = CEA && bs_ena`。RESETAは書込みを抑止しない。behavioral modelの `!reseta && cea` は異なる契約になっている。
-- `cpu.sv` のboot配列は7680 byteだが、状態に無関係に `boot_program[cur.boot_idx]` を参照する。loaderはlengthを最後のindexとして扱い、1 byte余分に書く。
-- storeのVRAM decodeは1020 byte、実RAM容量は1024 byte。clearはVRAM側の次indexとshadow側の旧indexを使う。通常store、RMW、内部表示書込みの契約が分散している。
-- PC/branch計算まで `$7FFF` maskを適用しており、CPUの16bit演算と32KiB RAMの物理変換が混ざっている。
-- LCDアドレスを多bit 2FFで渡しても値全体の整合性は保証できない。font address/dataにもCDCが残る。
-- PLL wrapperはLOCKを内部 `lock_o` に閉じ込め、公開portはclkout/clkinのみ。既存portのままlockに基づくresetを実装できない。
+- RAM/VRAM vendor IP は `READ_MODE=0`, `RESET_MODE="SYNC"`。同梱 SDPB model では CEB によって bypass 出力を更新し、OCE は追加 pipeline register だけに作用する。`ram.sv` と VRAM stub の `ceb && oce` は不一致。
+- 同梱 SDPB model の write enable は `pcea = CEA && bs_ena`。RESETA は書込みを抑止しない。behavioral model の `!reseta && cea` は異なる契約になっている。
+- `cpu.sv` の boot 配列は 7680 byte だが、状態に無関係に `boot_program[cur.boot_idx]` を参照する。loader は length を最後の index として扱い、1 byte 余分に書く。
+- store の VRAM decode は 1020 byte、実 RAM 容量は 1024 byte。clear は VRAM 側の次 index と shadow 側の旧 index を使う。通常 store、RMW、内部表示書込みの契約が分散している。
+- PC/branch 計算まで `$7FFF` mask を適用しており、CPU の 16bit 演算と 32KiB RAM の物理変換が混ざっている。
+- LCD アドレスを多 bit 2FF で渡しても値全体の整合性は保証できない。font address/data にも CDC が残る。
+- PLL wrapper は LOCK を内部 `lock_o` に閉じ込め、公開 port は clkout/clkin のみ。既存 port のまま lock に基づく reset を実装できない。
 
 ## 2. 実装の所有ファイルと分担
 
@@ -28,24 +28,24 @@
 | build統合 | `day99_completed/Makefile`, `day99_9k.gprj`, `day99_20k.gprj` | 新規RTLの登録、BOARD parameter、simulation/vendor契約testの経路、依存manifest |
 | 文書 | `day99_completed/docs/GVRAM_ja.md`, `docs/LCD.md`, `docs/DEVELOPER.md`、本書/改善計画 | 決定したaddress map、timing、未検証範囲の明記 |
 
-`src/cpu/cpu_fsm_next_pkg.sv` をGLMと後続CPU担当が同時に変更しない。`src/top_core.sv` はLCD/clock統合担当が所有し、メモリ担当はportの変更を連絡する。build統合はRTL interface確定後に行う。generated/vendorファイルは編集しない。
+`src/cpu/cpu_fsm_next_pkg.sv` を GLM と後続 CPU 担当が同時に変更しない。`src/top_core.sv` は LCD/clock 統合担当が所有し、メモリ担当は port の変更を連絡する。build 統合は RTL interface 確定後に行う。generated/vendor ファイルは編集しない。
 
 ## 3. CPU・メモリの契約
 
 ### Boot
 
-容量を `BOOT_CAPACITY=7680`、lengthをbyte数とする。生成器、linker、CPU portの容量を一致させる。現HEX生成器には既に空入力・容量超過拒否が実装されているが、この調査では実行していない。
+容量を `BOOT_CAPACITY=7680`、length を byte 数とする。生成器、linker、CPU port の容量を一致させる。現 HEX 生成器には既に空入力・容量超過拒否が実装されているが、この調査では実行していない。
 
-1. `length == 0` または `length > BOOT_CAPACITY` は、RAM writeなしで明示fault/停止する。
-2. INIT_RAMかつ `idx < length && idx < BOOT_CAPACITY` の場合だけboot byteを参照する。範囲外の入力はゼロなど固定値とし、配列をindexしない。
-3. byte準備 → registered CEAによる実際のwrite edge → idx更新の順序を維持する。
-4. 最後のwrite edgeが終わるまでFETCH_REQへ解放しない。合法lengthのwrite数は厳密にlengthとする。
+1. `length == 0` または `length > BOOT_CAPACITY` は、RAM write なしで明示 fault/停止する。
+2. INIT_RAM かつ `idx < length && idx < BOOT_CAPACITY` の場合だけ boot byte を参照する。範囲外の入力はゼロなど固定値とし、配列を index しない。
+3. byte 準備 → registered CEA による実際の write edge → idx 更新の順序を維持する。
+4. 最後の write edge が終わるまで FETCH_REQ へ解放しない。合法 length の write 数は厳密に length とする。
 
 ### 書込みとVRAM/shadow
 
-`calc_cpu_next` の標準値を `next.cea=0; next.v_cea=0;` とし、writeを発行するcaseだけ再設定する。通常storeのwrite enableをFETCH_REQで保持しない。clearは各edgeで異なるセルへ連続writeしてよい。
+`calc_cpu_next` の標準値を `next.cea=0; next.v_cea=0;` とし、write を発行する case だけ再設定する。通常 store の write enable を FETCH_REQ で保持しない。clear は各 edge で異なるセルへ連続 write してよい。
 
-定数は `VRAM_CAPACITY=1024`, `VISIBLE_CELLS=COLUMNS*ROWS=1020` に分ける。通常STA/STX/STY/RMW writeの領域decodeを一つのhelperに集約する。内部VRAM writeの不変条件は以下とする。
+定数は `VRAM_CAPACITY=1024`, `VISIBLE_CELLS=COLUMNS*ROWS=1020` に分ける。通常 STA/STX/STY/RMW write の領域 decode を一つの helper に集約する。内部 VRAM write の不変条件は以下とする。
 
 ```text
 0 <= i < VRAM_CAPACITY
@@ -55,31 +55,31 @@ din   = v_din
 cea   = v_cea = 1
 ```
 
-shadowの直接CPU storeは拒否し、内部VRAM更新のみがshadowを書ける。clearは容量全1024セルをspaceで埋める案を推奨する。表示1020セルに加え未表示4セルも決定的な値になる。clearの終了は最終セルwrite edge後とし、次のindexへのwrapや余分なwriteを生まない。
+shadow の直接 CPU store は拒否し、内部 VRAM 更新のみが shadow を書ける。clear は容量全 1024 セルを space で埋める案を推奨する。表示 1020 セルに加え未表示 4 セルも決定的な値になる。clear の終了は最終セル write edge 後とし、次の index への wrap や余分な write を生まない。
 
-VRAM RMWにはread値の決定が必要。**推奨はVRAM readをshadow readへ変換する仕様**であり、VRAMはread/write、shadowはCPU read-onlyとして文書を更新する。write-onlyを維持するならVRAM RMWを明示faultにする。これは実装前に採用方針を一つに固定する必要がある。
+VRAM RMW には read 値の決定が必要。**推奨はVRAM readをshadow readへ変換する仕様**であり、VRAM は read/write、shadow は CPU read-only として文書を更新する。write-only を維持するなら VRAM RMW を明示 fault にする。これは実装前に採用方針を一つに固定する必要がある。
 
 ### 16bit CPU addressとphysical decode
 
-PC加算・branch・absolute/indexed実効アドレスは16bit wrap、zero-page indexedは8bit wrapとする。15bit化はメモリdecodeでのみ行う。
+PC 加算・branch・absolute/indexed 実効アドレスは 16bit wrap、zero-page indexed は 8bit wrap とする。15bit 化はメモリ decode でのみ行う。
 
-小さい変更で現在のRAM mirrorを維持する案なら、上位領域を正式なplatform仕様として列挙し、VRAM decodeをmirrorより優先する。shadowのmirror aliasへのwriteも拒否し、read-only保護を迂回できないようにする。mirrorを廃止してunmapped領域を設ける案では、現在の15bit `adb` だけで識別できないためCPU contextにfull read address/validを追加する。暗黙のmaskを残して「unmapped対応済み」としない。
+小さい変更で現在の RAM mirror を維持する案なら、上位領域を正式な platform 仕様として列挙し、VRAM decode を mirror より優先する。shadow の mirror alias への write も拒否し、read-only 保護を迂回できないようにする。mirror を廃止して unmapped 領域を設ける案では、現在の 15bit `adb` だけで識別できないため CPU context に full read address/valid を追加する。暗黙の mask を残して「unmapped 対応済み」としない。
 
 ### RAM timing/reset/collision
 
-- main RAM: write/readともMEMORY_CLK。VRAM: write MEMORY_CLK、read PixelClk。
-- READ_MODE=0: read clock edgeでCEB=1なら出力更新、CEB=0なら保持。OCE=0でもbypass出力は更新する。
-- RESETBはread clockで出力registerをゼロにする。メモリ内容を消さない。
-- RESETAにwrite抑止を依存させない。CPU CEA reset値と、必要ならtopの `cea & memory_rst_n` で保証する。
-- dual-clock同addr read/write衝突のold/new値にportableな保証を置かない。vendor modelとの比較は非衝突系列およびwrite完了後のread一致を対象にする。連続表示中のCPU更新は一時的な表示変化を許容し、frame atomicityを保証しない。
+- main RAM: write/read とも MEMORY_CLK。VRAM: write MEMORY_CLK、read PixelClk。
+- READ_MODE=0: read clock edge で CEB=1 なら出力更新、CEB=0 なら保持。OCE=0 でも bypass 出力は更新する。
+- RESETB は read clock で出力 register をゼロにする。メモリ内容を消さない。
+- RESETA に write 抑止を依存させない。CPU CEA reset 値と、必要なら top の `cea & memory_rst_n` で保証する。
+- dual-clock 同 addr read/write 衝突の old/new 値に portable な保証を置かない。vendor model との比較は非衝突系列および write 完了後の read 一致を対象にする。連続表示中の CPU 更新は一時的な表示変化を許容し、frame atomicity を保証しない。
 
 ## 4. LCD domainとpipeline
 
-`ram.sv` にPixelClk入力を追加し、VRAM vendor `clkb` だけをPixelClkへ移す。font ROMのclkもPixelClkへ移す。`top_core.sv` の `v_adb_sync1/2` を削除する。既存vendor VRAM/font wrapperの公開portで実現でき、vendor編集は不要。
+`ram.sv` に PixelClk 入力を追加し、VRAM vendor `clkb` だけを PixelClk へ移す。font ROM の clk も PixelClk へ移す。`top_core.sv` の `v_adb_sync1/2` を削除する。既存 vendor VRAM/font wrapper の公開 port で実現でき、vendor 編集は不要。
 
-clock接続変更だけでは既存lcdのstage間隔は成立しない。registered addressを発行した次edgeでcaptureすると、同じedgeのRAM NBA更新前の旧dataを読む。旧CHAR_FETCH_OFFSETを温存して動作確認をsmokeだけに任せない。
+clock 接続変更だけでは既存 lcd の stage 間隔は成立しない。registered address を発行した次 edge で capture すると、同じ edge の RAM NBA 更新前の旧 data を読む。旧 CHAR_FETCH_OFFSET を温存して動作確認を smoke だけに任せない。
 
-推奨pipelineは全pixelを処理し、addressを組合せ生成する。
+推奨 pipeline は全 pixel を処理し、address を組合せ生成する。
 
 | edge | memory動作 | LCD metadata |
 | --- | --- | --- |
@@ -87,15 +87,15 @@ clock接続変更だけでは既存lcdのstage間隔は成立しない。registe
 | E1 | E0のv_doutとstage0 rowから組合せfont addressをROMが読む | bit index/valid/char error判定をstage1へ登録 |
 | E2 | E1のfont byteを受けRGBを登録 | stage1 validをDEへ登録し、同じbit indexで画素選択 |
 
-DEもRGBと同じpipelineへ遅延する案なら、480 pixelのactive幅を保ったまま内部beamに対し開始を2edge遅らせる。従来porch配置を厳密に保つ必要がある場合は2pixel先読みを設計する。どちらかを明記し、reset後のpipeline validはゼロにする。
+DE も RGB と同じ pipeline へ遅延する案なら、480 pixel の active 幅を保ったまま内部 beam に対し開始を 2edge 遅らせる。従来 porch 配置を厳密に保つ必要がある場合は 2pixel 先読みを設計する。どちらかを明記し、reset 後の pipeline valid はゼロにする。
 
-counterは `0..TOTAL-1` を回す。現コードの `==PixelForHS` / `==PixelForVS` は1clock余分に回る。縦進行は横wrap時のみ更新し、vsyncが旧V値によって1行ずれないようにする。vsyncのCPU受信は既存2FFを使い、単bit CDCの受信domainで同期する。
+counter は `0..TOTAL-1` を回す。現コードの `==PixelForHS` / `==PixelForVS` は 1clock 余分に回る。縦進行は横 wrap 時のみ更新し、vsync が旧 V 値によって 1 行ずれないようにする。vsync の CPU 受信は既存 2FF を使い、単 bit CDC の受信 domain で同期する。
 
-font simulationは全zero stubを変更し、実 `data/font.mi` またはvendor INIT値から生成した、検証可能なnonzero内容を使う。MIはコメント/metadata行を含むため、そのまま `$readmemh` へ渡さず厳密に変換する。generated/vendor本体は変更しない。
+font simulation は全 zero stub を変更し、実 `data/font.mi` または vendor INIT 値から生成した、検証可能な nonzero 内容を使う。MI はコメント/metadata 行を含むため、そのまま `$readmemh` へ渡さず厳密に変換する。generated/vendor 本体は変更しない。
 
 ## 5. PLL wrapperとreset policy
 
-既存LOCKのhierarchical参照は合成portable性に依存するため採用しない。新しい手書き `platform_clocks.sv` がrPLL primitiveを2個instantiateし、clockとLOCKを公開する案を推奨する。既存vendor PLLソースは変更せず保持する。
+既存 LOCK の hierarchical 参照は合成 portable 性に依存するため採用しない。新しい手書き `platform_clocks.sv` が rPLL primitive を 2 個 instantiate し、clock と LOCK を公開する案を推奨する。既存 vendor PLL ソースは変更せず保持する。
 
 現物の確認値:
 
@@ -111,17 +111,17 @@ font simulationは全zero stubを変更し、実 `data/font.mi` またはvendor 
 | DYN_DA_EN | `"true"` | 同左 | 同左 | 同左 |
 | DYN_SDIV_SEL | 2 | 2 | 2 | 2 |
 
-上記は `src/gowin_rpll_9K/gowin_rpll9.v`, `gowin_rpll40.v`, `src/gowin_rpll_20K/gowin_rpll9.v`, `gowin_rpll40.v` から確認した値。残る設定も既存値を保存する: DYN_IDIV/FBDIV/ODIV_SEL=false、CLKFB_SEL=internal、全CLKOUT*_BYPASS=false、CLKOUT/CLKOUTP_FT_DIR=1、DLY_STEP=0、CLKOUTD/CLKOUTD3_SRC=CLKOUT。dynamic selector/CLKFBはゼロ接続。
+上記は `src/gowin_rpll_9K/gowin_rpll9.v`, `gowin_rpll40.v`, `src/gowin_rpll_20K/gowin_rpll9.v`, `gowin_rpll40.v` から確認した値。残る設定も既存値を保存する: DYN_IDIV/FBDIV/ODIV_SEL=false、CLKFB_SEL=internal、全 CLKOUT*_BYPASS=false、CLKOUT/CLKOUTP_FT_DIR=1、DLY_STEP=0、CLKOUTD/CLKOUTD3_SRC=CLKOUT。dynamic selector/CLKFB はゼロ接続。
 
-BOARD差は `top_20k` から `top_core`/clock wrapperへ明示parameterで渡す。simulationの `BOARD_20K` defineだけにhardware選択を依存させない。
+BOARD 差は `top_20k` から `top_core`/clock wrapper へ明示 parameter で渡す。simulation の `BOARD_20K` define だけに hardware 選択を依存させない。
 
 reset policy:
 
-1. board wrapperで既存ResetButton極性を正規化する。9Kは `rst_n=ResetButton`、20Kは `rst_n=~ResetButton`。コメントのactive-high/low表現だけで極性を変更しない。
-2. PLL primitive RESETへ接続する場合は外部button resetのみを使う。LOCK由来resetをPLL自身へ戻して循環依存を作らない。
-3. user logicの非同期reset条件は `rst_n && pixel_lock && memory_lock`。各clock domainに2FF同期releaseを設ける。button resetまたはどちらかのlock喪失で両domainを即assertする。
-4. memory domain release前にCPU/writeを動かさない。pixel domain release前にDE/pipeline validをゼロにする。RAM内容の初期化はこのresetの役割に含めない。
-5. simulationは直結PLL stubではなく9MHz/40.5MHzとLOCK遅延・喪失を表すclock modelにする。複数位相で実行する。metastabilityの実耐性はsimulation成功から証明しない。
+1. board wrapper で既存 ResetButton 極性を正規化する。9K は `rst_n=ResetButton`、20K は `rst_n=~ResetButton`。コメントの active-high/low 表現だけで極性を変更しない。
+2. PLL primitive RESET へ接続する場合は外部 button reset のみを使う。LOCK 由来 reset を PLL 自身へ戻して循環依存を作らない。
+3. user logic の非同期 reset 条件は `rst_n && pixel_lock && memory_lock`。各 clock domain に 2FF 同期 release を設ける。button reset またはどちらかの lock 喪失で両 domain を即 assert する。
+4. memory domain release 前に CPU/write を動かさない。pixel domain release 前に DE/pipeline valid をゼロにする。RAM 内容の初期化はこの reset の役割に含めない。
+5. simulation は直結 PLL stub ではなく 9MHz/40.5MHz と LOCK 遅延・喪失を表す clock model にする。複数位相で実行する。metastability の実耐性は simulation 成功から証明しない。
 
 ## 6. 後続検証順と受入条件
 
@@ -138,4 +138,4 @@ reset policy:
 | 9 | FPGA | 9K/20K両方で合成・配置配線・timing/CDC評価。PLL設定、VRAM dual-clock推論/IP接続、追加logicの資源を確認 |
 | 10 | 実機 | 両boardのcold boot/button reset/連続表示/CPU更新中表示を確認。実機未実施は未証明として残す |
 
-故意にread enable/write pulse/font latencyを壊した場合に対応テストが非ゼロ終了することも確認する。独立 `cpu_memory` テストやDEN/colorのみのsmoke成功を、現CPU・文字pipelineの受入に代用しない。
+故意に read enable/write pulse/font latency を壊した場合に対応テストが非ゼロ終了することも確認する。独立 `cpu_memory` テストや DEN/color のみの smoke 成功を、現 CPU・文字 pipeline の受入に代用しない。
