@@ -120,7 +120,6 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 
 - **FPGA**: Verify on the LCD that the X register changes as expected.
 
-
 ## 🎯 Next Step
 
 In Day 08, we will significantly strengthen the CPU's computational power by integrating the **ALU (Arithmetic Logic Unit)** for full addition/subtraction and the **Processor Status (P) register** to bundle our status flags.

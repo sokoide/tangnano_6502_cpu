@@ -80,7 +80,7 @@ make BOARD=20k download
 
 ## 🧠 6502 CPU 実装
 
-本CPUは文書化された2進演算の命令サブセットと4つの独自opcodeを実装します。未対応命令はfaultで停止し、NMOS 6502の完全互換やサイクル完全互換は対象外です。
+本 CPU は文書化された 2 進演算の命令サブセットと 4 つの独自 opcode を実装します。未対応命令は fault で停止し、NMOS 6502 の完全互換やサイクル完全互換は対象外です。
 
 ## 🧭 day06-18（教育用CPU）との違い
 
@@ -115,10 +115,9 @@ make BOARD=20k download
 0xFC00-0xFFFF  RAM のミラー: 0x7C00-0x7FFF (VRAM シャドウ読出しの格納先)
 ```
 
-フォント ROM は LCD 専用の別資源で、CPU のアドレス空間には含まれません。VRAM への書込みは、CPU が読み出すシャドウコピー (`0x7C00-0x7FFF`) の RAM にも同じ値を書き込みます。`0xE000-0xE3FF` の読出しは VRAM から値を取得しません。`0xFC00-0xFFFF` 経由の書込みは RAM のミラー先だけを変更し、VRAM は更新しません。この対応関係は `src/cpu_memory.sv` のデコードと `src/ram.sv` の15ビット RAM アドレスに基づきます。
+フォント ROM は LCD 専用の別資源で、CPU のアドレス空間には含まれません。VRAM への書込みは、CPU が読み出すシャドウコピー (`0x7C00-0x7FFF`) の RAM にも同じ値を書き込みます。`0xE000-0xE3FF` の読出しは VRAM から値を取得しません。`0xFC00-0xFFFF` 経由の書込みは RAM のミラー先だけを変更し、VRAM は更新しません。この対応関係は `src/cpu_memory.sv` のデコードと `src/ram.sv` の 15 ビット RAM アドレスに基づきます。
 
-**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横60列・縦17行で表示します。対応命令とメモリ動作は [`docs/INSTRUCTIONS.md`](./docs/INSTRUCTIONS.md) を参照してください。
-
+**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横 60 列・縦 17 行で表示します。対応命令とメモリ動作は[`docs/INSTRUCTIONS.md`](./docs/INSTRUCTIONS.md)を参照してください。
 
 ## 🎮 プログラミング例
 
