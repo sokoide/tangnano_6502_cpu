@@ -63,11 +63,17 @@ To avoid waiting for 50 million cycles in simulation, we use parameters to short
 ```systemverilog
 // In your module
 module traffic_light #(
-    parameter TIMER_LIMIT = 26'd50_000_000
+    parameter TIMER_LIMIT_RED = 26'd50_000_000,
+    parameter TIMER_LIMIT_GREEN = 26'd50_000_000,
+    parameter TIMER_LIMIT_YELLOW = 26'd25_000_000
 ) (...);
 
 // In your testbench
-traffic_light #(.TIMER_LIMIT(26'd10)) dut (...);
+traffic_light #(
+    .TIMER_LIMIT_RED(26'd10),
+    .TIMER_LIMIT_GREEN(26'd10),
+    .TIMER_LIMIT_YELLOW(26'd5)
+) dut (...);
 ```
 
 ## 💡 The Tick of the Clock
@@ -183,7 +189,11 @@ stateDiagram-v2
 ```
 
 ```systemverilog
-module traffic_light (
+module traffic_light #(
+    parameter TIMER_LIMIT_RED = 26'd50_000_000,
+    parameter TIMER_LIMIT_GREEN = 26'd50_000_000,
+    parameter TIMER_LIMIT_YELLOW = 26'd25_000_000
+) (
     input  logic clk,
     input  logic rst_n,
     output logic red,
@@ -219,7 +229,7 @@ module traffic_light (
     always_comb begin
         case (current_state)
             RED_STATE: begin
-                if (timer >= 26'd50_000_000)  // Approx. 2 seconds
+                if (timer >= TIMER_LIMIT_RED)  // Approx. 2 seconds
                     next_state = GREEN_STATE;
                 else
                     next_state = RED_STATE;
@@ -285,5 +295,7 @@ flowchart LR
 In Day 04, we will dive into practical CPU components and hardware interaction:
 
 - **LCD Display**: Learn how to interface with an external LCD module.
-- **CPU Registers**: Implement the core registers (A, X, Y, etc.) of the 6502.
-- **Memory & Flags**: Understand how to manage state and calculate processor flags.
+- **Text display**: Connect VRAM, font ROM and the pixel clock.
+- **CPU preparation**: Display fixed text; CPU registers and flags are added later.
+
+The divider is disabled at ratio 0, bypasses the input clock at 1, and divides by 2..15. Change the ratio during reset. Prefer the original clock plus a clock enable for slowing internal logic.

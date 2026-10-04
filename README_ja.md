@@ -13,7 +13,7 @@
 
 ## 🏗️ システムアーキテクチャ
 
-Day 01–03 では基礎回路を個別に作り、Day 04 では LCD デモを作ります。CPU と RAM、VRAM、LCD を統合したシステムは Day 99 で構築します。
+Day 01–03 では基礎回路を個別に作り、Day 04 では LCD デモを作ります。Day05 から CPU の状態を LCD に表示し、Day10 から同期 RAM を使います。Day99 では CPU から VRAM へ直接文字を書ける統合システムへ進みます。
 最大の特徴は**ハードウェアネイティブ・デバッガ**です。CPU がデバッグ情報を直接 VRAM に書き込み、LCD 画面上で内部レジスタの状態を確認できます。
 
 ```mermaid
@@ -22,7 +22,7 @@ graph TD
         CPU[6502 CPU コア]
         VRAM["VRAM (デュアルポート RAM)"]
         LCD[LCD コントローラ]
-        RAM[プログラム / データ RAM (BSRAM)]
+        RAM["プログラム / データ RAM (BSRAM)"]
 
         CPU -- "アドレス/データ" --> RAM
         RAM -- "読出しデータ" --> CPU
@@ -32,8 +32,8 @@ graph TD
 
     LCD -- "LCD 信号" --> DISPLAY[480x272 LCD パネル]
 
-    style CPU fill:#f96,stroke:#333,stroke-width:2px
-    style VRAM fill:#69f,stroke:#333,stroke-width:2px
+    style CPU fill:pink,stroke:#333,stroke-width:2px
+    style VRAM fill:lightblue,stroke:#333,stroke-width:2px
 ```
 
 ## 🎯 学習目標
@@ -50,13 +50,13 @@ graph TD
 
 | カテゴリ | 知識                               | 必要性 |
 | -------- | ---------------------------------- | :----: |
-| **必須** | 何らかの言語でのプログラミング経験 |   ✅   |
-| **必須** | 2 進数・16 進数の理解              |   ✅   |
-| **必須** | 論理演算(AND, OR, XOR)の基本       |   ✅   |
-| **推奨** | C 言語(ポインタ、ビット演算)       |   ⭕   |
-| **推奨** | アセンブリ言語の概念               |   ⭕   |
-| **不要** | FPGA/Verilog 経験                  |   ❌   |
-| **不要** | 6502 アーキテクチャの知識          |   ❌   |
+| **必須** | 何らかの言語でのプログラミング経験 | ✅     |
+| **必須** | 2 進数・16 進数の理解              | ✅     |
+| **必須** | 論理演算(AND, OR, XOR)の基本       | ✅     |
+| **推奨** | C 言語(ポインタ、ビット演算)       | ⭕     |
+| **推奨** | アセンブリ言語の概念               | ⭕     |
+| **不要** | FPGA/Verilog 経験                  | ❌     |
+| **不要** | 6502 アーキテクチャの知識          | ❌     |
 
 ## 📂 ディレクトリ構造とワークフロー
 
@@ -72,7 +72,7 @@ graph TD
 1. `dayXX/README_ja.md` を読む。
 2. `dayXX/` 内の課題ファイルを編集して実装する。
 3. 各 Day の README に記載された `make -C dayXX test-cpu` / `test` などを実行する。シミュレーションは指定されたテスト範囲だけを検証し、実機動作までは保証しない。
-4. `make BOARD=9k download` または `make BOARD=20k download` はリポジトリ直下の既定ターゲット（Day 99）をビルドして書き込むコマンド。個別 Day の書き込みは `make -C dayXX_completed download BOARD=9k` のように実行する。実機確認は別途ボード上で行う。
+4. `make BOARD=9k download` または `make BOARD=20k download` はリポジトリ直下の既定ターゲット（Day 99）をビルドして書き込むコマンド。個別 Day の書き込みは `make -C dayXX download BOARD=9k` のように実行する。実機確認は別途ボード上で行う。
 
 ## 📘 ソフトウェアエンジニア向けリソース
 
@@ -97,46 +97,46 @@ graph TD
 
 まずは FPGA 開発の基本と、後の CPU 開発でデバッグに使う周辺回路を準備します。
 
-| Day | テーマ | 学習内容 |
-| :---: | :--- | :--- |
-| [**Day 01**](./day01/README_ja.md) | **L チカ** | 開発環境の構築と FPGA への書き込み |
-| [**Day 02**](./day02/README_ja.md) | **4-bit ALU** | 組み合わせ回路の基本と論理演算 |
-| [**Day 03**](./day03/README_ja.md) | **信号機 FSM** | 順序回路と状態遷移 (Finite State Machine) |
-| [**Day 04**](./day04/README_ja.md) | **デバッグ基盤** | LCD 表示回路（BSRAM/pROM 使用）の基礎 |
+| Day                                | テーマ           | 学習内容                                  |
+| :--------------------------------: | :--------------- | :---------------------------------------- |
+| [**Day 01**](./day01/README_ja.md) | **L チカ**       | 開発環境の構築と FPGA への書き込み        |
+| [**Day 02**](./day02/README_ja.md) | **4-bit ALU**    | 組み合わせ回路の基本と論理演算            |
+| [**Day 03**](./day03/README_ja.md) | **信号機 FSM**   | 順序回路と状態遷移 (Finite State Machine) |
+| [**Day 04**](./day04/README_ja.md) | **デバッグ基盤** | LCD 表示回路（BSRAM/pROM 使用）の基礎     |
 
 ### Phase 2: CPU の実装開始 (Day 05-10)
 
 CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しながらデバッグします。
 
-| Day | テーマ | 実装する命令（例） |
-| :---: | :--- | :--- |
-| [**Day 05**](./day05/README_ja.md) | **CPU の骨格** | `NOP` (Program Counter のみ) |
-| [**Day 06**](./day06/README_ja.md) | **メモリアクセス** | `LDA #imm` (即値ロード) |
-| [**Day 07**](./day07/README_ja.md) | **レジスタ転送** | `TAX`, `TAY`, `INX`, `INY` |
-| [**Day 08**](./day08/README_ja.md) | **算術演算 (ALU)** | `ADC`, `SBC` (フラグ NVZC の計算) |
-| [**Day 09**](./day09/README_ja.md) | **分岐命令** | `BNE`, `BEQ`, `BPL`, `BMI` |
-| [**Day 10**](./day10/README_ja.md) | **スタック操作** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT` |
+| Day                                | テーマ             | 実装する命令（例）                       |
+| :--------------------------------: | :----------------- | :--------------------------------------- |
+| [**Day 05**](./day05/README_ja.md) | **CPU の骨格**     | PC・リセット・実行許可（命令解読なし）   |
+| [**Day 06**](./day06/README_ja.md) | **メモリアクセス** | `LDA #imm` (即値ロード)                  |
+| [**Day 07**](./day07/README_ja.md) | **レジスタ転送**   | `TAX`, `TAY`, `INX`, `INY`               |
+| [**Day 08**](./day08/README_ja.md) | **算術演算 (ALU)** | `ADC`, `SBC` (フラグ NVZC の計算)        |
+| [**Day 09**](./day09/README_ja.md) | **分岐命令**       | `BNE`, `BEQ`, `BPL`, `BMI`               |
+| [**Day 10**](./day10/README_ja.md) | **スタック操作**   | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT` |
 
 ### Phase 3: アドレッシングモードとデータ処理 (Day 11-15)
 
 メモリ操作を強化し、より複雑なデータ処理を可能にします。
 
-| Day | テーマ | 学習内容 |
-| :---: | :--- | :--- |
-| [**Day 11**](./day11/README_ja.md) | **Zero Page** | ゼロページアドレッシング (`LDA $00`) と RAM 実装 |
-| [**Day 12**](./day12/README_ja.md) | **Absolute** | アブソリュートアドレッシング (`LDA $1234`) |
-| [**Day 13**](./day13/README_ja.md) | **論理演算** | `AND`, `ORA`, `EOR`, `BIT` (ビット操作) |
-| [**Day 14**](./day14/README_ja.md) | **シフト・回転** | `ASL`, `LSR`, `ROL`, `ROR` |
-| [**Day 15**](./day15/README_ja.md) | **比較・増減** | `CMP`, `CPX`, `CPY`, `DEX`, `DEY`, `INC`, `DEC` |
+| Day                                | テーマ           | 学習内容                                         |
+| :--------------------------------: | :--------------- | :----------------------------------------------- |
+| [**Day 11**](./day11/README_ja.md) | **Zero Page**    | ゼロページアドレッシング (`LDA $00`) と RAM 実装 |
+| [**Day 12**](./day12/README_ja.md) | **Absolute**     | アブソリュートアドレッシング (`LDA $1234`)       |
+| [**Day 13**](./day13/README_ja.md) | **論理演算**     | `AND`, `ORA`, `EOR`, `BIT` (ビット操作)          |
+| [**Day 14**](./day14/README_ja.md) | **シフト・回転** | `ASL`, `LSR`, `ROL`, `ROR`                       |
+| [**Day 15**](./day15/README_ja.md) | **比較・増減**   | `CMP`, `CPX`, `CPY`, `DEX`, `DEY`, `INC`, `DEC`  |
 
 ### Phase 4: 高度なアドレッシングと独自命令 (Day 16-18)
 
 6502 の真骨頂である複雑なアドレッシングと、FPGA ならではの独自拡張を実装します。
 
-| Day | テーマ | 学習内容 |
-| :---: | :--- | :--- |
-| [**Day 16**](./day16/README_ja.md) | **Indexed** | インデックス付きアドレッシング (`LDA $1234,X` / `,Y`) |
-| [**Day 17**](./day17/README_ja.md) | **Indirect** | 間接アドレッシング (`JMP ($1234)`, `($00,X)`, `($00),Y`) |
+| Day                                | テーマ       | 学習内容                                                   |
+| :--------------------------------: | :----------- | :--------------------------------------------------------- |
+| [**Day 16**](./day16/README_ja.md) | **Indexed**  | インデックス付きアドレッシング (`LDA $1234,X` / `,Y`)      |
+| [**Day 17**](./day17/README_ja.md) | **Indirect** | 間接アドレッシング (`JMP ($1234)`, `($00,X)`, `($00),Y`)   |
 | [**Day 18**](./day18/README_ja.md) | **独自命令** | `WVS` (V-Sync 待ち), `CVR` (VRAM クリア), `IFO` (情報表示) |
 
 ### 🏁 最終目標 (Day 99)
@@ -154,3 +154,9 @@ CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しな
   - **GTKwave**: 信号の変化を視覚化する波形ビューア（ロジックのための「デバッガ」）。
 
 詳細は[Day 01](./day01/README_ja.md)から始めてください！
+
+## 各Dayの進め方とDay99への移行
+
+各 Day は独立したスターターです。前日の編集は次 Day に自動反映されません。次 Day には必要な前提実装が入っているので、その Day の TODO を埋めます。完成例を書き込む場合は `dayXX_completed`、自分の実装を確認する場合は `dayXX` を指定してください。Day01 は GUI 手順でプロジェクトを作成します。Day02 の LED 点滅は書込み確認で、ALU はシミュレーションで検証します。
+
+Day18 を終えたら[Day99への移行ガイド](./docs/DAY18_TO_DAY99_ja.md)へ進んでください。

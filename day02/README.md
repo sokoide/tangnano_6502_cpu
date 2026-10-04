@@ -43,7 +43,7 @@ graph LR
     - Implement the main operations using a `case` statement inside an `always_comb` block.
     - Ensure all outputs are defined to avoid **"inferred latches"** (accidental memory).
 2. **Update LED Speed**:
-    - In `top.sv`, we now use a lower bit of the counter (e.g., `counter[22]`) to make the LED blink approximately 4 times faster than Day 01. This is a quick way to verify that your new bitstream was successfully downloaded.
+    - In `top_9k.sv` / `top_20k.sv`, we now use a lower bit of the counter (e.g., `counter[22]`) to make the LED blink approximately 4 times faster than Day 01. This is a quick way to verify that your new bitstream was successfully downloaded.
 3. **Simulation & Verification**:
     - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
     - Use `make test` to run the simulation and check for errors.
@@ -303,3 +303,5 @@ In Day 03, we will learn about sequential circuits:
 - Counters and timers
 
 **Preparation task**: Review the basics of digital circuits (flip-flops, clocks, setup time).
+
+The supplied board tops only blink an LED to confirm programming. The ALU is not connected to them; validate ALU arithmetic with `make test`. Hardware ALU integration requires additional input/output wiring and is an optional exercise.

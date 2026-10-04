@@ -27,26 +27,18 @@ Day 04–09 use a simple program ROM (`rom.sv`) to supply instructions. RAM, inc
 
 The **Memory Map** defines how the CPU's address space is connected to various memory blocks and peripherals. The memory map for our 6502 system is as follows:
 
-### 6502 System Memory Map (used in this Training)
+### Local VRAM addresses in this lesson
 
-| Address Range | Purpose | Description |
-| :--- | :--- | :--- |
-| `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
-| `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
-| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
-| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
+The CPU is not connected yet. The initializer writes local VRAM port addresses 0..1023; the first 1020 bytes hold the visible 60x17 cells. CPU maps are introduced in [Day10](../day10/README.md) and [Day99](../day99_completed/README.md).
 
 ### VRAM to LCD Mapping
 
 The LCD screen (480x272 pixels) is divided into 8x16 pixel character units, allowing for a display of **60 columns × 17 rows**. Each ASCII code in VRAM maps to a specific coordinate.
 
 **Display Address Formula:**
-`VRAM Address = 0xE000 + (Row * 60) + Column`
+`VRAM Address = (Row * 60) + Column`
 
-For example, writing `8'h41` ('A') to `0xE000` displays 'A' in the top-left corner.
+For example, writing `8'h41` ('A') to local VRAM port address `0` displays 'A' in the top-left corner.
 
 ```mermaid
 graph TD
@@ -54,7 +46,7 @@ graph TD
         C["Column <br/> 0 - 59"]
         R["Row <br/> 0 - 16"]
     end
-    C --> CALC["Address Calculation <br/> 0xE000 + (Row * 60) + Column"]
+    C --> CALC["Address Calculation <br/> (Row * 60) + Column"]
     R --> CALC
     CALC --> VRAM["VRAM (SDPB) <br/> 1020 bytes"]
     VRAM --> OUT["ASCII Code <br/> at Position"]
@@ -64,7 +56,7 @@ graph TD
 
 ```mermaid
 graph TD
-    CPU[CPU/Logic] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>0xE000 - 0xE3FF]
+    CPU[CPU/Logic] -->|1. Write ASCII Code| VRAM[Text VRAM<br/>local addresses 0..1023]
 
     subgraph "LCD Controller (lcd.sv)"
         VRAM -->|2. Read| Code[ASCII Code]
@@ -101,7 +93,7 @@ In the Day 04 starter, we instantiate `lcd_demo` inside `top_core.sv` to establi
 
 The slow-paced demo circuit driving CPU registers and instruction category LEDs is added to `top_core.sv` in subsequent days. The LCD display in Day 04 does not show CPU instruction execution or debug information. Please refer to each specific day's `top_core.sv` and README for its actual wiring.
 
-**About the Memory Map:** The table above introduces the logical address layout planned for subsequent CPU lessons. The Day 04 LCD demo itself has no CPU address decoding. Furthermore, Day 99 implements mirror regions in higher addresses; refer to the [Day 99 Memory Contract](../day99_completed/docs/INSTRUCTIONS.md) for the final layout.
+**About the Memory Map:** CPU addresses and local VRAM port addresses are separate. The Day 04 LCD demo itself has no CPU address decoding. Furthermore, Day 99 implements mirror regions in higher addresses; refer to the [Day 99 Memory Contract](../day99_completed/docs/INSTRUCTIONS.md) for the final layout.
 
 ## 🛠️ Build and Verification Steps
 
@@ -148,3 +140,5 @@ In hardware development, you cannot simply `printf` to a console. By establishin
 
 From Day 05, we begin building the CPU itself.
 We will start by implementing the **Program Counter (PC)** along with reset and execution enable. Implementing independent A/X/Y register files is provided as an optional exercise, with CPU integration coming in later steps.
+
+Day04 only connects the LCD text pipeline. It does not execute CPU instructions or display live CPU registers. VRAM port address = row * 60 + column.

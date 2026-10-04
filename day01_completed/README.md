@@ -189,7 +189,7 @@ module top (
 );
 
     // Clock divider for visible blinking (bit 24 toggles every 0.621 s; full cycle 1.243 s)
-    logic [24:0] counter;
+    logic [24:0] counter = 0;
 
     always_ff @(posedge clk) begin
         counter <= counter + 1'b1;
@@ -249,7 +249,7 @@ flowchart LR
 - Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
 - Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
 - Use `<=` (non-blocking assignment) inside `always_ff` to ensure all registers update simultaneously at the clock edge.
-  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERVERILOG_CHEATSHEET.md) for details.
+  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERILOG_CHEATSHEET.md) for details.
 
 ### Step 3: Create Constraint File
 

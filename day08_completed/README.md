@@ -36,7 +36,7 @@ graph TD
 The 6502 flags are updated automatically by many instructions. We focus on the four primary arithmetic flags:
 
 - **N (Negative)**: Set to 1 if bit 7 of the result is 1 (negative number).
-- **V (Overflow)**: Set to 1 if a signed arithmetic result exceeds ±127.
+- **V (Overflow)**: Set to 1 if a signed arithmetic result exceeds -128..127.
 - **Z (Zero)**: Set to 1 if the result is 0.
 - **C (Carry)**: Set to 1 if addition overflows or subtraction does NOT borrow.
 
@@ -44,17 +44,17 @@ The 6502 flags are updated automatically by many instructions. We focus on the f
 
 | Opcode | Mnemonic   | Description                                     | Cycles |
 | :----: | ---------- | ----------------------------------------------- | :----: |
-| `0x69` | `ADC #imm` | Add operand + Carry to Accumulator              |   2    |
-| `0xE9` | `SBC #imm` | Subtract operand - (1 - Carry) from Accumulator |   2    |
-| `0x18` | `CLC`      | Clear Carry flag (0)                            |   2    |
-| `0x38` | `SEC`      | Set Carry flag (1)                              |   2    |
+| `0x69` | `ADC #imm` | Add operand + Carry to Accumulator              | 2      |
+| `0xE9` | `SBC #imm` | Subtract operand - (1 - Carry) from Accumulator | 2      |
+| `0x18` | `CLC`      | Clear Carry flag (0)                            | 2      |
+| `0x38` | `SEC`      | Set Carry flag (1)                              | 2      |
 
 ## 🛠️ Implementation Steps
 
 1. **Declare Flags**:
-    - In `cpu.sv`, add `logic N, V, Z, C;`.
-2. **Create ALU (Combinational Logic)**:
-    - Use `always_comb` to define arithmetic logic.
+    - Check the existing `logic n, v, z, c;` and `debug_p` wiring.
+2. **CPU-local Arithmetic**:
+    - Implement arithmetic and flag updates in the STATE_FETCH_OPERAND TODO inside always_ff.
     - `ADC`: `{C_out, result} = A + operand + C;`
     - `SBC`: Equivalent to `A + (~operand) + C`.
 3. **Flag Update Logic**:
@@ -89,3 +89,7 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 ## 🎯 Next Step
 
 In Day 09, we will use these flags (Z, C, etc.) to control the program flow using **Branch Instructions**.
+
+This day implements binary arithmetic inside the CPU, not an independent ALU module; decimal arithmetic is out of scope. Signed 8-bit range is -128..127. C means carry-out for ADC and no borrow for SBC. SBC overflow is `(A[7] != operand[7]) && (A[7] != result[7])`. Use a 9-bit sum; invert the operand within 8 bits before zero-extending it.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

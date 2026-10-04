@@ -17,12 +17,12 @@ SRCS = alu_4bit.sv
 
 ifeq ($(BOARD),20k)
   DEVICE = GW2AR-18C
-  GPRJ = hw_20k.gprj
-  TOP_SRCS = $(SRCS)
+  GPRJ = day02_20k.gprj
+  TOP_SRCS = top_$(BOARD).sv $(SRCS)
 else
   DEVICE = GW1NR-9C
-  GPRJ = hw_9k.gprj
-  TOP_SRCS = $(SRCS)
+  GPRJ = day02_9k.gprj
+  TOP_SRCS = top_$(BOARD).sv $(SRCS)
 endif
 
 .PHONY: all clean download help tools-check sim sim-build test tools-check-sim

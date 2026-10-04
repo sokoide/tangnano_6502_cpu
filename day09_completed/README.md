@@ -42,7 +42,7 @@ graph TD
 
 1. **Relative Address Calculation**:
     - The second byte of a branch instruction is a **signed 8-bit offset**.
-    - Target PC formula: `target_pc = (PC + 2) + $signed(offset);` (Wait until the offset byte is fetched).
+    - Target PC formula: `target_pc = opcode_pc + 2 + 16'($signed(offset));` Here opcode_pc denotes the opcode address. During operand fetch the actual pc already addresses the operand, so use pc + 1 + the sign-extended offset.
 2. **Condition Check**:
     - Inside your `always_ff` block, check the state of the relevant flag.
     - Example: `if (opcode == OP_BNE && !Z) PC <= target_pc;`

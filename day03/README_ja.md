@@ -5,6 +5,17 @@
 🌐 対応言語:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## 実習の見取り図
+
+この Day のスターターで編集します。
+
+| 項目           | 内容                                               |
+| -------------- | -------------------------------------------------- |
+| 編集する箇所   | traffic_light.svの状態遷移TODO。独立部品は追加課題 |
+| 提供済みの前提 | カウンタ・PWM・分周器のinterface                   |
+| テストの期待値 | `make test` で交通信号の遷移と分周器の比率0～15    |
+| 実機で見るもの | 信号機LEDが赤→緑→黄。外部入力はボードtopで固定     |
+
 ## 📜 概要
 
 Day 02 までは、組み合わせ回路による演算ロジックを学びました。しかし、CPU がプログラムを実行するためには、値を「記憶」し、時間に沿って「状態」を遷移させる必要があります。
@@ -63,11 +74,17 @@ stateDiagram-v2
 ```systemverilog
 // モジュール側
 module traffic_light #(
-    parameter TIMER_LIMIT = 26'd50_000_000
+    parameter TIMER_LIMIT_RED = 26'd50_000_000,
+    parameter TIMER_LIMIT_GREEN = 26'd50_000_000,
+    parameter TIMER_LIMIT_YELLOW = 26'd25_000_000
 ) (...);
 
 // テストベンチ側
-traffic_light #(.TIMER_LIMIT(26'd10)) dut (...);
+traffic_light #(
+    .TIMER_LIMIT_RED(26'd10),
+    .TIMER_LIMIT_GREEN(26'd10),
+    .TIMER_LIMIT_YELLOW(26'd5)
+) dut (...);
 ```
 
 ## 💡 クロックの「鼓動」
@@ -184,7 +201,11 @@ stateDiagram-v2
 ```
 
 ```systemverilog
-module traffic_light (
+module traffic_light #(
+    parameter TIMER_LIMIT_RED = 26'd50_000_000,
+    parameter TIMER_LIMIT_GREEN = 26'd50_000_000,
+    parameter TIMER_LIMIT_YELLOW = 26'd25_000_000
+) (
     input  logic clk,
     input  logic rst_n,
     output logic red,
@@ -220,7 +241,7 @@ module traffic_light (
     always_comb begin
         case (current_state)
             RED_STATE: begin
-                if (timer >= 26'd50_000_000)  // 約2秒
+                if (timer >= TIMER_LIMIT_RED)  // 約2秒
                     next_state = GREEN_STATE;
                 else
                     next_state = RED_STATE;
@@ -286,5 +307,7 @@ flowchart LR
 Day 04 では、実践的な CPU コンポーネントとハードウェア操作について学習します:
 
 - **LCD ディスプレイ**: 外部 LCD モジュールとのインターフェース方法を学びます。
-- **CPU レジスタ**: 6502 のコアレジスタ（A, X, Y など）を実装します。
-- **メモリとフラグ**: 状態管理とプロセッサフラグの計算方法を理解します。
+- **文字表示**: VRAM、フォント ROM、画素クロックの接続を学びます。
+- **CPUの準備**: CPU はまだ接続せず、固定デモ文字を表示します。
+
+分周器は `div_ratio=0` で停止、`1` で入力クロックを通過、`2..15` で整数分周します。比率はリセット中に変更してください。内部回路の低速化には、派生クロックより元クロックと clock enable を使う方法を優先します。

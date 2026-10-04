@@ -58,10 +58,10 @@ graph LR
 
 | Opcode | Mnemonic | Description                         | Cycles |
 | :----: | -------- | ----------------------------------- | :----: |
-| `0x0A` | `ASL A`  | Arithmetic Shift Left (Fill with 0) |   2    |
-| `0x4A` | `LSR A`  | Logical Shift Right (Fill with 0)   |   2    |
-| `0x2A` | `ROL A`  | Rotate Left (Through Carry)         |   2    |
-| `0x6A` | `ROR A`  | Rotate Right (Through Carry)        |   2    |
+| `0x0A` | `ASL A`  | Arithmetic Shift Left (Fill with 0) | 2      |
+| `0x4A` | `LSR A`  | Logical Shift Right (Fill with 0)   | 2      |
+| `0x2A` | `ROL A`  | Rotate Left (Through Carry)         | 2      |
+| `0x6A` | `ROR A`  | Rotate Right (Through Carry)        | 2      |
 
 ## 🛠️ Implementation Steps
 
@@ -91,3 +91,5 @@ graph LR
 ## 🎯 Next Step
 
 In Day 15, we will implement **Comparison Instructions (CMP, CPX, CPY)** and **Increment/Decrement** for memory contents, which provide the data needed for branches.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

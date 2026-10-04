@@ -5,6 +5,17 @@
 🌐 対応言語:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## 実習の見取り図
+
+この Day のスターターで編集します。
+
+| 項目           | 内容                                 |
+| -------------- | ------------------------------------ |
+| 編集する箇所   | GUIでtopとCSTを作成                  |
+| 提供済みの前提 | 27MHz入力とLED配線                   |
+| テストの期待値 | 完成例の `make test` はLED反転を確認 |
+| 実機で見るもの | 約0.62秒ごとにLED反転                |
+
 ## 📜 概要
 
 6502 CPU 自作への第一歩へようこそ！複雑なロジックの世界に飛び込む前に、まずはハードウェアと開発環境に慣れる必要があります。
@@ -195,7 +206,7 @@ module top (
     // 2^25 is approximately 33,554,432.
     // By using the 25th bit (MSB), the LED will toggle roughly every 0.62 seconds
     // (16.7M / 27M, full period ~1.24s), resulting in a visible blink.
-    logic [24:0] counter;
+    logic [24:0] counter = 0;
 
     // Sequential logic: updates on the rising edge of the clock
     always_ff @(posedge clk) begin
@@ -205,7 +216,7 @@ module top (
 
     // Combinational logic: continuous assignment
     // The 'led' signal always reflects the state of the counter's most significant bit.
-    // When counter[24] is 1, the LED is ON; when it's 0, the LED is OFF.
+    // Board LED polarity is handled by the board wrapper; 9K LEDs are active-low.
     assign led = counter[24];
 
 endmodule

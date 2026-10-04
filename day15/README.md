@@ -36,13 +36,13 @@ sequenceDiagram
 
 | Opcode | Mnemonic   | Description                   | Cycles |
 | :----: | ---------- | ----------------------------- | :----: |
-| `0xC9` | `CMP #imm` | Compare A with immediate      |   2    |
-| `0xE0` | `CPX #imm` | Compare X with immediate      |   2    |
-| `0xC0` | `CPY #imm` | Compare Y with immediate      |   2    |
-| `0xCA` | `DEX`      | Decrement X (Z, N flags)      |   2    |
-| `0x88` | `DEY`      | Decrement Y (Z, N flags)      |   2    |
-| `0xE6` | `INC zp`   | Increment memory at Zero Page |   5    |
-| `0xC6` | `DEC zp`   | Decrement memory at Zero Page |   5    |
+| `0xC9` | `CMP #imm` | Compare A with immediate      | 2      |
+| `0xE0` | `CPX #imm` | Compare X with immediate      | 2      |
+| `0xC0` | `CPY #imm` | Compare Y with immediate      | 2      |
+| `0xCA` | `DEX`      | Decrement X (Z, N flags)      | 2      |
+| `0x88` | `DEY`      | Decrement Y (Z, N flags)      | 2      |
+| `0xE6` | `INC zp`   | Increment memory at Zero Page | 5      |
+| `0xC6` | `DEC zp`   | Decrement memory at Zero Page | 5      |
 
 Cycle counts are reference values from the real 6502. The CPU in this curriculum is an educational multi-cycle FSM implementation, so actual cycle counts are higher.
 
@@ -93,3 +93,5 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🏁 Phase 3 Complete
 
 Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.
+
+The CPU test also sets C=1/V=1 before DEX/DEY to check flag preservation. On hardware the successful ROM stops at $0212 with X=$00, Y=$FF, RAM[$10]=$01.

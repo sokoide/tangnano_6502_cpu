@@ -61,17 +61,9 @@ Used for the **Font ROM**. It comes pre-loaded with font patterns upon power-up,
 
 ## 🏗️ Memory Data Flow & Layout
 
-### 6502 System Memory Map (used in this Training)
+### Local VRAM addresses in this lesson
 
-| Address Range | Purpose | Description |
-| :--- | :--- | :--- |
-| `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
-| `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7BFF` | Program RAM | Main memory for programs/data (30.5KB) |
-| `0x7C00 - 0x7FFF` | Shadow VRAM | CPU-readable VRAM copy (1KB) |
-| `0x8000 - 0xDFFF` | (Unmapped) | Reserved for future expansion |
-| `0xE000 - 0xE3FF` | Text VRAM | Character codes (ASCII) for LCD display (1KB) |
-| `0xE400 - 0xFFFF` | (Unmapped) | Reserved for I/O or expansion |
+The CPU is not connected yet. The initializer writes local VRAM port addresses 0..1023; the first 1020 bytes hold the visible 60x17 cells. CPU maps are introduced in [Day10](../day10/README.md) and [Day99](../day99_completed/README.md).
 
 ### VRAM Screen Layout
 
@@ -83,7 +75,7 @@ graph TD
         C["Column <br/> 0 - 59"]
         R["Row <br/> 0 - 16"]
     end
-    C --> CALC["Address Calculation <br/> 0xE000 + (Row * 60) + Column"]
+    C --> CALC["Address Calculation <br/> (Row * 60) + Column"]
     R --> CALC
     CALC --> VRAM["VRAM (SDPB) <br/> 1020 bytes"]
     VRAM --> OUT["ASCII Code <br/> at Position"]
@@ -92,3 +84,5 @@ graph TD
 ## 💡 The "Architecture of Visibility"
 
 In hardware development, you cannot "print" to a console. By building the LCD controller early, you created a hardware-native debugger. Starting from tomorrow, you will see your CPU's internal state updating in real-time on this screen!
+
+Day04 only connects the LCD text pipeline. It does not execute CPU instructions or display live CPU registers. VRAM port address = row * 60 + column.

@@ -77,3 +77,10 @@ help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"
 	@echo "Vars: BOARD=9k|20k, GWSH=..., PRG=..."
+
+.PHONY: test-divider
+test: test-divider
+test-divider: tools-check-sim
+	@mkdir -p build/$(BOARD)/divider
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_clock_divider --Mdir build/$(BOARD)/divider ../day03_completed/tb_clock_divider.sv clock_divider.sv
+	./build/$(BOARD)/divider/Vtb_clock_divider

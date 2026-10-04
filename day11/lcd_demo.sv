@@ -43,6 +43,9 @@ module lcd_demo (
 `else
     // FPGA path: CPU/VRAM writes use MEMORY_CLK; display reads use LCD_CLK.
     logic MEMORY_CLK;
+    logic locked_raw, locked_meta, locked_sync, lock_stable;
+    logic [3:0] lock_count;
+    wire mem_rst_n = rst_n && lock_stable;
 
     Gowin_rPLL9 pll9_inst (
         .clkout(LCD_CLK),
@@ -51,8 +54,29 @@ module lcd_demo (
 
     Gowin_rPLL40 pll40_inst (
         .clkout(MEMORY_CLK),
-        .clkin (XTAL_IN)
+        .clkin (XTAL_IN),
+        .locked(locked_raw)
     );
+
+    // Keep boot writes reset until synchronized PLL LOCK holds for 16 clocks.
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            locked_meta <= 1'b0;
+            locked_sync <= 1'b0;
+            lock_count  <= 4'd0;
+            lock_stable <= 1'b0;
+        end else begin
+            locked_meta <= locked_raw;
+            locked_sync <= locked_meta;
+            if (!locked_sync) begin
+                lock_count  <= 4'd0;
+                lock_stable <= 1'b0;
+            end else if (lock_count != 4'd15) begin
+                lock_count  <= lock_count + 1'b1;
+                lock_stable <= 1'b0;
+            end else lock_stable <= 1'b1;
+        end
+    end
 
     // Font pROM (Sweet16Font, 4KB: 16 bytes/char x 256 chars)
     Gowin_pROM_font prom_font_inst (
@@ -120,10 +144,13 @@ module lcd_demo (
 `endif
 
     logic cpu_clk;
+    logic boot_rst_n;
 `ifdef VERILATOR
     assign cpu_clk = LCD_CLK;
+    assign boot_rst_n = rst_n;
 `else
     assign cpu_clk = MEMORY_CLK;
+    assign boot_rst_n = mem_rst_n;
 `endif
 
     cpu u_cpu (
@@ -152,14 +179,14 @@ module lcd_demo (
     ram u_ram (
         .clk(cpu_clk),
         .addr(ram_addr),
-        .write_en(ram_we),
+        .write_en(ram_we && boot_rst_n),
         .din(ram_din),
         .dout(ram_data_out)
     );
 
     boot_loader u_boot (
         .clk(cpu_clk),
-        .rst_n(rst_n),
+        .rst_n(boot_rst_n),
         .cpu_address_bus(cpu_address_bus),
         .cpu_data_out(cpu_data_out),
         .cpu_write_en(cpu_write_en),
@@ -244,6 +271,20 @@ module lcd_demo (
     } vram_write_state_t;
     vram_write_state_t vram_write_state;
 
+    // Synchronize the pixel-domain frame event before memory-domain use.
+    logic vsync_meta, vsync_sync, vsync_prev;
+    always_ff @(posedge cpu_clk or negedge rst_n) begin
+        if (!rst_n) begin
+            vsync_meta <= 1'b0;
+            vsync_sync <= 1'b0;
+            vsync_prev <= 1'b0;
+        end else begin
+            vsync_meta <= vsync;
+            vsync_sync <= vsync_meta;
+            vsync_prev <= vsync_sync;
+        end
+    end
+
     always_ff @(posedge cpu_clk or negedge rst_n) begin
         if (!rst_n) begin
             vram_cea <= 1'b0;
@@ -253,7 +294,9 @@ module lcd_demo (
         end else begin
             vram_cea <= 1'b0;  // Default to no write
             case (vram_write_state)
-                S_IDLE:  if (vsync) vram_write_state <= S_WRITE_P;  // Start writing on vsync
+                S_IDLE:
+                if (vsync_sync && !vsync_prev)
+                    vram_write_state <= S_WRITE_P;  // Start writing on vsync
                 S_WRITE_P: begin
                     vram_cea <= 1'b1;
                     vram_ada <= 0;

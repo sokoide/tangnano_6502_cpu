@@ -26,7 +26,7 @@ From Day 10 onward, the program runs from RAM backed by Gowin BSRAM (`ram.sv`), 
 ```mermaid
 graph TD
     subgraph "JMP (abs)"
-        Instr[Instruction<br/>JMP $1000]
+        Instr[Instruction<br/>JMP ($1000)]
         Ptr[Pointer at $1000<br/>Contains $2034]
         Target[Target Address<br/>$2034]
         Instr -->|Fetch Pointer| Ptr
@@ -46,9 +46,9 @@ graph TD
 
 | Opcode | Mnemonic     | Description                                        | Cycles |
 | :----: | ------------ | -------------------------------------------------- | :----: |
-| `0x6C` | `JMP (abs)`  | Indirect Jump: Jump to address stored at `abs`     |   5    |
-| `0xA1` | `LDA (zp,X)` | Pre-indexed Indirect: Load from `pointer(zp+X)`    |   6    |
-| `0xB1` | `LDA (zp),Y` | Post-indexed Indirect: Load from `pointer(zp) + Y` |   5+   |
+| `0x6C` | `JMP (abs)`  | Indirect Jump: Jump to address stored at `abs`     | 5      |
+| `0xA1` | `LDA (zp,X)` | Pre-indexed Indirect: Load from `pointer(zp+X)`    | 6      |
+| `0xB1` | `LDA (zp),Y` | Post-indexed Indirect: Load from `pointer(zp) + Y` | 5+     |
 
 ## 🛠️ Implementation Steps
 
@@ -58,7 +58,7 @@ graph TD
     - `(zp,X)`: Add X to the page-0 address _before_ fetching the pointer.
     - `(zp),Y`: Fetch the pointer from page-0 _first_, then add Y to get the final effective address.
 3. **Advanced FSM Control**:
-    - Since these instructions take 5 to 6 cycles, ensure your state machine correctly sequences the operand fetch, pointer fetch, and final data access/operation.
+    - Sequence operand fetch, pointer low/high reads, and final access as separate FSM steps with synchronous RAM waits. Standard 6502 cycles are reference values only.
 
 ## 🧪 Verification
 
@@ -84,3 +84,7 @@ graph TD
 ## 🎯 Next Step
 
 In Day 18, we will implement **Custom FPGA Instructions (WVS, CVR, IFO)** beyond the standard 6502 set. Together with `HLT` (introduced in Day 10), they give direct control over our hardware peripherals.
+
+Zero-page pointer reads wrap from $FF to $00. JMP (abs) instead increments the full 16-bit address; the NMOS 6502 page-boundary bug ($12FF to $1200) is not reproduced: this CPU reads $1300.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

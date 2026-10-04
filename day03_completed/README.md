@@ -48,7 +48,7 @@ This is the completed project for designing sequential circuits in SystemVerilog
 ### 5. Clock Divider
 
 - Variable division ratio (1-15)
-- 50% duty cycle
+- 50% duty cycle for even ratios; floor(N/2)/N for odd ratios
 - High-precision division
 
 ## How to Build and Test
@@ -120,3 +120,5 @@ Inside `top_core.sv`, traffic-light state and low counter bits are mapped to the
 3. **Multi-Stage Clock Divider**: More flexible frequency generation
 
 These sequential circuits play an important role in the control part and timing control of the CPU.
+
+The divider is disabled at ratio 0, bypasses the input clock at 1, and divides by 2..15. Change the ratio during reset. Prefer the original clock plus a clock enable for slowing internal logic.

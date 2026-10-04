@@ -231,6 +231,34 @@ module tb_cpu;
             $display("PASS: debug_pc stays at 0x021E after HLT");
         end
 
+        // Exercise preservation with both C and V set, not only their reset values.
+        @(negedge clk);
+        rst_n = 0;
+        mem[16'h0200] = 8'hA9;
+        mem[16'h0201] = 8'h7F;  // LDA #$7F
+        mem[16'h0202] = 8'h18;  // CLC
+        mem[16'h0203] = 8'h69;
+        mem[16'h0204] = 8'h01;  // ADC #1: A=$80 V=1
+        mem[16'h0205] = 8'h38;  // SEC: C=1
+        mem[16'h0206] = 8'hA2;
+        mem[16'h0207] = 8'h01;  // LDX #1
+        mem[16'h0208] = 8'hA0;
+        mem[16'h0209] = 8'h00;  // LDY #0
+        mem[16'h020A] = 8'hCA;  // DEX: X=0, Z=1, C/V retained
+        mem[16'h020B] = 8'h88;  // DEY: Y=$FF, N=1, C/V retained
+        mem[16'h020C] = 8'hEF;  // HLT
+        repeat (2) @(negedge clk);
+        rst_n = 1;
+        wait_pc(16'h020A, 80, "prepare C=1 V=1");
+        check_p("before DEX C=1 V=1", 8'h7F);
+        wait_pc(16'h020B, 10, "DEX preserves set C/V");
+        check8("DEX X=0", debug_x, 8'h00);
+        check_p("DEX retains C=1 V=1", 8'h7F);
+        wait_pc(16'h020C, 10, "DEY preserves set C/V");
+        check8("DEY Y=FF", debug_y, 8'hFF);
+        check8("DEX/DEY leave A unchanged", debug_a, 8'h80);
+        check_p("DEY retains C=1 V=1", 8'hFD);
+
         // Final result
         $display("---------------------------------------");
         if (error_count == 0) begin

@@ -7,9 +7,10 @@
 //Device Version: C
 //Created Time: Sun Apr 20 19:56:53 2025
 
-module Gowin_rPLL40 (clkout, clkin);
+module Gowin_rPLL40 (clkout, clkin, locked);
 
 output clkout;
+output locked;
 input clkin;
 
 wire lock_o;
@@ -19,6 +20,7 @@ wire clkoutd3_o;
 wire gw_gnd;
 
 assign gw_gnd = 1'b0;
+assign locked = lock_o;
 
 rPLL rpll_inst (
     .CLKOUT(clkout),

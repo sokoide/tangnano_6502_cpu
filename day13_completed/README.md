@@ -96,3 +96,5 @@ The completed CPU test runs with `make test-cpu` in this directory. `make test` 
 ## 🎯 Next Step
 
 In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

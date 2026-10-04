@@ -14,7 +14,7 @@ instantiate the separate decoder/flag modules. Arithmetic CPU flags are tested i
 1. Reset PC to `$0200`, A to `$00`, and the FSM to opcode fetch.
 2. Recognize `$A9` in opcode fetch and advance PC/address to its operand.
 3. Save the operand into A and advance to the next opcode.
-4. Add the `pc_enable` input to the starter interface and hold state when it is zero.
+4. Use the existing `pc_enable` input and hold state when it is zero.
    The completed interface already has this input. Day 04–09 use ROM; synchronous RAM waits arrive in Day 10.
 5. Run `make test-cpu` to check multiple immediate loads, PC, and enable holds.
    The completed workspace connects the same testbench to the reference CPU.
@@ -24,10 +24,10 @@ instantiate the separate decoder/flag modules. Arithmetic CPU flags are tested i
 
 ## Memory Example
 
-| Address | Byte | Meaning |
-| --- | --- | --- |
-| `$0200` | `$A9` | LDA immediate opcode |
-| `$0201` | `$42` | Operand loaded into A |
+| Address | Byte        | Meaning                     |
+| ------- | ----------- | --------------------------- |
+| `$0200` | `$A9`       | LDA immediate opcode        |
+| `$0201` | `$42`       | Operand loaded into A       |
 | `$0202` | next opcode | Fetch destination after LDA |
 
 ## Additional Exercises

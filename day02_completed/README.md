@@ -152,3 +152,5 @@ gtkwave tb_alu_4bit.vcd
 3. **Parity Generator**: Calculate even/odd parity
 
 These basic modules will be important building blocks in the later CPU design.
+
+The supplied board tops only blink an LED to confirm programming. The ALU is not connected to them; validate ALU arithmetic with `make test`. Hardware ALU integration requires additional input/output wiring and is an optional exercise.

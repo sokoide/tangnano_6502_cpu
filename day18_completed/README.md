@@ -32,12 +32,12 @@ graph TD
     Wait -- Yes --> Next[Next Instruction]
 ```
 
-| Opcode | Mnemonic     | Description                                                               |
-| :----: | ------------ | ------------------------------------------------------------------------- |
-| `0xFF` | `WVS #count` | **Wait for V-Sync**: In Day 18, operand N waits for N VSync rising edges. |
-| `0xCF` | `CVR`        | **Clear VRAM**: Request the peripheral circuit to clear VRAM.             |
-| `0xDF` | `IFO`        | **Info**: Request the peripheral circuit to display debug information.    |
-| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU while the LCD controller keeps running.        |
+| Opcode | Mnemonic     | Description                                                                      |
+| :----: | ------------ | -------------------------------------------------------------------------------- |
+| `0xFF` | `WVS #count` | **Wait for V-Sync**: In Day 18, operand N waits for max(1,N) VSync rising edges. |
+| `0xCF` | `CVR`        | **Clear VRAM**: Request the peripheral circuit to clear VRAM.                    |
+| `0xDF` | `IFO`        | **Info**: Request the peripheral circuit to display debug information.           |
+| `0xEF` | `HLT`        | **Halt CPU**: Stop the CPU while the LCD controller keeps running.               |
 
 `CVR` and `IFO` are request signals from the CPU to the peripheral circuit. The CPU instruction execution cycle and the time needed for VRAM clearing or character rendering are separate things.
 
@@ -49,7 +49,7 @@ graph TD
 1. **Opcode Assignment**:
     - Define new instructions in `opcodes.svh`.
 2. **Decoder and Execution Logic**:
-    - Implement `WVS` as an opcode plus a 1-byte immediate operand. In the Day 18 spec, operand N waits for N rising edges (Day 99 waits for N+1, so beware the spec difference).
+    - Implement `WVS` as an opcode plus a 1-byte immediate operand. In the Day 18 spec, operand N waits for max(1,N) rising edges (zero also waits once) (Day 99 waits for N+1, so beware the spec difference).
 3. **External Signal Definition**:
     - Add `vsync` input and notification signals to the `cpu` module's ports and connect them to external hardware.
 

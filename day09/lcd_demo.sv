@@ -179,6 +179,20 @@ module lcd_demo (
     } vram_write_state_t;
     vram_write_state_t vram_write_state;
 
+    // Synchronize the pixel-domain frame event before memory-domain use.
+    logic vsync_meta, vsync_sync, vsync_prev;
+    always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
+        if (!rst_n) begin
+            vsync_meta <= 1'b0;
+            vsync_sync <= 1'b0;
+            vsync_prev <= 1'b0;
+        end else begin
+            vsync_meta <= vsync;
+            vsync_sync <= vsync_meta;
+            vsync_prev <= vsync_sync;
+        end
+    end
+
     always_ff @(posedge MEMORY_CLK or negedge rst_n) begin
         if (!rst_n) begin
             vram_cea <= 1'b0;
@@ -188,7 +202,9 @@ module lcd_demo (
         end else begin
             vram_cea <= 1'b0;  // Default to no write
             case (vram_write_state)
-                S_IDLE:  if (vsync) vram_write_state <= S_WRITE_P;  // Start writing on vsync
+                S_IDLE:
+                if (vsync_sync && !vsync_prev)
+                    vram_write_state <= S_WRITE_P;  // Start writing on vsync
                 S_WRITE_P: begin
                     vram_cea <= 1'b1;
                     vram_ada <= 0;

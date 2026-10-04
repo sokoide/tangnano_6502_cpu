@@ -13,12 +13,11 @@ Tang Nano 9K / 20K FPGA ボード向けの、LCD コントローラを搭載し�
 ### 前提条件
 
 - **ハードウェア**: Tang Nano 9K または 20K
-- **ソフトウェア**: Gowin EDA, cc65, Make
+- **ソフトウェア**: Gowin EDA, cc65, srecord, Go, Make（テストには Verilator、波形表示には GTKWave）
 
-### 1. リポジトリのクローン
+### 1. 取得済みのリポジトリへ移動
 
 ```bash
-git clone <repository-url>
 cd tangnano_6502_cpu
 ```
 
@@ -36,7 +35,7 @@ make BOARD=20k download
 
 ## ✨ 特徴
 
-- **6502命令サブセット**: 実装済み命令と独自拡張を搭載。未実装 opcode は fault で停止し、割り込み・decimal 演算・サイクル完全互換などは対象外です（詳細は `docs/INSTRUCTIONS.md`）。
+- **6502命令サブセット**: 実装済み命令と独自拡張を搭載。未実装 opcode は fault で停止し、割り込み・decimal 演算・サイクル完全互換などは対象外です（詳細は[命令契約](./docs/INSTRUCTIONS.md)）。
 - **LCD テキストディスプレイ**: 480x272 LCD を駆動し、ハードウェアアクセラレーションによるフォントレンダリングで 60x17 文字を表示。
 - **モジュラー設計**: CPU コア、LCD コントローラ、メモリシステム間のクリーンな分離。
 - **アセンブリプログラミング**: cc65 ツールチェーンと統合され、いくつかのサンプルプログラムが含まれています。
@@ -86,12 +85,12 @@ make BOARD=20k download
 
 このリポジトリの day06-18 は、6502 を「部品→統合」の順で理解するための教育用ステップで、モジュール分割や制御方法が day99 と一致しない部分があります。
 
-- **day06-18**: レジスタ/ALU/デコーダ/メモリ IF/制御ユニットなど、学習しやすい粒度で分割（段階的に機能を増やすことを優先）。
+- **day06-18**: CPU 内のレジスタと単一 `always_ff` の FSM へ命令を段階的に追加。独立 ALU/decoder の追加練習は CPU に未接続。
 - **day99**: 実機( LCD + VRAM + カスタム命令 )を動かす統合版。CPU は `cpu_ctx_t` を中心に**2-process FSM**（`always_comb`で`next`計算、`always_ff`で`cur<=next`更新）へ収束し、リファクタしやすい形を優先。
 
 教育用途としては**day06-18は現状のままの方が分かりやすい**（制御の段階的な導入がしやすい）一方で、実務寄りの「安全なリファクタ/拡張」を学ぶなら day99 の 2-process FSM 構造が参考になります。
 
-詳細は `day99_completed/docs/FSM.md` と `day99_completed/docs/README_architecture_ja.md` を参照してください。
+詳細は[移行ガイド](../docs/DAY18_TO_DAY99_ja.md)、[FSM](./docs/FSM.md)、[アーキテクチャ](./docs/README_architecture_ja.md)を参照してください。
 
 ### カスタム命令
 
@@ -117,7 +116,7 @@ make BOARD=20k download
 
 フォント ROM は LCD 専用の別資源で、CPU のアドレス空間には含まれません。VRAM への書込みは、CPU が読み出すシャドウコピー (`0x7C00-0x7FFF`) の RAM にも同じ値を書き込みます。`0xE000-0xE3FF` の読出しは VRAM から値を取得しません。`0xFC00-0xFFFF` 経由の書込みは RAM のミラー先だけを変更し、VRAM は更新しません。この対応関係は `src/cpu_memory.sv` のデコードと `src/ram.sv` の 15 ビット RAM アドレスに基づきます。
 
-**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横 60 列・縦 17 行で表示します。対応命令とメモリ動作は[`docs/INSTRUCTIONS.md`](./docs/INSTRUCTIONS.md)を参照してください。
+**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横 60 列・縦 17 行で表示します。対応命令とメモリ動作は[[命令契約](./docs/INSTRUCTIONS.md)](./docs/INSTRUCTIONS.md)を参照してください。
 
 ## 🎮 プログラミング例
 
@@ -125,7 +124,7 @@ make BOARD=20k download
 
 ```bash
 # 前提条件のインストール（macOS）
-brew install srecord cc65
+brew install srecord cc65 go
 
 # サンプルをビルドしてFPGAへ書き込む（デフォルト: simple5）
 # PROGで examples/*.s を拡張子なしの名前で指定できる
@@ -153,6 +152,7 @@ make download
 ```bash
 # lintとフォーマットチェックを実行
 make lint
+# 以下はファイルを書き換える整形コマンド
 make format
 ```
 

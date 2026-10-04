@@ -13,12 +13,11 @@ This guide explains how to build and deploy the project on Tang Nano 9K and 20K 
 ### Prerequisites
 
 - **Hardware**: Tang Nano 9K or 20K
-- **Software**: Gowin EDA, cc65, Make
+- **Software**: Gowin EDA, cc65, srecord, Go, Make (Verilator for tests; GTKWave for waveforms)
 
-### 1. Clone the Repository
+### 1. Enter Your Local Checkout
 
 ```bash
-git clone <repository-url>
 cd tangnano_6502_cpu
 ```
 
@@ -87,12 +86,12 @@ This project implements a documented binary-mode instruction subset with four cu
 
 The day06-18 folders are an educational, step-by-step 6502 build-up (components → integration). For teaching, their module boundaries and control style intentionally prioritize clarity and incremental learning, so they do not necessarily match day99.
 
-- **day06-18**: split into learning-friendly blocks (registers/ALU/decoder/memory interface/control unit) and evolve gradually.
+- **day06-18**: incrementally add registers and instructions to a CPU-local single always_ff FSM. Independent ALU/decoder exercises are not connected to the CPU.
 - **day99**: an integrated, “real system” target (LCD + VRAM + custom opcodes). The CPU core is refactored around `cpu_ctx_t` and converged to a **2-process FSM** (compute `next` in `always_comb`, update `cur <= next` in `always_ff`) to make maintenance/refactors safer.
 
 For education, keeping day06-18 as-is is usually better. If you want a more production-oriented reference for safe refactors and extensibility, day99’s 2-process FSM structure is the intended example.
 
-See `day99_completed/docs/FSM.md` and `day99_completed/docs/README_architecture_en.md` for details.
+See [FSM](./docs/FSM.md), [architecture](./docs/README_architecture_en.md), and the [transition guide](../docs/DAY18_TO_DAY99_ja.md).
 
 ### Custom Instructions
 
@@ -126,7 +125,7 @@ The `examples/` directory contains several 6502 assembly programs. Use the `cc65
 
 ```bash
 # Install prerequisites (macOS)
-brew install srecord cc65
+brew install srecord cc65 go
 
 # Install prerequisites (Linux)
 sudo apt install srecord cc65
@@ -176,3 +175,5 @@ Contributions are welcome! Please review the coding standards and development gu
 ![LCD Example](./docs/lcd.jpg)
 
 _The system running a text display program on a 480x272 LCD module._
+
+See the [Day18-to-Day99 transition guide](../docs/DAY18_TO_DAY99_ja.md). `make format` rewrites files; it is not a read-only check.

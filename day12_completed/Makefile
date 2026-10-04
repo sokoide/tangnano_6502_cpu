@@ -136,3 +136,10 @@ test-lcd-pipeline: tools-check-sim
 		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv
 	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline
 test: test-lcd-pipeline
+
+.PHONY: test-rom
+test: test-rom
+test-rom: tools-check-sim
+	@mkdir -p build/$(BOARD)/rom
+	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_curriculum_rom --Mdir build/$(BOARD)/rom -GTEST_DAY=12 ../sim/tb_curriculum_rom.sv cpu.sv rom.sv ram.sv boot_loader.sv
+	./build/$(BOARD)/rom/Vtb_curriculum_rom

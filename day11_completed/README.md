@@ -46,10 +46,10 @@ graph LR
 
 | Opcode | Mnemonic | Description                   | Cycles |
 | :----: | -------- | ----------------------------- | :----: |
-| `0xA5` | `LDA zp` | Load A from Zero Page address |   3    |
-| `0x85` | `STA zp` | Store A to Zero Page address  |   3    |
-| `0xA6` | `LDX zp` | Load X from Zero Page address |   3    |
-| `0x86` | `STX zp` | Store X to Zero Page address  |   3    |
+| `0xA5` | `LDA zp` | Load A from Zero Page address | 3      |
+| `0x85` | `STA zp` | Store A to Zero Page address  | 3      |
+| `0xA6` | `LDX zp` | Load X from Zero Page address | 3      |
+| `0x86` | `STX zp` | Store X to Zero Page address  | 3      |
 
 ## 🛠️ Implementation Steps
 
@@ -79,3 +79,5 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 ## 🎯 Next Step
 
 In Day 12, we will implement **Absolute Addressing**, allowing the CPU to reach any address in the full 64KB range ($0000 - $FFFF).
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

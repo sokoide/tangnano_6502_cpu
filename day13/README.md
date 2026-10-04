@@ -91,3 +91,5 @@ This Day includes a CPU testbench (`sim/tb_cpu.sv`). If the starter TODOs are no
 ## 🎯 Next Step
 
 In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

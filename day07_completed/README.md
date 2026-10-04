@@ -40,12 +40,12 @@ graph TD
 
 | Opcode | Mnemonic | Description | Cycles |
 | :----: | -------- | ----------- | :----: |
-| `0xAA` | `TAX`    | Copy A to X |   2    |
-| `0xA8` | `TAY`    | Copy A to Y |   2    |
-| `0x8A` | `TXA`    | Copy X to A |   2    |
-| `0x98` | `TYA`    | Copy Y to A |   2    |
-| `0xE8` | `INX`    | Increment X |   2    |
-| `0xC8` | `INY`    | Increment Y |   2    |
+| `0xAA` | `TAX`    | Copy A to X | 2      |
+| `0xA8` | `TAY`    | Copy A to Y | 2      |
+| `0x8A` | `TXA`    | Copy X to A | 2      |
+| `0x98` | `TYA`    | Copy Y to A | 2      |
+| `0xE8` | `INX`    | Increment X | 2      |
+| `0xC8` | `INY`    | Increment Y | 2      |
 
 _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you might implement them in a single cycle._
 
@@ -84,17 +84,17 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 ## 🛠️ Implementation Steps
 
 1. **Declare Registers**:
-    - In `cpu.sv`, add `logic [7:0] X, Y;`.
+    - Check the existing `logic [7:0] a, x, y;` declarations and reset.
 2. **Extend the Decoder**:
-    - In the `always_comb` block, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to your `case` statement.
+    - In the `STATE_FETCH_OPCODE` case inside `always_ff`, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to your `case` statement.
 3. **Transfer Logic**:
-    - `TAX`: `X <= A;`
-    - `TXA`: `A <= X;`
+    - `TAX`: `x <= a;`
+    - `TXA`: `a <= x;`
 4. **Arithmetic Logic**:
-    - `INX`: `X <= X + 1;`
+    - `INX`: `x <= x + 1'b1;`
     - Note: These instructions usually update the Zero (Z) and Negative (N) flags, but we will handle flag implementation in Day 08.
 5. **Update LCD Display**:
-    - Add `debug_x` and `debug_y` ports to the CPU and display their values on the LCD.
+    - Use the existing `debug_x` and `debug_y` ports and display their values on the LCD.
 
 ## 💡 The Role of Index Registers
 

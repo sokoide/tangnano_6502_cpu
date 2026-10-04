@@ -50,8 +50,8 @@ Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
 
 | Opcode | Mnemonic  | Description                         | Cycles |
 | :----: | --------- | ----------------------------------- | :----: |
-| `0xAD` | `LDA abs` | Load A from specific 16-bit address |   4    |
-| `0x8D` | `STA abs` | Store A to specific 16-bit address  |   4    |
+| `0xAD` | `LDA abs` | Load A from specific 16-bit address | 4      |
+| `0x8D` | `STA abs` | Store A to specific 16-bit address  | 4      |
 
 ## 🛠️ Implementation Steps
 
@@ -80,3 +80,5 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🎯 Next Step
 
 In Day 13, we will enhance our data processing capabilities by implementing **Logical Operations (AND, ORA, EOR, BIT)**.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.

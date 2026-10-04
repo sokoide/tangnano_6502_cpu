@@ -199,7 +199,7 @@ module top (
     // 2^25 is approximately 33,554,432.
     // By using the 25th bit (MSB), the LED will toggle roughly every 0.62 seconds
     // (16.7M / 27M, full period ~1.24s), resulting in a visible blink.
-    logic [24:0] counter;
+    logic [24:0] counter = 0;
 
     // Sequential logic: updates on the rising edge of the clock
     always_ff @(posedge clk) begin
@@ -209,7 +209,7 @@ module top (
 
     // Combinational logic: continuous assignment
     // The 'led' signal always reflects the state of the counter's most significant bit.
-    // When counter[24] is 1, the LED is ON; when it's 0, the LED is OFF.
+    // Board LED polarity is handled by the board wrapper; 9K LEDs are active-low.
     assign led = counter[24];
 
 endmodule
@@ -263,7 +263,7 @@ flowchart LR
 - Think of `always_ff` as creating a component that has **memory** (state). It only changes when the clock "ticks".
 - Think of `assign` as creating a component with **no memory**. Its output changes _instantly_ whenever its inputs change. This is the essence of parallel hardware.
 - Use `<=` (non-blocking assignment) inside `always_ff` to ensure all registers update simultaneously at the clock edge.
-  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERVERILOG_CHEATSHEET.md) for details.
+  - **Important**: Using `=` inside `always_ff` causes bugs. See "Assignment: = vs <=" in [SystemVerilog Cheatsheet](../docs/SYSTEMVERILOG_CHEATSHEET.md) for details.
 
 ### Step 3: Create Constraint File
 

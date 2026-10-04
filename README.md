@@ -13,7 +13,7 @@ The goal of this curriculum is the instruction subset and LCD peripheral circuit
 
 ## 🏗️ System Architecture
 
-Days 01–03 build foundational circuits separately, and Day 04 builds an LCD demo. Day 99 integrates the CPU, RAM, VRAM, and LCD into one system.
+Days 01–03 build foundational circuits separately, and Day 04 builds an LCD demo. Day05 adds CPU state display and Day10 introduces synchronous RAM. Day99 extends this into a system with CPU-addressable VRAM.
 The key feature is the **Hardware-Native Debugger**: the CPU writes debug info directly to VRAM, allowing you to see internal registers on the LCD screen.
 
 ```mermaid
@@ -22,7 +22,7 @@ graph TD
         CPU[6502 CPU Core]
         VRAM["VRAM (Dual Port RAM)"]
         LCD[LCD Controller]
-        RAM[Program / Data RAM (BSRAM)]
+        RAM["Program / Data RAM (BSRAM)"]
 
         CPU -- "Address / data" --> RAM
         RAM -- "Read data" --> CPU
@@ -32,8 +32,8 @@ graph TD
 
     LCD -- "LCD signals" --> DISPLAY["480x272 LCD panel"]
 
-    style CPU fill:#f96,stroke:#333,stroke-width:2px
-    style VRAM fill:#69f,stroke:#333,stroke-width:2px
+    style CPU fill:pink,stroke:#333,stroke-width:2px
+    style VRAM fill:lightblue,stroke:#333,stroke-width:2px
 ```
 
 ## 🎯 Learning Objectives
@@ -50,13 +50,13 @@ This curriculum assumes no prior FPGA experience. Here's what will help:
 
 | Category         | Knowledge                               | Required |
 | ---------------- | --------------------------------------- | :------: |
-| **Essential**    | Basic programming in any language       |    ✅    |
-| **Essential**    | Binary and hexadecimal numbers          |    ✅    |
-| **Essential**    | Logical operations (AND, OR, XOR)       |    ✅    |
-| **Helpful**      | C language (pointers, bit manipulation) |    ⭕    |
-| **Helpful**      | Assembly language concepts              |    ⭕    |
-| **Not Required** | FPGA/Verilog experience                 |    ❌    |
-| **Not Required** | 6502 architecture knowledge             |    ❌    |
+| **Essential**    | Basic programming in any language       | ✅       |
+| **Essential**    | Binary and hexadecimal numbers          | ✅       |
+| **Essential**    | Logical operations (AND, OR, XOR)       | ✅       |
+| **Helpful**      | C language (pointers, bit manipulation) | ⭕       |
+| **Helpful**      | Assembly language concepts              | ⭕       |
+| **Not Required** | FPGA/Verilog experience                 | ❌       |
+| **Not Required** | 6502 architecture knowledge             | ❌       |
 
 ## 📂 Directory Structure & Workflow
 
@@ -72,7 +72,7 @@ Each day is split into two folders. Use them as follows:
 1. Read `dayXX/README.md`.
 2. Edit the starter files in `dayXX/` to complete the task.
 3. Run the test commands listed in each day's README (e.g., `make -C dayXX test-cpu` or `make test`). Note that simulation validates the specified test scope and does not guarantee hardware execution.
-4. `make BOARD=9k download` or `make BOARD=20k download` builds and programs the Day 99 design. To program an individual day, run e.g. `make -C dayXX_completed download BOARD=9k`. Real-hardware verification should be confirmed on your board.
+4. `make BOARD=9k download` or `make BOARD=20k download` builds and programs the Day 99 design. To program an individual day, run e.g. `make -C dayXX download BOARD=9k`. Real-hardware verification should be confirmed on your board.
 
 ## 📘 Resources for Software Engineers
 
@@ -97,46 +97,46 @@ The roadmap is divided into four main phases.
 
 Setting up the environment and building the necessary debug tools.
 
-| Day | Topic | What You'll Learn |
-| :---: | :--- | :--- |
-| [**Day 01**](./day01/README.md) | **Blinky LED** | Environment setup and FPGA programming. |
-| [**Day 02**](./day02/README.md) | **4-bit ALU** | Combinational logic and basic logical operations. |
-| [**Day 03**](./day03/README.md) | **Traffic Light FSM** | Sequential logic and Finite State Machines. |
-| [**Day 04**](./day04/README.md) | **Debug Foundation** | LCD display circuit (BSRAM/pROM). |
+| Day                             | Topic                 | What You'll Learn                                 |
+| :-----------------------------: | :-------------------- | :------------------------------------------------ |
+| [**Day 01**](./day01/README.md) | **Blinky LED**        | Environment setup and FPGA programming.           |
+| [**Day 02**](./day02/README.md) | **4-bit ALU**         | Combinational logic and basic logical operations. |
+| [**Day 03**](./day03/README.md) | **Traffic Light FSM** | Sequential logic and Finite State Machines.       |
+| [**Day 04**](./day04/README.md) | **Debug Foundation**  | LCD display circuit (BSRAM/pROM).                 |
 
 ### Phase 2: Core CPU Implementation (Day 05-10)
 
 Implementing core CPU functionality and visualizing internal state.
 
-| Day | Topic | Instructions (Examples) |
-| :---: | :--- | :--- |
-| [**Day 05**](./day05/README.md) | **CPU Skeleton** | `NOP` (Program Counter only). |
-| [**Day 06**](./day06/README.md) | **Memory Access** | `LDA #imm` (Immediate load). |
-| [**Day 07**](./day07/README.md) | **Reg Transfers** | `TAX`, `TAY`, `INX`, `INY`. |
-| [**Day 08**](./day08/README.md) | **Arithmetic (ALU)** | `ADC`, `SBC` (NVZC Flag calculations). |
-| [**Day 09**](./day09/README.md) | **Branching** | `BNE`, `BEQ`, `BPL`, `BMI`. |
-| [**Day 10**](./day10/README.md) | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT`. |
+| Day                             | Topic                   | Instructions (Examples)                              |
+| :-----------------------------: | :---------------------- | :--------------------------------------------------- |
+| [**Day 05**](./day05/README.md) | **CPU Skeleton**        | PC, reset and execution enable (no opcode decoding). |
+| [**Day 06**](./day06/README.md) | **Memory Access**       | `LDA #imm` (Immediate load).                         |
+| [**Day 07**](./day07/README.md) | **Reg Transfers**       | `TAX`, `TAY`, `INX`, `INY`.                          |
+| [**Day 08**](./day08/README.md) | **Arithmetic (ALU)**    | `ADC`, `SBC` (NVZC Flag calculations).               |
+| [**Day 09**](./day09/README.md) | **Branching**           | `BNE`, `BEQ`, `BPL`, `BMI`.                          |
+| [**Day 10**](./day10/README.md) | **Stack & Subroutines** | `JSR`, `RTS`, `PHA`, `PLA`, `JMP`, `HLT`.            |
 
 ### Phase 3: Addressing Modes & Data Processing (Day 11-15)
 
 Strengthening memory operations and complex processing.
 
-| Day | Topic | What You'll Learn |
-| :---: | :--- | :--- |
-| [**Day 11**](./day11/README.md) | **Zero Page** | Zero Page addressing (`LDA $00`) and RAM. |
-| [**Day 12**](./day12/README.md) | **Absolute** | Absolute addressing (`LDA $1234`). |
-| [**Day 13**](./day13/README.md) | **Logic Ops** | `AND`, `ORA`, `EOR`, `BIT` (Bitwise logic). |
-| [**Day 14**](./day14/README.md) | **Shift & Rotate** | `ASL`, `LSR`, `ROL`, `ROR`. |
+| Day                             | Topic                 | What You'll Learn                                |
+| :-----------------------------: | :-------------------- | :----------------------------------------------- |
+| [**Day 11**](./day11/README.md) | **Zero Page**         | Zero Page addressing (`LDA $00`) and RAM.        |
+| [**Day 12**](./day12/README.md) | **Absolute**          | Absolute addressing (`LDA $1234`).               |
+| [**Day 13**](./day13/README.md) | **Logic Ops**         | `AND`, `ORA`, `EOR`, `BIT` (Bitwise logic).      |
+| [**Day 14**](./day14/README.md) | **Shift & Rotate**    | `ASL`, `LSR`, `ROL`, `ROR`.                      |
 | [**Day 15**](./day15/README.md) | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `DEX`, `DEY`, `INC`, `DEC`. |
 
 ### Phase 4: Advanced Addressing & Custom Extension (Day 16-18)
 
 Complex addressing modes and hardware-native custom instructions.
 
-| Day | Topic | What You'll Learn |
-| :---: | :--- | :--- |
-| [**Day 16**](./day16/README.md) | **Indexed** | Indexed addressing (`LDA $1234,X` / `,Y`). |
-| [**Day 17**](./day17/README.md) | **Indirect** | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`). |
+| Day                             | Topic              | What You'll Learn                                            |
+| :-----------------------------: | :----------------- | :----------------------------------------------------------- |
+| [**Day 16**](./day16/README.md) | **Indexed**        | Indexed addressing (`LDA $1234,X` / `,Y`).                   |
+| [**Day 17**](./day17/README.md) | **Indirect**       | Indirect addressing (`JMP ($1234)`, `($00,X)`, `($00),Y`).   |
 | [**Day 18**](./day18/README.md) | **Custom Opcodes** | `WVS` (Wait V-Sync), `CVR` (Clear VRAM), `IFO` (Debug Info). |
 
 ### 🏁 Final Goal (Day 99)
@@ -154,3 +154,5 @@ Complex addressing modes and hardware-native custom instructions.
   - **GTKwave**: A waveform viewer to visualize signals over time (your "debugger" for logic).
 
 Check [Day 01](./day01/README.md) to get started!
+
+Each day is an independent starter; edits are not automatically carried into the next day. Program dayXX to check your own implementation, or dayXX_completed to check the reference. Day01 uses the GUI project creation steps; Day02 board tops verify LED blinking, while the ALU is tested in simulation. See the [Day18-to-Day99 guide](./docs/DAY18_TO_DAY99_ja.md) for CPU structure, VRAM mapping, WVS counts and boot-program changes.

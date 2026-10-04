@@ -20,12 +20,12 @@ From Day 10 onward, Zero Page, Stack, and Program RAM are all RAM-backed, so the
 
 ### 6502 System Memory Map (used in this Training)
 
-| Address Range | Purpose | Description |
-| :--- | :--- | :--- |
-| `0x0000 - 0x00FF` | Zero Page | Fast-access 256-byte memory area |
-| `0x0100 - 0x01FF` | Stack | Area used by the Stack Pointer (SP) |
-| `0x0200 - 0x7FFF` | Program/Data RAM | 30.5KB (0x7E00 bytes; range 0x0200-0x7FFF within the 32KB BSRAM). The boot loader copies the `rom.sv` program to `$0200` before the CPU starts |
-| `0x8000 - 0xFFFF` | Demo ROM (read-only) | Selected by address bit 15: CPU reads return `rom.sv` bytes (`$EA` fill outside the program); CPU writes to this range are ignored |
+| Address Range     | Purpose              | Description                                                                                                                                     |
+| :---------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0x0000 - 0x00FF` | Zero Page            | Fast-access 256-byte memory area                                                                                                                |
+| `0x0100 - 0x01FF` | Stack                | Area used by the Stack Pointer (SP)                                                                                                             |
+| `0x0200 - 0x7FFF` | Program/Data RAM     | 31.5KiB (0x7E00 bytes; range 0x0200-0x7FFF within the 32KB BSRAM). The boot loader copies the `rom.sv` program to `$0200` before the CPU starts |
+| `0x8000 - 0xFFFF` | Demo ROM (read-only) | Selected by address bit 15: CPU reads return `rom.sv` bytes (`$EA` fill outside the program); CPU writes to this range are ignored              |
 
 Note: In Day 10-18, the LCD text VRAM is written only by the debug display logic inside `lcd_demo.sv` and is not mapped into the CPU address space. The Day 99 shadow/text VRAM map (`$7C00`, `$E000`) does not apply to this build.
 
@@ -65,14 +65,14 @@ graph TD
 
 | Opcode | Mnemonic  | Description                        | Cycles |
 | :----: | --------- | ---------------------------------- | :----: |
-| `0x20` | `JSR abs` | Push PC and Jump to Subroutine     |   6    |
-| `0x60` | `RTS`     | Pull PC and Return from Subroutine |   6    |
-| `0x08` | `PHP`     | Push Processor Status (P)          |   3    |
-| `0x28` | `PLP`     | Pull Processor Status (P)          |   4    |
-| `0x48` | `PHA`     | Push Accumulator (A)               |   3    |
-| `0x68` | `PLA`     | Pull Accumulator (A)               |   4    |
-| `0x4C` | `JMP abs` | Jump to Absolute Address           |   3    |
-| `0xEF` | `HLT`     | Halt CPU execution (Custom Ext.)   |   -    |
+| `0x20` | `JSR abs` | Push PC and Jump to Subroutine     | 6      |
+| `0x60` | `RTS`     | Pull PC and Return from Subroutine | 6      |
+| `0x08` | `PHP`     | Push Processor Status (P)          | 3      |
+| `0x28` | `PLP`     | Pull Processor Status (P)          | 4      |
+| `0x48` | `PHA`     | Push Accumulator (A)               | 3      |
+| `0x68` | `PLA`     | Pull Accumulator (A)               | 4      |
+| `0x4C` | `JMP abs` | Jump to Absolute Address           | 3      |
+| `0xEF` | `HLT`     | Halt CPU execution (Custom Ext.)   | -      |
 
 ## 🛠️ Implementation Steps
 
@@ -110,3 +110,5 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🏁 Phase 2 Complete
 
 Congratulations! You have built a CPU core with registers, arithmetic, branching, and subroutines. Starting from Day 11, we enter **Phase 3**, where we explore more advanced addressing modes and memory utilization.
+
+Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
