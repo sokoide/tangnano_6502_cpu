@@ -156,12 +156,15 @@ test-lcd-pipeline: tools-check-sim
 		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv lcd/vram.sv
 	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline
 
-# Verify the FPGA-branch PLL LOCK write gate (blocked while unlocked, boot copy
-# after lock, blocked again on lock drop, re-copy on re-lock).
+# Verify the FPGA-branch PLL LOCK write gate on the real lcd_demo: compiled
+# with -UVERILATOR so the non-VERILATOR path (LOCK synchronizer + write gate)
+# is simulated against functional Gowin primitive models.
 .PHONY: test-lock
 test-lock: tools-check-sim
 	@mkdir -p build/$(BOARD)/tb_lock_gate
-	$(VERILATOR) --binary --timing --assert -Wno-fatal \
+	$(VERILATOR) --binary --timing --assert -Wno-fatal -UVERILATOR \
 		--Mdir build/$(BOARD)/tb_lock_gate --top-module tb_lock_gate \
-		sim/tb_lock_gate.sv boot_loader.sv ram.sv
+		sim/tb_lock_gate.sv sim/gowin_fpga_models.sv \
+		lcd_demo.sv cpu.sv boot_loader.sv rom.sv ram.sv \
+		lcd/lcd.sv lcd/vram.sv lcd/font_rom.sv
 	@./build/$(BOARD)/tb_lock_gate/Vtb_lock_gate
