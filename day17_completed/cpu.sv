@@ -416,17 +416,6 @@ module cpu (
                             write_en <= 1'b1;
                             data_out <= a;
                             state <= STATE_EXECUTE;
-                        end else if (current_opcode == OP_LDA_ABS || current_opcode == OP_LDA_ABX || current_opcode == OP_LDA_ABY) begin
-                            address_bus <= {data_in, temp_addr[7:0]} +
-                                           ((current_opcode == OP_LDA_ABX) ? {8'h00, x} :
-                                            (current_opcode == OP_LDA_ABY) ? {8'h00, y} : 16'h0000);
-                            state <= STATE_EXECUTE;
-                        end else if (current_opcode == OP_STA_ABS || current_opcode == OP_STA_ABX) begin
-                            address_bus <= {data_in, temp_addr[7:0]} +
-                                           ((current_opcode == OP_STA_ABX) ? {8'h00, x} : 16'h0000);
-                            write_en <= 1'b1;
-                            data_out <= a;
-                            state <= STATE_EXECUTE;
                         end
                     end
 

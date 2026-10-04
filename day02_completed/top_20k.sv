@@ -1,4 +1,4 @@
-// Day 02 Completed: Hardware sanity top (Tang Nano 20K)
+// day02: board top (Tang Nano 20K) - LED blink (ALU is verified in simulation)
 // In Day 02, we blink the LED faster (~4x) than Day 01 to confirm the update.
 
 module top (

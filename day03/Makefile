@@ -72,7 +72,9 @@ sim: sim-build
 test: sim
 
 clean:
-	rm -rf impl/gwsynthesis impl/pnr $(PROJECT)_$(BOARD).fs *.rpt *.log *.vcd $(BUILD_TCL) obj_dir/
+	rm -rf impl/gwsynthesis impl/pnr build/
+	rm -f $(PROJECT)_$(BOARD).fs *.rpt *.log *.vcd $(BUILD_TCL)
+	rm -rf obj_dir/
 help:
 	@echo "Targets: make | make download | make clean"
 	@echo "         make sim | make test"

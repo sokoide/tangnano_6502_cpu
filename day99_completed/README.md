@@ -174,4 +174,4 @@ Contributions are welcome! Please review the coding standards and development gu
 
 _The system running a text display program on a 480x272 LCD module._
 
-See the [Day18-to-Day99 transition guide](../docs/DAY18_TO_DAY99.md). `make format` rewrites files; it is not a read-only check.
+See the [Day18-to-Day99 transition guide](../docs/DAY18_TO_DAY99.md).

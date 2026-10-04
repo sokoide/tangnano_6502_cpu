@@ -40,7 +40,7 @@ The **Memory Map** defines how the CPU's address space is connected to various m
 
 ### Local VRAM addresses in this lesson
 
-The CPU is not connected yet. The initializer writes local VRAM port addresses 0..1023; the first 1020 bytes hold the visible 60x17 cells. CPU maps are introduced in [Day10](../day10/README.md) and [Day99](../day99_completed/README.md).
+The CPU is not connected yet. The write port's local address space is 0..1023, but the initializer writes only 0..1019 (the 1020 visible 60x17 cells); 1020..1023 are unused. CPU maps are introduced in [Day10](../day10/README.md) and [Day99](../day99_completed/README.md).
 
 ### VRAM to LCD Mapping
 

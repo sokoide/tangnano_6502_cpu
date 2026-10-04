@@ -160,25 +160,36 @@ For understanding incremental learning, use day06-18. For production-oriented pa
 3. Implement execution in `DECODE_EXECUTE` state
 4. Update `day99_completed/docs/INSTRUCTIONS.md` documentation
 
-### Memory-Mapped I/O
+### Memory-Mapped I/O (Day 99)
+
+CPU-mapped VRAM exists in Day 99 only. In Day 07-18, the text VRAM is written by the display FSM inside `lcd_demo.sv` and is not mapped into the CPU address space. Day 99 decodes CPU writes to Text VRAM in `cpu_memory.sv`:
 
 ```systemverilog
-// VRAM write example (Day 07+)
-if (addr >= VRAM_START && addr <= VRAM_END) begin
-    v_ada <= addr - VRAM_START;  // Map to 1KB VRAM space
-    v_din <= data;
-    v_cea <= 1;  // Enable VRAM write
-    write_to_vram <= 1'b1;
+// Day 99: CPU write to Text VRAM (0xE000-0xE3FF, write-only)
+if (is_vram_region && is_vram_write) begin
+    vram_write_addr = effective_addr[9:0];  // Map to 1KB VRAM space
+    vram_write_data = write_data;
+    vram_write_en   = 1'b1;  // Enable VRAM write
 end
 ```
 
 ### Boot Process (Day 10+)
 
-1. CPU copies `boot_program` array to RAM at 0x0200 (INIT_RAM state)
+The curriculum uses two boot mechanisms:
+
+**Day 10-18: `boot_loader.sv` ROM-to-RAM copy**
+
+1. After reset, `boot_loader` copies 256 bytes from the demo ROM (`rom.sv`) into BSRAM at 0x0200 (`boot_addr = 0x0200 + boot_index`)
+2. ROM is read-only at 0x8000-0xFFFF (selected by address bit 15); its program bytes are decoded at 0x0200-based addresses
+3. When the copy completes, `cpu_rst_n` is released and the CPU starts fetching at 0x0200
+
+**Day 99: CPU `INIT_RAM` state**
+
+1. CPU copies the `boot_program` array (max 7680 bytes) to RAM at 0x0200 (INIT_RAM state)
 2. Sets PC to 0x0200
 3. Begins normal fetch/decode/execute cycle
 
-The `boot_program` array is auto-generated from assembly source via:
+The Day 99 `boot_program` ROM is auto-generated from assembly source via:
 
 ```
 assembly (ca65) → binary (ld65) → Intel HEX (srec_cat) → SystemVerilog (hex_fpga Go tool)

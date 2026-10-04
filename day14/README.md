@@ -106,10 +106,6 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Observe the shift/rotate results and the final halted state on the LCD.
 
-## 🎯 Next Step
-
-In Day 15, we will implement **Comparison Instructions (CMP, CPX, CPY)** and **Increment/Decrement** for memory contents, which provide the data needed for branches.
-
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
 
 CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
@@ -117,3 +113,7 @@ CPU unit tests and the hardware ROM use different inputs. The hardware expectati
 See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
 
 LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
+
+## 🎯 Next Step
+
+In Day 15, we will implement **Comparison Instructions (CMP, CPX, CPY)** and **Increment/Decrement** for memory contents, which provide the data needed for branches.

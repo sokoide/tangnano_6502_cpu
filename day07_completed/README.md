@@ -14,7 +14,7 @@ The reference solution already implements the tasks below.
 | Where to edit | TAX/TAY/TXA/TYA/INX/INY TODOs in cpu.sv |
 | Provided foundation | a/x/y, debug outputs and LDA handling |
 | Expected test results | The injected transfer/increment program ends with A/X/Y=$43 |
-| What to observe on hardware | ROM starts with LDA #$40 and reaches A/X/Y=$41, then executes NOPs |
+| What to observe on hardware | ROM starts with LDA #$40 and reaches A=$41, then executes NOPs (X/Y=$41 is confirmed by the CPU test in simulation) |
 
 ## 📜 Overview
 
@@ -104,8 +104,8 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 4. **Arithmetic Logic**:
     - `INX`: `x <= x + 1'b1;`
     - Note: These instructions usually update the Zero (Z) and Negative (N) flags, but we will handle flag implementation in Day 08.
-5. **Update LCD Display**:
-    - Use the existing `debug_x` and `debug_y` ports and display their values on the LCD.
+5. **Verify X/Y Changes**:
+    - The LCD in this Day shows PC and A only. Verify X/Y with `make test-cpu`; the injected program ends with A/X/Y=$43. The LCD starts displaying X in Day 09.
 
 ## 💡 The Role of Index Registers
 
@@ -129,7 +129,7 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 
     This is the sequence in `rom.sv`; after `TYA`, A, X, and Y are `$41`. The shared starter testbench injects a separate `$42` program.
 
-- **FPGA**: Verify on the LCD that the X register changes as expected.
+- **FPGA**: The LCD shows PC and A only. Confirm that A reaches $41 after the ROM program runs; X/Y changes are confirmed in simulation (the LCD starts showing X in Day 09).
 
 ## 🎯 Next Step
 

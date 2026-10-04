@@ -14,9 +14,7 @@ module lcd_demo (
     logic [ 7:0] vram_data;
     logic [11:0] font_addr;
     logic [ 7:0] font_data;
-    /* verilator lint_off UNUSEDSIGNAL */
     logic        vsync;
-    /* verilator lint_on UNUSEDSIGNAL */
     logic        vram_cea;
     logic [ 9:0] vram_ada;
     logic [ 7:0] vram_din;

@@ -63,6 +63,15 @@ module tb_cpu;
         end
     endtask
 
+    task automatic check16(input string name, input logic [15:0] got, input logic [15:0] exp);
+        if (got !== exp) begin
+            $display("FAIL: %s = 0x%04h (expected 0x%04h)", name, got, exp);
+            error_count++;
+        end else begin
+            $display("PASS: %s = 0x%04h", name, got);
+        end
+    endtask
+
     initial begin
         $display("=== Day 06: LDA Immediate Test ===");
 
@@ -107,6 +116,35 @@ module tb_cpu;
 
         // Trailing NOP: known PC boundary instead of HLT
         wait_pc(16'h0206, 5, "final NOP");
+
+`ifdef TB_CPU_HAS_PC_ENABLE
+        // Hold check: pc_enable=0 must freeze the CPU (PC and A unchanged)
+        begin : hold_check
+            logic [15:0] hold_pc;
+            logic [ 7:0] hold_a;
+            @(negedge clk);
+            hold_pc   = debug_pc;
+            hold_a    = debug_a;
+            pc_enable = 1'b0;
+            repeat (4) begin
+                @(posedge clk);
+                #1;  // post-posedge sampling
+                check16("debug_pc (pc_enable=0)", debug_pc, hold_pc);
+                check8("debug_a  (pc_enable=0)", debug_a, hold_a);
+            end
+            // Resume: pc_enable=1 must let the CPU advance PC again
+            @(negedge clk);
+            pc_enable = 1'b1;
+            @(posedge clk);
+            #1;
+            if (debug_pc === hold_pc) begin
+                $display("FAIL: PC did not advance after pc_enable=1 (PC=0x%04h)", debug_pc);
+                error_count++;
+            end else begin
+                $display("PASS: PC resumed after pc_enable=1 (PC=0x%04h)", debug_pc);
+            end
+        end
+`endif
 
         // Final result
         $display("---------------------------------------");

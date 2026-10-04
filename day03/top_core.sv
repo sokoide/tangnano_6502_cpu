@@ -31,7 +31,11 @@ module top_core (
         end
     end
 
-    // Clock divider (27MHz to ~1Hz for visible operation)
+    // Clock divider: 27MHz / 10 = 2.7MHz slow clock (drives the shift register).
+    // Second-scale visible timing comes from the traffic_light TIMER counters and
+    // the 0.5s enable counter below, both running on the 27MHz clock.
+    // For slowing internal logic, prefer a clock enable over a divided clock
+    // (see the Day 03 README).
     clock_divider clk_div (
         .clk_in   (clk),
         .rst_n    (internal_rst_n),
@@ -86,7 +90,7 @@ module top_core (
 
     // Shift register
     shift_register shifter (
-        .clk          (slow_clk),         // Use slow clock for visible shifting
+        .clk          (slow_clk),         // 2.7MHz divided-clock domain (not human-visible pacing)
         .rst_n        (rst_n),
         .shift_enable (1'b1),             // Always shifting
         .serial_in    (switches[0]),      // Input from switch 0

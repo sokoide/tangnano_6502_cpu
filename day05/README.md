@@ -25,7 +25,7 @@ for the instruction fetch introduced next.
 1. Implement the PC with an asynchronous active-low reset.
 2. Update it only on an enabled rising edge. Arithmetic wraps at 16 bits.
 3. Run `make test-cpu`: reset, two increments, and holds are checked.
-4. Run `make test` for CPU verification and the LCD smoke test. `make sim` runs only the LCD smoke test.
+4. Run `make test` for CPU verification and the LCD smoke test. `make sim` runs both the CPU test and the LCD smoke test.
 5. Build with `make BOARD=9k` or `make BOARD=20k`. Hardware uses a slow display enable.
    Simulation success does not establish hardware operation.
 

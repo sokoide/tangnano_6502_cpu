@@ -99,10 +99,6 @@ This Day includes a CPU testbench (`sim/tb_cpu.sv`). If the starter TODOs are no
 - **Simulation**: Run `make test-cpu` and verify the simulation ends with `RESULT: ALL TESTS PASSED` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: `rom.sv` contains a different program (starting with `LDA #$EF` and ending with `BIT $11`). Check the A and P rows on the LCD (P = {N,V,1,1,1,1,Z,C}). `BIT` holds A unchanged and updates only N/V/Z based on the memory value.
 
-## 🎯 Next Step
-
-In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.
-
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
 
 CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
@@ -110,3 +106,7 @@ CPU unit tests and the hardware ROM use different inputs. The hardware expectati
 See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
 
 LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
+
+## 🎯 Next Step
+
+In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.

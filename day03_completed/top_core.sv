@@ -21,7 +21,12 @@ module top_core (
     logic [7:0] pwm_duty;
     logic red_led, yellow_led, green_led;
 
-    // Clock divider (27MHz to ~1Hz for visible operation)
+    // Clock divider: 27MHz / 10 = 2.7MHz slow clock (drives the shift register).
+    // Second-scale visible timing comes from the traffic_light TIMER counters
+    // (0.5s/0.5s/0.25s @ 27MHz) and the ~0.1s enable counter below, both running
+    // on the 27MHz clock.
+    // For slowing internal logic, prefer a clock enable over a divided clock
+    // (see the Day 03 README).
     clock_divider clk_div (
         .clk_in   (clk),
         .rst_n    (rst_n),

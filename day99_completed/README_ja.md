@@ -54,6 +54,7 @@ make BOARD=20k download
 | **[docs/INSTRUCTIONS.md](./docs/INSTRUCTIONS.md)**                     | サポートされている CPU 命令とカスタム拡張機能。 |
 | **[docs/LCD.md](./docs/LCD.md)**                                       | LCD の仕様とコントローラの詳細。                |
 | **[docs/CODING_STYLE.md](./docs/CODING_STYLE.md)**                     | SystemVerilog コーディング規約。                |
+| **[docs/MODULE_MAP.md](./docs/MODULE_MAP.md)**                         | コードリーディングガイド (top → cpu/lcd/ram)。  |
 | **[AGENTS.md](./AGENTS.md)**                                           | AI 支援開発のガイドライン。                     |
 
 ## 🏗️ プロジェクト構成
@@ -116,7 +117,7 @@ make BOARD=20k download
 
 フォント ROM は LCD 専用の別資源で、CPU のアドレス空間には含まれません。VRAM への書込みは、CPU が読み出すシャドウコピー (`0x7C00-0x7FFF`) の RAM にも同じ値を書き込みます。`0xE000-0xE3FF` の読出しは VRAM から値を取得しません。`0xFC00-0xFFFF` 経由の書込みは RAM のミラー先だけを変更し、VRAM は更新しません。この対応関係は `src/cpu_memory.sv` のデコードと `src/ram.sv` の 15 ビット RAM アドレスに基づきます。
 
-**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横 60 列・縦 17 行で表示します。対応命令とメモリ動作は[[命令契約](./docs/INSTRUCTIONS.md)](./docs/INSTRUCTIONS.md)を参照してください。
+**表示システム:** 480×272 LCD に、8×16 ピクセルの文字を横 60 列・縦 17 行で表示します。対応命令とメモリ動作は[命令契約](./docs/INSTRUCTIONS.md)を参照してください。
 
 ## 🎮 プログラミング例
 
@@ -172,3 +173,5 @@ make format
 ![LCD Example](./docs/lcd.jpg)
 
 _480x272 LCD モジュールでテキスト表示プログラムを実行しているシステム。_
+
+Day18 から Day99 への[移行ガイド](../docs/DAY18_TO_DAY99_ja.md)も参照してください。

@@ -157,4 +157,4 @@ Check [Day 01](./day01/README.md) to get started!
 
 ## Daily workflow and the transition to Day99
 
-Each day is an independent starter; edits are not automatically carried into the next day. Program dayXX to check your own implementation, or dayXX_completed to check the reference. Day01 uses the GUI project creation steps; Day02 board tops verify LED blinking, while the ALU is tested in simulation. See the [Day18-to-Day99 guide](./docs/DAY18_TO_DAY99.md) for CPU structure, VRAM mapping, WVS counts and boot-program changes.
+Each day is an independent starter; edits are not automatically carried into the next day. Instead, each day's starter already contains the prerequisite implementations, so you fill in that day's TODOs. Program dayXX to check your own implementation, or dayXX_completed to check the reference. Day01 uses the GUI project creation steps; Day02 board tops verify LED blinking, while the ALU is tested in simulation. See the [Day18-to-Day99 guide](./docs/DAY18_TO_DAY99.md) for CPU structure, VRAM mapping, WVS counts and boot-program changes.

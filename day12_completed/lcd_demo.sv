@@ -92,7 +92,6 @@ module lcd_demo (
     );
 
     // Dual-port VRAM: memory-domain writes, pixel-domain synchronous reads.
-
     Gowin_SDPB_vram vram_inst (
         .dout  (vram_data),
         .clka  (MEMORY_CLK),

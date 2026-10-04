@@ -80,7 +80,7 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 
     ```asm
     LDA #$AA
-    STA $0300  ; Store in RAM (Page 2)
+    STA $0300  ; Store in RAM (Page 3)
     LDA #$00
     LDA $0300  ; Re-load (A should become $AA)
     HLT        ; Stop at PC=$020A

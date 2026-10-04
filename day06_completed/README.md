@@ -26,7 +26,7 @@ instantiate the separate decoder/flag modules. Arithmetic CPU flags are tested i
 2. Recognize `$A9` in opcode fetch and advance PC/address to its operand.
 3. Save the operand into A and advance to the next opcode.
 4. Use the existing `pc_enable` input and hold state when it is zero.
-   The completed interface already has this input. Day 04–09 use ROM; synchronous RAM waits arrive in Day 10.
+   Day 04–09 use ROM; synchronous RAM waits arrive in Day 10.
 5. Run `make test-cpu` to check multiple immediate loads, PC, and enable holds.
    The completed workspace connects the same testbench to the reference CPU.
    The starter fails until its TODOs are implemented.

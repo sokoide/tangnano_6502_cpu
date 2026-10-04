@@ -101,10 +101,6 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `PASS` (`make sim` additionally runs the TFT smoke test).
 - **FPGA**: Confirm the register and flag states on the LCD as the program progresses.
 
-## 🏁 Phase 3 Complete
-
-Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.
-
 The CPU test also sets C=1/V=1 before DEX/DEY to check flag preservation. On hardware the successful ROM stops at $0212 with X=$00, Y=$FF, RAM[$10]=$01.
 
 CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
@@ -114,3 +110,7 @@ See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timi
 LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
 
 In the reference solution, `make test-rom` executes the hardware `rom.sv` through boot copying and synchronous RAM, then checks the halt PC and data. This is separate from the program injected by the CPU unit test.
+
+## 🏁 Phase 3 Complete
+
+Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.

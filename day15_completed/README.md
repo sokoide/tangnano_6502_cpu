@@ -71,7 +71,7 @@ Cycle counts are reference values from the real 6502. The CPU in this curriculum
 
 ## 🧪 Verification
 
-Run the completed CPU test with `make test-cpu` in this directory (it uses the shared starter testbench `../day15/sim/tb_cpu.sv`). `make test` additionally runs the TFT smoke test, the synchronous RAM integration test (`test-sync`), and the LCD pipeline test (`test-lcd-pipeline`). Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
+Run the completed CPU test with `make test-cpu` in this directory (it uses the shared starter testbench `../day15/sim/tb_cpu.sv`). `make test` additionally runs the TFT smoke test, the synchronous RAM integration test (`test-sync`), the LCD pipeline test (`test-lcd-pipeline`), and the hardware ROM test (`test-rom`). Passing the tests verifies the tested scope only and does not guarantee untested instructions or real-hardware behavior.
 
 - **Test Program**:
 
@@ -95,10 +95,6 @@ Run the completed CPU test with `make test-cpu` in this directory (it uses the s
 - **Simulation**: Run `make test-cpu` and verify the simulation outputs `RESULT: ALL TESTS PASSED`.
 - **FPGA**: Confirm on the LCD that memory values and status flags change as expected during comparisons and memory updates.
 
-## 🏁 Phase 3 Complete
-
-Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.
-
 The CPU test also sets C=1/V=1 before DEX/DEY to check flag preservation. On hardware the successful ROM stops at $0212 with X=$00, Y=$FF, RAM[$10]=$01.
 
 CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
@@ -108,3 +104,7 @@ See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timi
 LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
 
 In the reference solution, `make test-rom` executes the hardware `rom.sv` through boot copying and synchronous RAM, then checks the halt PC and data. This is separate from the program injected by the CPU unit test.
+
+## 🏁 Phase 3 Complete
+
+Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.

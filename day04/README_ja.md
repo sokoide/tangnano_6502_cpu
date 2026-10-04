@@ -40,7 +40,7 @@ CPU がデータを読み書きする際、どのアドレスがどこのメモ�
 
 ### このDayのVRAMアドレス
 
-Day04 は CPU 未接続で、初期化回路が VRAM の書込みポートに 0～1023 の局所アドレスを出力します。表示に使うのは先頭 1020 バイトです。CPU のメモリマップは[Day10](../day10/README_ja.md)、CPU からの VRAM 書込みは[Day99](../day99_completed/README_ja.md)で扱います。
+Day04 は CPU 未接続で、書込みポートの局所アドレス空間は 0～1023 ですが、初期化回路が書き込むのは 0～1019（可視の 60x17 セル = 1020 バイト）だけです。1020～1023 は未使用です。CPU のメモリマップは[Day10](../day10/README_ja.md)、CPU からの VRAM 書込みは[Day99](../day99_completed/README_ja.md)で扱います。
 
 ### VRAM と LCD の対応関係
 
