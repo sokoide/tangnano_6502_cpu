@@ -1,4 +1,4 @@
-// Day 15: Comparison (CMP/CPX/CPY) & Memory Inc/Dec (INC/DEC) - Logic Testbench
+// Day 15: Comparison (CMP/CPX/CPY), Memory Inc/Dec (INC/DEC) & Register Decrement (DEX/DEY) - Logic Testbench
 `timescale 1ns / 1ps
 
 module tb_cpu;
@@ -82,7 +82,7 @@ module tb_cpu;
     endtask
 
     initial begin
-        $display("=== Day 15: CMP/CPX/CPY & INC/DEC Test ===");
+        $display("=== Day 15: CMP/CPX/CPY, INC/DEC & DEX/DEY Test ===");
 
         // Memory setup
         // $0200: LDA #$50
@@ -96,7 +96,13 @@ module tb_cpu;
         // $0210: INC $31    ; FF -> 00:   Z=1 N=0 (wrap)
         // $0212: DEC $32    ; 00 -> FF:   Z=0 N=1 (wrap)
         // $0214: DEC $30    ; 10 -> 0F:   Z=0 N=0
-        // $0216: HLT
+        // $0216: DEX        ; X 05 -> 04: Z=0 N=0
+        // $0217: DEY        ; Y 07 -> 06: Z=0 N=0
+        // $0218: LDX #$01
+        // $021A: DEX        ; 01 -> 00:   Z=1 N=0
+        // $021B: LDY #$00
+        // $021D: DEY        ; 00 -> FF:   Z=0 N=1 (wrap)
+        // $021E: HLT
         mem[16'h0200] = 8'hA9;
         mem[16'h0201] = 8'h50;
         mem[16'h0202] = 8'hC9;  // CMP imm
@@ -119,7 +125,15 @@ module tb_cpu;
         mem[16'h0213] = 8'h32;
         mem[16'h0214] = 8'hC6;  // DEC zp
         mem[16'h0215] = 8'h30;
-        mem[16'h0216] = 8'hEF;  // HLT
+        mem[16'h0216] = 8'hCA;  // DEX
+        mem[16'h0217] = 8'h88;  // DEY
+        mem[16'h0218] = 8'hA2;  // LDX imm
+        mem[16'h0219] = 8'h01;
+        mem[16'h021A] = 8'hCA;  // DEX (01 -> 00)
+        mem[16'h021B] = 8'hA0;  // LDY imm
+        mem[16'h021C] = 8'h00;
+        mem[16'h021D] = 8'h88;  // DEY (00 -> FF)
+        mem[16'h021E] = 8'hEF;  // HLT
         mem[16'h0030] = 8'h0F;
         mem[16'h0031] = 8'hFF;
         mem[16'h0032] = 8'h00;
@@ -181,16 +195,40 @@ module tb_cpu;
         check8("mem[0x0030] after DEC $30", mem[16'h0030], 8'h0F);
         check_p("after DEC $30 (Z=0 N=0)", 8'h3C);
 
-        // 12. HLT: PC must stay at 0x0216 (post-posedge stability)
+        // 12. DEX: X 05 -> 04 (C=0 carried over from CPY #$09)
+        wait_pc(16'h0217, 10, "DEX");
+        check8("debug_x after DEX", debug_x, 8'h04);
+        check_p("after DEX (Z=0 N=0)", 8'h3C);
+
+        // 13. DEY: Y 07 -> 06
+        wait_pc(16'h0218, 10, "DEY");
+        check8("debug_y after DEY", debug_y, 8'h06);
+        check_p("after DEY (Z=0 N=0)", 8'h3C);
+
+        // 14. LDX #$01 / DEX: 01 -> 00 (Z=1)
+        wait_pc(16'h021A, 10, "LDX #$01");
+        check8("debug_x after LDX #$01", debug_x, 8'h01);
+        wait_pc(16'h021B, 10, "DEX wrap-to-zero");
+        check8("debug_x after DEX (01 -> 00)", debug_x, 8'h00);
+        check_p("after DEX 01 -> 00 (Z=1 N=0)", 8'h3E);
+
+        // 15. LDY #$00 / DEY: 00 -> FF (wrap, N=1)
+        wait_pc(16'h021D, 10, "LDY #$00");
+        check8("debug_y after LDY #$00", debug_y, 8'h00);
+        wait_pc(16'h021E, 10, "DEY wrap");
+        check8("debug_y after DEY (00 -> FF)", debug_y, 8'hFF);
+        check_p("after DEY 00 -> FF (Z=0 N=1)", 8'hBC);
+
+        // 16. HLT: PC must stay at 0x021E (post-posedge stability)
         repeat (3) begin
             @(posedge clk);
             #1;
         end
-        if (debug_pc !== 16'h0216) begin
-            $display("FAIL: debug_pc after HLT = 0x%04h (expected 0x0216)", debug_pc);
+        if (debug_pc !== 16'h021E) begin
+            $display("FAIL: debug_pc after HLT = 0x%04h (expected 0x021E)", debug_pc);
             error_count++;
         end else begin
-            $display("PASS: debug_pc stays at 0x0216 after HLT");
+            $display("PASS: debug_pc stays at 0x021E after HLT");
         end
 
         // Final result

@@ -127,7 +127,7 @@ Strengthening memory operations and complex processing.
 | [**Day 12**](./day12/README.md) | **Absolute** | Absolute addressing (`LDA $1234`). |
 | [**Day 13**](./day13/README.md) | **Logic Ops** | `AND`, `ORA`, `EOR`, `BIT` (Bitwise logic). |
 | [**Day 14**](./day14/README.md) | **Shift & Rotate** | `ASL`, `LSR`, `ROL`, `ROR`. |
-| [**Day 15**](./day15/README.md) | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `INC`, `DEC`. |
+| [**Day 15**](./day15/README.md) | **Compare & Inc/Dec** | `CMP`, `CPX`, `CPY`, `DEX`, `DEY`, `INC`, `DEC`. |
 
 ### Phase 4: Advanced Addressing & Custom Extension (Day 16-18)
 

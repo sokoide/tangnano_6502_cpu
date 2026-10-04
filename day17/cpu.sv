@@ -191,6 +191,22 @@ module cpu (
                                     address_bus <= pc + 1'b1;
                                     state <= STATE_FETCH_OPCODE;
                                 end
+                                OP_DEX: begin
+                                    x <= x - 1'b1;
+                                    z <= ((x - 8'h01) == 8'h00);
+                                    n <= (x - 8'h01) >> 7;
+                                    pc <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state <= STATE_FETCH_OPCODE;
+                                end
+                                OP_DEY: begin
+                                    y <= y - 1'b1;
+                                    z <= ((y - 8'h01) == 8'h00);
+                                    n <= (y - 8'h01) >> 7;
+                                    pc <= pc + 1'b1;
+                                    address_bus <= pc + 1'b1;
+                                    state <= STATE_FETCH_OPCODE;
+                                end
 
                                 // Flag operations
                                 OP_CLC: begin

@@ -1,4 +1,4 @@
-# Day 15: Comparison & Memory Inc/Dec (CMP, INC, DEC)
+# Day 15: Comparison & Inc/Dec (CMP, INC, DEC, DEX, DEY)
 
 ---
 
@@ -7,9 +7,9 @@
 
 ## 📜 Overview
 
-To wrap up Phase 3, we implement **Comparison Instructions (CMP, CPX, CPY)** and instructions that directly modify memory: **Increment (INC)** and **Decrement (DEC)**.
+To wrap up Phase 3, we implement **Comparison Instructions (CMP, CPX, CPY)**, the register decrements **DEX/DEY**, and instructions that directly modify memory: **Increment (INC)** and **Decrement (DEC)**.
 
-Comparisons are heavily used just before branches to make decisions, while memory inc/dec instructions are useful for managing counters stored in RAM.
+Comparisons are heavily used just before branches to make decisions, while memory inc/dec instructions are useful for managing counters stored in RAM. DEX/DEY complete the register set by adding the counterparts of Day 07's INX/INY.
 
 ## 🧠 Memory Model Note
 
@@ -20,6 +20,7 @@ From Day 10 onward, after reset the `boot_loader.sv` copies the 256-byte program
 - **The Mechanism of Comparison**: Understand that comparing is just a subtraction where the result is discarded and only flags are updated.
 - **Read-Modify-Write (RMW)**: Implement the sequence of reading from memory, processing the data, and writing it back.
 - **Flag Control**: Correctly set C, Z, and N flags based on comparison results.
+- **Register Decrement**: Extend Day 07's `INX`/`INY` with `DEX`/`DEY` (Z and N flags, C unchanged).
 
 ## 🏗️ Instructions to Implement
 
@@ -38,6 +39,8 @@ sequenceDiagram
 | `0xC9` | `CMP #imm` | Compare A with immediate      |   2    |
 | `0xE0` | `CPX #imm` | Compare X with immediate      |   2    |
 | `0xC0` | `CPY #imm` | Compare Y with immediate      |   2    |
+| `0xCA` | `DEX`      | Decrement X (Z, N flags)      |   2    |
+| `0x88` | `DEY`      | Decrement Y (Z, N flags)      |   2    |
 | `0xE6` | `INC zp`   | Increment memory at Zero Page |   5    |
 | `0xC6` | `DEC zp`   | Decrement memory at Zero Page |   5    |
 
@@ -51,6 +54,9 @@ Cycle counts are reference values from the real 6502. The CPU in this curriculum
 2. **Read-Modify-Write Sequence**:
     - `INC` and `DEC` split into steps: read the data, compute ±1, and write it back to the same address.
     - Reuse the existing states: in `STATE_FETCH_OPERAND` set `address_bus` to the Zero Page address and transition to `STATE_EXECUTE`; in `STATE_EXECUTE` compute `data_in ± 1`, update `Z`/`N`, assert `write_en`, and transition to `STATE_WRITE_BACK`; in `STATE_WRITE_BACK` clear `write_en` and return to `STATE_FETCH_OPCODE`.
+3. **Register Decrement (DEX, DEY)**:
+    - These are 1-byte instructions handled entirely in `STATE_FETCH_OPCODE`, just like `INX`/`INY` from Day 07.
+    - `DEX`: `x <= x - 1`; set `Z` if the result is zero and `N` from bit 7 of the result. `DEY` does the same for `y`. `C` and `V` are unchanged.
 
 ## 🧪 Verification
 

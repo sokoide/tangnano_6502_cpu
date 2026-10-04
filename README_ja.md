@@ -13,7 +13,7 @@
 
 ## 🏗️ システムアーキテクチャ
 
-Day 01–03 では基礎回路を個別に作り、Day 04 ではLCDデモを作ります。CPUとRAM、VRAM、LCDを統合したシステムはDay 99で構築します。
+Day 01–03 では基礎回路を個別に作り、Day 04 では LCD デモを作ります。CPU と RAM、VRAM、LCD を統合したシステムは Day 99 で構築します。
 最大の特徴は**ハードウェアネイティブ・デバッガ**です。CPU がデバッグ情報を直接 VRAM に書き込み、LCD 画面上で内部レジスタの状態を確認できます。
 
 ```mermaid
@@ -127,7 +127,7 @@ CPU の基本機能を一つずつ追加し、LCD に内部状態を表示しな
 | [**Day 12**](./day12/README_ja.md) | **Absolute** | アブソリュートアドレッシング (`LDA $1234`) |
 | [**Day 13**](./day13/README_ja.md) | **論理演算** | `AND`, `ORA`, `EOR`, `BIT` (ビット操作) |
 | [**Day 14**](./day14/README_ja.md) | **シフト・回転** | `ASL`, `LSR`, `ROL`, `ROR` |
-| [**Day 15**](./day15/README_ja.md) | **比較・増減** | `CMP`, `CPX`, `CPY`, `INC`, `DEC` |
+| [**Day 15**](./day15/README_ja.md) | **比較・増減** | `CMP`, `CPX`, `CPY`, `DEX`, `DEY`, `INC`, `DEC` |
 
 ### Phase 4: 高度なアドレッシングと独自命令 (Day 16-18)
 

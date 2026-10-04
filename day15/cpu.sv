@@ -2,7 +2,7 @@
 /* verilator lint_off WIDTHTRUNC */
 /* verilator lint_off CASEINCOMPLETE */
 /* verilator lint_off UNUSEDSIGNAL */
-// day15: Comparison (CMP/CPX/CPY) & Memory Inc/Dec (INC/DEC) - Skeleton
+// day15: Comparison (CMP/CPX/CPY), Memory Inc/Dec (INC/DEC) & Register Decrement (DEX/DEY) - Skeleton
 `include "include/opcodes.svh"
 
 module cpu (
@@ -49,11 +49,12 @@ module cpu (
     logic memory_ready, step_pending;
 
     // -------------------------------------------------------------------------
-    // TODO: Implement Comparison (CMP, CPX, CPY) and Memory INC/DEC (INC, DEC)
-    // TODO: 比較命令 (CMP, CPX, CPY) とメモリのインクリメント/デクリメント (INC, DEC)
+    // TODO: Implement Comparison (CMP, CPX, CPY), Memory Inc/Dec (INC, DEC) and Register Decrement (DEX, DEY)
+    // TODO: 比較命令 (CMP, CPX, CPY)、メモリの増減 (INC, DEC)、レジスタデクリメント (DEX, DEY)
     // -------------------------------------------------------------------------
     // 1. In STATE_FETCH_OPCODE:
     //    - Add OP_CMP_IMM, OP_CPX_IMM, OP_CPY_IMM, OP_INC_ZP, OP_DEC_ZP to fetch operand.
+    //    - Add OP_DEX, OP_DEY as 1-byte instructions (same section as OP_INX/OP_INY).
     //
     // 2. In STATE_FETCH_OPERAND:
     //    - OP_CMP_IMM: Compare A with operand: diff = A - operand. Set C if A >= operand (!diff[8]), Z if A == operand, N if diff[7].
@@ -67,6 +68,10 @@ module cpu (
     //
     // 4. In STATE_WRITE_BACK:
     //    - Clear write_en <= 0, increment PC, address_bus <= PC + 1, return to STATE_FETCH_OPCODE.
+    //
+    // 5. OP_DEX / OP_DEY (in STATE_FETCH_OPCODE, mirroring OP_INX/OP_INY):
+    //    - OP_DEX: x <= x - 1; Z if (x - 1) == 0, N from bit 7 of (x - 1).
+    //    - OP_DEY: y <= y - 1; same Z/N updates. C and V are unchanged.
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -181,6 +186,7 @@ module cpu (
                                     address_bus <= pc + 1'b1;
                                     state <= STATE_FETCH_OPCODE;
                                 end
+                                // TODO: Add OP_DEX, OP_DEY here (decrement x/y like OP_INX/OP_INY)
 
                                 // Flag operations
                                 OP_CLC: begin
