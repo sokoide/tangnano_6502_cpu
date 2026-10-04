@@ -13,7 +13,7 @@ Edit this day's starter workspace.
 | --- | --- |
 | Where to edit | WVS/CVR/IFO TODOs in cpu.sv |
 | Provided foundation | HLT, synchronized VSync, PLL LOCK wait and display FSM |
-| Expected test results | CVR/IFO pulses, WVS #2 and #0, synchronous-RAM/display integration |
+| Expected test results | Starter CPU test checks CVR/IFO pulses and WVS #2; WVS #0 and synchronous-RAM/display integration tests are provided in day18_completed |
 | What to observe on hardware | ROM updates the IFO display approximately once per second and increments A/X/Y |
 
 ## 📜 Overview
