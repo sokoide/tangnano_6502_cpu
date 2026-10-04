@@ -11,22 +11,22 @@
 実稼働経路は `top_9k/top_20k → top_core → cpu → calc_cpu_next`。`cpu_memory.sv` は現在の CPU から instantiate されていないため、この参考モジュールを直すだけではメモリ問題は解消しない。
 
 - RAM/VRAM vendor IP は `READ_MODE=0`, `RESET_MODE="SYNC"`。同梱 SDPB model では CEB によって bypass 出力を更新し、OCE は追加 pipeline register だけに作用する。`ram.sv` と VRAM stub の `ceb && oce` は不一致。
-- 同梱 SDPB model の write enable は `pcea = CEA && bs_ena`。RESETA は書込みを抑止しない。behavioral model の `!reseta && cea` は異なる契約になっている。
+- 同梱 SDPB model の write enable は `pcea = CEA && bs_ena`。RESETA は書き込みを抑止しない。behavioral model の `!reseta && cea` は異なる契約になっている。
 - `cpu.sv` の boot 配列は 7680 byte だが、状態に無関係に `boot_program[cur.boot_idx]` を参照する。loader は length を最後の index として扱い、1 byte 余分に書く。
-- store の VRAM decode は 1020 byte、実 RAM 容量は 1024 byte。clear は VRAM 側の次 index と shadow 側の旧 index を使う。通常 store、RMW、内部表示書込みの契約が分散している。
+- store の VRAM decode は 1020 byte、実 RAM 容量は 1024 byte。clear は VRAM 側の次 index と shadow 側の旧 index を使う。通常 store、RMW、内部表示書き込みの契約が分散している。
 - PC/branch 計算まで `$7FFF` mask を適用しており、CPU の 16bit 演算と 32KiB RAM の物理変換が混ざっている。
-- LCD アドレスを多 bit 2FF で渡しても値全体の整合性は保証できない。font address/data にも CDC が残る。
+- LCD アドレスを各ビットの 2 段 FF で渡しても値全体の整合性は保証できない。font address/data にも CDC が残る。
 - PLL wrapper は LOCK を内部 `lock_o` に閉じ込め、公開 port は clkout/clkin のみ。既存 port のまま lock に基づく reset を実装できない。
 
 ## 2. 実装の所有ファイルと分担
 
-| 担当 | 所有ファイル | 責任 |
-| --- | --- | --- |
-| CPU | `day99_completed/src/cpu.sv`, `src/cpu/cpu_types_pkg.sv`, `src/cpu/cpu_fsm_next_pkg.sv`, `include/consts_pkg.sv`, `include/cpu_pkg.sv` | boot、write発行、16bit CPU address、領域decode、fault、clear/shadow整合 |
-| メモリ | `day99_completed/src/ram.sv`, `sim/gowin_sdpb_vram_stub.sv`、新規RAM契約テスト | bypassのCE/OCE/reset契約、VRAM dual-clock port、vendorとの系列比較 |
-| LCD/clock統合 | `day99_completed/src/top_core.sv`, `src/top_9k.sv`, `src/top_20k.sv`, `src/lcd.sv`, 新規 `src/platform_clocks.sv`, 新規 `src/reset_sync.sv`, `sim/gowin_prom_font_stub.sv`、新規表示/clockテスト | pixel domainへVRAM/font移動、pipeline、PLL lock、各domain reset |
-| build統合 | `day99_completed/Makefile`, `day99_9k.gprj`, `day99_20k.gprj` | 新規RTLの登録、BOARD parameter、simulation/vendor契約testの経路、依存manifest |
-| 文書 | `day99_completed/docs/GVRAM_ja.md`, `docs/LCD.md`, `docs/DEVELOPER.md`、本書/改善計画 | 決定したaddress map、timing、未検証範囲の明記 |
+| 担当          | 所有ファイル                                                                                                                                                                                     | 責任                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| CPU           | `day99_completed/src/cpu.sv`, `src/cpu/cpu_types_pkg.sv`, `src/cpu/cpu_fsm_next_pkg.sv`, `include/consts_pkg.sv`, `include/cpu_pkg.sv`                                                           | boot、write発行、16bit CPU address、領域decode、fault、clear/shadow整合       |
+| メモリ        | `day99_completed/src/ram.sv`, `sim/gowin_sdpb_vram_stub.sv`、新規RAM契約テスト                                                                                                                   | bypassのCE/OCE/reset契約、VRAM dual-clock port、vendorとの系列比較            |
+| LCD/clock統合 | `day99_completed/src/top_core.sv`, `src/top_9k.sv`, `src/top_20k.sv`, `src/lcd.sv`, 新規 `src/platform_clocks.sv`, 新規 `src/reset_sync.sv`, `sim/gowin_prom_font_stub.sv`、新規表示/clockテスト | pixel domainへVRAM/font移動、pipeline、PLL lock、各domain reset               |
+| build統合     | `day99_completed/Makefile`, `day99_9k.gprj`, `day99_20k.gprj`                                                                                                                                    | 新規RTLの登録、BOARD parameter、simulation/vendor契約testの経路、依存manifest |
+| 文書          | `day99_completed/docs/GVRAM_ja.md`, `docs/LCD.md`, `docs/DEVELOPER.md`、本書/改善計画                                                                                                            | 決定したaddress map、timing、未検証範囲の明記                                 |
 
 `src/cpu/cpu_fsm_next_pkg.sv` を GLM と後続 CPU 担当が同時に変更しない。`src/top_core.sv` は LCD/clock 統合担当が所有し、メモリ担当は port の変更を連絡する。build 統合は RTL interface 確定後に行う。generated/vendor ファイルは編集しない。
 
@@ -41,7 +41,7 @@
 3. byte 準備 → registered CEA による実際の write edge → idx 更新の順序を維持する。
 4. 最後の write edge が終わるまで FETCH_REQ へ解放しない。合法 length の write 数は厳密に length とする。
 
-### 書込みとVRAM/shadow
+### 書き込みとVRAM/shadow
 
 `calc_cpu_next` の標準値を `next.cea=0; next.v_cea=0;` とし、write を発行する case だけ再設定する。通常 store の write enable を FETCH_REQ で保持しない。clear は各 edge で異なるセルへ連続 write してよい。
 
@@ -81,11 +81,11 @@ clock 接続変更だけでは既存 lcd の stage 間隔は成立しない。re
 
 推奨 pipeline は全 pixel を処理し、address を組合せ生成する。
 
-| edge | memory動作 | LCD metadata |
-| --- | --- | --- |
-| E0 | 現beam座標の組合せVRAM addressをRAMが読む | row/bit index/validをstage0へ登録 |
-| E1 | E0のv_doutとstage0 rowから組合せfont addressをROMが読む | bit index/valid/char error判定をstage1へ登録 |
-| E2 | E1のfont byteを受けRGBを登録 | stage1 validをDEへ登録し、同じbit indexで画素選択 |
+| edge | memory動作                                              | LCD metadata                                      |
+| ---- | ------------------------------------------------------- | ------------------------------------------------- |
+| E0   | 現beam座標の組合せVRAM addressをRAMが読む               | row/bit index/validをstage0へ登録                 |
+| E1   | E0のv_doutとstage0 rowから組合せfont addressをROMが読む | bit index/valid/char error判定をstage1へ登録      |
+| E2   | E1のfont byteを受けRGBを登録                            | stage1 validをDEへ登録し、同じbit indexで画素選択 |
 
 DE も RGB と同じ pipeline へ遅延する案なら、480 pixel の active 幅を保ったまま内部 beam に対し開始を 2edge 遅らせる。従来 porch 配置を厳密に保つ必要がある場合は 2pixel 先読みを設計する。どちらかを明記し、reset 後の pipeline valid はゼロにする。
 
@@ -99,17 +99,17 @@ font simulation は全 zero stub を変更し、実 `data/font.mi` または ven
 
 現物の確認値:
 
-| parameter | pixel 9K | pixel 20K | memory 9K | memory 20K |
-| --- | --- | --- | --- | --- |
-| DEVICE | `GW1NR-9C` | `GW2AR-18C` | `GW1NR-9C` | `GW2AR-18C` |
-| FCLKIN | `"27"` | `"27"` | `"27"` | `"27"` |
-| IDIV_SEL | 2 | 2 | 1 | 1 |
-| FBDIV_SEL | 0 | 0 | 2 | 2 |
-| ODIV_SEL | 48 | 64 | 16 | 16 |
-| PSDA_SEL | `"0000"` | 同左 | 同左 | 同左 |
-| DUTYDA_SEL | `"1000"` | 同左 | 同左 | 同左 |
-| DYN_DA_EN | `"true"` | 同左 | 同左 | 同左 |
-| DYN_SDIV_SEL | 2 | 2 | 2 | 2 |
+| parameter    | pixel 9K   | pixel 20K   | memory 9K  | memory 20K  |
+| ------------ | ---------- | ----------- | ---------- | ----------- |
+| DEVICE       | `GW1NR-9C` | `GW2AR-18C` | `GW1NR-9C` | `GW2AR-18C` |
+| FCLKIN       | `"27"`     | `"27"`      | `"27"`     | `"27"`      |
+| IDIV_SEL     | 2          | 2           | 1          | 1           |
+| FBDIV_SEL    | 0          | 0           | 2          | 2           |
+| ODIV_SEL     | 48         | 64          | 16         | 16          |
+| PSDA_SEL     | `"0000"`   | 同左        | 同左       | 同左        |
+| DUTYDA_SEL   | `"1000"`   | 同左        | 同左       | 同左        |
+| DYN_DA_EN    | `"true"`   | 同左        | 同左       | 同左        |
+| DYN_SDIV_SEL | 2          | 2           | 2          | 2           |
 
 上記は `src/gowin_rpll_9K/gowin_rpll9.v`, `gowin_rpll40.v`, `src/gowin_rpll_20K/gowin_rpll9.v`, `gowin_rpll40.v` から確認した値。残る設定も既存値を保存する: DYN_IDIV/FBDIV/ODIV_SEL=false、CLKFB_SEL=internal、全 CLKOUT*_BYPASS=false、CLKOUT/CLKOUTP_FT_DIR=1、DLY_STEP=0、CLKOUTD/CLKOUTD3_SRC=CLKOUT。dynamic selector/CLKFB はゼロ接続。
 
@@ -125,17 +125,17 @@ reset policy:
 
 ## 6. 後続検証順と受入条件
 
-| 順序 | 検査 | 合格条件 |
-| --- | --- | --- |
-| 1 | GLMの命令修正を独立レビュー | 命令結果・flag・stack・unsupported opcodeが期待仕様と一致 |
-| 2 | RAM契約単体 | CEB=0保持、CEB=1/OCE=0更新、RESETB output reset、内容保持をbehavioral/vendor同一系列で確認 |
-| 3 | boot | length 0/1/7679/7680/7681。合法値のwrite数=length、address範囲厳密一致、最終write前fetch禁止、不合法値writeなし |
-| 4 | CPU write/address | `$DFFF/$E000/$E3FB/$E3FC/$E3FF/$E400`、shadow両端とmirror alias、STA/STX/STY/RMW、要求ごとのwrite回数 |
-| 5 | clear | 全1024セルとshadowがspaceで一致。各indexへのwriteは1回。完了後にwriteが残らない |
-| 6 | CPU wrap | zero-page `$FF`、PC `$7FFF/$FFFF`、正負branch。CPU16bit値と物理addressを別々に検査 |
-| 7 | LCD画像/timing | nonzero font、文字の先頭/末尾、行境界、最終セル。DEN幅480、272 active行、TOTAL周期、bit向き、pipeline整合 |
-| 8 | 非同期clock/reset | 9MHz/40.5MHzで複数位相。LOCK待ち/喪失/relock、各domain同期release、reset中write禁止 |
-| 9 | FPGA | 9K/20K両方で合成・配置配線・timing/CDC評価。PLL設定、VRAM dual-clock推論/IP接続、追加logicの資源を確認 |
-| 10 | 実機 | 両boardのcold boot/button reset/連続表示/CPU更新中表示を確認。実機未実施は未証明として残す |
+| 順序 | 検査                        | 合格条件                                                                                                        |
+| ---- | --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1    | GLMの命令修正を独立レビュー | 命令結果・flag・stack・unsupported opcodeが期待仕様と一致                                                       |
+| 2    | RAM契約単体                 | CEB=0保持、CEB=1/OCE=0更新、RESETB output reset、内容保持をbehavioral/vendor同一系列で確認                      |
+| 3    | boot                        | length 0/1/7679/7680/7681。合法値のwrite数=length、address範囲厳密一致、最終write前fetch禁止、不合法値writeなし |
+| 4    | CPU write/address           | `$DFFF/$E000/$E3FB/$E3FC/$E3FF/$E400`、shadow両端とmirror alias、STA/STX/STY/RMW、要求ごとのwrite回数           |
+| 5    | clear                       | 全1024セルとshadowがspaceで一致。各indexへのwriteは1回。完了後にwriteが残らない                                 |
+| 6    | CPU wrap                    | zero-page `$FF`、PC `$7FFF/$FFFF`、正負branch。CPU16bit値と物理addressを別々に検査                              |
+| 7    | LCD画像/timing              | nonzero font、文字の先頭/末尾、行境界、最終セル。DEN幅480、272 active行、TOTAL周期、bit向き、pipeline整合       |
+| 8    | 非同期clock/reset           | 9MHz/40.5MHzで複数位相。LOCK待ち/喪失/relock、各domain同期release、reset中write禁止                             |
+| 9    | FPGA                        | 9K/20K両方で合成・配置配線・timing/CDC評価。PLL設定、VRAM dual-clock推論/IP接続、追加logicの資源を確認          |
+| 10   | 実機                        | 両boardのcold boot/button reset/連続表示/CPU更新中表示を確認。実機未実施は未証明として残す                      |
 
 故意に read enable/write pulse/font latency を壊した場合に対応テストが非ゼロ終了することも確認する。独立 `cpu_memory` テストや DEN/color のみの smoke 成功を、現 CPU・文字 pipeline の受入に代用しない。

@@ -24,7 +24,7 @@ RTL シミュレーションでは常に正常だったため、実機とシミ�
    ただし今回の修正後も 27MHz は維持している (修正後の slack は +2.651ns)。
 3. **メモリ読み出しタイミング差分説 (不成立)**: SDPB を pipeline モード相当の
    1 サイクル遅延読み出しにしたシミュレーションでも挙動不変。
-4. **症状の符号化から の仮説**: プログラム 16 バイト目以降 (RAM `$0210` 以降)
+4. **症状をバイト値で捉えた仮説**: プログラム 16 バイト目以降 (RAM `$0210` 以降)
    の各バイトの bit7 が失われると仮定すると、全観測が説明できる:
    - simple5: index 16 の `0xC9` (CMP #imm) が `0x49` (EOR #imm) になれば、
      `ADC #1; EOR #$7F` のループで `0x21^0x7F=0x5E`、`0x5F^0x7F=0x20` と
@@ -119,16 +119,16 @@ SDPB と正しく整合する。この性質は
 
 ## 診断資産
 
-| ファイル | 目的 |
-| --- | --- |
-| `examples/diag_bootram.s` | RAM `$0200` のロードバイトダンプ (7バイト) |
-| `examples/diag_simple5.s` | simple5 の初回算術を IFO/WVS と分離 (25バイト) |
-| `examples/diag_adc.s` / `diag_wvs.s` | 算術経路と VSync 待ちの分離 |
-| `examples/diag_rom16.s` | index 16-23 の bit7 マーカー (`C9 A5 D0 EE A9 4C 8D FF`) ダンプ。正常なら `$0210:` 行が `C9A5D0EE A94C8DFF`、旧バグなら `4925 506E...` |
-| `src/tb_simple5_trace.sv` | RTL: フレーム毎の A/PC トレース |
-| `src/tb_diag_screen.sv` | RTL: 60x17 テキスト画面ダンプ |
-| `src/tb_pnr_trace.sv` | Post-PnR ネットリストから SDPB モデルの RAM/VRAM を直接観測 |
-| `docs/DIAG_SIMPLE5_ja.md` | 診断プログラムの使い方と期待値 |
+| ファイル                             | 目的                                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `examples/diag_bootram.s`            | RAM `$0200` のロードバイトダンプ (7バイト)                                                                                             |
+| `examples/diag_simple5.s`            | simple5 の最初の算術演算を IFO/WVS と分離 (25バイト)                                                                                   |
+| `examples/diag_adc.s` / `diag_wvs.s` | 算術経路と VSync 待ちの分離                                                                                                            |
+| `examples/diag_rom16.s`              | index 16-23 の bit7 マーカー (`C9 A5 D0 EE A9 4C 8D FF`) ダンプ。正常なら `$0210:` 行が `C9A5D0EE A94C8DFF`、旧バグなら `4925 506E...` |
+| `src/tb_simple5_trace.sv`            | RTL: フレーム毎の A/PC トレース                                                                                                        |
+| `src/tb_diag_screen.sv`              | RTL: 60x17 テキスト画面ダンプ                                                                                                          |
+| `src/tb_pnr_trace.sv`                | Post-PnR ネットリストから SDPB モデルの RAM/VRAM を直接観測                                                                            |
+| `docs/DIAG_SIMPLE5_ja.md`            | 診断プログラムの使い方と期待値                                                                                                         |
 
 ## 教材 (day01-18) への適用範囲
 

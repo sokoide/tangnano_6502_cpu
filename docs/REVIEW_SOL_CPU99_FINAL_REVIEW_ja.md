@@ -20,7 +20,7 @@
 
 `day99_completed/src/tb_cpu_regression.sv:384–420` は done sentinel を見て 4edge 待ち、SP/checkpoint/fail byte を確認して PASS する。最終 CPU state、fault_reason、停止後の CEA/VCEA は確認していない。
 
-したがって全 checkpoint/done 書込み後の HLT が unsupported fault に変わる、または CPU が継続実行する変異をこの TB 単独では検出できない。これは source 上の終了条件からの指摘であり、今回 source 変異を行って再現した結果ではない。`tb_cpu_contract` は別に HALT/FAULT を待つが、この regression program 自体の正常終了確認の代替にはならない。
+したがって全 checkpoint/done 書き込み後の HLT が unsupported fault に変わる、または CPU が継続実行する変異をこの TB 単独では検出できない。これは source 上の終了条件からの指摘であり、今回 source 変異を行って再現した結果ではない。`tb_cpu_contract` は別に HALT/FAULT を待つが、この regression program 自体の正常終了確認の代替にはならない。
 
 修正: bounded wait で HALT へ到達し、FAULT_NONE、期待最終 PC、SP、停止後 write enable=0 を検査する。done を書いた後に FAULT へ入る場合は即 fatal とする。
 
@@ -28,9 +28,9 @@
 
 `tb_cpu_contract:99–115` の 14 比較 forms は、全 form とも source/operand=$40 の等値だけを検査し、A/X/Y も同じ値である。新 CD/DD/D9/EC/CC の borrow/非等値や CPX/CPY の source 選択を誤った場合に強く検出するには、register を異なる値にしたケースが必要。
 
-GLM regression は一部 forms で大小差・borrow を検査しており、比較全体の基本演算が未検証という意味ではない。新 absolute forms の等値・C 入力非依存・V 保持・正しい address 読出しの検査は有効。
+GLM regression は一部 forms で大小差・borrow を検査しており、比較全体の基本演算が未検証という意味ではない。新 absolute forms の等値・C 入力非依存・V 保持・正しい address 読み出しの検査は有効。
 
-pointer の zero-page `$FF→$00` 読出し wrap も今回の TB には明示 case がない。RTL は 8bit `zp_addr` を使っており静的には正しいが、index 加算 wrap の case を pointer 高 byte 読出し wrap の実行証拠とは扱わない。
+pointer の zero-page `$FF→$00` 読み出し wrap も今回の TB には明示 case がない。RTL は 8bit `zp_addr` を使っており静的には正しいが、index 加算 wrap の case を pointer 高 byte 読み出し wrap の実行証拠とは扱わない。
 
 追加案: A/X/Y に別値、operand より小/等/大、C 入力両値の absolute 比較、各 indirect 形式で pointer 低 byte を$FF に置いた case、JMP indirect `$FFFF→$0000` の platform 仕様 case。
 
@@ -40,8 +40,8 @@ pointer の zero-page `$FF→$00` 読出し wrap も今回の TB には明示 ca
 - Write: next CEA/VCEA 標準 0。STA/STX/STY/RMW が共通 decode へ進み、通常 store が FETCH_REQ へ持続しない。JSR の 2 回 write、PHA/PHP の stack write も独立 edge で発行する。
 - VRAM/shadow: E000–E3FF read は shadow、write は VRAM+shadow。同じ index/data で更新。7C00–7FFF/FC00–FFFF の直接 CPU write を fault 化し、mirror で read-only を迂回できない。E3FC–E3FF も物理容量に含む。
 - Clear: address0 を準備し、次 index を VRAM/shadow 両方へ使い、1023 の write retirement 後に次命令へ移る。全 1024index の write 数=1 と内容一致を TB が検査する。
-- PC/effective address: CPU 加算は 16bit、RAM15bit 変換は decode へ分離。zero-page index/pointer は 8bit temporary で truncate。RTS は読出し直後の上位 byte と保持済み下位 byte を組み立てて+1。
-- PLP/PHP: SP を 8bit 加算して stack 読出し、N/V/I/Z/C 復元、B/bit5 は状態 flag へ復元しない。PHP の出力 B/bit5=1。D=1 の PLP と SED は decimal fault、CLD は明示対応という binary-only 方針と一致。
+- PC/effective address: CPU 加算は 16bit、RAM15bit 変換は decode へ分離。zero-page index/pointer は 8bit temporary で truncate。RTS は読み出し直後の上位 byte と保持済み下位 byte を組み立てて+1。
+- PLP/PHP: SP を 8bit 加算して stack 読み出し、N/V/I/Z/C 復元、B/bit5 は状態 flag へ復元しない。PHP の出力 B/bit5=1。D=1 の PLP と SED は decimal fault、CLD は明示対応という binary-only 方針と一致。
 - Fault: 未分類 opcode を operand 推測なしで停止し opcode/PC を保持。fault_reason 非 zero は FAULT へ集約し CEA/VCEA/CEB を 0、reset まで reason を保持する。HALT とは区別する。
 - Oracle: checkpoint0 を含む全 checkpoint の CC poison、fail byte、bounded timeout、fatal が有効。RAM model は独立同期 read で CEB を尊重する。CPU 内部 handler を直接呼ぶだけの検証ではなく、boot→fetch→execute を通る。
 

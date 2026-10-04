@@ -5,7 +5,7 @@ GLM の RTS/BCS/zero-page・indirect 比較修正を土台に、active 経路 `c
 
 ## 実装
 
-- Boot 容量 7680 byte、length は byte 数。0/超過を write なしの fault へ。有効 INIT_RAM index だけ配列参照。最後の registered write edge 後に FETCH を許可し、厳密に length 回書込む。
+- Boot 容量 7680 byte、length は byte 数。0/超過を write なしの fault へ。有効 INIT_RAM index だけ配列参照。最後の registered write edge 後に FETCH を許可し、厳密に length 回書き込む。
 - 通常 CEA/VCEA は標準 0。STA/STX/STY と RMW の write decode を同じ helper へ集約し、一命令 write を一 edge にする。欠けていた STY absolute ($8C)も追加した。
 - Text VRAM は 1024 byte、可視 1020 セル。全 1024 セル clear と shadow の index/data を一致。VRAM read は shadow へ decode し RMW を可能にした。7C00–7FFF/FC00–FFFF の CPU 直接 write は fault。
 - PC、branch、absolute/indexed effective address は 16bit wrap。物理 15bit RAM mirror は維持し VRAM decode を優先。JMP indirect は 16bit 次 address を読む仕様で、NMOS page-wrap bug を再現しない。
@@ -35,10 +35,10 @@ verilator --binary --timing --assert -Wno-fatal \
 /private/tmp/sol-cpu-regression-final3/Vtb_cpu_regression
 ```
 
-| テスト | 結果 |
-| --- | --- |
+| テスト            | 結果                                  |
+| ----------------- | ------------------------------------- |
 | tb_cpu_regression | 12 checkpoints PASS、build/run exit 0 |
-| tb_cpu_contract | 全項目PASS、build/run exit 0 |
+| tb_cpu_contract   | 全項目PASS、build/run exit 0          |
 
 契約 TB の検査:
 
@@ -56,16 +56,16 @@ GLM TB は checkpoint0 の期待値 0 が RAM 初期値 0 と一致していた�
 
 本体を変えず `/private/tmp/sol-neg-*` に CPU/include/TB を複製して故意の誤りを導入。以下の 8 ケースは fresh build、同じ assert/timeout で検出し run exit 1。
 
-| 変異 | 検出結果 |
-| --- | --- |
-| 次状態CEA/VCEA標準0を削除 | write count 期待11/8が22/16、fatal |
-| boot終了をbyte数でなく最終index比較へ戻す | 最終boot write retirement前FETCH、fatal |
-| clear shadow indexを旧cur.v_adaへ戻す | shadow/video mismatch、fatal |
-| checkpoint0 write先だけを050Cへ変える | checkpoint0=CCのまま、期待00との差でfatal |
-| CPX/CPYのsourceを誤ってAへ変更 | unequal/borrow/distinct-source検査でfatal |
-| A1/B1を2 byte operand分類へ戻す | second operand fetch禁止assertでfatal |
-| A1でread全体を省略しAを保持して次命令へ | initial A=33とRAM=44の差を検出、fatal |
-| B1でread全体を省略しAを保持して次命令へ | initial A=33とRAM=44の差を検出、fatal |
+| 変異                                      | 検出結果                                  |
+| ----------------------------------------- | ----------------------------------------- |
+| 次状態CEA/VCEA標準0を削除                 | write count 期待11/8が22/16、fatal        |
+| boot終了をbyte数でなく最終index比較へ戻す | 最終boot write retirement前FETCH、fatal   |
+| clear shadow indexを旧cur.v_adaへ戻す     | shadow/video mismatch、fatal              |
+| checkpoint0 write先だけを050Cへ変える     | checkpoint0=CCのまま、期待00との差でfatal |
+| CPX/CPYのsourceを誤ってAへ変更            | unequal/borrow/distinct-source検査でfatal |
+| A1/B1を2 byte operand分類へ戻す           | second operand fetch禁止assertでfatal     |
+| A1でread全体を省略しAを保持して次命令へ   | initial A=33とRAM=44の差を検出、fatal     |
+| B1でread全体を省略しAを保持して次命令へ   | initial A=33とRAM=44の差を検出、fatal     |
 
 変異スクリプト実行: `python3 /private/tmp/sol_cpu_negative.py` (各実行 exit 0)。初回 pulse/boot/clear/checkpoint、追加 source/operand/noread-a1/noread-b1 を別 run で検査。再実行はスクリプト末尾の kind list で選択する。build/run log は各 `/private/tmp/sol-neg-*/{build,run}.log`。一時スクリプト・log は永続成果物ではない。変異内容は上表に保存した。
 

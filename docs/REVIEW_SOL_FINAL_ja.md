@@ -12,11 +12,11 @@
 
 `grep -q 'Finished'` が substring 一致で、exit=0・Error:なしの場合、成功を否定する `Not Finished` も成功になる。tmp fake programmer で次を実行し、3 ケース全て script exit=0 を確認した。
 
-| fake stdout | script exit | 評価 |
-| --- | --- | --- |
-| Not Finished | 0 | 偽成功 |
-| Finished with errors | 0 | 偽成功 |
-| UnFinished | 0 | 偽成功 |
+| fake stdout          | script exit | 評価   |
+| -------------------- | ----------- | ------ |
+| Not Finished         | 0           | 偽成功 |
+| Finished with errors | 0           | 偽成功 |
+| UnFinished           | 0           | 偽成功 |
 
 既存 fake テストは Error:・marker 欠損・nonzero code を検査し、それらは妥当。ただしこの反例は含まれない。実 programmer の正規成功 marker を確認し、行として認識すること、否定/失敗ログを拒否すること、その fake ケースを追加することを推奨する。今回 hardware programming は実行していない。
 
@@ -45,6 +45,6 @@
 
 F01: parent が Day99 dependency に `src/*.cst` / `*.sdc` / `src/*.sdc` を加えたことを静的確認。他 completed にも CST glob が追加された。constraint 変更の未反映原因は解消した。
 
-F02: 正規成功 marker を行全体の `^[[:space:]]*Finished[[:space:]]*$` へ修正し、3 反例を含む 10 fake ケースを追加。`python3 scripts/test_program_fpga.py` を独立再実行し exit0。実 programmer の hardware 書込み結果は別受入。
+F02: 正規成功 marker を行全体の `^[[:space:]]*Finished[[:space:]]*$` へ修正し、3 反例を含む 10 fake ケースを追加。`python3 scripts/test_program_fpga.py` を独立再実行し exit0。実 programmer の hardware 書き込み結果は別受入。
 
 F03: active board top＋font stub manifest、明示 include path、top-module へ修正された。`make -C day99_completed lint > /private/tmp/sol-cross-lint-fixed.log 2>&1` を独立再実行し exit0。警告は nonfatal 設定であり、timing/CDC や実機の証明にはしない。

@@ -5,7 +5,7 @@
 ## 完了内容
 
 - Day01–18 の starter/completed に CPU・LCD・同期 RAM の目的別検証を追加し、CPU 課題の誤った期待値・説明を修正した。
-- 失敗を隠して成功扱いする Makefile と FPGA 書込み helper を修正し、fake programmer で失敗経路を確認した。
+- 失敗を隠して成功扱いする Makefile と FPGA 書き込み helper を修正し、fake programmer で失敗経路を確認した。
 - Day99 の opcode/CPU 契約、HEX 変換、ALU、RAM、font、LCD pipeline、clock/reset、board wrapper、build 依存を改善した。
 - Day05–18 の 20K TFT シミュレーションへ`BOARD_20K`を渡し、ボード固有 reset 極性でテストするよう修正した。
 - 9K/20K 別 PLL・SDC を設定した。9K は CPU/メモリクロックを 31.5MHz、20K は 40.5MHz とする。
@@ -16,10 +16,10 @@
 
 実ソースを Gowin で合成・配置配線し、両ボードの bitstream 生成まで完了した。制約したクロックと配置配線後の最大周波数は次の通り。
 
-| Board | CPU/Memory制約 | CPU/Memory Actual Fmax | 最悪setup slack | Setup TNS |
-| --- | ---: | ---: | ---: | ---: |
-| Tang Nano 9K | 31.500MHz | 31.907MHz | +0.406ns | 0 |
-| Tang Nano 20K | 40.500MHz | 53.791MHz | +6.101ns | 0 |
+| Board         | CPU/Memory制約 | CPU/Memory Actual Fmax | 最悪setup slack | Setup TNS |
+| ------------- | -------------: | ---------------------: | --------------: | --------: |
+| Tang Nano 9K  | 31.500MHz      | 31.907MHz              | +0.406ns        | 0         |
+| Tang Nano 20K | 40.500MHz      | 53.791MHz              | +6.101ns        | 0         |
 
 9K の 40.5MHz 構成は Fmax 33.809MHz で不成立だった。33MHz 制約も Fmax 33.013MHz で余裕がほぼなかったため、27MHz 入力から PLL 比 7/6 の 31.5MHz へ下げた。9K では最悪経路の slack が正で、setup TNS は 0。これは今回の Gowin ツール・選択デバイス条件における内部 STA 結果であり、外部 LCD 入出力 delay や基板上の計測を含まない。
 
@@ -41,4 +41,4 @@
 
 ## 受入境界
 
-レビューとコード・テスト・FPGA P&R は完了。FPGA への書込み、実パネルでの表示確認、cold boot、連続運転はまだ実施していないため、その受入は未確認のまま区別する。commit/push は行っていない。
+レビューとコード・テスト・FPGA P&R は完了。FPGA への書き込み、実パネルでの表示確認、cold boot、連続運転はまだ実施していないため、その受入は未確認のまま区別する。commit/push は行っていない。

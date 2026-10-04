@@ -55,12 +55,12 @@
 ## Day 99 pixel pipeline（2026-10-03）
 
 VRAM の write port は 9K では 27MHz、20K では 40.5MHz の MEMORY_CLK へ接続する。read port は両ボードとも 9MHz PixelClk へ接続する。
-font ROM と LCD は PixelClk に揃える。多 bit address を 2FF で転送する旧 CDC 経路は使用しない。
+font ROM と LCD は PixelClk に揃える。複数ビットのアドレスを 2FF で転送する旧 CDC 経路は使用しない。
 
 VRAM address を beam 座標から組合せ生成し、同期 VRAM 1clock → 同期 font ROM 1clock → RGB/DE 登録の順で描画する。
 font row・bit index・active valid を同じ pipeline で運び、DE は beam に対し 2edge 遅延する。
 画素は font byte の MSB から左順。active 幅 480、active 行 272、周期 531×292 pixel である。
-reset 時に pipeline valid をクリアする。font memory の READ_MODE=0 では OCE によらず CE で読出す。
+reset 時に pipeline valid をクリアする。font memory の READ_MODE=0 では OCE によらず CE で読み出す。
 
 実 font MI は metadata 上 4096byte 容量だが、収録データは 128 文字×16 行=2048byte。
 simulation はこの 2048byte を読み、残る 2048byte を vendor INIT と同じゼロで埋める。

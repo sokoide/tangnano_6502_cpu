@@ -29,14 +29,14 @@ fetch 分類には既に列挙済みで実行 handler が無かったもの。
 `calc_decode_compare_next` を拡張。即値 3 種はヘルパー `complete_compare` に統一し、
 fetch 分類（opcode メタデータ）に列挙済みのメモリ形式を実装した:
 
-| opcode | 命令 | 実装方式 |
-| --- | --- | --- |
-| `$C5` | CMP zp | `request_data_fetch` → `dout_r` で比較 |
-| `$D5` | CMP zp,X | 8bit 加算で zp wrap |
-| `$C1` | CMP (zp,X) | `fetched_data_bytes` 0..3 の多段（LDA `$A1` と同型） |
-| `$D1` | CMP (zp),Y | 同上（LDA `$B1` と同型）、ポインタ+Y は 16bit wrap |
-| `$E4` | CPX zp | CMP zp と同型 |
-| `$C4` | CPY zp | 同上 |
+| opcode | 命令       | 実装方式                                             |
+| ------ | ---------- | ---------------------------------------------------- |
+| `$C5`  | CMP zp     | `request_data_fetch` → `dout_r` で比較               |
+| `$D5`  | CMP zp,X   | 8bit 加算で zp wrap                                  |
+| `$C1`  | CMP (zp,X) | `fetched_data_bytes` 0..3 の多段（LDA `$A1` と同型） |
+| `$D1`  | CMP (zp),Y | 同上（LDA `$B1` と同型）、ポインタ+Y は 16bit wrap   |
+| `$E4`  | CPX zp     | CMP zp と同型                                        |
+| `$C4`  | CPY zp     | 同上                                                 |
 
 比較 semantics: `C = (lhs >= operand)`（borrow なし）、`Z/N` は 8bit 差分、
 ソースレジスタと `V` は保存、入力 `C` は不使用。
@@ -45,7 +45,7 @@ fetch 分類（opcode メタデータ）に列挙済みのメモリ形式を実�
 ## 回帰テスト `src/tb_cpu_regression.sv`（新規）
 
 - DUT は実物 `src/cpu.sv`。RAM は TB 内の独立した 1 クロック同期モデル
-  （`cea` 書込み、`adb` を毎エッジ読出 = アドレス呈示の次サイクルでデータ出力）。
+  （`cea` 書き込み、`adb` を各クロックエッジで読み出し = アドレスを提示した次のサイクルでデータを出力）。
 - boot プログラムは生成物 `include/boot_program.sv` を使わず、TB 内蔵のハンドアセンブル
   286 バイト（org `$0200`）。各テストは番号を `$0500+i` にチェックポイントとして書き、
   flag 誤りは `$7BFE=$FF`、完了は `$7BFF=$A5` + HLT。
@@ -53,20 +53,20 @@ fetch 分類（opcode メタデータ）に列挙済みのメモリ形式を実�
 
 テスト項目（12 チェックポイント）:
 
-| # | 内容 |
-| --- | --- |
-| 0 | CMP 即値の基本（C/Z/N） |
-| 1 | CMP zp（一致 → C=1, Z=1） |
-| 2 | CMP zp,X（`$F8+$10` の zp wrap → `$08`） |
-| 3 | CMP (zp,X)（ptr `$40/$41` → `$0340`、C=0/N=1） |
-| 4 | CMP (zp),Y（`$0300+Y` → `$0320`、C=1） |
-| 5 | CPX zp |
-| 6 | CPY zp（C=0/N=1） |
-| 7 | BCS taken（SEC 後） |
-| 8 | BCS not taken（CLC 後） |
-| 9 | RTS 入れ子（JSR sub1 → JSR sub2 → RTS ×2） |
-| 10 | RTS cross-page（JSR を `$02FD` に配置、push `$02FF`、RTS → `$0300`、$FF 桁上げ） |
-| 11 | 入れ子内側の RTS 到達確認 |
+| #   | 内容                                                                             |
+| --- | -------------------------------------------------------------------------------- |
+| 0   | CMP 即値の基本（C/Z/N）                                                          |
+| 1   | CMP zp（一致 → C=1, Z=1）                                                        |
+| 2   | CMP zp,X（`$F8+$10` の zp wrap → `$08`）                                         |
+| 3   | CMP (zp,X)（ptr `$40/$41` → `$0340`、C=0/N=1）                                   |
+| 4   | CMP (zp),Y（`$0300+Y` → `$0320`、C=1）                                           |
+| 5   | CPX zp                                                                           |
+| 6   | CPY zp（C=0/N=1）                                                                |
+| 7   | BCS taken（SEC 後）                                                              |
+| 8   | BCS not taken（CLC 後）                                                          |
+| 9   | RTS 入れ子（JSR sub1 → JSR sub2 → RTS ×2）                                       |
+| 10  | RTS cross-page（JSR を `$02FD` に配置、push `$02FF`、RTS → `$0300`、$FF 桁上げ） |
+| 11  | 入れ子内側の RTS 到達確認                                                        |
 
 ## 検証コマンドと結果（day99_completed から）
 
@@ -84,15 +84,15 @@ exit code: 0
 
 バグを一時的に復元して同一テストベンチで失敗することを確認（確認後すべて復元・削除済み）:
 
-| 復元したバグ | 結果 | exit code |
-| --- | --- | --- |
-| RTS 組立を旧ロジックに戻す | checkpoint 9/10/11 FAIL + timeout watchdog | 1 |
-| BCS handler を削除 | checkpoint 3 以降 FAIL + timeout（未処理命令で DECODE_EXECUTE 停留） | 1 |
-| CMP zp handler を削除 | checkpoint 1 以降 FAIL + timeout | 1 |
+| 復元したバグ               | 結果                                                                 | exit code |
+| -------------------------- | -------------------------------------------------------------------- | --------- |
+| RTS 組立を旧ロジックに戻す | checkpoint 9/10/11 FAIL + timeout watchdog                           | 1         |
+| BCS handler を削除         | checkpoint 3 以降 FAIL + timeout（未処理命令で DECODE_EXECUTE 停留） | 1         |
+| CMP zp handler を削除      | checkpoint 1 以降 FAIL + timeout                                     | 1         |
 
 ## 既知の未解決事項（本スコープ外、Sol レビュー後の修正予定）
 
-- R06: boot loader の長さ判定オフバイワン（`0..length` の 1 バイト超過書込み）。TB では
+- R06: boot loader の長さ判定オフバイワン（`0..length` の 1 バイト超過書き込み）。TB では
   末尾に NOP を置き影響を回避。R06 修正時は配列範囲外参照の防止も必要。
 - R07: PC / 実効アドレス計算への `RAMW15/RAMW16` マスク混在。今回の修正は既存の
   マスク方針を踏襲（RTS の `& RAMW16`、(zp),Y の 16bit wrap は `$7FFF` 未満のアドレスでのみ検証）。

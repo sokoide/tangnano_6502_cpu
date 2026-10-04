@@ -1,4 +1,4 @@
-> 現行Day 99は1024 byteのtext VRAM。実装済みmap/read-write/clear仕様は[INSTRUCTIONS](INSTRUCTIONS.md#メモリmapとboot)を参照。以下の外部Graphic VRAM、RDY、arbiter/MMUは未実装の設計案であり、現CPUの契約ではない。理論bandwidthだけから実効帯域や影響を保証できない。
+> 現行の Day 99 は 1024 バイトのテキスト VRAM を使います。実装済みのメモリマップ、読み書き、消去の仕様は[INSTRUCTIONS](INSTRUCTIONS.md#メモリmapとboot)を参照してください。以下で説明する外部グラフィック VRAM、RDY、アービタ/MMU は未実装の設計案であり、現行 CPU の仕様ではありません。理論上の帯域幅だけでは、実効帯域や CPU への影響を保証できません。
 
 # 外部RAMを利用した高解像度Graphic VRAMアーキテクチャ
 
@@ -16,7 +16,7 @@
 
 ### 帯域幅の計算 (Bandwidth Analysis)
 
-以下は仮定に基づく理論帯域の比較。refresh、command overhead、burst 効率、worst-case latency を含まない。
+以下は仮定に基づく理論上の帯域幅の比較です。リフレッシュ、コマンドの処理時間、バースト転送の効率、最悪時の遅延は含みません。
 
 * **LCD表示に必要な帯域:**
   * Pixel Clock: 約 9 MHz
@@ -26,7 +26,7 @@
   * Bus Width: 16 bit (PSRAM) / 32 bit (SDRAM)
   * Max Throughput: 100 MHz × 16 bit = **1600 Mbps** (Tang Nano 9K の場合)
 
-理論値の比率は約 9%。CPU への残り帯域割当や表示 deadline は未測定で、成立には実効帯域と最大待ち時間の検証が必要。
+理論値の比率は約 9% です。CPU に割り当てられる残りの帯域や、表示に必要な処理を期限内に終えられるかは未測定です。成立を確認するには、実効帯域と最大待ち時間の検証が必要です。
 
 ## 2. システムアーキテクチャ
 
@@ -119,10 +119,10 @@ graph TD
 
 ## 5. メモリアドレスマップ案 (例)
 
-| Address Range | Description | Size | Note |
-| :--- | :--- | :--- | :--- |
-| `0x000000` - `0x03FC00` | **VRAM** | ~261 KB | 480x272x16b. 外部RAM先頭に配置 |
-| `0x040000` - `0xXXXXXX` | **Main RAM** | 残り全域 | CPU用のプログラム・データ領域 |
+| Address Range           | Description  | Size     | Note                           |
+| :---------------------- | :----------- | :------- | :----------------------------- |
+| `0x000000` - `0x03FC00` | **VRAM**     | ~261 KB  | 480x272x16b. 外部RAM先頭に配置 |
+| `0x040000` - `0xXXXXXX` | **Main RAM** | 残り全域 | CPU用のプログラム・データ領域  |
 
 ※ 6502 は 16bit アドレス空間(64KB)しか持たないため、VRAM や大容量 RAM へのアクセスには**バンク切り替え (Bank Switching)**または**メモリマッパ (MMU)**の実装が別途必要となる点に注意が必要。
 

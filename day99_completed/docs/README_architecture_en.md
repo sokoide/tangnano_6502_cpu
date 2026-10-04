@@ -1,4 +1,4 @@
-> CPU仕様の正本は[INSTRUCTIONS](INSTRUCTIONS.md)。二進6502サブセット、16bit logical/15bit physical mirror、VRAM/shadow read/write、boot/fault契約と256opcodeの対応一覧を参照。この文書の旧FSM例は現RTLの受入証拠ではない。
+> CPU の仕様は[INSTRUCTIONS](INSTRUCTIONS.md)を正本とします。二進演算に対応した 6502 命令サブセット、16 ビットの論理アドレスと 15 ビットの物理アドレスによるミラー領域、VRAM とシャドウコピーの読み書き、ブート処理と異常停止の仕様、256 オペコードの対応一覧を参照してください。この文書にある旧 FSM の例は、現行 RTL の動作を検証した証拠ではありません。
 
 # 6502 CPU Architecture Comprehensive Guide
 
@@ -120,14 +120,14 @@ graph LR
 
 The system implements a sophisticated memory hierarchy optimized for both CPU access and display rendering:
 
-| CPU address | Physical mapping | Access |
-| --- | --- | --- |
-| 0000–7BFF | Main RAM | CPU R/W |
-| 7C00–7FFF | Shadow VRAM | CPU R; writes fault |
-| 8000–DFFF | RAM mirror, clear bit15 | CPU R/W |
-| E000–E3FF | Text VRAM (read through shadow) | CPU R/W |
-| E400–FBFF | RAM mirror, clear bit15 | CPU R/W |
-| FC00–FFFF | Shadow mirror | CPU R; writes fault |
+| CPU address | Physical mapping                | Access              |
+| ----------- | ------------------------------- | ------------------- |
+| 0000–7BFF   | Main RAM                        | CPU R/W             |
+| 7C00–7FFF   | Shadow VRAM                     | CPU R; writes fault |
+| 8000–DFFF   | RAM mirror, clear bit15         | CPU R/W             |
+| E000–E3FF   | Text VRAM (read through shadow) | CPU R/W             |
+| E400–FBFF   | RAM mirror, clear bit15         | CPU R/W             |
+| FC00–FFFF   | Shadow mirror                   | CPU R; writes fault |
 
 Font ROM is a separate LCD resource, outside the CPU address map.
 
