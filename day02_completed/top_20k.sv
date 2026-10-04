@@ -13,7 +13,7 @@ module top (
     end
 
     // Use bit 22 for faster blinking (approx 0.3s period)
-    // Tang Nano 20K LED is Active High (1 = ON).
-    assign led = counter[22];
+    // Tang Nano 20K on-board LED is active-low (0 = ON).
+    assign led = ~counter[22];
 
 endmodule

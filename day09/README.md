@@ -37,7 +37,7 @@ Before proceeding, make sure you understand:
 ## 🎯 Learning Objectives
 
 - **Implement Branch Instructions**: Learn conditional execution based on flag states.
-- **Relative Addressing**: Implement position-independent code using PC-relative offsets.
+- **Relative Addressing**: Preserve branch distances using PC-relative offsets.
 - **Signed Offsets**: Achieve jumps from -128 to +127 using 8-bit values.
 - **Pass Tests**: Pass the logic verification testbench (`sim/tb_cpu.sv`).
 
@@ -78,7 +78,7 @@ Branch instructions use relative offsets rather than absolute addresses.
 - **Absolute Addressing** is like a GPS coordinate: "Go to Latitude 35.6895, Longitude 139.6917."
 - **Relative Addressing** is like walking directions: "Go forward 3 steps" or "Go back 5 steps."
 
-This makes the code **position-independent**, meaning it can work correctly no matter where it's loaded in memory without being recompiled.
+The relative branch remains valid when both the branch and its target move by the same amount. This alone does not make the entire program position-independent: absolute loads, stores and jumps may still require relocation.
 
 ## 🧪 Verification
 

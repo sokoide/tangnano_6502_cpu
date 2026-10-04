@@ -17,9 +17,8 @@ module tb_cpu;
     assign data_in = mem[address_bus];
 
     // Instance of CPU
-    // Note: the completed CPU has a pc_enable input (manual stepping).
-    // The starter skeleton does not have it yet, so the port is connected
-    // only when TB_CPU_HAS_PC_ENABLE is defined (set by day06_completed/Makefile).
+    // Both starter and reference CPUs have pc_enable. Their Makefiles define
+    // TB_CPU_HAS_PC_ENABLE to connect and exercise it.
     cpu dut (
         .clk(clk),
         .rst_n(rst_n),

@@ -14,7 +14,7 @@ The reference solution already implements the tasks below.
 | Where to edit | TAX/TAY/TXA/TYA/INX/INY TODOs in cpu.sv |
 | Provided foundation | a/x/y, debug outputs and LDA handling |
 | Expected test results | The injected transfer/increment program ends with A/X/Y=$43 |
-| What to observe on hardware | ROM starts with LDA #$40 and reaches A=$41, then executes NOPs (X/Y=$41 is confirmed by the CPU test in simulation) |
+| What to observe on hardware | ROM starts with LDA #$40 and reaches A=$41, then executes NOPs (the ROM also reaches X/Y=$41; the separate CPU test checks A/X/Y=$43) |
 
 ## 📜 Overview
 

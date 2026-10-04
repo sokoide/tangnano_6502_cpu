@@ -62,7 +62,7 @@ graph TD
 
 ## 💡 Why Relative Addressing?
 
-Branch instructions use relative offsets rather than absolute addresses. This makes the code **position-independent**, meaning it can work correctly no matter where it's loaded in memory without being recompiled.
+Branch instructions use relative offsets rather than absolute addresses. The relative branch remains valid when both the branch and its target move by the same amount. This alone does not make the entire program position-independent: absolute loads, stores and jumps may still require relocation.
 
 ## 🧪 Verification
 

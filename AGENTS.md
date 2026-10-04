@@ -60,7 +60,7 @@ make clean && make          # Build assembly (ca65/cc65 toolchain)
 
 ### System Block Diagram
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │  Tang Nano FPGA (9K or 20K)                            │
 │                                                        │
@@ -90,7 +90,7 @@ make clean && make          # Build assembly (ca65/cc65 toolchain)
 
 ### Memory Map
 
-```
+```text
 0x0000-0x00FF  Zero Page (256B) - Fast 8-bit addressing
 0x0100-0x01FF  Stack (256B) - Hardware stack
 0x0200-0x7BFF  Program RAM (30.5KB) - Main program memory
@@ -185,13 +185,13 @@ The curriculum uses two boot mechanisms:
 
 **Day 99: CPU `INIT_RAM` state**
 
-1. CPU copies the `boot_program` array (max 7680 bytes) to RAM at 0x0200 (INIT_RAM state)
+1. CPU copies the generated boot ROM (max 7680 bytes) to RAM at 0x0200 (INIT_RAM state). FPGA synthesis reads the `boot_program_byte()` case function; the `boot_program` array input exists only under `VERILATOR` for test injection
 2. Sets PC to 0x0200
 3. Begins normal fetch/decode/execute cycle
 
 The Day 99 `boot_program` ROM is auto-generated from assembly source via:
 
-```
+```text
 assembly (ca65) → binary (ld65) → Intel HEX (srec_cat) → SystemVerilog (hex_fpga Go tool)
 ```
 
