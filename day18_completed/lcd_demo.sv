@@ -707,7 +707,10 @@ module lcd_demo (
     // Select the entire memory transaction. Debug must never inherit CPU writes.
     always_comb begin
         ram_addr_final = ram_addr_boot;
-        ram_we_final   = rst_n && ram_we;
+        // Gate with mem_rst_n, not rst_n: while the PLL is unlocked the held
+        // boot_loader still combinationally asserts ram_we=1 (boot_done=0), so
+        // only the LOCK-stable reset blocks those writes on the unstable clock.
+        ram_we_final   = mem_rst_n && ram_we;
         ram_din_final  = ram_din;
         if (!boot_active && memory_hold) begin
             ram_addr_final = debug_addr[14:0];

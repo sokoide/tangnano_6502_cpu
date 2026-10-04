@@ -65,7 +65,7 @@ stateDiagram-v2
     - Implement the `always_comb` block to calculate the `next_state`.
 4. **Peripheral Integration**:
     - Connect the state outputs to the physical LEDs.
-    - **Note for Tang Nano 9K**: LEDs are **Active Low** (0 = ON). You might need to invert the signals in your board wrapper.
+    - **Note**: The on-board LEDs on both the Tang Nano 9K and 20K are **Active Low** (0 = ON), so the board wrappers invert the signals.
 
 ## 🧪 Simulation with Parameters
 

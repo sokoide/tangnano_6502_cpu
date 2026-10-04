@@ -45,7 +45,7 @@ Note: In Day 10-18, the LCD text VRAM is written only by the debug display logic
 Before proceeding, make sure you understand:
 
 - **Branch Instructions**: Conditional jumps based on flag states
-- **Relative Addressing**: PC-relative offsets for position-independent code
+- **Relative Addressing**: PC-relative offsets keep branch targets valid when code moves (within the limits discussed in Day 09)
 - **Signed Offsets**: How 8-bit values can represent -128 to +127
 
 ## 🎯 Learning Objectives

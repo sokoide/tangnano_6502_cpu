@@ -95,7 +95,7 @@ sim: sim-build
 
 test-lcd: sim
 
-test: test-cpu test-lcd test-lcd-pipeline test-sync test-system test-vsync
+test: test-cpu test-lcd test-lcd-pipeline test-sync test-system test-vsync test-lock
 
 clean:
 	rm -rf impl/gwsynthesis impl/pnr
@@ -155,3 +155,13 @@ test-lcd-pipeline: tools-check-sim
 	$(VERILATOR) --binary --timing --assert -Wno-fatal --top-module tb_lcd_pipeline \
 		--Mdir build/$(BOARD)/tb_lcd_pipeline sim/tb_lcd_pipeline.sv lcd/lcd.sv lcd/vram.sv
 	@./build/$(BOARD)/tb_lcd_pipeline/Vtb_lcd_pipeline
+
+# Verify the FPGA-branch PLL LOCK write gate (blocked while unlocked, boot copy
+# after lock, blocked again on lock drop, re-copy on re-lock).
+.PHONY: test-lock
+test-lock: tools-check-sim
+	@mkdir -p build/$(BOARD)/tb_lock_gate
+	$(VERILATOR) --binary --timing --assert -Wno-fatal \
+		--Mdir build/$(BOARD)/tb_lock_gate --top-module tb_lock_gate \
+		sim/tb_lock_gate.sv boot_loader.sv ram.sv
+	@./build/$(BOARD)/tb_lock_gate/Vtb_lock_gate
