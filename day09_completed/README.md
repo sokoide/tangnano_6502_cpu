@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Branch-condition and relative-PC-update TODOs in cpu.sv |
+| Provided foundation | Binary arithmetic and flags |
+| Expected test results | PC and A for taken and not-taken branches |
+| What to observe on hardware | ROM BEQ skips LDA #$FF, leaving A=$00/X=$01, then executes NOPs; it does not loop |
+
 ## 📜 Overview
 
 A CPU that only executes instructions in a straight line isn't very capable. Today, we give our CPU "decision-making" power by implementing **Branch Instructions**.
@@ -55,7 +66,7 @@ Branch instructions use relative offsets rather than absolute addresses. This ma
 
 ## 🧪 Verification
 
-The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` separately runs only the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
 
 - **Test Program**:
 
@@ -72,3 +83,7 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 ## 🎯 Next Step
 
 In Day 10, we will complete the core CPU features by implementing the **Stack** and **Stack Pointer (S)**, enabling function calls (subroutines).
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Connect lcd_demo in top_core.sv |
+| Provided foundation | LCD, VRAM, font ROM and PLL are provided |
+| Expected test results | `make sim` runs the LCD smoke test |
+| What to observe on hardware | Fixed demo text such as VRAM TEXT. The CPU is not connected |
+
 ## 📜 Overview
 
 In Day 04, we established a critical foundation for CPU development: **A Window into the Machine (LCD)**. By building a display pipeline, we can now visually observe what the CPU is doing inside the FPGA.

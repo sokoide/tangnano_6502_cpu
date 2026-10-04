@@ -91,7 +91,7 @@ The day06-18 folders are an educational, step-by-step 6502 build-up (components 
 
 For education, keeping day06-18 as-is is usually better. If you want a more production-oriented reference for safe refactors and extensibility, day99’s 2-process FSM structure is the intended example.
 
-See [FSM](./docs/FSM.md), [architecture](./docs/README_architecture_en.md), and the [transition guide](../docs/DAY18_TO_DAY99_ja.md).
+See [FSM](./docs/FSM.md), [architecture](./docs/README_architecture_en.md), and the [transition guide](../docs/DAY18_TO_DAY99.md).
 
 ### Custom Instructions
 
@@ -127,9 +127,6 @@ The `examples/` directory contains several 6502 assembly programs. Use the `cc65
 # Install prerequisites (macOS)
 brew install srecord cc65 go
 
-# Install prerequisites (Linux)
-sudo apt install srecord cc65
-
 # Build and program an example (default: simple5).
 # PROG selects any examples/*.s by name, without the .s extension.
 cd day99_completed
@@ -154,8 +151,9 @@ The currently embedded program is recorded in the `// source:` line of
 `make test` runs the CPU regression/contract tests plus peripheral and integration simulations. The CPU regression suite (`tb_cpu_regression.sv`) verifies selected cases of the implemented subset. The static opcode audit in `docs/INSTRUCTIONS.md` and these local tests do not guarantee all inputs and boundary conditions; synthesis, place-and-route, and continuous operation on real hardware are separate validations.
 
 ```bash
-# Run lint and format checks
+# Run lint checks
 make lint
+# Formatting rewrites files
 make format
 ```
 
@@ -176,4 +174,4 @@ Contributions are welcome! Please review the coding standards and development gu
 
 _The system running a text display program on a 480x272 LCD module._
 
-See the [Day18-to-Day99 transition guide](../docs/DAY18_TO_DAY99_ja.md). `make format` rewrites files; it is not a read-only check.
+See the [Day18-to-Day99 transition guide](../docs/DAY18_TO_DAY99.md). `make format` rewrites files; it is not a read-only check.

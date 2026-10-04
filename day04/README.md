@@ -5,6 +5,17 @@
 🌐 Languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Connect lcd_demo in top_core.sv |
+| Provided foundation | LCD, VRAM, font ROM and PLL are provided |
+| Expected test results | `make sim` runs the LCD smoke test |
+| What to observe on hardware | Fixed demo text such as VRAM TEXT. The CPU is not connected |
+
 ## 📜 Overview
 
 Until now, we have verified operations using only LEDs—providing just "one bit" of information. However, as we build a complex CPU, LEDs are no longer sufficient.

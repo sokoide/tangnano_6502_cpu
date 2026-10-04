@@ -2,6 +2,17 @@
 
 [English](README.md) | [日本語](README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Opcode/operand-fetch TODOs in cpu.sv |
+| Provided foundation | PC, A, pc_enable and LCD wiring |
+| Expected test results | A/PC after immediate LDA, and holding when enable=0 |
+| What to observe on hardware | ROM loads A=$42, then executes NOPs |
+
 ## Goal
 
 Implement A and a two-state opcode/operand FSM in `cpu.sv`.
@@ -42,3 +53,7 @@ separately; C/V have different requirements for the later ADC/SBC instructions.
 ## Next Day
 
 Day 07 adds X/Y and register transfers. Day 08 adds ADC/SBC and C/V/Z/N verification.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

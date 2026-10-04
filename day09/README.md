@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Branch-condition and relative-PC-update TODOs in cpu.sv |
+| Provided foundation | Binary arithmetic and flags |
+| Expected test results | PC and A for taken and not-taken branches |
+| What to observe on hardware | ROM BEQ skips LDA #$FF, leaving A=$00/X=$01, then executes NOPs; it does not loop |
+
 ## 📜 Overview
 
 A CPU that only executes instructions in a straight line isn't very capable. Today, we give our CPU "decision-making" power by implementing **Branch Instructions**.
@@ -98,3 +109,7 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🎯 Next Step
 
 In Day 10, we will complete the core CPU features by implementing the **Stack** and **Stack Pointer (S)**, enabling function calls (subroutines).
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

@@ -5,11 +5,22 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | TAX/TAY/TXA/TYA/INX/INY TODOs in cpu.sv |
+| Provided foundation | a/x/y, debug outputs and LDA handling |
+| Expected test results | The injected transfer/increment program ends with A/X/Y=$43 |
+| What to observe on hardware | ROM starts with LDA #$40 and reaches A/X/Y=$41, then executes NOPs |
+
 ## 📜 Overview
 
 In addition to the Accumulator, the 6502 has two versatile 8-bit index registers: the **X Register** and the **Y Register**. In Day 07, we will add these to our CPU.
 
-These registers are essential for many addressing modes and are often used as loop counters or offsets. We will implement instructions to transfer values between registers and perform basic increment/decrement operations.
+These registers are essential for many addressing modes and are often used as loop counters or offsets. We will implement instructions to transfer values between registers and perform INX/INY increments. DEX/DEY decrements are introduced on Day15.
 
 ## 🧠 Memory Model Note
 
@@ -95,7 +106,7 @@ _Note: On a real 6502, these take 2 cycles. In our simplified FPGA model, you mi
 1. **Declare Registers**:
     - Check the existing `logic [7:0] a, x, y;` declarations and reset.
 2. **Extend the Decoder**:
-    - In the `STATE_FETCH_OPCODE` case inside `always_ff`, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to your `case` statement.
+    - In the `STATE_FETCH_OPCODE` case inside `always_ff`, add the new opcodes (`0xAA`, `0xA8`, `0x8A`, `0x98`, `0xE8`, `0xC8`) to `case (data_in)`.
 3. **Transfer Logic**:
     - `TAX`: `x <= a;`
     - `TXA`: `a <= x;`
@@ -138,3 +149,7 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🎯 Next Step
 
 In Day 08, we will significantly strengthen the CPU's computational power by integrating the **ALU (Arithmetic Logic Unit)** for full addition/subtraction and the **Processor Status (P) register** to bundle our status flags.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

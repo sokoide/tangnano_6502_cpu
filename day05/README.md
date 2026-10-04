@@ -2,6 +2,17 @@
 
 [English](README.md) | [日本語](README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | PC-update TODO in cpu.sv |
+| Provided foundation | LCD wiring and a slow enable signal |
+| Expected test results | `make test-cpu` checks PC=$0200 → $0201 → $0202 and holding while disabled |
+| What to observe on hardware | PC advances on the LCD; instructions are not decoded yet |
+
 ## Goal
 
 Implement a 16-bit PC in `cpu.sv`. Reset it to `$0200`, increment it once on a rising edge
@@ -14,7 +25,7 @@ for the instruction fetch introduced next.
 1. Implement the PC with an asynchronous active-low reset.
 2. Update it only on an enabled rising edge. Arithmetic wraps at 16 bits.
 3. Run `make test-cpu`: reset, two increments, and holds are checked.
-4. Run `make sim`: it runs the LCD smoke test in addition to the CPU simulation.
+4. Run `make test` for CPU verification and the LCD smoke test. `make sim` runs only the LCD smoke test.
 5. Build with `make BOARD=9k` or `make BOARD=20k`. Hardware uses a slow display enable.
    Simulation success does not establish hardware operation.
 
@@ -33,3 +44,7 @@ Write a separate test for register reset, write enable, and hold behavior.
 
 Day 06 adds A and the opcode/operand fetch for `LDA #imm`.
 Day 04–09 use ROM; RAM, Zero Page, and stack arrive in Day 10.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | State-transition TODOs in traffic_light.sv; independent components are extra exercises |
+| Provided foundation | Counter, PWM and divider interfaces |
+| Expected test results | `make test` checks traffic-light transitions and divider ratios 0–15 |
+| What to observe on hardware | Traffic-light LEDs cycle red → green → yellow. External inputs are fixed in the board top |
+
 ## 📜 Overview
 
 Up until Day 02, we learned about arithmetic logic using combinational circuits. However, for a CPU to execute programs, it needs to "remember" values and transition through "states" over time.

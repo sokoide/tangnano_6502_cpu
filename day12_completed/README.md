@@ -5,9 +5,20 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Absolute load/store TODOs in cpu.sv |
+| Provided foundation | Zero-page handling and synchronous RAM |
+| Expected test results | Stores and loads at a 16-bit address in the injected program |
+| What to observe on hardware | ROM ends with RAM[$0300]=$AA, A=$AA and HLT at PC=$020A without overwriting instructions |
+
 ## 📜 Overview
 
-The Zero Page we learned on Day 11 is useful but limited to 256 bytes. Today, we implement **Absolute Addressing**, which enables the CPU to access the full 64KB memory range.
+The Zero Page we learned on Day 11 is useful but limited to 256 bytes. Today, we implement **Absolute Addressing**, which enables the CPU to specify any 16-bit address ($0000–$FFFF). The actual mapped memory still depends on this day’s hardware.
 
 In this mode, the opcode is followed by a 2-byte address (low byte, then high byte). This allows the CPU to read or write to any memory location, as well as interact with memory-mapped ROM and peripherals.
 
@@ -63,7 +74,7 @@ Think of it like writing a date as **"Day-Month-Year"** (25th December 2025).
 
 ## 🧪 Verification
 
-The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` separately runs only the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
 
 - **Test Program**:
 
@@ -82,3 +93,11 @@ The completed CPU test is `make test-cpu`; run it from this directory. `make sim
 In Day 13, we will enhance our data processing capabilities by implementing **Logical Operations (AND, ORA, EOR, BIT)**.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
+
+In the reference solution, `make test-rom` executes the hardware `rom.sv` through boot copying and synchronous RAM, then checks the halt PC and data. This is separate from the program injected by the CPU unit test.

@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Create top and CST in the GUI |
+| Provided foundation | 27 MHz input and LED wiring |
+| Expected test results | The reference `make test` checks LED toggling |
+| What to observe on hardware | LED toggles approximately every 0.62 seconds |
+
 ## 📜 Overview
 
 Welcome to the first step of building your own 6502 CPU! Before diving into complex logic, you need to get comfortable with the hardware and development environment.

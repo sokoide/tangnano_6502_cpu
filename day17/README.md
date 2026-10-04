@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Indirect-pointer-fetch TODOs in cpu.sv |
+| Provided foundation | Absolute/indexed addressing and boot |
+| Expected test results | Zero-page wrapping, indirect loads, JSR/RTS and JMP |
+| What to observe on hardware | ROM loads A=$42 from $8021 and halts |
+
 ## 📜 Overview
 
 Today, we implement the most complex and powerful addressing modes of the 6502: **Indirect Addressing**.
@@ -96,3 +107,9 @@ In Day 18, we will implement **Custom FPGA Instructions (WVS, CVR, IFO)** beyond
 Zero-page pointer reads wrap from $FF to $00. JMP (abs) instead increments the full 16-bit address; the NMOS 6502 page-boundary bug ($12FF to $1200) is not reproduced: this CPU reads $1300.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

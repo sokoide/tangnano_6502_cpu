@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | CMP/CPX/CPY, INC/DEC and DEX/DEY TODOs in cpu.sv |
+| Provided foundation | Instructions through shifts and rotates |
+| Expected test results | Comparisons, wrapping, zero and C/V preservation, including C=1/V=1 |
+| What to observe on hardware | Successful ROM execution ends with RAM[$10]=$01, X=$00/Y=$FF and HLT at PC=$0212 |
+
 ## 📜 Overview
 
 To wrap up Phase 3, we implement **Comparison Instructions (CMP, CPX, CPY)**, the register decrements **DEX/DEY**, and instructions that directly modify memory: **Increment (INC)** and **Decrement (DEC)**.
@@ -89,3 +100,11 @@ Run the completed CPU test with `make test-cpu` in this directory (it uses the s
 Congratulations! You now have a solid foundation of memory access and data processing. From Day 16 in **Phase 4**, we will implement the 6502's most powerful features: Indexed and Indirect addressing modes.
 
 The CPU test also sets C=1/V=1 before DEX/DEY to check flag preservation. On hardware the successful ROM stops at $0212 with X=$00, Y=$FF, RAM[$10]=$01.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
+
+In the reference solution, `make test-rom` executes the hardware `rom.sv` through boot copying and synchronous RAM, then checks the halt PC and data. This is separate from the program injected by the CPU unit test.

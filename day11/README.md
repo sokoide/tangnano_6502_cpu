@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Zero-page load/store TODOs in cpu.sv |
+| Provided foundation | Synchronous RAM and boot provided since Day10 |
+| Expected test results | Stored memory value after STA, and A=$42 restored by LDA |
+| What to observe on hardware | ROM ends with RAM[$10]=$42, A=$42 and HLT at PC=$0208 |
+
 ## 📜 Overview
 
 So far, all our programs have used "Immediate (`#imm`)" or "Register-to-Register" operations. From today, we start working with **Memory** in earnest.
@@ -82,11 +93,17 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
     LDA $10    ; Load from address $0010 (A = 0x42)
     ```
 
-- **Simulation**: Run `make sim` and verify that the RAM write and read operations work correctly and the simulation outputs `PASS`.
+- **Simulation**: Run `make test-cpu` to check the RAM read/write assertions and the `PASS` result. `make sim` runs only the LCD/TFT smoke test.
 - **FPGA**: Confirm on the LCD that the A register value changes as expected.
 
 ## 🎯 Next Step
 
-In Day 12, we will implement **Absolute Addressing**, allowing the CPU to reach any address in the full 64KB range ($0000 - $FFFF).
+In Day 12, we will implement **Absolute Addressing**, allowing the CPU to specify a 16-bit address ($0000–$FFFF); actual mapped memory depends on the hardware.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | WVS/CVR/IFO TODOs in cpu.sv |
+| Provided foundation | HLT, synchronized VSync, PLL LOCK wait and display FSM |
+| Expected test results | CVR/IFO pulses, WVS #2 and #0, synchronous-RAM/display integration |
+| What to observe on hardware | ROM updates the IFO display approximately once per second and increments A/X/Y |
+
 ## 📜 Overview
 
 One of the best parts of building your own CPU on an FPGA is adding "original instructions" that don't exist in standard architectures. Today, we will use unused 6502 opcodes to implement **custom instructions** that directly control the FPGA hardware.
@@ -89,3 +100,7 @@ By building a 6502 CPU from scratch on an FPGA and even adding your own custom i
 This journey doesn't end here. You now have the foundation to optimize this CPU, add more instructions, or even dive into entirely new architectures. The possibilities are endless!
 
 Wishing you the very best in your future engineering endeavors!
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.

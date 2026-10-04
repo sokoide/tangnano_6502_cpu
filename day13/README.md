@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | AND/ORA/EOR/BIT TODOs in cpu.sv |
+| Provided foundation | Absolute and zero-page handling |
+| Expected test results | A after logic operations, BIT N/V/Z, and unchanged A after BIT |
+| What to observe on hardware | ROM BIT $11 leaves A=$0F/P=$BC and halts at PC=$0212 |
+
 ## 📜 Overview
 
 In addition to arithmetic, bitwise manipulation is a core responsibility of a CPU. Today, we implement **Logical Operations (AND, ORA, EOR)** and the **BIT** instruction for checking bit states.
@@ -93,3 +104,9 @@ This Day includes a CPU testbench (`sim/tb_cpu.sv`). If the starter TODOs are no
 In Day 14, we will further expand our bit manipulation repertoire by implementing **Shift and Rotate Instructions (ASL, LSR, ROL, ROR)**.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

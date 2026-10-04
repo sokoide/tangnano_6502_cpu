@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | ASL/LSR/ROL/ROR TODOs in cpu.sv |
+| Provided foundation | Logic operations and flags |
+| Expected test results | A/C/Z/N after shifts and rotates, including zero boundaries |
+| What to observe on hardware | ROM ends with A=$80/P=$BD and HLT at PC=$020C |
+
 ## 📜 Overview
 
 Today, we implement **Shift** and **Rotate** instructions, which move bits to the left or right within a register.
@@ -93,3 +104,9 @@ graph LR
 In Day 15, we will implement **Comparison Instructions (CMP, CPX, CPY)** and **Increment/Decrement** for memory contents, which provide the data needed for branches.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

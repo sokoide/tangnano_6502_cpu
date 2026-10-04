@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Arithmetic TODOs in alu_4bit.sv |
+| Provided foundation | top_9k.sv / top_20k.sv provide a blinking-LED circuit |
+| Expected test results | `make test` checks arithmetic and logic results |
+| What to observe on hardware | LED blinks about four times faster than Day01. ALU results are not connected to LEDs |
+
 ## 📜 Overview
 
 In Day 02, we move from simple sequential circuits (counters) to **combinational circuits**. Combinational circuits handle "computation" in hardware; they have no state and react instantly to changes in input.
@@ -48,7 +59,7 @@ graph LR
     - Write a testbench (`tb_alu_4bit.sv`) to feed values into your ALU.
     - Use `make test` to run the simulation and check for errors.
 4. **Hardware Display**:
-    - Integrate your ALU into the board and see the results on external LEDs or 7-segment displays.
+    - Program the provided board top to check LED blinking. The ALU is not connected to these LEDs; verify its results in simulation. Connecting ALU outputs to hardware is an additional exercise that requires wiring changes.
 
 > [!TIP]
 > **Pro Tips: Robust Cleaning**

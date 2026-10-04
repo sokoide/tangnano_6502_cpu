@@ -7,6 +7,17 @@ This is the completed project for designing sequential circuits in SystemVerilog
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | State-transition TODOs in traffic_light.sv; independent components are extra exercises |
+| Provided foundation | Counter, PWM and divider interfaces |
+| Expected test results | `make test` checks traffic-light transitions and divider ratios 0–15 |
+| What to observe on hardware | Traffic-light LEDs cycle red → green → yellow. External inputs are fixed in the board top |
+
 ## File Structure
 
 - `counter_8bit.sv` - 8-bit up counter

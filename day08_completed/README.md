@@ -5,11 +5,22 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | ADC/SBC/CLC/SEC TODOs in cpu.sv |
+| Provided foundation | Registers, flags and debug_p wiring |
+| Expected test results | A and N/V/Z/C after each arithmetic operation in the CPU test |
+| What to observe on hardware | ROM reaches A=$05 after SBC, then A=$00/C=1/Z=1 after ADC, followed by NOPs |
+
 ## 📜 Overview
 
 Today, we build the **Arithmetic Logic Unit (ALU)**, the core of the CPU's computational power, supporting full addition and subtraction. We will also integrate the **Processor Status (P) register**, which stores the N/V/Z/C arithmetic flags introduced in this lesson.
 
-This allows the CPU to perform complete addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
+This allows the CPU to perform binary immediate addition (`ADC`) and subtraction (`SBC`) operations and observe how the results affect the status flags (N, V, Z, C) through the P register. This is a major leap towards making logical decisions in programs.
 
 ## 🧠 Memory Model Note
 
@@ -36,7 +47,7 @@ graph TD
 The 6502 flags are updated automatically by many instructions. We focus on the four primary arithmetic flags:
 
 - **N (Negative)**: Set to 1 if bit 7 of the result is 1 (negative number).
-- **V (Overflow)**: Set to 1 if a signed arithmetic result exceeds -128..127.
+- **V (Overflow)**: Set to 1 if a signed arithmetic result is outside -128..127.
 - **Z (Zero)**: Set to 1 if the result is 0.
 - **C (Carry)**: Set to 1 if addition overflows or subtraction does NOT borrow.
 
@@ -70,7 +81,7 @@ In the 6502, it is standard to call `SEC` (Set Carry) before an `SBC` operation.
 
 ## 🧪 Verification
 
-The completed CPU test is `make test-cpu`; run it from this directory. `make sim` also runs the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
+The completed CPU test is `make test-cpu`; run it from this directory. `make sim` separately runs only the LCD/TFT smoke test. Passing these tests covers their assertions only, not every instruction or hardware behavior.
 
 - **Test Program**:
 
@@ -93,3 +104,7 @@ In Day 09, we will use these flags (Z, C, etc.) to control the program flow usin
 This day implements binary arithmetic inside the CPU, not an independent ALU module; decimal arithmetic is out of scope. Signed 8-bit range is -128..127. C means carry-out for ADC and no borrow for SBC. SBC overflow is `(A[7] != operand[7]) && (A[7] != result[7])`. Use a 9-bit sum; invert the operand within 8 bits before zero-extending it.
 
 Instruction-table cycles are reference values for the standard 6502, not clock counts for this FSM including memory waits.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.

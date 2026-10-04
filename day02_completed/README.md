@@ -7,6 +7,17 @@ This is the completed project for designing combinational circuits in SystemVeri
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+The reference solution already implements the tasks below.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Arithmetic TODOs in alu_4bit.sv |
+| Provided foundation | top_9k.sv / top_20k.sv provide a blinking-LED circuit |
+| Expected test results | `make test` checks arithmetic and logic results |
+| What to observe on hardware | LED blinks about four times faster than Day01. ALU results are not connected to LEDs |
+
 ## File Structure
 
 - `alu_4bit.sv` - 4-bit ALU

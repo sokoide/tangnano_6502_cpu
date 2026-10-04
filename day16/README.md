@@ -5,6 +5,17 @@
 🌐 Available languages:
 [English](./README.md) | [日本語](./README_ja.md)
 
+## Lesson at a glance
+
+Edit this day's starter workspace.
+
+| Item | Details |
+| --- | --- |
+| Where to edit | Indexed load/store TODOs in cpu.sv |
+| Provided foundation | Instructions through DEX/DEY |
+| Expected test results | Indexed reads/writes in the CPU test yield A=$77 |
+| What to observe on hardware | ROM reads array values $11 → $22 → $33 and halts with A=$33/X=$03 |
+
 ## 📜 Overview
 
 Today, we implement one of the features that makes the 6502 incredibly powerful: **Indexed Addressing**.
@@ -79,3 +90,9 @@ This Day includes a CPU testbench. If the starter TODOs are not yet implemented,
 ## 🎯 Next Step
 
 In Day 17, we will tackle the most advanced mode: **Indirect Addressing**. This is essential for handling pointers and dynamic memory access.
+
+CPU unit tests and the hardware ROM use different inputs. The hardware expectations above are derived from `rom.sv` and the LCD wiring; they do not mean that operation has been verified on every board.
+
+See [synchronous RAM timing](../docs/DAY18_TO_DAY99.md#synchronous-ram-read-timing) for request and capture timing. At startup, PLL LOCK is synchronized and must remain stable for 16 clocks before boot begins.
+
+LCD VSync passes through a two-stage synchronizer into the display-write clock domain. Its rising edge starts a frame update. VRAM and font reads remain in the pixel-clock domain.
