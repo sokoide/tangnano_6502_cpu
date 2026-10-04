@@ -20,7 +20,8 @@ module top (
 
     // Combinational logic: continuous assignment
     // The 'led' signal always reflects the state of the counter's most significant bit.
+    // The Tang Nano 20K on-board LED is active-low (0 = ON), so invert the bit.
     // When counter[24] is 1, the LED is ON; when it's 0, the LED is OFF.
-    assign led = counter[24];
+    assign led = ~counter[24];
 
 endmodule

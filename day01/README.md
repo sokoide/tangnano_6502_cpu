@@ -197,7 +197,7 @@ Board notes (9K/20K tool paths, device selection, etc.): see `docs/BOARD_SETUP.m
 Create a `top.sv` file and write the following code:
 
 ```systemverilog
-// Day 01: LED Blink Example (Tang Nano 20K)
+// Day 01: LED Blink Example (Tang Nano 9K)
 // This module demonstrates a basic clock divider to blink an LED.
 
 module top (
@@ -219,9 +219,11 @@ module top (
     end
 
     // Combinational logic: continuous assignment
-    // The 'led' signal always reflects the state of the counter's most significant bit.
-    // Board LED polarity is handled by the board wrapper; 9K LEDs are active-low.
-    assign led = counter[24];
+    // The on-board LEDs on the Tang Nano 9K and 20K are active-low (verified
+    // on hardware), so invert the bit here (1 = ON).
+    // Day 01 has no board wrapper; handle the LED polarity in your own top.
+    // (Later days introduce top_9k/top_20k + top_core.)
+    assign led = ~counter[24];
 
 endmodule
 ```

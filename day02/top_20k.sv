@@ -1,4 +1,4 @@
-// Day 02 Completed: Hardware sanity top (Tang Nano 20K)
+// day02: board top (Tang Nano 20K) - LED blink (ALU is verified in simulation)
 // In Day 02, we blink the LED faster (~4x) than Day 01 to confirm the update.
 
 module top (
@@ -13,7 +13,7 @@ module top (
     end
 
     // Use bit 22 for faster blinking (approx 0.3s period)
-    // Tang Nano 20K LED is Active High (1 = ON).
-    assign led = counter[22];
+    // The Tang Nano 20K on-board LED is active-low (0 = ON), so invert the bit.
+    assign led = ~counter[22];
 
 endmodule

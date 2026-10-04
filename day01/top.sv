@@ -21,13 +21,12 @@ module top (
 
     // Combinational logic: continuous assignment
     // The 'led' signal always reflects the state of the counter's bit.
-    // 
+    //
     // [Note for Beginners]
-    // Different boards may have different LED polarities and clock behaviors:
-    // - Tang Nano 20K: LED is often Active High (1 = ON). Use 'assign led = counter[24];'
-    // - Tang Nano 9K: LED is often Active Low (0 = ON). Use 'assign led = ~counter[24];'
-    // If the LED is always ON or OFF, try inverting the signal with '~'.
+    // The on-board LEDs on the Tang Nano 9K and 20K are active-low (0 = ON),
+    // so invert the counter bit: 'assign led = ~counter[24];' (1 = ON).
+    // If your board behaves differently, try removing the inversion.
     // If the blink is too slow, try using a lower bit like 'counter[22]'.
-    assign led = counter[24];
+    assign led = ~counter[24];
 
 endmodule
