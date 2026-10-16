@@ -40,7 +40,7 @@ Day 02 では、単純な順序回路（カウンタ）から**組み合わせ�
 
 - **ユニットテスト (テストベンチ)**: ハードウェアに書き込む前に、シミュレーションでロジックを検証する。
 
-- **Verilator/GTKWave**: FPGA エンジニアの必須ツールである診断ツールの使い方を習得する。
+- **Verilator/Surfer**: FPGA エンジニアの必須ツールである診断ツールの使い方を習得する。
 
 ## 🏗️ アーキテクチャ
 
@@ -277,26 +277,54 @@ flowchart LR
 
     このコマンドで、上で説明した Verilator のフローが実行されます。テストベンチ内の `$display` や `assert` からのメッセージが出力されます。
 
-2. **波形表示 (任意ですが推奨):**
-   「成功」か「失敗」かだけでは、なぜ間違っているのかわからないことがあります。信号が時間と共に*どのように*変化しているかを見る必要があります。波形は、回路の信号をグラフにしたものです。
+## Surferで波形を確認する
 
-    波形を生成するには、テストベンチの `initial begin` ブロックに以下の 2 行を追加します。
+### 1. ビューアを準備する
 
-    ```systemverilog
-    $dumpfile("tb_alu_4bit.vcd");
-    $dumpvars(0, tb_alu_4bit);
-    ```
+この教材では、macOS・Windows・Linux共通の波形ビューアとして[Surfer](https://surfer-project.org/)を使用します。Verilatorが生成するVCDをそのまま開けます。
 
-    `make test` を実行すると、`tb_alu_4bit.vcd` というファイルが生成されます。これを**GTKWave**のような波形ビューアで開くことができます。
+- **macOS**: `brew install surfer` でインストールします（[Homebrewの配布情報](https://formulae.brew.sh/formula/surfer)）。
+- **Windows**: [公式サイト](https://surfer-project.org/)のWindowsリンクから配布ファイルを取得・展開し、ここでは `C:\Tools\Surfer\surfer.exe` に配置します。シミュレーションにはWSLのVerilatorを使い、波形表示にはWindows版Surferを使います。
+- **Linux**: [公式インストール手順](https://docs.surfer-project.org/book/)に従って、配布バイナリまたはディストリビューションのパッケージを導入します。
 
-    ```bash
-    gtkwave tb_alu_4bit.vcd
-    ```
+### 2. VCDを生成して開く
 
-    以下のように`a`, `b`, `carry`, `zero`, `result`の波形が時間軸に沿って表示されます。
-    ![Wave](../docs/day02_wave.png)
+このREADMEのあるディレクトリで実行します。付属の `tb_alu_4bit.sv` には `$dumpfile` と `$dumpvars` があり、Makefileも `--trace` を指定済みです。
 
-    これは、期待通りの値にならない原因を突き止めるのに非常に役立ちます。
+```bash
+make test
+
+# macOS / Linux
+make wave
+# 同じファイルを直接開く場合
+surfer ./tb_alu_4bit.vcd
+```
+
+**Windows / WSL**では、`make test` の後にWSLから次を実行します。`wslpath` でVCDの絶対パスをWindows形式へ変換します。
+
+```bash
+/mnt/c/Tools/Surfer/surfer.exe "$(wslpath -w "$PWD/tb_alu_4bit.vcd")"
+```
+
+PowerShellから開く場合は、WindowsからアクセスできるVCDのパスを指定します。
+
+```powershell
+& C:\Tools\Surfer\surfer.exe 'C:\path\to\tb_alu_4bit.vcd'
+```
+
+`make wave` は生成済みVCDを開くターゲットです。RTLやテストベンチを変更したら、先に `make test` を再実行してください。別の起動コマンドを使う場合は `make wave WAVE_VIEWER=/path/to/surfer` と指定できます。WSLからWindows版を起動する場合は上記のパス変換付きコマンドを使います。
+
+### 3. 信号を追加して結果を読む
+
+Surferで `tb_alu_4bit` の階層を開き、`a`、`b`、`op`、`result`、`zero`、`carry` を波形表示へ追加します。全期間が見えるようにズームを調整し、カーソルを各テストの区間へ移動して値を確認します。
+
+starterの付属テストは加算が中心です。以下の例をすべて確認するにはテストを追加するか、`day02_completed` で `make test` を実行します。
+
+- `5 + 3`: `result = 8`、`zero = 0`、`carry = 0`
+- `15 + 1`: 4ビットの結果は `0`、`zero = 1`、`carry = 1`
+- `5 - 5`: `result = 0`、`zero = 1`
+
+信号が見えない場合は階層と表示への追加を確認し、値が古い場合は `make test` でVCDを再生成して開き直します。
 
 ## 🔧 デバッグのヒント
 

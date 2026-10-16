@@ -100,8 +100,11 @@ prog:
 prog-download: prog
 	$(MAKE) BOARD=$(BOARD) download
 
+WAVE_VIEWER ?= surfer
+
 wave:
-	gtkwave ./waveform.vcd
+	@test -f waveform.vcd || { echo "Run make test-cpu-regression first to generate waveform.vcd." >&2; exit 1; }
+	$(WAVE_VIEWER) "$(abspath waveform.vcd)"
 
 clean:
 	$(MAKE) -C examples clean
@@ -119,7 +122,7 @@ help:
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make lint           - Verilator lint (excludes vendor IP)"
 	@echo "  make format         - Verible format (in-place)"
-	@echo "  make wave           - Open waveform.vcd in GTKWave"
+	@echo "  make wave           - Open waveform.vcd in Surfer"
 	@echo "Variables:"
 	@echo "  BOARD=9k|20k        - Select board (maps DEVICE if DEVICE unset)"
 	@echo "  DEVICE=...          - Override explicit device code"

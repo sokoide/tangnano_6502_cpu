@@ -20,16 +20,18 @@
 make test
 ```
 
-### 波形の確認 (GTKWave)
+### 波形の確認 (Surfer)
 
 テストが失敗した場合や、内部の挙動を確認したい場合：
 
 1. `make test` を実行して `.vcd` (Value Change Dump) ファイルを生成します。
-2. GTKWave でファイルを開きます：
+2. Surfer でファイルを開きます：
 
     ```bash
-    gtkwave tb_alu_4bit.vcd  # ファイル名は例
+    surfer ./tb_alu_4bit.vcd  # ファイル名は例
     ```
+
+Windows / WSLでは、[共通のSurfer導入手順](PREREQS_ja.md)に従い、VCDのパスを `wslpath -w` で変換してWindows版を起動します。
 
 ### 波形の見方
 

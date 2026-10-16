@@ -2,7 +2,7 @@
 
 - **GoWin EDA** (FPGA 合成・配置配線ツール)
 - **Verilator** (SystemVerilog シミュレータ)
-- **GTKWave** (波形表示ツール)
+- **Surfer** (波形表示ツール)
 - **cc65** (6502 アセンブラ、Day 10 で使用)
 - **srecord** (バイナリ変換ツール)
 - **Make** (ビルドシステム)
@@ -15,7 +15,7 @@
 
 ```bash
 brew update
-brew install srecord cc65 golang gtkwave verilator openssl@3
+brew install srecord cc65 golang surfer verilator openssl@3
 ```
 
 - すでに homebrew がインストールされている場合、Apple Silicon / Intel version を確認し、あなたの Mac の CPU とミスマッチがあったら homebrew を再インストールしてください
@@ -30,7 +30,7 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 
 ```bash
 sudo apt update
-sudo apt install -y make srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev \
+sudo apt install -y make srecord cc65 golang verilator libnss3 libnspr4 libasound2-dev \
   libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
   libdbus-1-3 libfontconfig1 libxrender1 libxkbcommon0 libxext6 libx11-6 \
   libxdamage1 libxfixes3 libnss3 libnspr4 libgbm1
@@ -38,6 +38,12 @@ sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
 ```
+
+## Surfer（波形ビューア）の準備
+
+macOSでは上記のHomebrewコマンドで導入できます。Windowsでは[Surfer公式サイト](https://surfer-project.org/)のWindowsリンクから配布ファイルを取得・展開します。この教材では `C:\Tools\Surfer\surfer.exe` に配置した例を使います。Linuxでは[公式インストール手順](https://docs.surfer-project.org/book/)から配布バイナリまたは利用中のディストリビューションのパッケージを選んでください。Ubuntu/Debianの上記コマンドにはSurferを含めていません。
+
+WindowsではWSLで `make test` を実行し、Windows版Surferで生成したVCDを開きます。[Day02の波形確認手順](../day02/README_ja.md#surferで波形を確認する)に、WSLのパス変換とPowerShellからの起動例があります。Day03以降も、各テストが出力するVCDのファイル名に置き換えて同じ方法で開けます。
 
 **GoWin EDA:**
 

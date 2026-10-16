@@ -13,7 +13,7 @@ Tang Nano 9K / 20K FPGA ボード向けの、LCD コントローラを搭載し�
 ### 前提条件
 
 - **ハードウェア**: Tang Nano 9K または 20K
-- **ソフトウェア**: Gowin EDA, cc65, srecord, Go, Make（テストには Verilator、波形表示には GTKWave）
+- **ソフトウェア**: Gowin EDA, cc65, srecord, Go, Make（テストには Verilator、波形表示には Surfer）
 
 ### 1. 取得済みのリポジトリへ移動
 

@@ -68,7 +68,7 @@ make test
 #### シミュレータについて
 
 - シミュレータ: Verilator（macOS/Linux/Windows で動作）。
-- 出力: `tb_traffic_light.sv` を実行し、波形 `tb_traffic_light.vcd` を生成します（`gtkwave tb_traffic_light.vcd` で確認）。
+- 出力: `tb_traffic_light.sv` を実行し、波形 `tb_traffic_light.vcd` を生成します（`surfer ./tb_traffic_light.vcd` で確認）。
 - 前提: `verilator` が `PATH` にあること（macOS 例: `brew install verilator`）。
 
 ### FPGAビルド & ダウンロード
@@ -88,8 +88,10 @@ make BOARD=20k download
 make test
 
 # 波形表示
-gtkwave tb_traffic_light.vcd
+surfer ./tb_traffic_light.vcd
 ```
+
+Windows / WSLでは、[共通のSurfer導入手順](../docs/PREREQS_ja.md)に従い、VCDのパスを `wslpath -w` で変換してWindows版を起動します。
 
 ## ハードウェア動作確認
 

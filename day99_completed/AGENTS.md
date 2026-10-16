@@ -27,7 +27,7 @@ This is a Tang Nano 9K/20K FPGA project implementing a 6502 CPU with LCD control
 - `make clean` — Remove local build artifacts.
 - `make test` — Run Verilator simulations (or `make BOARD=20k test`).
 - `cd examples && make` — Assemble 6502 program and regenerate `include/boot_program.sv`. Edit `SRCS` in `examples/Makefile` to select the program.
-- `make wave` — Open `gtkwave` on `waveform.vcd` (produce VCD in your simulator first).
+- `make wave` — Open `surfer` on `waveform.vcd` (produce VCD in your simulator first).
 - Board variant: target via `make BOARD=9k` (default) or `make BOARD=20k` (`top_9k.sv` / `top_20k.sv` handle reset polarity; `platform_clocks.sv` configures 27MHz/40.5MHz).
 
 ## Architecture

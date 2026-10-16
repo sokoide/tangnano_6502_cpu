@@ -2,7 +2,7 @@
 
 - **GoWin EDA** (FPGA synthesis and place & route tool)
 - **Verilator** (SystemVerilog simulator)
-- **GTKWave** (Waveform viewer)
+- **Surfer** (Waveform viewer)
 - **cc65** (6502 assembler, used on Day 10)
 - **srecord** (binary conversion tool)
 - **Make** (build system)
@@ -13,7 +13,7 @@
 
 ```bash
 brew update
-brew install srecord cc65 golang gtkwave verilator openssl@3
+brew install srecord cc65 golang surfer verilator openssl@3
 ```
 
 - If you already have Homebrew, make sure it's the aarch64 version for Apple Silicon, or the Intel version for Intel CPUs.
@@ -29,7 +29,7 @@ brew install srecord cc65 golang gtkwave verilator openssl@3
 
 ```bash
 sudo apt update
-sudo apt install -y make srecord cc65 golang gtkwave verilator libnss3 libnspr4 libasound2-dev \
+sudo apt install -y make srecord cc65 golang verilator libnss3 libnspr4 libasound2-dev \
   libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
   libdbus-1-3 libfontconfig1 libxrender1 libxkbcommon0 libxext6 libx11-6 \
   libxdamage1 libxfixes3 libnss3 libnspr4 libgbm1
@@ -37,6 +37,12 @@ sudo apt install -y --reinstall \
   libfreetype6 \
   libfontconfig1
 ```
+
+## Set Up Surfer (Waveform Viewer)
+
+On macOS, the Homebrew command above installs Surfer. On Windows, download and extract the archive using the Windows link on the [official Surfer website](https://surfer-project.org/). This curriculum uses `C:\Tools\Surfer\surfer.exe` as an example location. On Linux, follow the [official installation instructions](https://docs.surfer-project.org/book/) to select a pre-built binary or your distribution's package. The Ubuntu/Debian command above does not install Surfer.
+
+On Windows, run `make test` in WSL and open the generated VCD with the Windows version of Surfer. The [Day02 waveform instructions](../day02/README.md#inspect-waveforms-with-surfer) show WSL path conversion and PowerShell launch examples. For Day03 and later, use the same approach with the VCD filename produced by each test.
 
 **GoWin EDA:**
 

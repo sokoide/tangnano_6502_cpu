@@ -151,7 +151,7 @@ Complex addressing modes and hardware-native custom instructions.
 - **Software**:
   - **GOWIN EDA**: The IDE and toolchain for synthesizing code for the FPGA (like GCC/Clang but for hardware).
   - **Verilator**: A fast SystemVerilog simulator used for running "unit tests" on your PC.
-  - **GTKwave**: A waveform viewer to visualize signals over time (your "debugger" for logic).
+  - **Surfer**: A waveform viewer to visualize signals over time (your "debugger" for logic).
 
 Check [Day 01](./day01/README.md) to get started!
 

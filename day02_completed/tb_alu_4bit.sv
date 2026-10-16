@@ -24,7 +24,7 @@ module tb_alu_4bit;
 
     // 3. Test scenario (Initial block runs once at the start of simulation)
     initial begin
-        // Waveform generation: enables viewing signal changes in GTKWave
+        // Waveform generation: enables viewing signal changes in Surfer
         $dumpfile("tb_alu_4bit.vcd");
         $dumpvars(0, tb_alu_4bit);
 

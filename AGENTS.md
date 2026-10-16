@@ -206,12 +206,12 @@ assembly (ca65) → binary (ld65) → Intel HEX (srec_cat) → SystemVerilog (he
 - SystemVerilog is the primary language; keep indentation at 4 spaces and line length to ~100 columns (enforced by `verible-verilog-format`).
 - Naming: modules/files `lower_snake_case`; constants/parameters `UPPER_SNAKE_CASE`; signals `lower_snake_case`; testbenches `tb_*.sv`.
 - Structure: one module per file with concise headers; keep day folders aligned with the curriculum (`day01`, `day01_completed`, etc.).
-- Waveform outputs are `*.vcd` for GTKwave.
+- Waveform outputs are `*.vcd` for Surfer.
 
 ## Testing Guidelines
 
 1. **Simulation First**: Use `make test` / Verilator before hardware testing
-2. **Waveform Analysis**: Use GTKwave on `*.vcd` files to debug timing issues
+2. **Waveform Analysis**: Use Surfer on `*.vcd` files to debug timing issues
 3. **Incremental Validation**: Test each instruction/category before integration
 4. **Hardware Verification**: Confirm with `make download` after simulation passes
 5. When adding a module, provide or update a `tb_*.sv` that exercises both nominal and edge cases.
@@ -252,7 +252,7 @@ VRAM writes must account for LCD read access:
 ## Tools, Prereqs, and Configuration
 
 - FPGA builds rely on GOWIN tools; see `docs/PREREQS.md` for installation.
-- Required tools: Gowin EDA (`gw_sh`, `programmer_cli`), Verilator, cc65/ca65, GTKwave, srecord.
+- Required tools: Gowin EDA (`gw_sh`, `programmer_cli`), Verilator, cc65/ca65, Surfer, srecord.
 - Makefiles auto-detect macOS Gowin installation at `/Applications/GowinIDE.app/`. Override via `make GWSH=/path/to/gw_sh PRG=/path/to/programmer_cli download`.
 
 ## Learning Resources

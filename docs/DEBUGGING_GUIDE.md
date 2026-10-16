@@ -20,16 +20,18 @@ The project uses `make test` to compile and run your SystemVerilog code using Ve
 make test
 ```
 
-### Viewing Waveforms (GTKWave)
+### Viewing Waveforms (Surfer)
 
 If a test fails or you want to verify internal behavior:
 
 1. Run `make test`. This generates a `.vcd` (Value Change Dump) file.
-2. Open the file with GTKWave:
+2. Open the file with Surfer:
 
     ```bash
-    gtkwave tb_alu_4bit.vcd  # Example filename
+    surfer ./tb_alu_4bit.vcd  # Example filename
     ```
+
+On Windows / WSL, follow the [shared Surfer setup](PREREQS.md) and launch the Windows viewer with the VCD path converted by `wslpath -w`.
 
 ### How to Read Waveforms
 

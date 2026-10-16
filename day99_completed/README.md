@@ -13,7 +13,7 @@ This guide explains how to build and deploy the project on Tang Nano 9K and 20K 
 ### Prerequisites
 
 - **Hardware**: Tang Nano 9K or 20K
-- **Software**: Gowin EDA, cc65, srecord, Go, Make (Verilator for tests; GTKWave for waveforms)
+- **Software**: Gowin EDA, cc65, srecord, Go, Make (Verilator for tests; Surfer for waveforms)
 
 ### 1. Enter Your Local Checkout
 

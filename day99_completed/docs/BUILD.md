@@ -35,9 +35,11 @@
 
   ```bash
   sudo apt update
-  sudo apt install srecord cc65 golang gtkwave verilator
+  sudo apt install srecord cc65 golang verilator
   # verible-verilog-format: install from releases if needed
   ```
+
+- Install Surfer separately using the [shared prerequisites](../../docs/PREREQS.md#set-up-surfer-waveform-viewer). After generating `waveform.vcd` with `make test-cpu-regression`, open it with `make wave`.
 
 - Typical Gowin tool locations (adjust per your install):
   - `GWSH=/opt/GowinEDA/IDE/bin/gw_sh`

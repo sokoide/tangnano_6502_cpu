@@ -45,19 +45,6 @@ make BOARD=9k download
 make BOARD=20k download
 ```
 
-### 個別テスト
-
-```bash
-# ALU シミュレーション
-make test
-
-# 波形表示 (GTKWave必要)
-# WSL High Resolution Display User Only
-# export GDK_SCALE=2        # Window scale
-# export GDK_DPI_SCALE=1.0  # Font scale
-gtkwave tb_alu_4bit.vcd
-```
-
 ## テスト内容
 
 ALU テストベンチで以下をテスト:
@@ -112,23 +99,52 @@ flowchart LR
     F -- 出力 --> G
 ```
 
-### 波形の表示方法
+## Surferで波形を確認する
 
-設計を視覚的にデバッグするために、波形ファイルを生成できます。同梱の`tb_alu_4bit.sv`には、必要な記述がすでに含まれています。
+### 1. ビューアを準備する
 
-```systemverilog
-initial begin
-    $dumpfile("tb_alu_4bit.vcd");
-    $dumpvars(0, tb_alu_4bit);
-    // ... この後にテストケースが続く
-end
-```
+この教材では、macOS・Windows・Linux共通の波形ビューアとして[Surfer](https://surfer-project.org/)を使用します。Verilatorが生成するVCDをそのまま開けます。
 
-`make test` を実行した後、生成された `tb_alu_4bit.vcd` ファイルを GTKWave のようなビューアで開くことができます。
+- **macOS**: `brew install surfer` でインストールします（[Homebrewの配布情報](https://formulae.brew.sh/formula/surfer)）。
+- **Windows**: [公式サイト](https://surfer-project.org/)のWindowsリンクから配布ファイルを取得・展開し、ここでは `C:\Tools\Surfer\surfer.exe` に配置します。シミュレーションにはWSLのVerilatorを使い、波形表示にはWindows版Surferを使います。
+- **Linux**: [公式インストール手順](https://docs.surfer-project.org/book/)に従って、配布バイナリまたはディストリビューションのパッケージを導入します。
+
+### 2. VCDを生成して開く
+
+このREADMEのあるディレクトリで実行します。付属の `tb_alu_4bit.sv` には `$dumpfile` と `$dumpvars` があり、Makefileも `--trace` を指定済みです。
 
 ```bash
-gtkwave tb_alu_4bit.vcd
+make test
+
+# macOS / Linux
+make wave
+# 同じファイルを直接開く場合
+surfer ./tb_alu_4bit.vcd
 ```
+
+**Windows / WSL**では、`make test` の後にWSLから次を実行します。`wslpath` でVCDの絶対パスをWindows形式へ変換します。
+
+```bash
+/mnt/c/Tools/Surfer/surfer.exe "$(wslpath -w "$PWD/tb_alu_4bit.vcd")"
+```
+
+PowerShellから開く場合は、WindowsからアクセスできるVCDのパスを指定します。
+
+```powershell
+& C:\Tools\Surfer\surfer.exe 'C:\path\to\tb_alu_4bit.vcd'
+```
+
+`make wave` は生成済みVCDを開くターゲットです。RTLやテストベンチを変更したら、先に `make test` を再実行してください。別の起動コマンドを使う場合は `make wave WAVE_VIEWER=/path/to/surfer` と指定できます。WSLからWindows版を起動する場合は上記のパス変換付きコマンドを使います。
+
+### 3. 信号を追加して結果を読む
+
+Surferで `tb_alu_4bit` の階層を開き、`a`、`b`、`op`、`result`、`zero`、`carry` を波形表示へ追加します。全期間が見えるようにズームを調整し、カーソルを各テストの区間へ移動して値を確認します。
+
+- `5 + 3`: `result = 8`、`zero = 0`、`carry = 0`
+- `15 + 1`: 4ビットの結果は `0`、`zero = 1`、`carry = 1`
+- `5 - 5`: `result = 0`、`zero = 1`
+
+信号が見えない場合は階層と表示への追加を確認し、値が古い場合は `make test` でVCDを再生成して開き直します。
 
 ## 学習ポイント
 
