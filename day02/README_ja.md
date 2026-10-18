@@ -314,9 +314,17 @@ PowerShellから開く場合は、WindowsからアクセスできるVCDのパス
 
 `make wave` は生成済みVCDを開くターゲットです。RTLやテストベンチを変更したら、先に `make test` を再実行してください。別の起動コマンドを使う場合は `make wave WAVE_VIEWER=/path/to/surfer` と指定できます。WSLからWindows版を起動する場合は上記のパス変換付きコマンドを使います。
 
+`make wave`で得られるwaveをSurferで可視化した図は以下の通りです。
+![waveform](./imgs/wave.png)
+
 ### 3. 信号を追加して結果を読む
 
 Surferで `tb_alu_4bit` の階層を開き、`a`、`b`、`op`、`result`、`zero`、`carry` を波形表示へ追加します。全期間が見えるようにズームを調整し、カーソルを各テストの区間へ移動して値を確認します。
+
+## 📝 今日の課題
+
+1. **テストケースを追加する**:
+    - `15 + 1`: 4ビットの結果は `0`、`zero = 1`、`carry = 1`
 
 starterの付属テストは加算が中心です。以下の例をすべて確認するにはテストを追加するか、`day02_completed` で `make test` を実行します。
 

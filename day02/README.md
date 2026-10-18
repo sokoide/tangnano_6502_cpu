@@ -299,6 +299,9 @@ To open it from PowerShell, supply a VCD path accessible from Windows:
 
 `make wave` opens an existing VCD. After changing the RTL or testbench, run `make test` again first. To use another viewer command, set `make wave WAVE_VIEWER=/path/to/surfer`. When launching the Windows viewer from WSL, use the path-converting command above.
 
+The following figure shows the waveform obtained by running `make wave` and visualizing it with Surfer.
+![waveform](./imgs/wave.png)
+
 ### 3. Add signals and inspect results
 
 Expand the `tb_alu_4bit` hierarchy in Surfer and add `a`, `b`, `op`, `result`, `zero`, and `carry` to the waveform display. Zoom to fit the full trace, then move the cursor to each test interval to inspect values.
